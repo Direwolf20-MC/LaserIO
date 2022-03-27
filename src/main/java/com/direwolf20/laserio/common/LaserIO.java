@@ -1,11 +1,19 @@
 package com.direwolf20.laserio.common;
 
+import com.direwolf20.laserio.setup.ClientSetup;
+import com.direwolf20.laserio.setup.ModSetup;
+import com.direwolf20.laserio.setup.Registration;
 import com.mojang.logging.LogUtils;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.InterModComms;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -18,25 +26,31 @@ import org.slf4j.Logger;
 import java.util.stream.Collectors;
 
 // The value here should match an entry in the META-INF/mods.toml file
-@Mod("laserio")
-public class LaserIO
-{
+@Mod(LaserIO.MODID)
+public class LaserIO {
     // Directly reference a slf4j logger
     private static final Logger LOGGER = LogUtils.getLogger();
+    public static final String MODID = "laserio";
 
-    public LaserIO()
-    {
+    public LaserIO() {
+        // Register the deferred registry
+        Registration.init();
         // Register the setup method for modloading
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
+        IEventBus modbus = FMLJavaModLoadingContext.get().getModEventBus();
         // Register the enqueueIMC method for modloading
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::enqueueIMC);
+        //FMLJavaModLoadingContext.get().getModEventBus().addListener(this::enqueueIMC);
         // Register the processIMC method for modloading
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::processIMC);
+        //FMLJavaModLoadingContext.get().getModEventBus().addListener(this::processIMC);
 
         // Register ourselves for server and other game events we are interested in
-        MinecraftForge.EVENT_BUS.register(this);
+        //MinecraftForge.EVENT_BUS.register(this);
+        // Register 'ModSetup::init' to be called at mod setup time (server and client)
+        modbus.addListener(ModSetup::init);
+        // Register 'ClientSetup::init' to be called at mod setup time (client only)
+        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> modbus.addListener(ClientSetup::init));
     }
-
+}
+/*
     private void setup(final FMLCommonSetupEvent event)
     {
         // some preinit code
@@ -79,3 +93,4 @@ public class LaserIO
         }
     }
 }
+*/
