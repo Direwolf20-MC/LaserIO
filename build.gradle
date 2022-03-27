@@ -145,6 +145,12 @@ repositories {
     // flatDir {
     //     dir 'libs'
     // }
+    maven { // JEI
+        url "https://dvs1.progwml6.com/files/maven"
+    }
+    maven { // TOP
+        url "https://cursemaven.com"
+    }
 }
 
 dependencies {
@@ -161,6 +167,12 @@ dependencies {
     // Examples using mod jars from ./libs
     // implementation fg.deobf("blank:coolmod-${mc_version}:${coolmod_version}")
 
+    //JEI
+    compileOnly fg.deobf("mezz.jei:jei-${jei_version}:api")
+    implementation fg.deobf("mezz.jei:jei-${jei_version}")
+
+    //TOP
+    implementation fg.deobf("curse.maven:the-one-probe-245211:3550084")
     // For more info...
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
