@@ -2,5 +2,6 @@
   "block.laserio.laser_connector": "Laser Connector",
   "block.laserio.laser_node": "Laser Node",
   "item.laserio.laser_wrench": "Laser Wrench",
-  "itemGroup.LaserIO": "Tutorial"
+  "itemGroup.LaserIO": "Tutorial",
+  "message.logisticslasers.wrenchrange": "This block is too far away. Max range is 8"
 }

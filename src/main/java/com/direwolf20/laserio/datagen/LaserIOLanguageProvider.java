@@ -18,6 +18,6 @@ public class LaserIOLanguageProvider extends LanguageProvider {
         add(Registration.LaserConnector.get(), "Laser Connector");
         add(Registration.LaserNode.get(), "Laser Node");
         add(Registration.Laser_Wrench.get(), "Laser Wrench");
-
+        add("message.logisticslasers.wrenchrange","This block is too far away. Max range is 8");
     }
 }
