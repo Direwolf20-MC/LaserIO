@@ -1,5 +1,6 @@
 package com.direwolf20.laserio.setup;
 
+import com.direwolf20.laserio.common.blocks.*;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
@@ -31,6 +32,8 @@ public class Registration {
     //Blocks
     public static final RegistryObject<Block> LaserConnector = BLOCKS.register("laser_connector", () -> new Block(BLOCK_PROPERTIES));
     public static final RegistryObject<Item> LaserConnector_ITEM = fromBlock(LaserConnector);
+    public static final RegistryObject<LaserNode> LaserNode = BLOCKS.register("laser_node", LaserNode::new);
+    public static final RegistryObject<Item> LaserNode_ITEM = fromBlock(LaserNode);
 
     //Items
     public static final RegistryObject<Item> Laser_Wrench = ITEMS.register("laser_wrench", () -> new Item(ITEM_PROPERTIES));

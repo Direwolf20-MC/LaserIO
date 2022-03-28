@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "laserio:block/laser_node"
+    }
+  }
+}
