@@ -1,5 +1,6 @@
 {
   "block.laserio.laser_connector": "Laser Connector",
+  "block.laserio.laser_node": "Laser Node",
   "item.laserio.laser_wrench": "Laser Wrench",
   "itemGroup.LaserIO": "Tutorial"
 }

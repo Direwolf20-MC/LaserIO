@@ -13,7 +13,7 @@ public class LaserIOBlockStates extends BlockStateProvider {
 
     @Override
     protected void registerStatesAndModels() {
-        simpleBlock(Registration.LaserConnector.get());
+        //simpleBlock(Registration.LaserConnector.get());
         //simpleBlock(Registration.LaserNode.get(), models().getExistingFile(modLoc("block/laser_node")));
     }
 }

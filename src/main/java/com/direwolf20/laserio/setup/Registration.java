@@ -30,7 +30,7 @@ public class Registration {
     public static final Item.Properties ITEM_PROPERTIES = new Item.Properties().tab(ModSetup.ITEM_GROUP);
 
     //Blocks
-    public static final RegistryObject<Block> LaserConnector = BLOCKS.register("laser_connector", () -> new Block(BLOCK_PROPERTIES));
+    public static final RegistryObject<Block> LaserConnector = BLOCKS.register("laser_connector", LaserConnector::new);
     public static final RegistryObject<Item> LaserConnector_ITEM = fromBlock(LaserConnector);
     public static final RegistryObject<LaserNode> LaserNode = BLOCKS.register("laser_node", LaserNode::new);
     public static final RegistryObject<Item> LaserNode_ITEM = fromBlock(LaserNode);
