@@ -20,6 +20,8 @@ public class BaseLaserBE extends BlockEntity {
         super(type,pos,state);
     }
 
+    //TODO See why block position's aren't saved on reload
+
     //TODO See if we still need to MarkDirtyClient
     public boolean addNode(BlockPos pos) {
         boolean success = connections.add(pos);

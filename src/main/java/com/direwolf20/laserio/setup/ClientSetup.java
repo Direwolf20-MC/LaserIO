@@ -1,9 +1,11 @@
 package com.direwolf20.laserio.setup;
 
+import com.direwolf20.laserio.client.events.ClientEvents;
 import com.direwolf20.laserio.common.LaserIO;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
@@ -12,6 +14,9 @@ public class ClientSetup {
     public static void init(final FMLClientSetupEvent event) {
         ItemBlockRenderTypes.setRenderLayer(Registration.LaserNode.get(), RenderType.cutout());
         ItemBlockRenderTypes.setRenderLayer(Registration.LaserConnector.get(), RenderType.cutout());
+
+        //Register our Render Events Class
+        MinecraftForge.EVENT_BUS.register(ClientEvents.class);
     }
 
 
