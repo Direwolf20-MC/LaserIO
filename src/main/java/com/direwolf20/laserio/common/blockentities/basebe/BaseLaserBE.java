@@ -1,6 +1,5 @@
 package com.direwolf20.laserio.common.blockentities.basebe;
 
-import com.direwolf20.laserio.setup.Registration;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -25,9 +24,6 @@ public class BaseLaserBE extends BlockEntity {
         super(type,pos,state);
     }
 
-    //TODO See why block position's aren't saved on reload
-
-    //TODO See if we still need to MarkDirtyClient
     @Override
     public ClientboundBlockEntityDataPacket getUpdatePacket() {
         // Vanilla uses the type parameter to indicate which type of tile entity (command block, skull, or beacon?) is receiving the packet, but it seems like Forge has overridden this behavior
