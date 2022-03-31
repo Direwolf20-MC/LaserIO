@@ -15,10 +15,10 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import java.awt.*;
 
 public class RenderUtils {
-    public static void render(Matrix4f matrix, VertexConsumer builder, BlockPos pos, Color color) {
+    public static void render(Matrix4f matrix, VertexConsumer builder, BlockPos pos, Color color, float scale) {
         float red = color.getRed() / 255f, green = color.getGreen() / 255f, blue = color.getBlue() / 255f, alpha = .5f;
 
-        float startX = 0, startY = 0, startZ = -1, endX = 1, endY = 1, endZ = 0;
+        float startX = 0+(1-scale)/2, startY = 0+(1-scale)/2, startZ = -1+(1-scale)/2, endX = 1-(1-scale)/2, endY = 1-(1-scale)/2, endZ = 0-(1-scale)/2;
 
         //down
         builder.vertex(matrix, startX, startY, startZ).color(red, green, blue, alpha).endVertex();
