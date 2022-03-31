@@ -4,15 +4,12 @@ import com.direwolf20.laserio.client.renderer.BlockOverlayRender;
 import com.direwolf20.laserio.common.blockentities.basebe.BaseLaserBE;
 import com.direwolf20.laserio.common.items.LaserWrench;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.client.event.RenderLevelLastEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-
-import java.util.List;
 
 public class ClientEvents {
     @SubscribeEvent

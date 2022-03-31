@@ -2,15 +2,14 @@ package com.direwolf20.laserio.setup;
 
 import com.direwolf20.laserio.common.blockentities.LaserConnectorBE;
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
-import com.direwolf20.laserio.common.blocks.*;
+import com.direwolf20.laserio.common.blocks.LaserConnector;
+import com.direwolf20.laserio.common.blocks.LaserNode;
 import com.direwolf20.laserio.common.items.LaserWrench;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.material.Material;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.DeferredRegister;

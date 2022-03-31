@@ -3,7 +3,6 @@ package com.direwolf20.laserio.client.renderer;
 import com.direwolf20.laserio.common.LaserIO;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
-import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 
@@ -37,7 +36,7 @@ public class MyRenderType extends RenderType {
     }*/
 
     public static final RenderType LASER_MAIN_BEAM = create("MiningLaserMainBeam",
-            DefaultVertexFormat.POSITION_COLOR_TEX, VertexFormat.Mode.QUADS, 256,false, false,
+            DefaultVertexFormat.POSITION_COLOR_TEX, VertexFormat.Mode.QUADS, 256, false, false,
             RenderType.CompositeState.builder().setTextureState(new TextureStateShard(laserBeam2, false, false))
                     .setShaderState(ShaderStateShard.POSITION_COLOR_TEX_SHADER)
                     .setLayeringState(VIEW_OFFSET_Z_LAYERING)
@@ -49,7 +48,7 @@ public class MyRenderType extends RenderType {
                     .createCompositeState(false));
 
     public static final RenderType LASER_MAIN_ADDITIVE = create("MiningLaserAdditiveBeam",
-            DefaultVertexFormat.POSITION_COLOR_TEX, VertexFormat.Mode.QUADS, 256,false, false,
+            DefaultVertexFormat.POSITION_COLOR_TEX, VertexFormat.Mode.QUADS, 256, false, false,
             RenderType.CompositeState.builder().setTextureState(new TextureStateShard(laserBeamGlow, false, false))
                     .setShaderState(ShaderStateShard.POSITION_COLOR_TEX_SHADER)
                     .setLayeringState(VIEW_OFFSET_Z_LAYERING)
@@ -61,7 +60,7 @@ public class MyRenderType extends RenderType {
                     .createCompositeState(false));
 
     public static final RenderType LASER_MAIN_CORE = create("MiningLaserCoreBeam",
-            DefaultVertexFormat.POSITION_COLOR_TEX, VertexFormat.Mode.QUADS, 256,false, false,
+            DefaultVertexFormat.POSITION_COLOR_TEX, VertexFormat.Mode.QUADS, 256, false, false,
             RenderType.CompositeState.builder().setTextureState(new TextureStateShard(laserBeam, false, false))
                     .setShaderState(ShaderStateShard.POSITION_COLOR_TEX_SHADER)
                     .setLayeringState(VIEW_OFFSET_Z_LAYERING)
@@ -73,7 +72,7 @@ public class MyRenderType extends RenderType {
                     .createCompositeState(false));
 
     public static final RenderType BlockOverlay = create("MiningLaserBlockOverlay",
-            DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.QUADS, 256,false, false,
+            DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.QUADS, 256, false, false,
             RenderType.CompositeState.builder()
                     .setShaderState(ShaderStateShard.POSITION_COLOR_SHADER)
                     .setLayeringState(VIEW_OFFSET_Z_LAYERING)

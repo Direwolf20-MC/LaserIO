@@ -26,7 +26,7 @@ public class ClientSetup {
     }
 
     @SubscribeEvent
-    public static void registerRenderers (EntityRenderersEvent.RegisterRenderers event) {
+    public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
         //Register Block Entity Renders
         event.registerBlockEntityRenderer(Registration.LaserConnector_BE.get(), LaserConnectorBERender::new);
         event.registerBlockEntityRenderer(Registration.LaserNode_BE.get(), LaserNodeBERender::new);

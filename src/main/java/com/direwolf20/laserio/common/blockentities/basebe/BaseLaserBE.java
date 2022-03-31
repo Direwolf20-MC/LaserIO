@@ -21,7 +21,7 @@ public class BaseLaserBE extends BlockEntity {
     protected final Set<BlockPos> renderedConnections = new HashSet<>();
 
     public BaseLaserBE(BlockEntityType<?> type, BlockPos pos, BlockState state) {
-        super(type,pos,state);
+        super(type, pos, state);
     }
 
     @Override
@@ -110,6 +110,7 @@ public class BaseLaserBE extends BlockEntity {
     public Set<BlockPos> getConnections() {
         return connections;
     }
+
     public Set<BlockPos> getRenderedConnections() {
         return renderedConnections;
     }
