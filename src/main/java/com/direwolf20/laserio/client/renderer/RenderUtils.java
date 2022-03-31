@@ -73,13 +73,13 @@ public class RenderUtils {
 
         builder = bufferIn.getBuffer(MyRenderType.LASER_MAIN_BEAM);
 
-        matrixStackIn.translate(startBlock.getX(), startBlock.getY(), startBlock.getZ());
+        //matrixStackIn.translate(startBlock.getX(), startBlock.getY(), startBlock.getZ());
 
         Vector3f startLaser = new Vector3f(0.5f, .5f, 0.5f);
         Vector3f endLaser = new Vector3f(diffX, diffY, diffZ);
         //Vector3f sortPos = new Vector3f(startBlock.getX(), startBlock.getY(), startBlock.getZ());
 
-        drawLaser(builder, positionMatrix, endLaser, startLaser, 1, 0, 0, 1f, 0.025f, v, v + diffY * 1.5, be);
+        drawLaser(builder, positionMatrix, endLaser, startLaser, 1, 0, 0, 0.5f, 0.025f, v, v + diffY * 1.5, be);
 
         matrixStackIn.popPose();
         bufferIn.getBuffer(MyRenderType.LASER_MAIN_BEAM).endVertex();

@@ -6,15 +6,20 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.Connection;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 
+import javax.annotation.Nonnull;
 import java.util.HashSet;
 import java.util.Set;
 
 public class BaseLaserBE extends BlockEntity {
     protected final Set<BlockPos> connections = new HashSet<>();
+    protected final Set<BlockPos> renderedConnections = new HashSet<>();
 
     public BaseLaserBE(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type,pos,state);
@@ -23,18 +28,58 @@ public class BaseLaserBE extends BlockEntity {
     //TODO See why block position's aren't saved on reload
 
     //TODO See if we still need to MarkDirtyClient
+    @Override
+    public ClientboundBlockEntityDataPacket getUpdatePacket() {
+        // Vanilla uses the type parameter to indicate which type of tile entity (command block, skull, or beacon?) is receiving the packet, but it seems like Forge has overridden this behavior
+        return ClientboundBlockEntityDataPacket.create(this);
+    }
+
+    @Override
+    public void handleUpdateTag(CompoundTag tag) {
+        this.load(tag);
+    }
+
+    @Override
+    public CompoundTag getUpdateTag() {
+        CompoundTag tag = new CompoundTag();
+        saveAdditional(tag);
+        return tag;
+    }
+
+    @Override
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
+        this.load(pkt.getTag());
+    }
+
+    public void markDirtyClient() {
+        this.setChanged();
+        if (this.getLevel() != null) {
+            BlockState state = this.getLevel().getBlockState(this.getBlockPos());
+            this.getLevel().sendBlockUpdated(this.getBlockPos(), state, state, 3);
+        }
+    }
+
     public boolean addNode(BlockPos pos) {
         boolean success = connections.add(pos);
         if (success) {
-            //markDirtyClient();
+            markDirtyClient();
+        }
+        return success;
+    }
+
+    public boolean addRenderNode(BlockPos pos) {
+        boolean success = renderedConnections.add(pos);
+        if (success) {
+            markDirtyClient();
         }
         return success;
     }
 
     public boolean removeNode(BlockPos pos) {
         boolean success = connections.remove(pos);
+        renderedConnections.remove(pos);
         if (success) {
-            //markDirtyClient();
+            markDirtyClient();
         }
         return success;
     }
@@ -45,17 +90,18 @@ public class BaseLaserBE extends BlockEntity {
      * Connects This Pos -> Target Pos, and connects Target Pos -> This pos
      */
     public boolean addConnection(BlockPos pos) {
-        BaseLaserBE be = (BaseLaserBE) level.getBlockEntity(pos);
+        BaseLaserBE be = (BaseLaserBE) level.getBlockEntity(this.getBlockPos().offset(pos));
         if (!(this instanceof BaseLaserBE || be instanceof BaseLaserBE))
             return false;
 
         boolean success = addNode(pos);
         if (success) {
-            if (!be.addNode(this.getBlockPos())) {
+            if (!be.addNode(this.getBlockPos().subtract(be.getBlockPos()))) {
                 removeNode(pos);
                 return false;
             }
         }
+        addRenderNode(pos);
         return success;
     }
 
@@ -70,6 +116,9 @@ public class BaseLaserBE extends BlockEntity {
 
     public Set<BlockPos> getConnections() {
         return connections;
+    }
+    public Set<BlockPos> getRenderedConnections() {
+        return renderedConnections;
     }
 
     public void disconnectAllNodes() {
@@ -91,6 +140,11 @@ public class BaseLaserBE extends BlockEntity {
             BlockPos blockPos = NbtUtils.readBlockPos(connections.getCompound(i).getCompound("pos"));
             this.connections.add(blockPos);
         }
+        ListTag renderedConnections = tag.getList("renderedConnections", Tag.TAG_COMPOUND);
+        for (int i = 0; i < renderedConnections.size(); i++) {
+            BlockPos blockPos = NbtUtils.readBlockPos(renderedConnections.getCompound(i).getCompound("pos"));
+            this.renderedConnections.add(blockPos);
+        }
     }
 
     @Override
@@ -103,6 +157,13 @@ public class BaseLaserBE extends BlockEntity {
             connections.add(comp);
         }
         tag.put("connections", connections);
+        ListTag renderedConnections = new ListTag();
+        for (BlockPos blockPos : this.renderedConnections) {
+            CompoundTag comp = new CompoundTag();
+            comp.put("pos", NbtUtils.writeBlockPos(blockPos));
+            renderedConnections.add(comp);
+        }
+        tag.put("renderedConnections", renderedConnections);
     }
 
     @Override
@@ -110,6 +171,12 @@ public class BaseLaserBE extends BlockEntity {
         if (!level.isClientSide())
             disconnectAllNodes();
         super.setRemoved();
+    }
+
+    @Nonnull
+    @Override
+    public AABB getRenderBoundingBox() {
+        return new AABB(getBlockPos().above(10).north(10).east(10), getBlockPos().below(10).south(10).west(10));
     }
 
 }

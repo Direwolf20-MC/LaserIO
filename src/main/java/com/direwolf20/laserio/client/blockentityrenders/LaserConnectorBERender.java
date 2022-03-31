@@ -6,6 +6,9 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.core.BlockPos;
+
+import java.util.Set;
 
 public class LaserConnectorBERender implements BlockEntityRenderer<LaserConnectorBE> {
     public LaserConnectorBERender(BlockEntityRendererProvider.Context p_173636_) {
@@ -13,7 +16,14 @@ public class LaserConnectorBERender implements BlockEntityRenderer<LaserConnecto
     }
     @Override
     public void render(LaserConnectorBE blockentity, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightsIn, int combinedOverlayIn) {
-        //System.out.println("Hello there!");
-        RenderUtils.drawLasers(blockentity, blockentity.getBlockPos(), blockentity.getBlockPos().above(),partialTicks, matrixStackIn, bufferIn, combinedLightsIn, combinedOverlayIn);
+        Set<BlockPos> renderedConnections = blockentity.getRenderedConnections();
+        renderedConnections.forEach((target)-> {
+            RenderUtils.drawLasers(blockentity, BlockPos.ZERO, target,partialTicks, matrixStackIn, bufferIn, combinedLightsIn, combinedOverlayIn);
+        });
     }
+
+    /*@Override
+    public boolean shouldRenderOffScreen(LaserConnectorBE be) {
+        return false;
+    }*/
 }
