@@ -28,8 +28,8 @@ public class BaseLaserBlock extends Block {
         if (!world.isClientSide) {
             BlockEntity blockEntity = world.getBlockEntity(pos);
             if (blockEntity instanceof BaseLaserBE) {
-                System.out.println(((BaseLaserBE) blockEntity).getConnections());
-                System.out.println(((BaseLaserBE) blockEntity).getRenderedConnections());
+                System.out.println("Connections: " + ((BaseLaserBE) blockEntity).getConnections());
+                System.out.println("RenderedConnections: " + ((BaseLaserBE) blockEntity).getRenderedConnections());
             }
             return InteractionResult.SUCCESS;
         }

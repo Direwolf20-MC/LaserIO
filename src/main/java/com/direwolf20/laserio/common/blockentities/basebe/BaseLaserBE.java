@@ -117,9 +117,9 @@ public class BaseLaserBE extends BlockEntity {
 
     public void disconnectAllNodes() {
         for (BlockPos pos : connections) {
-            BlockEntity be = level.getBlockEntity(pos);
+            BlockEntity be = level.getBlockEntity(this.getBlockPos().offset(pos));
             if (be instanceof BaseLaserBE) {
-                ((BaseLaserBE) be).removeNode(this.getBlockPos());
+                ((BaseLaserBE) be).removeNode(this.getBlockPos().subtract(be.getBlockPos()));
             }
         }
     }
