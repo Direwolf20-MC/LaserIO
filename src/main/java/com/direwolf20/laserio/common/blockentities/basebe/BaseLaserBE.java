@@ -96,20 +96,17 @@ public class BaseLaserBE extends BlockEntity {
 
         boolean success = addNode(pos);
         if (success) {
-            if (!be.addNode(this.getBlockPos().subtract(be.getBlockPos()))) {
-                removeNode(pos);
-                return false;
-            }
+            addRenderNode(pos);
+            return be.addNode(this.getBlockPos().subtract(be.getBlockPos()));
         }
-        addRenderNode(pos);
-        return success;
+        return false;
     }
 
     public boolean removeConnection(BlockPos pos) {
         boolean success = removeNode(pos);
         if (success) {
-            BaseLaserBE be = (BaseLaserBE) level.getBlockEntity(pos);
-            be.removeNode(this.getBlockPos());
+            BaseLaserBE be = (BaseLaserBE) level.getBlockEntity(this.getBlockPos().offset(pos));
+            be.removeNode(this.getBlockPos().subtract(be.getBlockPos()));
         }
         return success;
     }
@@ -140,6 +137,7 @@ public class BaseLaserBE extends BlockEntity {
             BlockPos blockPos = NbtUtils.readBlockPos(connections.getCompound(i).getCompound("pos"));
             this.connections.add(blockPos);
         }
+        renderedConnections.clear();
         ListTag renderedConnections = tag.getList("renderedConnections", Tag.TAG_COMPOUND);
         for (int i = 0; i < renderedConnections.size(); i++) {
             BlockPos blockPos = NbtUtils.readBlockPos(renderedConnections.getCompound(i).getCompound("pos"));
