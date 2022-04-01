@@ -1,6 +1,9 @@
 {
   "block.laserio.laser_connector": "Laser Connector",
   "block.laserio.laser_node": "Laser Node",
+  "item.laserio.card_energy": "Energy Card",
+  "item.laserio.card_fluid": "Fluid Card",
+  "item.laserio.card_item": "Item Card",
   "item.laserio.laser_wrench": "Laser Wrench",
   "itemGroup.LaserIO": "Tutorial",
   "message.logisticslasers.wrenchrange": "This block is too far away. Max range is 8"

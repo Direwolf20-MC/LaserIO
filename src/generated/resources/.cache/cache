@@ -1,4 +1,7 @@
-3a2702e95473945582ccdc7ef969a39339369a49 assets/laserio/lang/en_us.json
+917b2b716faa80099333da503c8302ec7a83fabc assets/laserio/lang/en_us.json
+a54a7787d6ae6b7e3097e0116d0191b3b7502bf7 assets/laserio/models/item/card_energy.json
+a202b855bd6a5693d2645d05f150f51dc5621dc0 assets/laserio/models/item/card_fluid.json
+173161de647cc9746227e8b381e7c7f15410262c assets/laserio/models/item/card_item.json
 ede5727632c4e4e718e4ec0cd8be4585760186d7 assets/laserio/models/item/laser_connector.json
 5bc93f0389b331cb7e2f6ae303e88ebd5c4b59a8 assets/laserio/models/item/laser_node.json
 f078ab97fe0309dbc315d95974a60e441f37515c assets/laserio/models/item/laser_wrench.json

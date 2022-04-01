@@ -5,6 +5,9 @@ import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import com.direwolf20.laserio.common.blocks.LaserConnector;
 import com.direwolf20.laserio.common.blocks.LaserNode;
 import com.direwolf20.laserio.common.items.LaserWrench;
+import com.direwolf20.laserio.common.items.cards.CardEnergy;
+import com.direwolf20.laserio.common.items.cards.CardFluid;
+import com.direwolf20.laserio.common.items.cards.CardItem;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
@@ -48,6 +51,9 @@ public class Registration {
 
     //Items
     public static final RegistryObject<Item> Laser_Wrench = ITEMS.register("laser_wrench", LaserWrench::new);
+    public static final RegistryObject<Item> Card_Energy = ITEMS.register("card_energy", CardEnergy::new);
+    public static final RegistryObject<Item> Card_Fluid = ITEMS.register("card_fluid", CardFluid::new);
+    public static final RegistryObject<Item> Card_Item = ITEMS.register("card_item", CardItem::new);
 
 
     // Conveniance function: Take a RegistryObject<Block> and make a corresponding RegistryObject<Item> from it
