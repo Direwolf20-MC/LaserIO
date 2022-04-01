@@ -3,7 +3,9 @@ package com.direwolf20.laserio.setup;
 import com.direwolf20.laserio.client.blockentityrenders.LaserConnectorBERender;
 import com.direwolf20.laserio.client.blockentityrenders.baseberender.LaserNodeBERender;
 import com.direwolf20.laserio.client.events.ClientEvents;
+import com.direwolf20.laserio.client.screens.LaserNodeScreen;
 import com.direwolf20.laserio.common.LaserIO;
+import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraftforge.api.distmarker.Dist;
@@ -22,6 +24,10 @@ public class ClientSetup {
         //Register our Render Events Class
         MinecraftForge.EVENT_BUS.register(ClientEvents.class);
 
+        event.enqueueWork(() -> {
+            MenuScreens.register(Registration.LaserNode_Container.get(), LaserNodeScreen::new);           // Attach our container to the screen
+            ItemBlockRenderTypes.setRenderLayer(Registration.LaserNode.get(), RenderType.translucent()); // Set the render type for our power generator to translucent
+        });
 
     }
 

@@ -5,6 +5,7 @@ import com.direwolf20.laserio.setup.Registration;
 import net.minecraft.data.DataGenerator;
 import net.minecraftforge.common.data.LanguageProvider;
 
+import static com.direwolf20.laserio.common.blocks.LaserNode.SCREEN_LASERNODE;
 import static com.direwolf20.laserio.setup.ModSetup.TAB_NAME;
 
 public class LaserIOLanguageProvider extends LanguageProvider {
@@ -22,5 +23,6 @@ public class LaserIOLanguageProvider extends LanguageProvider {
         add(Registration.Card_Fluid.get(), "Fluid Card");
         add(Registration.Card_Energy.get(), "Energy Card");
         add("message.logisticslasers.wrenchrange", "This block is too far away. Max range is 8");
+        add(SCREEN_LASERNODE, "Power generator");
     }
 }
