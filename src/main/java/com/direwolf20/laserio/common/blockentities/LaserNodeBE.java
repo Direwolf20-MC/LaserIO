@@ -9,4 +9,8 @@ public class LaserNodeBE extends BaseLaserBE {
     public LaserNodeBE(BlockPos pos, BlockState state) {
         super(Registration.LaserNode_BE.get(), pos, state);
     }
+
+    public void tickServer() {
+        //System.out.println("Hello from: " + this.getBlockPos());
+    }
 }

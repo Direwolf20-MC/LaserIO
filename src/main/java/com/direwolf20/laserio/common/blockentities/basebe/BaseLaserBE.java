@@ -161,12 +161,12 @@ public class BaseLaserBE extends BlockEntity {
         tag.put("renderedConnections", renderedConnections);
     }
 
-    @Override
+    /*@Override
     public void setRemoved() {
         if (!level.isClientSide())
             disconnectAllNodes();
         super.setRemoved();
-    }
+    }*/
 
     @Nonnull
     @Override

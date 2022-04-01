@@ -35,4 +35,15 @@ public class BaseLaserBlock extends Block {
         }
         return InteractionResult.SUCCESS;
     }
+
+    @Override
+    public void onRemove(BlockState state, Level worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
+        if (newState.getBlock() != this) {
+            BlockEntity be = worldIn.getBlockEntity(pos);
+            if (be != null && be instanceof BaseLaserBE) {
+                ((BaseLaserBE) be).disconnectAllNodes();
+            }
+        }
+        super.onRemove(state, worldIn, pos, newState, isMoving);
+    }
 }

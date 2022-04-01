@@ -18,8 +18,8 @@ public class BaseLaserBERender<T extends BaseLaserBE> implements BlockEntityRend
     @Override
     public void render(T blockentity, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightsIn, int combinedOverlayIn) {
         Set<BlockPos> renderedConnections = blockentity.getRenderedConnections();
-        renderedConnections.forEach((target) -> {
+        for (BlockPos target : renderedConnections)
             RenderUtils.drawLasers(blockentity, BlockPos.ZERO, target, partialTicks, matrixStackIn, bufferIn, combinedLightsIn, combinedOverlayIn);
-        });
+
     }
 }
