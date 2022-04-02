@@ -19,11 +19,16 @@ import javax.annotation.Nullable;
 
 public class LaserNodeBE extends BaseLaserBE {
     // Never create lazy optionals in getCapability. Always place them as fields in the tile entity:
-    private final ItemStackHandler itemHandler = createHandler();
-    private final LazyOptional<IItemHandler> handler = LazyOptional.of(() -> itemHandler);
+    private final ItemStackHandler[] itemHandler = new ItemStackHandler[6];
+    private final LazyOptional<IItemHandler>[] handler = new LazyOptional[6];
 
     public LaserNodeBE(BlockPos pos, BlockState state) {
         super(Registration.LaserNode_BE.get(), pos, state);
+        for (int i = 0; i < Direction.values().length; i++) {
+            itemHandler[i] = createHandler();
+            final int j = i;
+            handler[i] = LazyOptional.of(() -> itemHandler[j]);
+        }
     }
 
     public void tickServer() {
@@ -66,8 +71,8 @@ public class LaserNodeBE extends BaseLaserBE {
     @Nonnull
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
-            return handler.cast();
+        if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY && side != null) {
+            return handler[side.ordinal()].cast();
         }
         return super.getCapability(cap, side);
     }
@@ -75,7 +80,7 @@ public class LaserNodeBE extends BaseLaserBE {
     @Override
     public void load(CompoundTag tag) {
         if (tag.contains("Inventory")) {
-            itemHandler.deserializeNBT(tag.getCompound("Inventory"));
+            //itemHandler.deserializeNBT(tag.getCompound("Inventory"));
         }
         super.load(tag);
 
@@ -84,6 +89,6 @@ public class LaserNodeBE extends BaseLaserBE {
     @Override
     public void saveAdditional(CompoundTag tag) {
         super.saveAdditional(tag);
-        tag.put("Inventory", itemHandler.serializeNBT());
+        //tag.put("Inventory", itemHandler.serializeNBT());
     }
 }

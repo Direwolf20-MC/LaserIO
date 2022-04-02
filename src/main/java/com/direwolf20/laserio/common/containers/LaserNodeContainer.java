@@ -10,8 +10,8 @@ import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.SlotItemHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
 
@@ -21,59 +21,20 @@ public class LaserNodeContainer extends AbstractContainerMenu {
     private IItemHandler playerInventory;
 
     public LaserNodeContainer(int windowId, BlockPos pos, Inventory playerInventory, Player player) {
+        this(windowId, pos, playerInventory, player, new ItemStackHandler(9));
+    }
+
+    public LaserNodeContainer(int windowId, BlockPos pos, Inventory playerInventory, Player player, IItemHandler handler) {
         super(Registration.LaserNode_Container.get(), windowId);
         blockEntity = player.getCommandSenderWorld().getBlockEntity(pos);
         this.playerEntity = player;
         this.playerInventory = new InvWrapper(playerInventory);
 
-        if (blockEntity != null) {
-            blockEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).ifPresent(h -> {
-                addSlotBox(h, 0, 62, 17, 3, 18, 3, 18);
-                //addSlot(new SlotItemHandler(h, 0, 62, 17));
-                //addSlot(new SlotItemHandler(h, 1, 80, 17));
-            });
-        }
+        if (handler != null)
+            addSlotBox(handler, 0, 62, 17, 3, 18, 3, 18);
+
         layoutPlayerInventorySlots(8, 84);
-        //trackPower();
     }
-
-    // Setup syncing of power from server to client so that the GUI can show the amount of power in the block
-    /*private void trackPower() {
-        // Unfortunatelly on a dedicated server ints are actually truncated to short so we need
-        // to split our integer here (split our 32 bit integer into two 16 bit integers)
-        addDataSlot(new DataSlot() {
-            @Override
-            public int get() {
-                return getEnergy() & 0xffff;
-            }
-
-            @Override
-            public void set(int value) {
-                blockEntity.getCapability(CapabilityEnergy.ENERGY).ifPresent(h -> {
-                    int energyStored = h.getEnergyStored() & 0xffff0000;
-                    ((CustomEnergyStorage)h).setEnergy(energyStored + (value & 0xffff));
-                });
-            }
-        });
-        addDataSlot(new DataSlot() {
-            @Override
-            public int get() {
-                return (getEnergy() >> 16) & 0xffff;
-            }
-
-            @Override
-            public void set(int value) {
-                blockEntity.getCapability(CapabilityEnergy.ENERGY).ifPresent(h -> {
-                    int energyStored = h.getEnergyStored() & 0x0000ffff;
-                    ((CustomEnergyStorage)h).setEnergy(energyStored | (value << 16));
-                });
-            }
-        });
-    }
-
-    public int getEnergy() {
-        return blockEntity.getCapability(CapabilityEnergy.ENERGY).map(IEnergyStorage::getEnergyStored).orElse(0);
-    }*/
 
     @Override
     public boolean stillValid(Player playerIn) {
