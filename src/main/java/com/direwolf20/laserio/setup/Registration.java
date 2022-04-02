@@ -4,6 +4,7 @@ import com.direwolf20.laserio.common.blockentities.LaserConnectorBE;
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import com.direwolf20.laserio.common.blocks.LaserConnector;
 import com.direwolf20.laserio.common.blocks.LaserNode;
+import com.direwolf20.laserio.common.containers.ItemCardContainer;
 import com.direwolf20.laserio.common.containers.LaserNodeContainer;
 import com.direwolf20.laserio.common.items.LaserWrench;
 import com.direwolf20.laserio.common.items.cards.CardEnergy;
@@ -60,6 +61,9 @@ public class Registration {
     //Containers
     public static final RegistryObject<MenuType<LaserNodeContainer>> LaserNode_Container = CONTAINERS.register("lasernode",
             () -> IForgeMenuType.create((windowId, inv, data) -> new LaserNodeContainer(windowId, data.readBlockPos(), inv, inv.player)));
+    public static final RegistryObject<MenuType<ItemCardContainer>> ItemCard_Container = CONTAINERS.register("itemcard",
+            () -> IForgeMenuType.create((windowId, inv, data) -> new ItemCardContainer(windowId, inv, inv.player)));
+
 
     // Conveniance function: Take a RegistryObject<Block> and make a corresponding RegistryObject<Item> from it
     public static <B extends Block> RegistryObject<Item> fromBlock(RegistryObject<B> block) {
