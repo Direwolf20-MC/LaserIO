@@ -25,6 +25,24 @@ public class BaseCard extends Item {
         ENERGY
     }
 
+    public enum TransferMode {
+        INSERT,
+        EXTRACT,
+        STOCK;
+
+        public static TransferMode next(TransferMode transferMode) {
+            switch (transferMode) {
+                case INSERT:
+                    return (EXTRACT);
+                case EXTRACT:
+                    return (STOCK);
+                case STOCK:
+                    return (INSERT);
+            }
+            return INSERT;
+        }
+    }
+
     public BaseCard() {
         super(new Item.Properties().tab(ModSetup.ITEM_GROUP));
     }
@@ -41,7 +59,9 @@ public class BaseCard extends Item {
 
         CardItemHandler handler = getInventory(itemstack);
         NetworkHooks.openGui((ServerPlayer) player, new SimpleMenuProvider(
-                (windowId, playerInventory, playerEntity) -> new ItemCardContainer(windowId, playerInventory, player, handler, itemstack), new TranslatableComponent("")));
+                (windowId, playerInventory, playerEntity) -> new ItemCardContainer(windowId, playerInventory, player, handler, itemstack), new TranslatableComponent("")), (buf -> {
+            buf.writeItem(itemstack);
+        }));
 
         return new InteractionResultHolder<>(InteractionResult.PASS, itemstack);
     }
@@ -56,5 +76,21 @@ public class BaseCard extends Item {
     public static CardItemHandler setInventory(ItemStack stack, CardItemHandler handler) {
         stack.getOrCreateTag().put("inv", handler.serializeNBT());
         return handler;
+    }
+
+    public static TransferMode setTransferMode(ItemStack card, TransferMode mode) {
+        card.getOrCreateTag().putByte("mode", (byte) mode.ordinal());
+        return mode;
+    }
+
+    public static TransferMode getTransferMode(ItemStack card) {
+        CompoundTag compound = card.getOrCreateTag();
+        return !compound.contains("mode") ? setTransferMode(card, TransferMode.INSERT) : TransferMode.values()[compound.getByte("mode")];
+    }
+
+    public static TransferMode nextTransferMode(ItemStack card) {
+        int k = getTransferMode(card).ordinal();
+        TransferMode transferMode = TransferMode.values()[k == 2 ? 0 : k + 1];
+        return setTransferMode(card, transferMode);
     }
 }

@@ -62,7 +62,7 @@ public class Registration {
     public static final RegistryObject<MenuType<LaserNodeContainer>> LaserNode_Container = CONTAINERS.register("lasernode",
             () -> IForgeMenuType.create((windowId, inv, data) -> new LaserNodeContainer(windowId, data.readBlockPos(), inv, inv.player)));
     public static final RegistryObject<MenuType<ItemCardContainer>> ItemCard_Container = CONTAINERS.register("itemcard",
-            () -> IForgeMenuType.create((windowId, inv, data) -> new ItemCardContainer(windowId, inv, inv.player)));
+            () -> IForgeMenuType.create((windowId, inv, data) -> new ItemCardContainer(windowId, inv, inv.player, data)));
 
 
     // Conveniance function: Take a RegistryObject<Block> and make a corresponding RegistryObject<Item> from it

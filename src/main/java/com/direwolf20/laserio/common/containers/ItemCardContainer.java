@@ -3,6 +3,7 @@ package com.direwolf20.laserio.common.containers;
 import com.direwolf20.laserio.common.containers.CustomItemHandlers.CardItemHandler;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.setup.Registration;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -19,8 +20,9 @@ public class ItemCardContainer extends AbstractContainerMenu {
     public Player playerEntity;
     private IItemHandler playerInventory;
 
-    public ItemCardContainer(int windowId, Inventory playerInventory, Player player) {
+    public ItemCardContainer(int windowId, Inventory playerInventory, Player player, FriendlyByteBuf extraData) {
         this(windowId, playerInventory, player, new CardItemHandler(3, ItemStack.EMPTY), ItemStack.EMPTY);
+        cardItem = extraData.readItem();
     }
 
     public ItemCardContainer(int windowId, Inventory playerInventory, Player player, CardItemHandler handler, ItemStack cardItem) {
