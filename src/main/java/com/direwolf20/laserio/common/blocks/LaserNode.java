@@ -28,7 +28,6 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.network.NetworkHooks;
 
 import javax.annotation.Nullable;
@@ -47,18 +46,20 @@ public class LaserNode extends BaseLaserBlock implements EntityBlock {
         if (!level.isClientSide) {
             BlockEntity be = level.getBlockEntity(pos);
             if (be instanceof LaserNodeBE) {
-                MenuProvider containerProvider = new MenuProvider() {
-                    @Override
-                    public Component getDisplayName() {
-                        return new TranslatableComponent(SCREEN_LASERNODE);
-                    }
+                be.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, result.getDirection()).ifPresent(h -> {
+                    MenuProvider containerProvider = new MenuProvider() {
+                        @Override
+                        public Component getDisplayName() {
+                            return new TranslatableComponent(SCREEN_LASERNODE);
+                        }
 
-                    @Override
-                    public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player playerEntity) {
-                        return new LaserNodeContainer(windowId, pos, playerInventory, playerEntity, be.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, result.getDirection()).orElse(new ItemStackHandler(9)));
-                    }
-                };
-                NetworkHooks.openGui((ServerPlayer) player, containerProvider, be.getBlockPos());
+                        @Override
+                        public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player playerEntity) {
+                            return new LaserNodeContainer(windowId, pos, playerInventory, playerEntity, h);
+                        }
+                    };
+                    NetworkHooks.openGui((ServerPlayer) player, containerProvider, be.getBlockPos());
+                });
             } else {
                 throw new IllegalStateException("Our named container provider is missing!");
             }
