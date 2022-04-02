@@ -4,6 +4,7 @@ import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import com.direwolf20.laserio.common.blocks.baseblocks.BaseLaserBlock;
 import com.direwolf20.laserio.common.containers.LaserNodeContainer;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerPlayer;
@@ -14,6 +15,7 @@ import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -55,7 +57,7 @@ public class LaserNode extends BaseLaserBlock implements EntityBlock {
 
                         @Override
                         public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player playerEntity) {
-                            return new LaserNodeContainer(windowId, pos, playerInventory, playerEntity, h);
+                            return new LaserNodeContainer(windowId, pos, playerInventory, playerEntity, h, ContainerLevelAccess.create(be.getLevel(), be.getBlockPos()));
                         }
                     };
                     NetworkHooks.openGui((ServerPlayer) player, containerProvider, be.getBlockPos());
@@ -112,12 +114,14 @@ public class LaserNode extends BaseLaserBlock implements EntityBlock {
         if (newState.getBlock() != this) {
             BlockEntity tileEntity = worldIn.getBlockEntity(pos);
             if (tileEntity != null) {
-                LazyOptional<IItemHandler> cap = tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY);
-                cap.ifPresent(handler -> {
-                    for (int i = 0; i < handler.getSlots(); ++i) {
-                        Containers.dropItemStack(worldIn, pos.getX(), pos.getY(), pos.getZ(), handler.getStackInSlot(i));
-                    }
-                });
+                for (Direction direction : Direction.values()) {
+                    LazyOptional<IItemHandler> cap = tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction);
+                    cap.ifPresent(handler -> {
+                        for (int i = 0; i < handler.getSlots(); ++i) {
+                            Containers.dropItemStack(worldIn, pos.getX(), pos.getY(), pos.getZ(), handler.getStackInSlot(i));
+                        }
+                    });
+                }
             }
 
         }

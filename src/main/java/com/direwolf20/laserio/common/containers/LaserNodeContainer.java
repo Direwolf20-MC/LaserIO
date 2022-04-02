@@ -19,17 +19,18 @@ public class LaserNodeContainer extends AbstractContainerMenu {
     private BlockEntity blockEntity;
     private Player playerEntity;
     private IItemHandler playerInventory;
+    ContainerLevelAccess containerLevelAccess;
 
     public LaserNodeContainer(int windowId, BlockPos pos, Inventory playerInventory, Player player) {
-        this(windowId, pos, playerInventory, player, new ItemStackHandler(9));
+        this(windowId, pos, playerInventory, player, new ItemStackHandler(9), ContainerLevelAccess.NULL);
     }
 
-    public LaserNodeContainer(int windowId, BlockPos pos, Inventory playerInventory, Player player, IItemHandler handler) {
+    public LaserNodeContainer(int windowId, BlockPos pos, Inventory playerInventory, Player player, IItemHandler handler, ContainerLevelAccess containerLevelAccess) {
         super(Registration.LaserNode_Container.get(), windowId);
         blockEntity = player.getCommandSenderWorld().getBlockEntity(pos);
         this.playerEntity = player;
         this.playerInventory = new InvWrapper(playerInventory);
-
+        this.containerLevelAccess = containerLevelAccess;
         if (handler != null)
             addSlotBox(handler, 0, 62, 17, 3, 18, 3, 18);
 
@@ -38,7 +39,7 @@ public class LaserNodeContainer extends AbstractContainerMenu {
 
     @Override
     public boolean stillValid(Player playerIn) {
-        return stillValid(ContainerLevelAccess.create(blockEntity.getLevel(), blockEntity.getBlockPos()), playerEntity, Registration.LaserNode.get());
+        return stillValid(containerLevelAccess, playerEntity, Registration.LaserNode.get());
     }
 
     @Override

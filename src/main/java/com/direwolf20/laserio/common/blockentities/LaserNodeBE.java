@@ -79,8 +79,10 @@ public class LaserNodeBE extends BaseLaserBE {
 
     @Override
     public void load(CompoundTag tag) {
-        if (tag.contains("Inventory")) {
-            //itemHandler.deserializeNBT(tag.getCompound("Inventory"));
+        for (int i = 0; i < Direction.values().length; i++) {
+            if (tag.contains("Inventory" + i)) {
+                itemHandler[i].deserializeNBT(tag.getCompound("Inventory" + i));
+            }
         }
         super.load(tag);
 
@@ -89,6 +91,7 @@ public class LaserNodeBE extends BaseLaserBE {
     @Override
     public void saveAdditional(CompoundTag tag) {
         super.saveAdditional(tag);
-        //tag.put("Inventory", itemHandler.serializeNBT());
+        for (int i = 0; i < Direction.values().length; i++)
+            tag.put("Inventory" + i, itemHandler[i].serializeNBT());
     }
 }
