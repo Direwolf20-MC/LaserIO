@@ -9,14 +9,13 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.SlotItemHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
 
 public class LaserNodeContainer extends AbstractContainerMenu {
-    private BlockEntity blockEntity;
+    //private BlockEntity blockEntity;
     private Player playerEntity;
     private IItemHandler playerInventory;
     ContainerLevelAccess containerLevelAccess;
@@ -27,7 +26,7 @@ public class LaserNodeContainer extends AbstractContainerMenu {
 
     public LaserNodeContainer(int windowId, BlockPos pos, Inventory playerInventory, Player player, IItemHandler handler, ContainerLevelAccess containerLevelAccess) {
         super(Registration.LaserNode_Container.get(), windowId);
-        blockEntity = player.getCommandSenderWorld().getBlockEntity(pos);
+        //blockEntity = player.getCommandSenderWorld().getBlockEntity(pos);
         this.playerEntity = player;
         this.playerInventory = new InvWrapper(playerInventory);
         this.containerLevelAccess = containerLevelAccess;
