@@ -93,4 +93,8 @@ public class BaseCard extends Item {
         TransferMode transferMode = TransferMode.values()[k == 2 ? 0 : k + 1];
         return setTransferMode(card, transferMode);
     }
+
+    public static boolean tickable(ItemStack card) {
+        return !getTransferMode(card).equals(TransferMode.INSERT);
+    }
 }
