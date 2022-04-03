@@ -76,8 +76,8 @@ public class LaserWrench extends Item {
                     return InteractionResultHolder.pass(wrench);
                 }
                 //Try to add a connection - if it fails (likely because it already exists) remove the connection
-                if (!((BaseLaserBE) be).addConnection(sourcePos.subtract(be.getBlockPos())))
-                    ((BaseLaserBE) be).removeConnection(sourcePos.subtract(be.getBlockPos()));
+                if (!((BaseLaserBE) be).addConnection(sourcePos))
+                    ((BaseLaserBE) be).removeConnection(sourcePos);
             }
         }
         //System.out.println(getConnectionPos(wrench));

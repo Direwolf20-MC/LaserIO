@@ -18,12 +18,18 @@ import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Set;
 
 public class LaserNodeBE extends BaseLaserBE {
     // Never create lazy optionals in getCapability. Always place them as fields in the tile entity:
     private final ItemStackHandler[] itemHandler = new ItemStackHandler[6];
     private final LazyOptional<IItemHandler>[] handler = new LazyOptional[6];
     private final IItemHandler EMPTY = new ItemStackHandler(0);
+
+    private final Set<BlockPos> otherNodesInNetwork = new HashSet<>();
 
     public LaserNodeBE(BlockPos pos, BlockState state) {
         super(Registration.LaserNode_BE.get(), pos, state);
@@ -62,6 +68,38 @@ public class LaserNodeBE extends BaseLaserBE {
         if (adjacentInventory != null) {
             System.out.println("Getting for: " + getBlockPos().relative(direction));
         }
+    }
+
+    public void discoverAllNodes() {
+        System.out.println("Discovering All Nodes!");
+        otherNodesInNetwork.clear(); //Clear the existing list of nodes
+
+        Queue<BlockPos> nodesToCheck = new LinkedList<>();
+        Set<BlockPos> checkedNodes = new HashSet<>();
+        nodesToCheck.add(getBlockPos()); //We should add this block to itself, so it can transfer between 2 adjacent inventories
+        //nodesToCheck.addAll(getWorldConnections()); //Add all the nodes connected to this controller to the list of nodes to check out
+
+
+        while (nodesToCheck.size() > 0) {
+            BlockPos posToCheck = nodesToCheck.remove(); //Pop the stack
+            if (!checkedNodes.add(posToCheck))
+                continue; //Don't check nodes we've checked before
+            BlockEntity be = level.getBlockEntity(posToCheck);
+            if (be instanceof BaseLaserBE) {
+                //addToAllNodes(posToCheck); //Add this node to the all nodes list
+                Set<BlockPos> connectedNodes = ((BaseLaserBE) be).getWorldConnections(); //Get all the nodes this node is connected to
+                nodesToCheck.addAll(connectedNodes); //Add them to the list to check
+                //((BaseLaserBE) be).setControllerPos(this.pos); //Set this node's controller to this position
+                //oldNodes.remove(posToCheck);
+                if (be instanceof LaserNodeBE)
+                    otherNodesInNetwork.add(getRelativePos(posToCheck));
+            }
+        }
+        System.out.println("Other Nodes: " + otherNodesInNetwork);
+        for (BlockPos pos : otherNodesInNetwork) {
+            System.out.println(getWorldPos(pos));
+        }
+        //updateLaserConnections();
     }
 
     public IItemHandler getAttachedInventory(Direction direction) {

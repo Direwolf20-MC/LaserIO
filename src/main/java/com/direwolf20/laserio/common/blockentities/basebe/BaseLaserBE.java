@@ -56,15 +56,23 @@ public class BaseLaserBE extends BlockEntity {
     }
 
     public boolean addNode(BlockPos pos) {
-        boolean success = connections.add(pos);
+        boolean success = connections.add(getRelativePos(pos));
         if (success) {
             markDirtyClient();
         }
         return success;
     }
 
+    public BlockPos getWorldPos(BlockPos relativePos) {
+        return getBlockPos().offset(relativePos);
+    }
+
+    public BlockPos getRelativePos(BlockPos worldPos) {
+        return worldPos.subtract(getBlockPos());
+    }
+
     public boolean addRenderNode(BlockPos pos) {
-        boolean success = renderedConnections.add(pos);
+        boolean success = renderedConnections.add(getRelativePos(pos));
         if (success) {
             markDirtyClient();
         }
@@ -72,8 +80,8 @@ public class BaseLaserBE extends BlockEntity {
     }
 
     public boolean removeNode(BlockPos pos) {
-        boolean success = connections.remove(pos);
-        renderedConnections.remove(pos);
+        boolean success = connections.remove(getRelativePos(pos));
+        renderedConnections.remove(getRelativePos(pos));
         if (success) {
             markDirtyClient();
         }
@@ -86,14 +94,14 @@ public class BaseLaserBE extends BlockEntity {
      * Connects This Pos -> Target Pos, and connects Target Pos -> This pos
      */
     public boolean addConnection(BlockPos pos) {
-        BaseLaserBE be = (BaseLaserBE) level.getBlockEntity(this.getBlockPos().offset(pos));
+        BaseLaserBE be = (BaseLaserBE) level.getBlockEntity(pos);
         if (!(this instanceof BaseLaserBE || be instanceof BaseLaserBE))
             return false;
 
         boolean success = addNode(pos);
         if (success) {
             addRenderNode(pos);
-            return be.addNode(this.getBlockPos().subtract(be.getBlockPos()));
+            return be.addNode(getBlockPos());
         }
         return false;
     }
@@ -101,8 +109,8 @@ public class BaseLaserBE extends BlockEntity {
     public boolean removeConnection(BlockPos pos) {
         boolean success = removeNode(pos);
         if (success) {
-            BaseLaserBE be = (BaseLaserBE) level.getBlockEntity(this.getBlockPos().offset(pos));
-            be.removeNode(this.getBlockPos().subtract(be.getBlockPos()));
+            BaseLaserBE be = (BaseLaserBE) level.getBlockEntity(pos);
+            be.removeNode(getBlockPos());
         }
         return success;
     }
@@ -111,15 +119,22 @@ public class BaseLaserBE extends BlockEntity {
         return connections;
     }
 
+    public Set<BlockPos> getWorldConnections() {
+        Set<BlockPos> worldConnections = new HashSet<>();
+        for (BlockPos relativePos : connections)
+            worldConnections.add(getWorldPos(relativePos));
+        return worldConnections;
+    }
+
     public Set<BlockPos> getRenderedConnections() {
         return renderedConnections;
     }
 
     public void disconnectAllNodes() {
         for (BlockPos pos : connections) {
-            BlockEntity be = level.getBlockEntity(this.getBlockPos().offset(pos));
+            BlockEntity be = level.getBlockEntity(getWorldPos(pos));
             if (be instanceof BaseLaserBE) {
-                ((BaseLaserBE) be).removeNode(this.getBlockPos().subtract(be.getBlockPos()));
+                ((BaseLaserBE) be).removeNode(getRelativePos(be.getBlockPos()));
             }
         }
     }

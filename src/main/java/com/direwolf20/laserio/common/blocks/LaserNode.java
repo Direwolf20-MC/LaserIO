@@ -48,23 +48,28 @@ public class LaserNode extends BaseLaserBlock implements EntityBlock {
         if (!level.isClientSide) {
             BlockEntity be = level.getBlockEntity(pos);
             if (be instanceof LaserNodeBE) {
-                be.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, result.getDirection()).ifPresent(h -> {
-                    MenuProvider containerProvider = new MenuProvider() {
-                        @Override
-                        public Component getDisplayName() {
-                            return new TranslatableComponent(SCREEN_LASERNODE);
-                        }
+                if (player.isShiftKeyDown()) {
+                    ((LaserNodeBE) be).discoverAllNodes();
+                } else {
+                    be.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, result.getDirection()).ifPresent(h -> {
+                        MenuProvider containerProvider = new MenuProvider() {
+                            @Override
+                            public Component getDisplayName() {
+                                return new TranslatableComponent(SCREEN_LASERNODE);
+                            }
 
-                        @Override
-                        public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player playerEntity) {
-                            return new LaserNodeContainer(windowId, pos, playerInventory, playerEntity, h, ContainerLevelAccess.create(be.getLevel(), be.getBlockPos()));
-                        }
-                    };
-                    NetworkHooks.openGui((ServerPlayer) player, containerProvider, be.getBlockPos());
-                });
+                            @Override
+                            public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player playerEntity) {
+                                return new LaserNodeContainer(windowId, pos, playerInventory, playerEntity, h, ContainerLevelAccess.create(be.getLevel(), be.getBlockPos()));
+                            }
+                        };
+                        NetworkHooks.openGui((ServerPlayer) player, containerProvider, be.getBlockPos());
+                    });
+                }
             } else {
                 throw new IllegalStateException("Our named container provider is missing!");
             }
+
         }
         return InteractionResult.SUCCESS;
     }
