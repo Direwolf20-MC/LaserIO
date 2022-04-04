@@ -81,6 +81,38 @@ public class RenderUtils {
         matrixStackIn.popPose();
     }
 
+    public static void drawConnectingLasers(BlockEntity be, BlockPos startBlock, BlockPos endBlock, PoseStack matrixStackIn, MultiBufferSource bufferIn, float offsetX, float offsetY, float offsetZ, float r, float g, float b, float alpha, float thickness, boolean reverse) {
+        Level level = be.getLevel();
+        long gameTime = level.getGameTime();
+        double v = gameTime * 0.04;
+
+        float diffX = endBlock.getX() + offsetX - startBlock.getX();
+        float diffY = endBlock.getY() + offsetY - startBlock.getY();
+        float diffZ = endBlock.getZ() + offsetZ - startBlock.getZ();
+
+        VertexConsumer builder;
+
+        matrixStackIn.pushPose();
+        Matrix4f positionMatrix = matrixStackIn.last().pose();
+
+        builder = bufferIn.getBuffer(MyRenderType.LASER_MAIN_BEAM);
+
+        Vector3f endLaser;
+        Vector3f startLaser;
+
+        if (reverse) {
+            endLaser = new Vector3f(offsetX, offsetY, offsetZ);
+            startLaser = new Vector3f(diffX, diffY, diffZ);
+        } else {
+            startLaser = new Vector3f(offsetX, offsetY, offsetZ);
+            endLaser = new Vector3f(diffX, diffY, diffZ);
+        }
+
+        drawLaser(builder, positionMatrix, endLaser, startLaser, r, g, b, alpha, thickness, v, v + diffY * 1.5, be);
+
+        matrixStackIn.popPose();
+    }
+
     public static Vector3f adjustBeamToEyes(Vector3f from, Vector3f to, BlockEntity be) {
         //This method takes the player's position into account, and adjusts the beam so that its rendered properly whereever you stand
         Player player = Minecraft.getInstance().player;
