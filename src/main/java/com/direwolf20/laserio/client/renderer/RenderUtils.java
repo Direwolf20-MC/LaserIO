@@ -81,14 +81,14 @@ public class RenderUtils {
         matrixStackIn.popPose();
     }
 
-    public static void drawConnectingLasers(BlockEntity be, BlockPos startBlock, BlockPos endBlock, PoseStack matrixStackIn, MultiBufferSource bufferIn, float offsetX, float offsetY, float offsetZ, float r, float g, float b, float alpha, float thickness, boolean reverse) {
+    public static void drawConnectingLasers(BlockEntity be, BlockPos startBlock, BlockPos endBlock, PoseStack matrixStackIn, MultiBufferSource bufferIn, Vector3f offset, float r, float g, float b, float alpha, float thickness, boolean reverse) {
         Level level = be.getLevel();
         long gameTime = level.getGameTime();
         double v = gameTime * 0.04;
 
-        float diffX = endBlock.getX() + offsetX - startBlock.getX();
-        float diffY = endBlock.getY() + offsetY - startBlock.getY();
-        float diffZ = endBlock.getZ() + offsetZ - startBlock.getZ();
+        float diffX = endBlock.getX() + offset.x() - startBlock.getX();
+        float diffY = endBlock.getY() + offset.y() - startBlock.getY();
+        float diffZ = endBlock.getZ() + offset.z() - startBlock.getZ();
 
         VertexConsumer builder;
 
@@ -101,10 +101,10 @@ public class RenderUtils {
         Vector3f startLaser;
 
         if (reverse) {
-            endLaser = new Vector3f(offsetX, offsetY, offsetZ);
+            endLaser = new Vector3f(offset.x(), offset.y(), offset.z());
             startLaser = new Vector3f(diffX, diffY, diffZ);
         } else {
-            startLaser = new Vector3f(offsetX, offsetY, offsetZ);
+            startLaser = new Vector3f(offset.x(), offset.y(), offset.z());
             endLaser = new Vector3f(diffX, diffY, diffZ);
         }
 
