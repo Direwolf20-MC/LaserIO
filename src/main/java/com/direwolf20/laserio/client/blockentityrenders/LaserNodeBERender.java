@@ -1,5 +1,6 @@
-package com.direwolf20.laserio.client.blockentityrenders.baseberender;
+package com.direwolf20.laserio.client.blockentityrenders;
 
+import com.direwolf20.laserio.client.blockentityrenders.baseberender.BaseLaserBERender;
 import com.direwolf20.laserio.client.renderer.RenderUtils;
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import com.direwolf20.laserio.common.items.cards.BaseCard;

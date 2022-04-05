@@ -1,7 +1,7 @@
 package com.direwolf20.laserio.setup;
 
 import com.direwolf20.laserio.client.blockentityrenders.LaserConnectorBERender;
-import com.direwolf20.laserio.client.blockentityrenders.baseberender.LaserNodeBERender;
+import com.direwolf20.laserio.client.blockentityrenders.LaserNodeBERender;
 import com.direwolf20.laserio.client.events.ClientEvents;
 import com.direwolf20.laserio.client.screens.ItemCardScreen;
 import com.direwolf20.laserio.client.screens.LaserNodeScreen;
