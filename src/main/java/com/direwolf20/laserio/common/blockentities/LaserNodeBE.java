@@ -1,5 +1,6 @@
 package com.direwolf20.laserio.common.blockentities;
 
+import com.direwolf20.laserio.client.particles.itemparticle.ItemFlowParticleData;
 import com.direwolf20.laserio.common.blockentities.basebe.BaseLaserBE;
 import com.direwolf20.laserio.common.containers.CustomItemHandlers.NodeItemHandler;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
@@ -7,6 +8,7 @@ import com.direwolf20.laserio.setup.Registration;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -40,6 +42,7 @@ public class LaserNodeBE extends BaseLaserBE {
     }
 
     public void tickServer() {
+        if (level.isClientSide) return;
         for (Direction direction : Direction.values()) {
             for (int slot = 0; slot < 9; slot++) {
                 ItemStack card = itemHandler[direction.ordinal()].getStackInSlot(slot);
@@ -65,9 +68,23 @@ public class LaserNodeBE extends BaseLaserBE {
                         BlockEntity be = level.getBlockEntity(getWorldPos(entry.getKey()));
                         if (be instanceof LaserNodeBE) {
                             IItemHandler possibleDestination = ((LaserNodeBE) be).getAttachedInventory(entry.getValue());
+                            if (possibleDestination == null) continue;
                             ItemStack itemStack = adjacentInventory.extractItem(slot, 1, false);
                             ItemStack postInsertStack = ItemHandlerHelper.insertItem(possibleDestination, itemStack, false);
                             if (postInsertStack.isEmpty()) {
+                                ServerLevel serverWorld = (ServerLevel) level;
+                                //Extract
+                                BlockPos fromPos = getBlockPos().relative(direction);
+                                BlockPos toPos = getBlockPos();
+                                ItemFlowParticleData data = new ItemFlowParticleData(itemStack, toPos.getX() + 0.5, toPos.getY() + 0.5, toPos.getZ() + 0.5, 10);
+                                serverWorld.sendParticles(data, fromPos.getX() + 0.5, fromPos.getY() + 0.5, fromPos.getZ() + 0.5, 8 * itemStack.getCount(), 0.1f, 0.1f, 0.1f, 0);
+
+                                //Insert
+                                fromPos = be.getBlockPos();
+                                toPos = be.getBlockPos().relative(entry.getValue());
+                                data = new ItemFlowParticleData(itemStack, toPos.getX() + 0.5, toPos.getY() + 0.5, toPos.getZ() + 0.5, 10);
+                                serverWorld.sendParticles(data, fromPos.getX() + 0.5, fromPos.getY() + 0.5, fromPos.getZ() + 0.5, 8 * itemStack.getCount(), 0.1f, 0.1f, 0.1f, 0);
+
                                 return;
                             }
                         }
