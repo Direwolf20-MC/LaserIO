@@ -12,20 +12,43 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.CapabilityItemHandler;
 
+import java.awt.*;
+
 public class LaserNodeBERender extends BaseLaserBERender<LaserNodeBE> {
-    Vector3f[] offsets = new Vector3f[9];
+    private final Vector3f[] offsets = {
+            new Vector3f(0.675f, 0.675f, 0.5f),
+            new Vector3f(0.5f, 0.675f, 0.5f),
+            new Vector3f(0.325f, 0.675f, 0.5f),
+            new Vector3f(0.675f, 0.5f, 0.5f),
+            new Vector3f(0.5f, 0.5f, 0.5f),
+            new Vector3f(0.325f, 0.5f, 0.5f),
+            new Vector3f(0.675f, 0.325f, 0.5f),
+            new Vector3f(0.5f, 0.325f, 0.5f),
+            new Vector3f(0.325f, 0.325f, 0.5f)
+    };
+    private final Color colors[] = {
+            new Color(255, 255, 255),
+            new Color(249, 128, 29),
+            new Color(198, 79, 189),
+            new Color(58, 179, 218),
+            new Color(255, 216, 61),
+            new Color(128, 199, 31),
+            new Color(243, 140, 170),
+            new Color(71, 79, 82),
+            new Color(156, 157, 151),
+            new Color(22, 156, 157),
+            new Color(137, 50, 183),
+            new Color(60, 68, 169),
+            new Color(130, 84, 50),
+            new Color(93, 124, 21),
+            new Color(176, 46, 38),
+            new Color(29, 28, 33)
+    };
+
 
     public LaserNodeBERender(BlockEntityRendererProvider.Context context) {
         super(context);
-        offsets[0] = new Vector3f(0.675f, 0.675f, 0.5f);
-        offsets[1] = new Vector3f(0.5f, 0.675f, 0.5f);
-        offsets[2] = new Vector3f(0.325f, 0.675f, 0.5f);
-        offsets[3] = new Vector3f(0.675f, 0.5f, 0.5f);
-        offsets[4] = new Vector3f(0.5f, 0.5f, 0.5f);
-        offsets[5] = new Vector3f(0.325f, 0.5f, 0.5f);
-        offsets[6] = new Vector3f(0.675f, 0.325f, 0.5f);
-        offsets[7] = new Vector3f(0.5f, 0.325f, 0.5f);
-        offsets[8] = new Vector3f(0.325f, 0.325f, 0.5f);
+
     }
 
     @Override
@@ -37,11 +60,10 @@ public class LaserNodeBERender extends BaseLaserBERender<LaserNodeBE> {
                     ItemStack card = h.getStackInSlot(slot);
                     if (card.getItem() instanceof BaseCard) {
                         if (((BaseCard) card.getItem()).getCardType() == BaseCard.CardType.ITEM) {
+                            float[] floatcolors = colors[BaseCard.getChannel(card)].getColorComponents(new float[3]);
                             boolean reverse = direction.equals(Direction.DOWN) ? true : false;
-                            float r = BaseCard.getChannel(card) == 0 ? 1 : 0;
-                            float b = BaseCard.getChannel(card) == 1 ? 1 : 0;
                             if (BaseCard.getNamedTransferMode(card) != BaseCard.TransferMode.INSERT) reverse = !reverse;
-                            RenderUtils.drawConnectingLasers(blockentity, BlockPos.ZERO, BlockPos.ZERO.relative(direction), matrixStackIn, bufferIn, findOffset(direction, slot), 0f, 1f, 0f, 0.5f, 0.025f, r, 0f, b, 1f, 0.0125f, reverse);
+                            RenderUtils.drawConnectingLasers(blockentity, BlockPos.ZERO, BlockPos.ZERO.relative(direction), matrixStackIn, bufferIn, findOffset(direction, slot), 0f, 1f, 0f, 0.5f, 0.025f, floatcolors[0], floatcolors[1], floatcolors[2], 1f, 0.0125f, reverse);
                         }
                     }
                 }

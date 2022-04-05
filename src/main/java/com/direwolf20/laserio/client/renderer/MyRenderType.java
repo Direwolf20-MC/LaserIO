@@ -20,7 +20,7 @@ public class MyRenderType extends RenderType {
 
     private static final LineStateShard THICK_LINES = new LineStateShard(OptionalDouble.of(3.0D));
 
-    public static void updateRenders() {
+    /*public static void updateRenders() {
         LASER_MAIN_CORE = create("MiningLaserCoreBeam",
                 DefaultVertexFormat.POSITION_COLOR_TEX, VertexFormat.Mode.QUADS, 256, false, false,
                 RenderType.CompositeState.builder().setTextureState(new TextureStateShard(laserBeam, false, false))
@@ -28,22 +28,34 @@ public class MyRenderType extends RenderType {
                         .setLayeringState(VIEW_OFFSET_Z_LAYERING)
                         .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
                         .setDepthTestState(LEQUAL_DEPTH_TEST)
-                        .setCullState(NO_CULL)
+                        .setCullState(CULL)
                         .setLightmapState(NO_LIGHTMAP)
                         .setWriteMaskState(COLOR_WRITE)
                         .createCompositeState(false));
-    }
+
+        LASER_MAIN_BEAM = create("MiningLaserMainBeam",
+                DefaultVertexFormat.POSITION_COLOR_TEX, VertexFormat.Mode.QUADS, 256, false, false,
+                RenderType.CompositeState.builder().setTextureState(new TextureStateShard(laserBeam2, false, false))
+                        .setShaderState(ShaderStateShard.POSITION_COLOR_TEX_SHADER)
+                        .setLayeringState(NO_LAYERING)
+                        .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
+                        .setDepthTestState(LEQUAL_DEPTH_TEST)
+                        .setCullState(CULL)
+                        .setLightmapState(NO_LIGHTMAP)
+                        .setWriteMaskState(COLOR_DEPTH_WRITE)
+                        .createCompositeState(false));
+    }*/
 
     public static final RenderType LASER_MAIN_BEAM = create("MiningLaserMainBeam",
             DefaultVertexFormat.POSITION_COLOR_TEX, VertexFormat.Mode.QUADS, 256, false, false,
             RenderType.CompositeState.builder().setTextureState(new TextureStateShard(laserBeam2, false, false))
                     .setShaderState(ShaderStateShard.POSITION_COLOR_TEX_SHADER)
-                    .setLayeringState(VIEW_OFFSET_Z_LAYERING)
+                    .setLayeringState(NO_LAYERING)
                     .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
                     .setDepthTestState(LEQUAL_DEPTH_TEST)
-                    .setCullState(NO_CULL)
+                    .setCullState(CULL)
                     .setLightmapState(NO_LIGHTMAP)
-                    .setWriteMaskState(COLOR_WRITE)
+                    .setWriteMaskState(COLOR_DEPTH_WRITE)
                     .createCompositeState(false));
 
     public static final RenderType LASER_MAIN_ADDITIVE = create("MiningLaserAdditiveBeam",
@@ -58,14 +70,14 @@ public class MyRenderType extends RenderType {
                     .setWriteMaskState(COLOR_WRITE)
                     .createCompositeState(false));
 
-    public static RenderType LASER_MAIN_CORE = create("MiningLaserCoreBeam",
+    public static final RenderType LASER_MAIN_CORE = create("MiningLaserCoreBeam",
             DefaultVertexFormat.POSITION_COLOR_TEX, VertexFormat.Mode.QUADS, 256, false, false,
             RenderType.CompositeState.builder().setTextureState(new TextureStateShard(laserBeam, false, false))
                     .setShaderState(ShaderStateShard.POSITION_COLOR_TEX_SHADER)
                     .setLayeringState(VIEW_OFFSET_Z_LAYERING)
                     .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
                     .setDepthTestState(LEQUAL_DEPTH_TEST)
-                    .setCullState(NO_CULL)
+                    .setCullState(CULL)
                     .setLightmapState(NO_LIGHTMAP)
                     .setWriteMaskState(COLOR_WRITE)
                     .createCompositeState(false));

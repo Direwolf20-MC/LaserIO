@@ -95,8 +95,6 @@ public class RenderUtils {
         matrixStackIn.pushPose();
         Matrix4f positionMatrix = matrixStackIn.last().pose();
 
-        builder = bufferIn.getBuffer(MyRenderType.LASER_MAIN_BEAM);
-
         Vector3f endLaser;
         Vector3f startLaser;
 
@@ -107,24 +105,11 @@ public class RenderUtils {
             startLaser = new Vector3f(offset.x(), offset.y(), offset.z());
             endLaser = new Vector3f(diffX, diffY, diffZ);
         }
-
+        //MyRenderType.updateRenders();
+        builder = bufferIn.getBuffer(MyRenderType.LASER_MAIN_BEAM);
         drawLaser(builder, positionMatrix, endLaser, startLaser, r, g, b, alpha, thickness, v, v + diffY * 4.5, be);
 
-        matrixStackIn.popPose();
-
-        matrixStackIn.pushPose();
-        positionMatrix = matrixStackIn.last().pose();
-        MyRenderType.updateRenders();
         builder = bufferIn.getBuffer(MyRenderType.LASER_MAIN_CORE);
-
-        if (reverse) {
-            endLaser = new Vector3f(offset.x(), offset.y(), offset.z());
-            startLaser = new Vector3f(diffX, diffY, diffZ);
-        } else {
-            startLaser = new Vector3f(offset.x(), offset.y(), offset.z());
-            endLaser = new Vector3f(diffX, diffY, diffZ);
-        }
-
         drawLaser(builder, positionMatrix, endLaser, startLaser, r2, g2, b2, alpha2, thickness2, v, v + diffY * 1.5, be);
 
         matrixStackIn.popPose();
