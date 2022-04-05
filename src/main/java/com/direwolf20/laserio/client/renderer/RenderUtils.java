@@ -81,7 +81,7 @@ public class RenderUtils {
         matrixStackIn.popPose();
     }
 
-    public static void drawConnectingLasers(BlockEntity be, BlockPos startBlock, BlockPos endBlock, PoseStack matrixStackIn, MultiBufferSource bufferIn, Vector3f offset, float r, float g, float b, float alpha, float thickness, boolean reverse) {
+    public static void drawConnectingLasers(BlockEntity be, BlockPos startBlock, BlockPos endBlock, PoseStack matrixStackIn, MultiBufferSource bufferIn, Vector3f offset, float r, float g, float b, float alpha, float thickness, float r2, float g2, float b2, float alpha2, float thickness2, boolean reverse) {
         Level level = be.getLevel();
         long gameTime = level.getGameTime();
         double v = gameTime * 0.04;
@@ -108,7 +108,24 @@ public class RenderUtils {
             endLaser = new Vector3f(diffX, diffY, diffZ);
         }
 
-        drawLaser(builder, positionMatrix, endLaser, startLaser, r, g, b, alpha, thickness, v, v + diffY * 1.5, be);
+        drawLaser(builder, positionMatrix, endLaser, startLaser, r, g, b, alpha, thickness, v, v + diffY * 4.5, be);
+
+        matrixStackIn.popPose();
+
+        matrixStackIn.pushPose();
+        positionMatrix = matrixStackIn.last().pose();
+        MyRenderType.updateRenders();
+        builder = bufferIn.getBuffer(MyRenderType.LASER_MAIN_CORE);
+
+        if (reverse) {
+            endLaser = new Vector3f(offset.x(), offset.y(), offset.z());
+            startLaser = new Vector3f(diffX, diffY, diffZ);
+        } else {
+            startLaser = new Vector3f(offset.x(), offset.y(), offset.z());
+            endLaser = new Vector3f(diffX, diffY, diffZ);
+        }
+
+        drawLaser(builder, positionMatrix, endLaser, startLaser, r2, g2, b2, alpha2, thickness2, v, v + diffY * 1.5, be);
 
         matrixStackIn.popPose();
     }

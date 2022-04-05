@@ -20,20 +20,19 @@ public class MyRenderType extends RenderType {
 
     private static final LineStateShard THICK_LINES = new LineStateShard(OptionalDouble.of(3.0D));
 
-    /*public static void updateRenders() {
-        BlockOverlay = create("MiningLaserBlockOverlay",
-                DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.QUADS, 256, false, false,
-                RenderType.CompositeState.builder()
-                        .setShaderState(ShaderStateShard.POSITION_COLOR_SHADER)
+    public static void updateRenders() {
+        LASER_MAIN_CORE = create("MiningLaserCoreBeam",
+                DefaultVertexFormat.POSITION_COLOR_TEX, VertexFormat.Mode.QUADS, 256, false, false,
+                RenderType.CompositeState.builder().setTextureState(new TextureStateShard(laserBeam, false, false))
+                        .setShaderState(ShaderStateShard.POSITION_COLOR_TEX_SHADER)
                         .setLayeringState(VIEW_OFFSET_Z_LAYERING)
                         .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
-                        .setTextureState(NO_TEXTURE)
-                        .setDepthTestState(NO_DEPTH_TEST)
-                        .setCullState(CULL)
+                        .setDepthTestState(LEQUAL_DEPTH_TEST)
+                        .setCullState(NO_CULL)
                         .setLightmapState(NO_LIGHTMAP)
                         .setWriteMaskState(COLOR_WRITE)
                         .createCompositeState(false));
-    }*/
+    }
 
     public static final RenderType LASER_MAIN_BEAM = create("MiningLaserMainBeam",
             DefaultVertexFormat.POSITION_COLOR_TEX, VertexFormat.Mode.QUADS, 256, false, false,
@@ -59,7 +58,7 @@ public class MyRenderType extends RenderType {
                     .setWriteMaskState(COLOR_WRITE)
                     .createCompositeState(false));
 
-    public static final RenderType LASER_MAIN_CORE = create("MiningLaserCoreBeam",
+    public static RenderType LASER_MAIN_CORE = create("MiningLaserCoreBeam",
             DefaultVertexFormat.POSITION_COLOR_TEX, VertexFormat.Mode.QUADS, 256, false, false,
             RenderType.CompositeState.builder().setTextureState(new TextureStateShard(laserBeam, false, false))
                     .setShaderState(ShaderStateShard.POSITION_COLOR_TEX_SHADER)
