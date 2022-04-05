@@ -28,19 +28,7 @@ public class BaseCard extends Item {
     public enum TransferMode {
         INSERT,
         EXTRACT,
-        STOCK;
-
-        public static TransferMode next(TransferMode transferMode) {
-            switch (transferMode) {
-                case INSERT:
-                    return (EXTRACT);
-                case EXTRACT:
-                    return (STOCK);
-                case STOCK:
-                    return (INSERT);
-            }
-            return INSERT;
-        }
+        STOCK
     }
 
     public BaseCard() {
@@ -78,23 +66,41 @@ public class BaseCard extends Item {
         return handler;
     }
 
-    public static TransferMode setTransferMode(ItemStack card, TransferMode mode) {
-        card.getOrCreateTag().putByte("mode", (byte) mode.ordinal());
+    public static byte setTransferMode(ItemStack card, byte mode) {
+        card.getOrCreateTag().putByte("mode", mode);
         return mode;
     }
 
-    public static TransferMode getTransferMode(ItemStack card) {
+    public static byte getTransferMode(ItemStack card) {
         CompoundTag compound = card.getOrCreateTag();
-        return !compound.contains("mode") ? setTransferMode(card, TransferMode.INSERT) : TransferMode.values()[compound.getByte("mode")];
+        return !compound.contains("mode") ? setTransferMode(card, (byte) 0) : compound.getByte("mode");
     }
 
-    public static TransferMode nextTransferMode(ItemStack card) {
-        int k = getTransferMode(card).ordinal();
-        TransferMode transferMode = TransferMode.values()[k == 2 ? 0 : k + 1];
-        return setTransferMode(card, transferMode);
+    public static byte nextTransferMode(ItemStack card) {
+        byte mode = getTransferMode(card);
+        return setTransferMode(card, (byte) (mode == 2 ? 0 : mode + 1));
+    }
+
+    public static TransferMode getNamedTransferMode(ItemStack card) {
+        return TransferMode.values()[getTransferMode(card)];
+    }
+
+    public static byte setChannel(ItemStack card, byte channel) {
+        card.getOrCreateTag().putByte("channel", channel);
+        return channel;
+    }
+
+    public static byte getChannel(ItemStack card) {
+        CompoundTag compound = card.getOrCreateTag();
+        return !compound.contains("channel") ? setChannel(card, (byte) 0) : compound.getByte("channel");
+    }
+
+    public static byte nextChannel(ItemStack card) {
+        byte k = getChannel(card);
+        return setChannel(card, (byte) (k == 15 ? 0 : k + 1));
     }
 
     public static boolean tickable(ItemStack card) {
-        return !getTransferMode(card).equals(TransferMode.INSERT);
+        return !getNamedTransferMode(card).equals(TransferMode.INSERT);
     }
 }

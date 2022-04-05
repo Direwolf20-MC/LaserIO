@@ -38,7 +38,10 @@ public class LaserNodeBERender extends BaseLaserBERender<LaserNodeBE> {
                     if (card.getItem() instanceof BaseCard) {
                         if (((BaseCard) card.getItem()).getCardType() == BaseCard.CardType.ITEM) {
                             boolean reverse = direction.equals(Direction.DOWN) ? true : false;
-                            RenderUtils.drawConnectingLasers(blockentity, BlockPos.ZERO, BlockPos.ZERO.relative(direction), matrixStackIn, bufferIn, findOffset(direction, slot), 0f, 1f, 0f, 0.5f, 0.025f, 1f, 0f, 0f, 1f, 0.0125f, reverse);
+                            float r = BaseCard.getChannel(card) == 0 ? 1 : 0;
+                            float b = BaseCard.getChannel(card) == 1 ? 1 : 0;
+                            if (BaseCard.getNamedTransferMode(card) != BaseCard.TransferMode.INSERT) reverse = !reverse;
+                            RenderUtils.drawConnectingLasers(blockentity, BlockPos.ZERO, BlockPos.ZERO.relative(direction), matrixStackIn, bufferIn, findOffset(direction, slot), 0f, 1f, 0f, 0.5f, 0.025f, r, 0f, b, 1f, 0.0125f, reverse);
                         }
                     }
                 }

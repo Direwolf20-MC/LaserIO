@@ -1,7 +1,7 @@
 package com.direwolf20.laserio.common.network;
 
 import com.direwolf20.laserio.common.LaserIO;
-import com.direwolf20.laserio.common.network.packets.PacketChangeTransferType;
+import com.direwolf20.laserio.common.network.packets.PacketUpdateCard;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
@@ -26,7 +26,7 @@ public class PacketHandler {
         int id = 0;
 
         // Server side
-        HANDLER.registerMessage(id++, PacketChangeTransferType.class, PacketChangeTransferType::encode, PacketChangeTransferType::decode, PacketChangeTransferType.Handler::handle);
+        HANDLER.registerMessage(id++, PacketUpdateCard.class, PacketUpdateCard::encode, PacketUpdateCard::decode, PacketUpdateCard.Handler::handle);
         //HANDLER.registerMessage(id++, PacketExtractUpgrade.class,     PacketExtractUpgrade::encode,       PacketExtractUpgrade::decode,       PacketExtractUpgrade.Handler::handle);
 
         //Client Side

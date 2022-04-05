@@ -4,7 +4,7 @@ import com.direwolf20.laserio.common.LaserIO;
 import com.direwolf20.laserio.common.containers.ItemCardContainer;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.common.network.PacketHandler;
-import com.direwolf20.laserio.common.network.packets.PacketChangeTransferType;
+import com.direwolf20.laserio.common.network.packets.PacketUpdateCard;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -24,7 +24,8 @@ public class ItemCardScreen extends AbstractContainerScreen<ItemCardContainer> {
     private final ResourceLocation GUI = new ResourceLocation(LaserIO.MODID, "textures/gui/itemcard.png");
 
     protected final ItemCardContainer container;
-    private BaseCard.TransferMode currentMode;
+    private byte currentMode;
+    private byte currentChannel;
     private ItemStack card;
     //private boolean isWhitelist;
     //private boolean isNBTFilter;
@@ -48,15 +49,23 @@ public class ItemCardScreen extends AbstractContainerScreen<ItemCardContainer> {
         List<AbstractWidget> leftWidgets = new ArrayList<>();
 
         currentMode = BaseCard.getTransferMode(card);
+        currentChannel = BaseCard.getChannel(card);
         Button sizeButton;
         int baseX = width / 2, baseY = height / 2;
         int left = baseX - 85;
         int top = baseY - 100;
 
-        leftWidgets.add(sizeButton = new Button(left, 0, 50, 20, new TranslatableComponent(currentMode.name(), currentMode), (button) -> {
+
+        leftWidgets.add(sizeButton = new Button(left, 0, 50, 20, new TranslatableComponent(BaseCard.TransferMode.values()[currentMode].name(), currentMode), (button) -> {
             currentMode = BaseCard.nextTransferMode(card);
-            button.setMessage(new TranslatableComponent(currentMode.name(), currentMode));
-            PacketHandler.sendToServer(new PacketChangeTransferType());
+            button.setMessage(new TranslatableComponent(BaseCard.TransferMode.values()[currentMode].name(), currentMode));
+            PacketHandler.sendToServer(new PacketUpdateCard(currentMode, currentChannel));
+        }));
+
+        leftWidgets.add(sizeButton = new Button(left, 0, 50, 20, new TranslatableComponent(String.valueOf(BaseCard.getChannel(card)), currentChannel), (button) -> {
+            currentChannel = BaseCard.nextChannel(card);
+            button.setMessage(new TranslatableComponent(String.valueOf(BaseCard.getChannel(card)), currentChannel));
+            PacketHandler.sendToServer(new PacketUpdateCard(currentMode, currentChannel));
         }));
 
         // Lay the buttons out, too lazy to figure out the math every damn time.

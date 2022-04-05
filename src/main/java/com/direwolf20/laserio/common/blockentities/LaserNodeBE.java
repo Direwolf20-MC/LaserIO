@@ -44,9 +44,9 @@ public class LaserNodeBE extends BaseLaserBE {
             for (int slot = 0; slot < 9; slot++) {
                 ItemStack card = itemHandler[direction.ordinal()].getStackInSlot(slot);
                 if (card.getItem() instanceof BaseCard) {
-                    if (BaseCard.getTransferMode(card).equals(BaseCard.TransferMode.EXTRACT)) {
+                    if (BaseCard.getNamedTransferMode(card).equals(BaseCard.TransferMode.EXTRACT)) {
                         sendItems(card, direction);
-                    } else if (BaseCard.getTransferMode(card).equals(BaseCard.TransferMode.STOCK)) {
+                    } else if (BaseCard.getNamedTransferMode(card).equals(BaseCard.TransferMode.STOCK)) {
                         getItems(card, direction);
                     }
                 }
@@ -149,11 +149,11 @@ public class LaserNodeBE extends BaseLaserBE {
                 ItemStack card = be.itemHandler[direction.ordinal()].getStackInSlot(slot);
                 if (card.getItem() instanceof BaseCard) {
                     System.out.println("Found card at " + pos + ": " + BaseCard.getTransferMode(card));
-                    if (BaseCard.getTransferMode(card).equals(BaseCard.TransferMode.EXTRACT)) {
+                    if (BaseCard.getNamedTransferMode(card).equals(BaseCard.TransferMode.EXTRACT)) {
                         //sendItems(card, direction);
-                    } else if (BaseCard.getTransferMode(card).equals(BaseCard.TransferMode.STOCK)) {
+                    } else if (BaseCard.getNamedTransferMode(card).equals(BaseCard.TransferMode.STOCK)) {
                         //getItems(card, direction);
-                    } else if (BaseCard.getTransferMode(card).equals(BaseCard.TransferMode.INSERT)) {
+                    } else if (BaseCard.getNamedTransferMode(card).equals(BaseCard.TransferMode.INSERT)) {
                         //getItems(card, direction);
                         inserterNodes.put(getRelativePos(pos), direction);
                     }

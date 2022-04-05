@@ -8,26 +8,34 @@ import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-public class PacketChangeTransferType {
-    public PacketChangeTransferType() {
+public class PacketUpdateCard {
+    byte mode;
+    byte channel;
+
+    public PacketUpdateCard(byte mode, byte channel) {
+        this.mode = mode;
+        this.channel = channel;
     }
 
-    public static void encode(PacketChangeTransferType msg, FriendlyByteBuf buffer) {
+    public static void encode(PacketUpdateCard msg, FriendlyByteBuf buffer) {
+        buffer.writeByte(msg.mode);
+        buffer.writeByte(msg.channel);
     }
 
-    public static PacketChangeTransferType decode(FriendlyByteBuf buffer) {
-        return new PacketChangeTransferType();
+    public static PacketUpdateCard decode(FriendlyByteBuf buffer) {
+        return new PacketUpdateCard(buffer.readByte(), buffer.readByte());
     }
 
     public static class Handler {
-        public static void handle(PacketChangeTransferType msg, Supplier<NetworkEvent.Context> ctx) {
+        public static void handle(PacketUpdateCard msg, Supplier<NetworkEvent.Context> ctx) {
             ctx.get().enqueueWork(() -> {
                 ServerPlayer player = ctx.get().getSender();
                 if (player == null)
                     return;
 
                 ItemStack stack = player.getMainHandItem(); //ToDo Support for offhand?
-                BaseCard.nextTransferMode(stack);
+                BaseCard.setTransferMode(stack, msg.mode);
+                BaseCard.setChannel(stack, msg.channel);
             });
 
             ctx.get().setPacketHandled(true);
