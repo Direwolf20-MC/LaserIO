@@ -16,12 +16,13 @@ import net.minecraftforge.items.wrapper.InvWrapper;
 
 public class LaserNodeContainer extends AbstractContainerMenu {
     //private BlockEntity blockEntity;
+    public static final int SLOTS = 9;
     private Player playerEntity;
     private IItemHandler playerInventory;
     ContainerLevelAccess containerLevelAccess;
 
     public LaserNodeContainer(int windowId, BlockPos pos, Inventory playerInventory, Player player) {
-        this(windowId, pos, playerInventory, player, new ItemStackHandler(9), ContainerLevelAccess.NULL);
+        this(windowId, pos, playerInventory, player, new ItemStackHandler(SLOTS), ContainerLevelAccess.NULL);
     }
 
     public LaserNodeContainer(int windowId, BlockPos pos, Inventory playerInventory, Player player, IItemHandler handler, ContainerLevelAccess containerLevelAccess) {
@@ -49,21 +50,21 @@ public class LaserNodeContainer extends AbstractContainerMenu {
             ItemStack stack = slot.getItem();
             itemstack = stack.copy();
             //If its one of the 9 slots at the top try to move it into your inventory
-            if (index <= 8) {
-                if (!this.moveItemStackTo(stack, 9, 45, true)) {
+            if (index < SLOTS) {
+                if (!this.moveItemStackTo(stack, SLOTS, this.playerInventory.getSlots(), false)) {
                     return ItemStack.EMPTY;
                 }
                 slot.onQuickCraft(stack, itemstack);
             } else {
                 if (stack.getItem() instanceof BaseCard) {
-                    if (!this.moveItemStackTo(stack, 0, 9, false)) {
+                    if (!this.moveItemStackTo(stack, 0, SLOTS, false)) {
                         return ItemStack.EMPTY;
                     }
                 } else if (index < 36) {
-                    if (!this.moveItemStackTo(stack, 36, 45, false)) {
+                    if (!this.moveItemStackTo(stack, 36, this.playerInventory.getSlots(), false)) {
                         return ItemStack.EMPTY;
                     }
-                } else if (index < 45 && !this.moveItemStackTo(stack, 9, 36, false)) {
+                } else if (index < 45 && !this.moveItemStackTo(stack, SLOTS, 36, false)) {
                     return ItemStack.EMPTY;
                 }
             }
