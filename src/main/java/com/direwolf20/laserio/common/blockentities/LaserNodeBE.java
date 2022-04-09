@@ -27,29 +27,23 @@ import javax.annotation.Nullable;
 import java.util.*;
 
 public class LaserNodeBE extends BaseLaserBE {
-    /**
-     * This blocks Item Handlers
-     **/
+    /** This blocks Item Handlers **/
     private final NodeItemHandler[] itemHandler = new NodeItemHandler[6]; //The item stacks in each side of the node, for local use only
     private final LazyOptional<NodeItemHandler>[] handler = new LazyOptional[6]; //The capability thingy gives this one out for others to access?
     private final IItemHandler EMPTY = new ItemStackHandler(0);
 
-    /**
-     * Adjacent Inventory Handlers
-     **/
+    /** Adjacent Inventory Handlers **/
     @Nullable
     private LazyOptional<IItemHandler>[] facingHandler = new LazyOptional[6];
-    /**
-     * Lambda to call when a lazy optional is invalidated. Final variable to reduce memory usage
-     */
-    private final List<NonNullConsumer<LazyOptional<IItemHandler>>> facingInvalidator = new ArrayList<>();
+    private final List<NonNullConsumer<LazyOptional<IItemHandler>>> facingInvalidator = new ArrayList<>(); //Lambda to call when a lazy optional is invalidated. Final variable to reduce memory usage
 
-    /**
-     * Variables for tracking and sending items/filters/etc
-     **/
+    /** Variables for tracking and sending items/filters/etc **/
     private Set<BlockPos> otherNodesInNetwork = new HashSet<>();
     private final HashMap<BlockPos, Direction> inserterNodes = new HashMap<>(); //All Inventory nodes that contain an inserter card
     private final HashMap<Direction, Integer> extractorCards = new HashMap<>();
+
+    /** Misc Variables **/
+    private boolean discoveredNodes = false;
 
     public LaserNodeBE(BlockPos pos, BlockState state) {
         super(Registration.LaserNode_BE.get(), pos, state);
@@ -96,6 +90,11 @@ public class LaserNodeBE extends BaseLaserBE {
 
     public void tickServer() {
         if (level.isClientSide) return;
+        if (!discoveredNodes) { //On world / chunk reload, lets rediscover the network, including this block's extractor cards.
+            discoverAllNodes();
+            findMyExtractors();
+            discoveredNodes = true;
+        }
         extractItems();
     }
 
@@ -158,7 +157,7 @@ public class LaserNodeBE extends BaseLaserBE {
      * This method clears the non-persistent inventory node data variables and regenerates them from scratch
      */
     public void refreshAllInvNodes() {
-        //System.out.println("Scanning all inventory nodes");
+        //System.out.println("Scanning all inventory nodes at: " + getBlockPos());
         inserterNodes.clear();
         HashMap<BlockPos, Direction> inserterNodes = new HashMap<>();
         for (BlockPos pos : otherNodesInNetwork) {
