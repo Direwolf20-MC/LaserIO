@@ -132,12 +132,9 @@ public class ItemCardScreen extends AbstractContainerScreen<ItemCardContainer> {
     }
 
     @Override
-    public void removed() {
-        /*PacketHandler.sendToServer(new PacketChangeRange(this.beamRange));
-        PacketHandler.sendToServer(new PacketChangeVolume(this.volume));
-        PacketHandler.sendToServer(new PacketChangeFreezeDelay(this.freezeDelay));*/
+    public void onClose() {
         PacketHandler.sendToServer(new PacketUpdateCard(currentMode, currentChannel, currentItemExtractAmt));
-        super.removed();
+        super.onClose();
     }
 
     @Override

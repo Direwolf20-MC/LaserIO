@@ -1,5 +1,7 @@
 package com.direwolf20.laserio.common.containers;
 
+import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
+import com.direwolf20.laserio.common.containers.customslot.CardSlot;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.setup.Registration;
 import net.minecraft.core.BlockPos;
@@ -11,8 +13,9 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
-import net.minecraftforge.items.SlotItemHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
+
+import javax.annotation.Nullable;
 
 public class LaserNodeContainer extends AbstractContainerMenu {
     //private BlockEntity blockEntity;
@@ -21,14 +24,18 @@ public class LaserNodeContainer extends AbstractContainerMenu {
     private IItemHandler playerInventory;
     ContainerLevelAccess containerLevelAccess;
 
+    // Tile can be null and shouldn't be used for accessing any data that needs to be up to date on both sides
+    public LaserNodeBE tile;
+
     public LaserNodeContainer(int windowId, BlockPos pos, Inventory playerInventory, Player player) {
-        this(windowId, pos, playerInventory, player, new ItemStackHandler(SLOTS), ContainerLevelAccess.NULL);
+        this((LaserNodeBE) playerInventory.player.level.getBlockEntity(pos), windowId, pos, playerInventory, player, new ItemStackHandler(SLOTS), ContainerLevelAccess.NULL);
     }
 
-    public LaserNodeContainer(int windowId, BlockPos pos, Inventory playerInventory, Player player, IItemHandler handler, ContainerLevelAccess containerLevelAccess) {
+    public LaserNodeContainer(@Nullable LaserNodeBE tile, int windowId, BlockPos pos, Inventory playerInventory, Player player, IItemHandler handler, ContainerLevelAccess containerLevelAccess) {
         super(Registration.LaserNode_Container.get(), windowId);
         //blockEntity = player.getCommandSenderWorld().getBlockEntity(pos);
         this.playerEntity = player;
+        this.tile = tile;
         this.playerInventory = new InvWrapper(playerInventory);
         this.containerLevelAccess = containerLevelAccess;
         if (handler != null)
@@ -88,7 +95,7 @@ public class LaserNodeContainer extends AbstractContainerMenu {
 
     private int addSlotRange(IItemHandler handler, int index, int x, int y, int amount, int dx) {
         for (int i = 0; i < amount; i++) {
-            addSlot(new SlotItemHandler(handler, index, x, y));
+            addSlot(new CardSlot(handler, index, x, y));
             x += dx;
             index++;
         }

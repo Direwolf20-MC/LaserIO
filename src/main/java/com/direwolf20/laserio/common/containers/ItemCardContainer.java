@@ -1,14 +1,18 @@
 package com.direwolf20.laserio.common.containers;
 
+import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import com.direwolf20.laserio.common.containers.customhandler.CardItemHandler;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.setup.Registration;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
@@ -19,9 +23,10 @@ public class ItemCardContainer extends AbstractContainerMenu {
     public ItemStack cardItem;
     public Player playerEntity;
     private IItemHandler playerInventory;
+    public BlockPos sourceContainer = BlockPos.ZERO;
 
     public ItemCardContainer(int windowId, Inventory playerInventory, Player player, FriendlyByteBuf extraData) {
-        this(windowId, playerInventory, player, new CardItemHandler(3, ItemStack.EMPTY), ItemStack.EMPTY);
+        this(windowId, playerInventory, player, new CardItemHandler(SLOTS, ItemStack.EMPTY), ItemStack.EMPTY);
         cardItem = extraData.readItem();
     }
 
@@ -37,9 +42,23 @@ public class ItemCardContainer extends AbstractContainerMenu {
         layoutPlayerInventorySlots(8, 84);
     }
 
+    public ItemCardContainer(int windowId, Inventory playerInventory, Player player, CardItemHandler handler, BlockPos sourcePos, ItemStack cardItem) {
+        super(Registration.ItemCard_Container.get(), windowId);
+        playerEntity = player;
+        this.handler = handler;
+        this.sourceContainer = sourcePos;
+        this.playerInventory = new InvWrapper(playerInventory);
+        this.cardItem = cardItem;
+        if (handler != null)
+            addSlotRange(handler, 0, 62, 35, 3, 18);
+
+        layoutPlayerInventorySlots(8, 84);
+    }
+
     @Override
     public boolean stillValid(Player playerIn) {
-        return playerIn.getMainHandItem().equals(cardItem); //TODO Validate this and check offhand?
+        return true;
+        //return playerIn.getMainHandItem().equals(cardItem); //TODO Validate this and check offhand?
     }
 
     @Override
@@ -109,5 +128,20 @@ public class ItemCardContainer extends AbstractContainerMenu {
         // Hotbar
         topRow += 58;
         addSlotRange(playerInventory, 0, leftCol, topRow, 9, 18);
+    }
+
+    @Override
+    public void removed(Player playerIn) {
+        Level world = playerIn.getLevel();
+        if (!world.isClientSide) {
+            BaseCard.setInventory(cardItem, handler);
+            if (!sourceContainer.equals(BlockPos.ZERO)) {
+                BlockEntity te = world.getBlockEntity(sourceContainer);
+                if (te instanceof LaserNodeBE) {
+                    //((InventoryNodeTile) te).notifyControllerOfChanges();
+                }
+            }
+        }
+        super.removed(playerIn);
     }
 }

@@ -60,7 +60,7 @@ public class LaserNode extends BaseLaserBlock implements EntityBlock {
 
                             @Override
                             public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player playerEntity) {
-                                return new LaserNodeContainer(windowId, pos, playerInventory, playerEntity, h, ContainerLevelAccess.create(be.getLevel(), be.getBlockPos()));
+                                return new LaserNodeContainer((LaserNodeBE) be, windowId, pos, playerInventory, playerEntity, h, ContainerLevelAccess.create(be.getLevel(), be.getBlockPos()));
                             }
                         };
                         NetworkHooks.openGui((ServerPlayer) player, containerProvider, be.getBlockPos());

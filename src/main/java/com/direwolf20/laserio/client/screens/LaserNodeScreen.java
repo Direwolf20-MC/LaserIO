@@ -4,6 +4,8 @@ import com.direwolf20.laserio.common.LaserIO;
 import com.direwolf20.laserio.common.containers.LaserNodeContainer;
 import com.direwolf20.laserio.common.containers.customslot.CardSlot;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
+import com.direwolf20.laserio.common.network.PacketHandler;
+import com.direwolf20.laserio.common.network.packets.PacketOpenCard;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -13,9 +15,11 @@ import net.minecraft.world.entity.player.Inventory;
 
 public class LaserNodeScreen extends AbstractContainerScreen<LaserNodeContainer> {
     private final ResourceLocation GUI = new ResourceLocation(LaserIO.MODID, "textures/gui/laser_node.png");
+    protected final LaserNodeContainer container;
 
     public LaserNodeScreen(LaserNodeContainer container, Inventory inv, Component name) {
         super(container, inv, name);
+        this.container = container;
     }
 
     @Override
@@ -44,7 +48,9 @@ public class LaserNodeScreen extends AbstractContainerScreen<LaserNodeContainer>
             return super.mouseClicked(x, y, btn);
 
         if (btn == 1 && hoveredSlot instanceof CardSlot) { //Right click
-
+            int slot = hoveredSlot.getSlotIndex();
+            PacketHandler.sendToServer(new PacketOpenCard(slot, container.tile.getBlockPos()));
+            return true;
         }
         return super.mouseClicked(x, y, btn);
     }
