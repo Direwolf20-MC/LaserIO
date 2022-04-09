@@ -1,17 +1,16 @@
 package com.direwolf20.laserio.common.containers.CustomItemHandlers;
 
-import com.direwolf20.laserio.common.blockentities.basebe.BaseLaserBE;
+import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
 
 public class NodeItemHandler extends ItemStackHandler {
-    BlockEntity blockEntity;
+    LaserNodeBE blockEntity;
 
-    public NodeItemHandler(int size, BlockEntity blockEntity) {
+    public NodeItemHandler(int size, LaserNodeBE blockEntity) {
         super(size);
         this.blockEntity = blockEntity;
     }
@@ -20,8 +19,11 @@ public class NodeItemHandler extends ItemStackHandler {
     protected void onContentsChanged(int slot) {
         // To make sure the TE persists when the chunk is saved later we need to
         // mark it dirty every time the item handler changes
+        if (blockEntity == null) return;
         blockEntity.setChanged();
-        ((BaseLaserBE) blockEntity).markDirtyClient();
+        blockEntity.notifyOtherNodesOfChange();
+        blockEntity.markDirtyClient();
+
     }
 
     @Override

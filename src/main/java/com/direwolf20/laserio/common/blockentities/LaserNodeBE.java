@@ -3,6 +3,7 @@ package com.direwolf20.laserio.common.blockentities;
 import com.direwolf20.laserio.client.particles.itemparticle.ItemFlowParticleData;
 import com.direwolf20.laserio.common.blockentities.basebe.BaseLaserBE;
 import com.direwolf20.laserio.common.containers.CustomItemHandlers.NodeItemHandler;
+import com.direwolf20.laserio.common.containers.LaserNodeContainer;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.setup.Registration;
 import com.direwolf20.laserio.util.WeakConsumerWrapper;
@@ -26,10 +27,16 @@ import javax.annotation.Nullable;
 import java.util.*;
 
 public class LaserNodeBE extends BaseLaserBE {
-    // Never create lazy optionals in getCapability. Always place them as fields in the tile entity:
-    private final ItemStackHandler[] itemHandler = new ItemStackHandler[6]; //The item stacks in each side of the node, for local use only
-    private final LazyOptional<IItemHandler>[] handler = new LazyOptional[6]; //The capability thingy gives this one out for others to access?
+    /**
+     * This blocks Item Handlers
+     **/
+    private final NodeItemHandler[] itemHandler = new NodeItemHandler[6]; //The item stacks in each side of the node, for local use only
+    private final LazyOptional<NodeItemHandler>[] handler = new LazyOptional[6]; //The capability thingy gives this one out for others to access?
     private final IItemHandler EMPTY = new ItemStackHandler(0);
+
+    /**
+     * Adjacent Inventory Handlers
+     **/
     @Nullable
     private LazyOptional<IItemHandler>[] facingHandler = new LazyOptional[6];
     /**
@@ -37,6 +44,9 @@ public class LaserNodeBE extends BaseLaserBE {
      */
     private final List<NonNullConsumer<LazyOptional<IItemHandler>>> facingInvalidator = new ArrayList<>();
 
+    /**
+     * Variables for tracking and sending items/filters/etc
+     **/
     private final Set<BlockPos> otherNodesInNetwork = new HashSet<>();
     private final HashMap<BlockPos, Direction> inserterNodes = new HashMap<>(); //All Inventory nodes that contain an inserter card
 
@@ -73,36 +83,34 @@ public class LaserNodeBE extends BaseLaserBE {
     //TODO Efficiency
     public void sendItems(ItemStack card, Direction direction) {
         IItemHandler adjacentInventory = getAttachedInventory(direction).orElse(EMPTY);
-        //if (adjacentInventory != null) {
         for (int slot = 0; slot < adjacentInventory.getSlots(); slot++) {
             ItemStack stackInSlot = adjacentInventory.getStackInSlot(slot);
             if (!stackInSlot.isEmpty()) {
                 for (Map.Entry<BlockPos, Direction> entry : inserterNodes.entrySet()) {
-                    BlockEntity be = level.getBlockEntity(getWorldPos(entry.getKey()));
-                    if (be instanceof LaserNodeBE) {
-                        IItemHandler possibleDestination = ((LaserNodeBE) be).getAttachedInventory(entry.getValue()).orElse(EMPTY);
-                        if (possibleDestination.getSlots() == 0) continue;
-                        ItemStack itemStack = adjacentInventory.extractItem(slot, 1, false);
-                        ItemStack postInsertStack = ItemHandlerHelper.insertItem(possibleDestination, itemStack, false);
-                        if (postInsertStack.isEmpty()) {
-                            ServerLevel serverWorld = (ServerLevel) level;
-                            //Extract
-                            BlockPos fromPos = getBlockPos().relative(direction);
-                            BlockPos toPos = getBlockPos();
-                            ItemFlowParticleData data = new ItemFlowParticleData(itemStack, toPos.getX() + 0.5, toPos.getY() + 0.5, toPos.getZ() + 0.5, 10);
-                            serverWorld.sendParticles(data, fromPos.getX() + 0.5, fromPos.getY() + 0.5, fromPos.getZ() + 0.5, 8 * itemStack.getCount(), 0.1f, 0.1f, 0.1f, 0);
+                    LaserNodeBE be = getNodeAt(getWorldPos(entry.getKey()));
+                    if (be == null) continue;
+                    IItemHandler possibleDestination = ((LaserNodeBE) be).getAttachedInventory(entry.getValue()).orElse(EMPTY);
+                    if (possibleDestination.getSlots() == 0) continue;
+                    ItemStack itemStack = adjacentInventory.extractItem(slot, 1, false);
+                    ItemStack postInsertStack = ItemHandlerHelper.insertItem(possibleDestination, itemStack, false);
+                    if (postInsertStack.isEmpty()) {
+                        ServerLevel serverWorld = (ServerLevel) level;
+                        //Extract
+                        BlockPos fromPos = getBlockPos().relative(direction);
+                        BlockPos toPos = getBlockPos();
+                        ItemFlowParticleData data = new ItemFlowParticleData(itemStack, toPos.getX() + 0.5, toPos.getY() + 0.5, toPos.getZ() + 0.5, 10);
+                        serverWorld.sendParticles(data, fromPos.getX() + 0.5, fromPos.getY() + 0.5, fromPos.getZ() + 0.5, 8 * itemStack.getCount(), 0.1f, 0.1f, 0.1f, 0);
 
-                                //Insert
-                                fromPos = be.getBlockPos();
-                                toPos = be.getBlockPos().relative(entry.getValue());
-                                data = new ItemFlowParticleData(itemStack, toPos.getX() + 0.5, toPos.getY() + 0.5, toPos.getZ() + 0.5, 10);
-                                serverWorld.sendParticles(data, fromPos.getX() + 0.5, fromPos.getY() + 0.5, fromPos.getZ() + 0.5, 8 * itemStack.getCount(), 0.1f, 0.1f, 0.1f, 0);
+                        //Insert
+                        fromPos = be.getBlockPos();
+                        toPos = be.getBlockPos().relative(entry.getValue());
+                        data = new ItemFlowParticleData(itemStack, toPos.getX() + 0.5, toPos.getY() + 0.5, toPos.getZ() + 0.5, 10);
+                        serverWorld.sendParticles(data, fromPos.getX() + 0.5, fromPos.getY() + 0.5, fromPos.getZ() + 0.5, 8 * itemStack.getCount(), 0.1f, 0.1f, 0.1f, 0);
 
-                                return;
-                            }
-                        }
+                        return;
                     }
                 }
+            }
             //}
         }
     }
@@ -162,6 +170,21 @@ public class LaserNodeBE extends BaseLaserBE {
         System.out.println(inserterNodes);
     }
 
+    public LaserNodeBE getNodeAt(BlockPos pos) {
+        BlockEntity be = level.getBlockEntity(pos);
+        if (be instanceof LaserNodeBE) return (LaserNodeBE) be;
+        return null;
+    }
+
+    public void notifyOtherNodesOfChange() {
+        for (BlockPos pos : otherNodesInNetwork) {
+            LaserNodeBE node = getNodeAt(getWorldPos(pos));
+            if (node == null) continue;
+            System.out.println("Telling " + node.getBlockPos() + " to update inventory of " + this.getBlockPos());
+            node.checkInvNode(this.getBlockPos());
+        }
+    }
+
     /**
      * Given a @param pos, look up the inventory node at that position in the world, and cache each of the cards in the cardCache Variable
      * Also populates the extractorNodes and inserterNodes variables, so we know which inventory nodes send/receive items.
@@ -170,12 +193,13 @@ public class LaserNodeBE extends BaseLaserBE {
      */
     public void checkInvNode(BlockPos pos) {
         System.out.println("Updating cache at: " + pos);
-        LaserNodeBE be = (LaserNodeBE) level.getBlockEntity(pos);
+        LaserNodeBE be = getNodeAt(pos);
+        BlockPos relativePos = getRelativePos(pos);
         //Remove this position from all caches, so we can repopulate below
-        inserterNodes.remove(pos);
-
+        inserterNodes.remove(relativePos);
+        if (be == null) return; //If the block position given doesn't contain a LaserNodeBE stop
         for (Direction direction : Direction.values()) {
-            for (int slot = 0; slot < 9; slot++) {
+            for (int slot = 0; slot < LaserNodeContainer.SLOTS; slot++) {
                 ItemStack card = be.itemHandler[direction.ordinal()].getStackInSlot(slot);
                 if (card.getItem() instanceof BaseCard) {
                     System.out.println("Found card at " + pos + ": " + BaseCard.getTransferMode(card));
@@ -185,7 +209,7 @@ public class LaserNodeBE extends BaseLaserBE {
                         //getItems(card, direction);
                     } else if (BaseCard.getNamedTransferMode(card).equals(BaseCard.TransferMode.INSERT)) {
                         //getItems(card, direction);
-                        inserterNodes.put(getRelativePos(pos), direction);
+                        inserterNodes.put(relativePos, direction);
                     }
                 }
             }
@@ -214,7 +238,6 @@ public class LaserNodeBE extends BaseLaserBE {
         }
 
         // if no inventory cached yet, find a new one
-        //Direction facing = getBlockState().get(BlockStateProperties.FACING);
         assert level != null;
         BlockEntity be = level.getBlockEntity(getBlockPos().relative(direction));
         // if we have a TE and its an item handler, try extracting from that
@@ -231,16 +254,6 @@ public class LaserNodeBE extends BaseLaserBE {
         facingHandler[direction.ordinal()] = null;
         return LazyOptional.empty();
     }
-    /*public IItemHandler getAttachedInventory(Direction direction) {
-        BlockEntity be = level.getBlockEntity(getBlockPos().relative(direction));
-        if (be == null)
-            return null;
-        IItemHandler adjacentHandler = be.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction.getOpposite()).orElse(EMPTY);
-        if (adjacentHandler.getSlots() != 0)
-            return adjacentHandler;
-
-        return null;
-    }*/
 
     /**
      * Called when a neighbor updates to invalidate the inventory cache
