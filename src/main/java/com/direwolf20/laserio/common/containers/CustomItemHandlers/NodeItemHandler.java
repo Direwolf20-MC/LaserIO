@@ -23,7 +23,7 @@ public class NodeItemHandler extends ItemStackHandler {
         blockEntity.setChanged();
         blockEntity.notifyOtherNodesOfChange();
         blockEntity.markDirtyClient();
-
+        blockEntity.findMyExtractors();
     }
 
     @Override

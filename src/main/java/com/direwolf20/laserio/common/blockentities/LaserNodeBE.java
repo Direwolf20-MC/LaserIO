@@ -49,6 +49,7 @@ public class LaserNodeBE extends BaseLaserBE {
      **/
     private Set<BlockPos> otherNodesInNetwork = new HashSet<>();
     private final HashMap<BlockPos, Direction> inserterNodes = new HashMap<>(); //All Inventory nodes that contain an inserter card
+    private final HashMap<Direction, Integer> extractorCards = new HashMap<>();
 
     public LaserNodeBE(BlockPos pos, BlockState state) {
         super(Registration.LaserNode_BE.get(), pos, state);
@@ -73,20 +74,29 @@ public class LaserNodeBE extends BaseLaserBE {
         refreshAllInvNodes(); //Seeing as the otherNodes list just got updated, we should refresh the InventoryNode content caches
     }
 
-    public void tickServer() {
-        if (level.isClientSide) return;
+    public void findMyExtractors() {
+        this.extractorCards.clear();
         for (Direction direction : Direction.values()) {
-            for (int slot = 0; slot < 9; slot++) {
+            for (int slot = 0; slot < LaserNodeContainer.SLOTS; slot++) {
                 ItemStack card = itemHandler[direction.ordinal()].getStackInSlot(slot);
                 if (card.getItem() instanceof BaseCard) {
                     if (BaseCard.getNamedTransferMode(card).equals(BaseCard.TransferMode.EXTRACT)) {
-                        sendItems(card, direction);
-                    } else if (BaseCard.getNamedTransferMode(card).equals(BaseCard.TransferMode.STOCK)) {
-                        getItems(card, direction);
+                        extractorCards.put(direction, slot);
                     }
                 }
             }
         }
+    }
+
+    public void extractItems() {
+        for (Map.Entry<Direction, Integer> entry : extractorCards.entrySet()) {
+            sendItems(itemHandler[entry.getKey().ordinal()].getStackInSlot(entry.getValue()), entry.getKey());
+        }
+    }
+
+    public void tickServer() {
+        if (level.isClientSide) return;
+        extractItems();
     }
 
     //TODO Efficiency
@@ -94,34 +104,38 @@ public class LaserNodeBE extends BaseLaserBE {
         IItemHandler adjacentInventory = getAttachedInventory(direction).orElse(EMPTY);
         for (int slot = 0; slot < adjacentInventory.getSlots(); slot++) {
             ItemStack stackInSlot = adjacentInventory.getStackInSlot(slot);
-            if (!stackInSlot.isEmpty()) {
-                for (Map.Entry<BlockPos, Direction> entry : inserterNodes.entrySet()) {
-                    LaserNodeBE be = getNodeAt(getWorldPos(entry.getKey()));
-                    if (be == null) continue;
-                    IItemHandler possibleDestination = ((LaserNodeBE) be).getAttachedInventory(entry.getValue()).orElse(EMPTY);
-                    if (possibleDestination.getSlots() == 0) continue;
-                    ItemStack itemStack = adjacentInventory.extractItem(slot, 1, false);
-                    ItemStack postInsertStack = ItemHandlerHelper.insertItem(possibleDestination, itemStack, false);
-                    if (postInsertStack.isEmpty()) {
-                        ServerLevel serverWorld = (ServerLevel) level;
-                        //Extract
-                        BlockPos fromPos = getBlockPos().relative(direction);
-                        BlockPos toPos = getBlockPos();
-                        ItemFlowParticleData data = new ItemFlowParticleData(itemStack, toPos.getX() + 0.5, toPos.getY() + 0.5, toPos.getZ() + 0.5, 10);
-                        serverWorld.sendParticles(data, fromPos.getX() + 0.5, fromPos.getY() + 0.5, fromPos.getZ() + 0.5, 8 * itemStack.getCount(), 0.1f, 0.1f, 0.1f, 0);
-
-                        //Insert
-                        fromPos = be.getBlockPos();
-                        toPos = be.getBlockPos().relative(entry.getValue());
-                        data = new ItemFlowParticleData(itemStack, toPos.getX() + 0.5, toPos.getY() + 0.5, toPos.getZ() + 0.5, 10);
-                        serverWorld.sendParticles(data, fromPos.getX() + 0.5, fromPos.getY() + 0.5, fromPos.getZ() + 0.5, 8 * itemStack.getCount(), 0.1f, 0.1f, 0.1f, 0);
-
-                        return;
-                    }
+            if (stackInSlot.isEmpty()) continue;
+            for (Map.Entry<BlockPos, Direction> entry : inserterNodes.entrySet()) {
+                LaserNodeBE be = getNodeAt(getWorldPos(entry.getKey()));
+                if (be == null) continue;
+                IItemHandler possibleDestination = be.getAttachedInventory(entry.getValue()).orElse(EMPTY);
+                if (possibleDestination.getSlots() == 0) continue;
+                ItemStack itemStack = adjacentInventory.extractItem(slot, 3, true); //Pretend to pull the item out
+                ItemStack postInsertStack = ItemHandlerHelper.insertItem(possibleDestination, itemStack, false); //Attempt to insert the item
+                if (!postInsertStack.equals(itemStack, false)) { //If something changed
+                    int countExtracted = postInsertStack.isEmpty() ? itemStack.getCount() : itemStack.getCount() - postInsertStack.getCount();
+                    adjacentInventory.extractItem(slot, countExtracted, false); //Actually remove the number of items
+                    drawParticles(itemStack, direction, be, entry.getValue());
+                    return;
                 }
             }
-            //}
         }
+    }
+
+    public void drawParticles(ItemStack itemStack, Direction fromdirection, LaserNodeBE destinationBE, Direction destinationDirection) {
+        ServerLevel serverWorld = (ServerLevel) level;
+        //Extract
+        BlockPos fromPos = getBlockPos().relative(fromdirection);
+        BlockPos toPos = getBlockPos();
+        ItemFlowParticleData data = new ItemFlowParticleData(itemStack, toPos.getX() + 0.5, toPos.getY() + 0.5, toPos.getZ() + 0.5, 10);
+        serverWorld.sendParticles(data, fromPos.getX() + 0.5, fromPos.getY() + 0.5, fromPos.getZ() + 0.5, 8 * itemStack.getCount(), 0.1f, 0.1f, 0.1f, 0);
+
+        //Insert
+        fromPos = destinationBE.getBlockPos();
+        toPos = destinationBE.getBlockPos().relative(destinationDirection);
+        data = new ItemFlowParticleData(itemStack, toPos.getX() + 0.5, toPos.getY() + 0.5, toPos.getZ() + 0.5, 10);
+        serverWorld.sendParticles(data, fromPos.getX() + 0.5, fromPos.getY() + 0.5, fromPos.getZ() + 0.5, 8 * itemStack.getCount(), 0.1f, 0.1f, 0.1f, 0);
+
     }
 
     public void getItems(ItemStack card, Direction direction) {
