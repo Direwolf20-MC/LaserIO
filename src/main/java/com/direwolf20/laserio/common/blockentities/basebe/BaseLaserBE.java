@@ -1,5 +1,6 @@
 package com.direwolf20.laserio.common.blockentities.basebe;
 
+import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -14,6 +15,8 @@ import net.minecraft.world.phys.AABB;
 
 import javax.annotation.Nonnull;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.Set;
 
 public class BaseLaserBE extends BlockEntity {
@@ -55,6 +58,46 @@ public class BaseLaserBE extends BlockEntity {
         }
     }
 
+    public LaserNodeBE getNodeAt(BlockPos pos) {
+        BlockEntity be = level.getBlockEntity(pos);
+        if (be instanceof LaserNodeBE) return (LaserNodeBE) be;
+        return null;
+    }
+
+    /**
+     * Resets all the cached node data and rediscovers the network by depth first searching (I think).
+     */
+    public void discoverAllNodes() {
+        //System.out.println("Discovering All Nodes!");
+        Set<BlockPos> otherNodesInNetwork = new HashSet<>(); //Fresh list of nodes
+
+        Queue<BlockPos> nodesToCheck = new LinkedList<>();
+        Set<BlockPos> checkedNodes = new HashSet<>();
+        nodesToCheck.add(getBlockPos()); //We should add this block to itself, as a starting point -- also if its a node it'll add itself
+
+
+        while (nodesToCheck.size() > 0) {
+            BlockPos posToCheck = nodesToCheck.remove(); //Pop the stack
+            if (!checkedNodes.add(posToCheck))
+                continue; //Don't check nodes we've checked before
+            BlockEntity be = level.getBlockEntity(posToCheck);
+            if (be instanceof BaseLaserBE) {
+                Set<BlockPos> connectedNodes = ((BaseLaserBE) be).getWorldConnections(); //Get all the nodes this node is connected to
+                nodesToCheck.addAll(connectedNodes); //Add them to the list to check
+                if (be instanceof LaserNodeBE)
+                    otherNodesInNetwork.add(posToCheck);
+            }
+        }
+        //System.out.println("Other Nodes: " + otherNodesInNetwork);
+        for (BlockPos pos : otherNodesInNetwork) {
+            //System.out.println("Copying discovered nodes to: " + pos);
+            LaserNodeBE nodeBE = getNodeAt(pos);
+            if (nodeBE == null) continue;
+            nodeBE.setOtherNodesInNetwork(otherNodesInNetwork);
+        }
+    }
+
+
     public boolean addNode(BlockPos pos) {
         boolean success = connections.add(getRelativePos(pos));
         if (success) {
@@ -94,14 +137,17 @@ public class BaseLaserBE extends BlockEntity {
      * Connects This Pos -> Target Pos, and connects Target Pos -> This pos
      */
     public boolean addConnection(BlockPos pos) {
-        BaseLaserBE be = (BaseLaserBE) level.getBlockEntity(pos);
-        if (!(this instanceof BaseLaserBE || be instanceof BaseLaserBE))
+        BlockEntity blockEntity = level.getBlockEntity(pos);
+        if (!(blockEntity instanceof BaseLaserBE))
             return false;
+        BaseLaserBE be = (BaseLaserBE) blockEntity;
 
-        boolean success = addNode(pos);
-        if (success) {
+        if (addNode(pos)) {
             addRenderNode(pos);
-            return be.addNode(getBlockPos());
+            boolean success = be.addNode(getBlockPos());
+            if (success)
+                discoverAllNodes();
+            return success;
         }
         return false;
     }
@@ -111,6 +157,8 @@ public class BaseLaserBE extends BlockEntity {
         if (success) {
             BaseLaserBE be = (BaseLaserBE) level.getBlockEntity(pos);
             be.removeNode(getBlockPos());
+            discoverAllNodes();
+            be.discoverAllNodes();
         }
         return success;
     }

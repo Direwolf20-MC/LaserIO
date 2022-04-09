@@ -47,7 +47,7 @@ public class LaserNodeBE extends BaseLaserBE {
     /**
      * Variables for tracking and sending items/filters/etc
      **/
-    private final Set<BlockPos> otherNodesInNetwork = new HashSet<>();
+    private Set<BlockPos> otherNodesInNetwork = new HashSet<>();
     private final HashMap<BlockPos, Direction> inserterNodes = new HashMap<>(); //All Inventory nodes that contain an inserter card
 
     public LaserNodeBE(BlockPos pos, BlockState state) {
@@ -62,6 +62,15 @@ public class LaserNodeBE extends BaseLaserBE {
                 }
             }));
         }
+    }
+
+    public void setOtherNodesInNetwork(Set<BlockPos> otherNodesInNetwork) {
+        //System.out.println(this.getBlockPos() + " is updating other nodes in network!");
+        this.otherNodesInNetwork.clear();
+        for (BlockPos pos : otherNodesInNetwork) {
+            this.otherNodesInNetwork.add(getRelativePos(pos));
+        }
+        refreshAllInvNodes(); //Seeing as the otherNodes list just got updated, we should refresh the InventoryNode content caches
     }
 
     public void tickServer() {
@@ -122,67 +131,26 @@ public class LaserNodeBE extends BaseLaserBE {
         }
     }
 
-    /**
-     * Resets all the cached node data and rediscovers the network by depth first searching (I think).
-     */
-    public void discoverAllNodes() {
-        System.out.println("Discovering All Nodes!");
-        otherNodesInNetwork.clear(); //Clear the existing list of nodes
-
-        Queue<BlockPos> nodesToCheck = new LinkedList<>();
-        Set<BlockPos> checkedNodes = new HashSet<>();
-        nodesToCheck.add(getBlockPos()); //We should add this block to itself, so it can transfer between 2 adjacent inventories
-        //nodesToCheck.addAll(getWorldConnections()); //Add all the nodes connected to this controller to the list of nodes to check out
-
-
-        while (nodesToCheck.size() > 0) {
-            BlockPos posToCheck = nodesToCheck.remove(); //Pop the stack
-            if (!checkedNodes.add(posToCheck))
-                continue; //Don't check nodes we've checked before
-            BlockEntity be = level.getBlockEntity(posToCheck);
-            if (be instanceof BaseLaserBE) {
-                //addToAllNodes(posToCheck); //Add this node to the all nodes list
-                Set<BlockPos> connectedNodes = ((BaseLaserBE) be).getWorldConnections(); //Get all the nodes this node is connected to
-                nodesToCheck.addAll(connectedNodes); //Add them to the list to check
-                //((BaseLaserBE) be).setControllerPos(this.pos); //Set this node's controller to this position
-                //oldNodes.remove(posToCheck);
-                if (be instanceof LaserNodeBE)
-                    otherNodesInNetwork.add(getRelativePos(posToCheck));
-            }
-        }
-        System.out.println("Other Nodes: " + otherNodesInNetwork);
+    public void notifyOtherNodesOfChange() {
         for (BlockPos pos : otherNodesInNetwork) {
-            System.out.println(getWorldPos(pos));
+            LaserNodeBE node = getNodeAt(getWorldPos(pos));
+            if (node == null) continue;
+            //System.out.println("Telling " + node.getBlockPos() + " to update inventory of " + this.getBlockPos());
+            node.checkInvNode(this.getBlockPos());
         }
-        //updateLaserConnections();
-        refreshAllInvNodes();
     }
 
     /**
      * This method clears the non-persistent inventory node data variables and regenerates them from scratch
      */
     public void refreshAllInvNodes() {
-        System.out.println("Scanning all inventory nodes");
+        //System.out.println("Scanning all inventory nodes");
         inserterNodes.clear();
+        HashMap<BlockPos, Direction> inserterNodes = new HashMap<>();
         for (BlockPos pos : otherNodesInNetwork) {
             checkInvNode(getWorldPos(pos));
         }
-        System.out.println(inserterNodes);
-    }
-
-    public LaserNodeBE getNodeAt(BlockPos pos) {
-        BlockEntity be = level.getBlockEntity(pos);
-        if (be instanceof LaserNodeBE) return (LaserNodeBE) be;
-        return null;
-    }
-
-    public void notifyOtherNodesOfChange() {
-        for (BlockPos pos : otherNodesInNetwork) {
-            LaserNodeBE node = getNodeAt(getWorldPos(pos));
-            if (node == null) continue;
-            System.out.println("Telling " + node.getBlockPos() + " to update inventory of " + this.getBlockPos());
-            node.checkInvNode(this.getBlockPos());
-        }
+        //System.out.println(inserterNodes);
     }
 
     /**
@@ -192,7 +160,7 @@ public class LaserNodeBE extends BaseLaserBE {
      * This method is called by refreshAllInvNodes() or on demand when the contents of an inventory node's container is changed
      */
     public void checkInvNode(BlockPos pos) {
-        System.out.println("Updating cache at: " + pos);
+        //System.out.println("Updating cache at: " + pos);
         LaserNodeBE be = getNodeAt(pos);
         BlockPos relativePos = getRelativePos(pos);
         //Remove this position from all caches, so we can repopulate below
@@ -202,7 +170,7 @@ public class LaserNodeBE extends BaseLaserBE {
             for (int slot = 0; slot < LaserNodeContainer.SLOTS; slot++) {
                 ItemStack card = be.itemHandler[direction.ordinal()].getStackInSlot(slot);
                 if (card.getItem() instanceof BaseCard) {
-                    System.out.println("Found card at " + pos + ": " + BaseCard.getTransferMode(card));
+                    //System.out.println("Found card at " + pos + ": " + BaseCard.getTransferMode(card));
                     if (BaseCard.getNamedTransferMode(card).equals(BaseCard.TransferMode.EXTRACT)) {
                         //sendItems(card, direction);
                     } else if (BaseCard.getNamedTransferMode(card).equals(BaseCard.TransferMode.STOCK)) {
