@@ -144,6 +144,14 @@ public class LaserNodeBE extends BaseLaserBE {
         }
     }
 
+    /** Called when changes happen - such as a card going into a side, or a card being modified via container **/
+    public void updateThisNode() {
+        setChanged();
+        notifyOtherNodesOfChange();
+        markDirtyClient();
+        findMyExtractors();
+    }
+
     public void notifyOtherNodesOfChange() {
         for (BlockPos pos : otherNodesInNetwork) {
             LaserNodeBE node = getNodeAt(getWorldPos(pos));

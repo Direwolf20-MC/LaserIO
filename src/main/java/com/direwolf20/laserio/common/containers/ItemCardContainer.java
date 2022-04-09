@@ -136,10 +136,10 @@ public class ItemCardContainer extends AbstractContainerMenu {
         if (!world.isClientSide) {
             BaseCard.setInventory(cardItem, handler);
             if (!sourceContainer.equals(BlockPos.ZERO)) {
-                BlockEntity te = world.getBlockEntity(sourceContainer);
-                if (te instanceof LaserNodeBE) {
-                    //((InventoryNodeTile) te).notifyControllerOfChanges();
-                }
+                BlockEntity blockEntity = world.getBlockEntity(sourceContainer);
+                if (blockEntity instanceof LaserNodeBE)
+                    ((LaserNodeBE) blockEntity).updateThisNode();
+
             }
         }
         super.removed(playerIn);

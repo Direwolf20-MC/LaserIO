@@ -20,10 +20,7 @@ public class NodeItemHandler extends ItemStackHandler {
         // To make sure the TE persists when the chunk is saved later we need to
         // mark it dirty every time the item handler changes
         if (blockEntity == null) return;
-        blockEntity.setChanged();
-        blockEntity.notifyOtherNodesOfChange();
-        blockEntity.markDirtyClient();
-        blockEntity.findMyExtractors();
+        blockEntity.updateThisNode();
     }
 
     @Override
