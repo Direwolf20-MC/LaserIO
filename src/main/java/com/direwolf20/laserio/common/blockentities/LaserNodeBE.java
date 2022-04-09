@@ -6,7 +6,10 @@ import com.direwolf20.laserio.common.containers.LaserNodeContainer;
 import com.direwolf20.laserio.common.containers.customhandler.NodeItemHandler;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.setup.Registration;
+import com.direwolf20.laserio.util.InserterCard;
 import com.direwolf20.laserio.util.WeakConsumerWrapper;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -39,8 +42,8 @@ public class LaserNodeBE extends BaseLaserBE {
 
     /** Variables for tracking and sending items/filters/etc **/
     private Set<BlockPos> otherNodesInNetwork = new HashSet<>();
-    private final HashMap<BlockPos, Direction> inserterNodes = new HashMap<>(); //All Inventory nodes that contain an inserter card
-    private final HashMap<Direction, Integer> extractorCards = new HashMap<>();
+    private final List<InserterCard> inserterNodes = new ArrayList<>(); //All Inventory nodes that contain an inserter card
+    private final Object2IntMap<Direction> extractorCards = new Object2IntOpenHashMap<>();
 
     /** Misc Variables **/
     private boolean discoveredNodes = false;
@@ -104,17 +107,17 @@ public class LaserNodeBE extends BaseLaserBE {
         for (int slot = 0; slot < adjacentInventory.getSlots(); slot++) {
             ItemStack stackInSlot = adjacentInventory.getStackInSlot(slot);
             if (stackInSlot.isEmpty()) continue;
-            for (Map.Entry<BlockPos, Direction> entry : inserterNodes.entrySet()) {
-                LaserNodeBE be = getNodeAt(getWorldPos(entry.getKey()));
+            for (InserterCard inserterCard : inserterNodes) {
+                LaserNodeBE be = getNodeAt(getWorldPos(inserterCard.relativePos));
                 if (be == null) continue;
-                IItemHandler possibleDestination = be.getAttachedInventory(entry.getValue()).orElse(EMPTY);
+                IItemHandler possibleDestination = be.getAttachedInventory(inserterCard.direction).orElse(EMPTY);
                 if (possibleDestination.getSlots() == 0) continue;
                 ItemStack itemStack = adjacentInventory.extractItem(slot, BaseCard.getItemExtractAmt(card), true); //Pretend to pull the item out
                 ItemStack postInsertStack = ItemHandlerHelper.insertItem(possibleDestination, itemStack, false); //Attempt to insert the item
                 if (!postInsertStack.equals(itemStack, false)) { //If something changed
                     int countExtracted = postInsertStack.isEmpty() ? itemStack.getCount() : itemStack.getCount() - postInsertStack.getCount();
                     adjacentInventory.extractItem(slot, countExtracted, false); //Actually remove the number of items
-                    drawParticles(itemStack, direction, be, entry.getValue());
+                    drawParticles(itemStack, direction, be, inserterCard.direction);
                     return;
                 }
             }
@@ -167,7 +170,6 @@ public class LaserNodeBE extends BaseLaserBE {
     public void refreshAllInvNodes() {
         //System.out.println("Scanning all inventory nodes at: " + getBlockPos());
         inserterNodes.clear();
-        HashMap<BlockPos, Direction> inserterNodes = new HashMap<>();
         for (BlockPos pos : otherNodesInNetwork) {
             checkInvNode(getWorldPos(pos));
         }
@@ -185,7 +187,7 @@ public class LaserNodeBE extends BaseLaserBE {
         LaserNodeBE be = getNodeAt(pos);
         BlockPos relativePos = getRelativePos(pos);
         //Remove this position from all caches, so we can repopulate below
-        inserterNodes.remove(relativePos);
+        inserterNodes.removeIf(p -> p.relativePos.equals(relativePos));
         if (be == null) return; //If the block position given doesn't contain a LaserNodeBE stop
         for (Direction direction : Direction.values()) {
             for (int slot = 0; slot < LaserNodeContainer.SLOTS; slot++) {
@@ -198,7 +200,7 @@ public class LaserNodeBE extends BaseLaserBE {
                         //getItems(card, direction);
                     } else if (BaseCard.getNamedTransferMode(card).equals(BaseCard.TransferMode.INSERT)) {
                         //getItems(card, direction);
-                        inserterNodes.put(relativePos, direction);
+                        inserterNodes.add(new InserterCard(relativePos, direction, BaseCard.getChannel(card)));
                     }
                 }
             }
