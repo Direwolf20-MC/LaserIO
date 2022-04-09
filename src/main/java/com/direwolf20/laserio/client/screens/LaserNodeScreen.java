@@ -2,6 +2,8 @@ package com.direwolf20.laserio.client.screens;
 
 import com.direwolf20.laserio.common.LaserIO;
 import com.direwolf20.laserio.common.containers.LaserNodeContainer;
+import com.direwolf20.laserio.common.containers.customslot.CardSlot;
+import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -34,5 +36,16 @@ public class LaserNodeScreen extends AbstractContainerScreen<LaserNodeContainer>
         int relX = (this.width - this.imageWidth) / 2;
         int relY = (this.height - this.imageHeight) / 2;
         this.blit(matrixStack, relX, relY, 0, 0, this.imageWidth, this.imageHeight);
+    }
+
+    @Override
+    public boolean mouseClicked(double x, double y, int btn) {
+        if (hoveredSlot == null || hoveredSlot.getItem().isEmpty() || !(hoveredSlot.getItem().getItem() instanceof BaseCard))
+            return super.mouseClicked(x, y, btn);
+
+        if (btn == 1 && hoveredSlot instanceof CardSlot) { //Right click
+
+        }
+        return super.mouseClicked(x, y, btn);
     }
 }

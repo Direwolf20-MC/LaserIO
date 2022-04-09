@@ -1,4 +1,4 @@
-package com.direwolf20.laserio.common.containers.CustomItemHandlers;
+package com.direwolf20.laserio.common.containers.customhandler;
 
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import com.direwolf20.laserio.common.items.cards.BaseCard;

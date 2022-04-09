@@ -2,8 +2,8 @@ package com.direwolf20.laserio.common.blockentities;
 
 import com.direwolf20.laserio.client.particles.itemparticle.ItemFlowParticleData;
 import com.direwolf20.laserio.common.blockentities.basebe.BaseLaserBE;
-import com.direwolf20.laserio.common.containers.CustomItemHandlers.NodeItemHandler;
 import com.direwolf20.laserio.common.containers.LaserNodeContainer;
+import com.direwolf20.laserio.common.containers.customhandler.NodeItemHandler;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.setup.Registration;
 import com.direwolf20.laserio.util.WeakConsumerWrapper;

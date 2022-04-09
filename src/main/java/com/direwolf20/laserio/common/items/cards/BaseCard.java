@@ -1,7 +1,7 @@
 package com.direwolf20.laserio.common.items.cards;
 
-import com.direwolf20.laserio.common.containers.CustomItemHandlers.CardItemHandler;
 import com.direwolf20.laserio.common.containers.ItemCardContainer;
+import com.direwolf20.laserio.common.containers.customhandler.CardItemHandler;
 import com.direwolf20.laserio.setup.ModSetup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.TranslatableComponent;

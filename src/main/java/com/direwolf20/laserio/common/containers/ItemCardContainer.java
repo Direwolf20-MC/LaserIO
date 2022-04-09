@@ -1,6 +1,6 @@
 package com.direwolf20.laserio.common.containers;
 
-import com.direwolf20.laserio.common.containers.CustomItemHandlers.CardItemHandler;
+import com.direwolf20.laserio.common.containers.customhandler.CardItemHandler;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.setup.Registration;
 import net.minecraft.network.FriendlyByteBuf;
