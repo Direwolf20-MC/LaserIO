@@ -100,6 +100,16 @@ public class BaseCard extends Item {
         return setChannel(card, (byte) (k == 15 ? 0 : k + 1));
     }
 
+    public static byte setItemExtractAmt(ItemStack card, byte itemextractamt) {
+        card.getOrCreateTag().putByte("itemextractamt", itemextractamt);
+        return itemextractamt;
+    }
+
+    public static byte getItemExtractAmt(ItemStack card) {
+        CompoundTag compound = card.getOrCreateTag();
+        return !compound.contains("itemextractamt") ? setItemExtractAmt(card, (byte) 1) : compound.getByte("itemextractamt");
+    }
+
     public static boolean tickable(ItemStack card) {
         return !getNamedTransferMode(card).equals(TransferMode.INSERT);
     }

@@ -6,5 +6,7 @@
   "item.laserio.card_item": "Item Card",
   "item.laserio.laser_wrench": "Laser Wrench",
   "itemGroup.LaserIO": "Tutorial",
-  "message.logisticslasers.wrenchrange": "This block is too far away. Max range is 8"
+  "message.logisticslasers.wrenchrange": "This block is too far away. Max range is 8",
+  "screen.laserio.extractamt": "Extract",
+  "screen.tutorial.powergen": "Power generator"
 }

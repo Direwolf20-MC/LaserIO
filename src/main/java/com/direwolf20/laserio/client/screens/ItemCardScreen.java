@@ -1,8 +1,10 @@
 package com.direwolf20.laserio.client.screens;
 
+import com.direwolf20.laserio.client.screens.widgets.DireButton;
 import com.direwolf20.laserio.common.LaserIO;
 import com.direwolf20.laserio.common.containers.ItemCardContainer;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
+import com.direwolf20.laserio.common.items.cards.CardItem;
 import com.direwolf20.laserio.common.network.PacketHandler;
 import com.direwolf20.laserio.common.network.packets.PacketUpdateCard;
 import com.mojang.blaze3d.platform.InputConstants;
@@ -10,6 +12,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
@@ -17,6 +20,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,6 +30,7 @@ public class ItemCardScreen extends AbstractContainerScreen<ItemCardContainer> {
     protected final ItemCardContainer container;
     private byte currentMode;
     private byte currentChannel;
+    private byte currentItemExtractAmt;
     private ItemStack card;
     //private boolean isWhitelist;
     //private boolean isNBTFilter;
@@ -50,35 +55,67 @@ public class ItemCardScreen extends AbstractContainerScreen<ItemCardContainer> {
 
         currentMode = BaseCard.getTransferMode(card);
         currentChannel = BaseCard.getChannel(card);
-        Button sizeButton;
+        currentItemExtractAmt = BaseCard.getItemExtractAmt(card);
+
         int baseX = width / 2, baseY = height / 2;
         int left = baseX - 85;
-        int top = baseY - 100;
+        int top = baseY - 80;
 
+        DireButton plusButton = new DireButton(left + 130, top + 11, 10, 10, new TranslatableComponent("-"), (button) -> {
+            int change = -1;
+            if (Screen.hasShiftDown()) change *= 10;
+            if (Screen.hasControlDown()) change *= 64;
+            currentItemExtractAmt = (byte) (Math.max(currentItemExtractAmt + change, 1));
+        });
+        DireButton minusButton = new DireButton(left + 155, top + 11, 10, 10, new TranslatableComponent("+"), (button) -> {
+            int change = 1;
+            if (Screen.hasShiftDown()) change *= 10;
+            if (Screen.hasControlDown()) change *= 64;
+            currentItemExtractAmt = (byte) (Math.min(currentItemExtractAmt + change, 64));
+        });
 
-        leftWidgets.add(sizeButton = new Button(left, 0, 50, 20, new TranslatableComponent(BaseCard.TransferMode.values()[currentMode].name(), currentMode), (button) -> {
+        leftWidgets.add(new Button(left, top, 50, 20, new TranslatableComponent(BaseCard.TransferMode.values()[currentMode].name(), currentMode), (button) -> {
             currentMode = BaseCard.nextTransferMode(card);
             button.setMessage(new TranslatableComponent(BaseCard.TransferMode.values()[currentMode].name(), currentMode));
-            PacketHandler.sendToServer(new PacketUpdateCard(currentMode, currentChannel));
+            if (currentMode == 1) {
+                addRenderableWidget(plusButton);
+                addRenderableWidget(minusButton);
+            } else {
+                removeWidget(plusButton);
+                removeWidget(minusButton);
+            }
         }));
 
-        leftWidgets.add(sizeButton = new Button(left, 0, 50, 20, new TranslatableComponent(String.valueOf(BaseCard.getChannel(card)), currentChannel), (button) -> {
+        leftWidgets.add(new Button(left, top + 25, 50, 20, new TranslatableComponent(String.valueOf(BaseCard.getChannel(card)), currentChannel), (button) -> {
             currentChannel = BaseCard.nextChannel(card);
             button.setMessage(new TranslatableComponent(String.valueOf(BaseCard.getChannel(card)), currentChannel));
-            PacketHandler.sendToServer(new PacketUpdateCard(currentMode, currentChannel));
+
         }));
+
+        if (showExtractAmt()) {
+            leftWidgets.add(plusButton);
+            leftWidgets.add(minusButton);
+        }
 
         // Lay the buttons out, too lazy to figure out the math every damn time.
         // Ordered by where you add them.
         for (int i = 0; i < leftWidgets.size(); i++) {
-            leftWidgets.get(i).y = (top + 20) + (i * 25);
             addRenderableWidget(leftWidgets.get(i));
         }
     }
 
+    private boolean showExtractAmt() {
+        return card.getItem() instanceof CardItem && BaseCard.getNamedTransferMode(card) == BaseCard.TransferMode.EXTRACT;
+    }
+
     @Override
-    protected void renderLabels(PoseStack matrixStack, int mouseX, int mouseY) {
-        //drawString(matrixStack, Minecraft.getInstance().font, "Energy: " + menu.getEnergy(), 10, 10, 0xffffff);
+    protected void renderLabels(PoseStack stack, int mouseX, int mouseY) {
+        if (showExtractAmt()) {
+            font.draw(stack, new TranslatableComponent("screen.laserio.extractamt").getString(), 132, 5, Color.DARK_GRAY.getRGB());
+            String extractAmt = Integer.toString(currentItemExtractAmt);
+            font.draw(stack, new TranslatableComponent(extractAmt).getString(), 150 - font.width(extractAmt) / 3, 15, Color.DARK_GRAY.getRGB());
+        }
+        //super.renderLabels(matrixStack, x, y);
     }
 
     @Override
@@ -99,7 +136,7 @@ public class ItemCardScreen extends AbstractContainerScreen<ItemCardContainer> {
         /*PacketHandler.sendToServer(new PacketChangeRange(this.beamRange));
         PacketHandler.sendToServer(new PacketChangeVolume(this.volume));
         PacketHandler.sendToServer(new PacketChangeFreezeDelay(this.freezeDelay));*/
-
+        PacketHandler.sendToServer(new PacketUpdateCard(currentMode, currentChannel, currentItemExtractAmt));
         super.removed();
     }
 

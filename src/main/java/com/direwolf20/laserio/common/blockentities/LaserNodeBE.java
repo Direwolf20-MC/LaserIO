@@ -110,7 +110,7 @@ public class LaserNodeBE extends BaseLaserBE {
                 if (be == null) continue;
                 IItemHandler possibleDestination = be.getAttachedInventory(entry.getValue()).orElse(EMPTY);
                 if (possibleDestination.getSlots() == 0) continue;
-                ItemStack itemStack = adjacentInventory.extractItem(slot, 3, true); //Pretend to pull the item out
+                ItemStack itemStack = adjacentInventory.extractItem(slot, BaseCard.getItemExtractAmt(card), true); //Pretend to pull the item out
                 ItemStack postInsertStack = ItemHandlerHelper.insertItem(possibleDestination, itemStack, false); //Attempt to insert the item
                 if (!postInsertStack.equals(itemStack, false)) { //If something changed
                     int countExtracted = postInsertStack.isEmpty() ? itemStack.getCount() : itemStack.getCount() - postInsertStack.getCount();

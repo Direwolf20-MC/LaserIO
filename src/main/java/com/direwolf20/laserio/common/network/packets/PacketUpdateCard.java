@@ -11,19 +11,22 @@ import java.util.function.Supplier;
 public class PacketUpdateCard {
     byte mode;
     byte channel;
+    byte extractAmt;
 
-    public PacketUpdateCard(byte mode, byte channel) {
+    public PacketUpdateCard(byte mode, byte channel, byte extractAmt) {
         this.mode = mode;
         this.channel = channel;
+        this.extractAmt = extractAmt;
     }
 
     public static void encode(PacketUpdateCard msg, FriendlyByteBuf buffer) {
         buffer.writeByte(msg.mode);
         buffer.writeByte(msg.channel);
+        buffer.writeByte(msg.extractAmt);
     }
 
     public static PacketUpdateCard decode(FriendlyByteBuf buffer) {
-        return new PacketUpdateCard(buffer.readByte(), buffer.readByte());
+        return new PacketUpdateCard(buffer.readByte(), buffer.readByte(), buffer.readByte());
     }
 
     public static class Handler {
@@ -36,6 +39,7 @@ public class PacketUpdateCard {
                 ItemStack stack = player.getMainHandItem(); //ToDo Support for offhand?
                 BaseCard.setTransferMode(stack, msg.mode);
                 BaseCard.setChannel(stack, msg.channel);
+                BaseCard.setItemExtractAmt(stack, msg.extractAmt);
             });
 
             ctx.get().setPacketHandled(true);
