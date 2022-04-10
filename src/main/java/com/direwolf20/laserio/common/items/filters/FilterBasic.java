@@ -45,4 +45,24 @@ public class FilterBasic extends BaseFilter {
         stack.getOrCreateTag().put("inv", handler.serializeNBT());
         return handler;
     }
+
+    public static boolean getAllowList(ItemStack stack) {
+        CompoundTag compound = stack.getOrCreateTag();
+        return !compound.contains("allowList") ? setAllowList(stack, false) : compound.getBoolean("allowList");
+    }
+
+    public static boolean setAllowList(ItemStack stack, boolean allowList) {
+        stack.getOrCreateTag().putBoolean("allowList", allowList);
+        return allowList;
+    }
+
+    public static boolean getCompareNBT(ItemStack stack) {
+        CompoundTag compound = stack.getOrCreateTag();
+        return !compound.contains("compareNBT") ? setCompareNBT(stack, false) : compound.getBoolean("compareNBT");
+    }
+
+    public static boolean setCompareNBT(ItemStack stack, boolean compareNBT) {
+        stack.getOrCreateTag().putBoolean("compareNBT", compareNBT);
+        return compareNBT;
+    }
 }

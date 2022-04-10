@@ -3,6 +3,7 @@ package com.direwolf20.laserio.util;
 import com.direwolf20.laserio.common.items.filters.FilterBasic;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.ItemStackHandler;
 
 import java.util.HashMap;
@@ -15,6 +16,7 @@ public class BaseCardCache {
     public final ItemStack filterCard;
     public final Set<ItemStack> filteredItems;
     public final boolean isAllowList;
+    public final boolean isCompareNBT;
     public final HashMap<ItemStackKey, Boolean> filterCache = new HashMap<>();
 
     public BaseCardCache(Direction direction, byte channel, ItemStack filterCard) {
@@ -24,9 +26,11 @@ public class BaseCardCache {
         if (filterCard.equals(ItemStack.EMPTY)) {
             filteredItems = new HashSet<>();
             isAllowList = false;
+            isCompareNBT = false;
         } else {
             this.filteredItems = getFilteredItems();
-            isAllowList = true; //TODO Card sets allow list.
+            isAllowList = FilterBasic.getAllowList(filterCard);
+            isCompareNBT = FilterBasic.getCompareNBT(filterCard);
         }
     }
 
@@ -43,7 +47,7 @@ public class BaseCardCache {
 
     public boolean isStackValidForCard(ItemStack testStack) {
         if (filterCard.equals(ItemStack.EMPTY)) return true; //If theres no filter in the card
-        ItemStackKey key = new ItemStackKey(testStack, false); //TODO Allow cards to check NBT
+        ItemStackKey key = new ItemStackKey(testStack, isCompareNBT); //TODO Allow cards to check NBT
         if (filterCache.containsKey(key)) return filterCache.get(key);
         /*if (filterCard.getItem() instanceof CardInserterTag) {
             List<String> tags = new ArrayList<>(CardInserterTag.getTags(filterCard));
@@ -60,9 +64,16 @@ public class BaseCardCache {
                 if (ItemHandlerHelper.canItemStacksStack(stack, testStack))
                     return whiteList;
             } else {*/
-            if (stack.sameItem(testStack)) {
-                filterCache.put(key, isAllowList);
-                return isAllowList;
+            if (isCompareNBT) {
+                if (ItemHandlerHelper.canItemStacksStack(stack, testStack)) {
+                    filterCache.put(key, isAllowList);
+                    return isAllowList;
+                }
+            } else {
+                if (stack.sameItem(testStack)) {
+                    filterCache.put(key, isAllowList);
+                    return isAllowList;
+                }
             }
         }
         //}

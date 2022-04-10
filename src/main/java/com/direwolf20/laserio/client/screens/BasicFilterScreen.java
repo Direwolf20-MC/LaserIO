@@ -1,10 +1,13 @@
 package com.direwolf20.laserio.client.screens;
 
+import com.direwolf20.laserio.client.screens.widgets.WhitelistButton;
 import com.direwolf20.laserio.common.LaserIO;
 import com.direwolf20.laserio.common.containers.BasicFilterContainer;
 import com.direwolf20.laserio.common.containers.customslot.BasicFilterSlot;
+import com.direwolf20.laserio.common.items.filters.FilterBasic;
 import com.direwolf20.laserio.common.network.PacketHandler;
 import com.direwolf20.laserio.common.network.packets.PacketGhostSlot;
+import com.direwolf20.laserio.common.network.packets.PacketUpdateFilter;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -16,6 +19,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,8 +28,8 @@ public class BasicFilterScreen extends AbstractContainerScreen<BasicFilterContai
 
     protected final BasicFilterContainer container;
     private ItemStack filter;
-    //private boolean isWhitelist;
-    //private boolean isNBTFilter;
+    private boolean isAllowList;
+    private boolean isCompareNBT;
 
     public BasicFilterScreen(BasicFilterContainer container, Inventory inv, Component name) {
         super(container, inv, name);
@@ -45,9 +49,22 @@ public class BasicFilterScreen extends AbstractContainerScreen<BasicFilterContai
         super.init();
         List<AbstractWidget> leftWidgets = new ArrayList<>();
 
+        this.isAllowList = FilterBasic.getAllowList(filter);
+        this.isCompareNBT = FilterBasic.getCompareNBT(filter);
+
         int baseX = width / 2, baseY = height / 2;
         int left = baseX - 85;
         int top = baseY - 80;
+
+        leftWidgets.add(new WhitelistButton(left + 5, top + 10, 10, 10, isAllowList, (button) -> {
+            isAllowList = !isAllowList;
+            ((WhitelistButton) button).setWhitelist(isAllowList);
+        }));
+
+        leftWidgets.add(new WhitelistButton(left + 5, top + 30, 10, 10, isCompareNBT, (button) -> {
+            isCompareNBT = !isCompareNBT;
+            ((WhitelistButton) button).setWhitelist(isCompareNBT);
+        }));
 
         // Lay the buttons out, too lazy to figure out the math every damn time.
         // Ordered by where you add them.
@@ -58,6 +75,8 @@ public class BasicFilterScreen extends AbstractContainerScreen<BasicFilterContai
 
     @Override
     protected void renderLabels(PoseStack stack, int mouseX, int mouseY) {
+        font.draw(stack, new TranslatableComponent("screen.laserio.allowlist").getString(), 5, 5, Color.DARK_GRAY.getRGB());
+        font.draw(stack, new TranslatableComponent("screen.laserio.comparenbt").getString(), 5, 25, Color.DARK_GRAY.getRGB());
         //super.renderLabels(matrixStack, x, y);
     }
 
@@ -76,7 +95,7 @@ public class BasicFilterScreen extends AbstractContainerScreen<BasicFilterContai
 
     @Override
     public void onClose() {
-        //PacketHandler.sendToServer(new PacketUpdateCard(currentMode, currentChannel, currentItemExtractAmt));
+        PacketHandler.sendToServer(new PacketUpdateFilter(isAllowList, isCompareNBT));
         super.onClose();
     }
 
