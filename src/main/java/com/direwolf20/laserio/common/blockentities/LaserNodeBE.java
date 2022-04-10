@@ -8,6 +8,7 @@ import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.setup.Registration;
 import com.direwolf20.laserio.util.ExtractorCardCache;
 import com.direwolf20.laserio.util.InserterCardCache;
+import com.direwolf20.laserio.util.ItemStackKey;
 import com.direwolf20.laserio.util.WeakConsumerWrapper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -43,6 +44,7 @@ public class LaserNodeBE extends BaseLaserBE {
     private Set<BlockPos> otherNodesInNetwork = new HashSet<>();
     private final List<InserterCardCache> inserterNodes = new ArrayList<>(); //All Inventory nodes that contain an inserter card
     private final List<ExtractorCardCache> extractorCardCaches = new ArrayList<>();
+    private final HashMap<ItemStackKey, List<InserterCardCache>> destinationCache = new HashMap<>();
 
     /** Misc Variables **/
     private boolean discoveredNodes = false; //The first time this block entity loads, it'll run discovery to refresh itself
@@ -102,6 +104,13 @@ public class LaserNodeBE extends BaseLaserBE {
         extractItems(); //If this node has any extractors, do stuff with them
     }
 
+    public List<InserterCardCache> getPossibleDestinations(ExtractorCardCache extractorCardCache, ItemStack stack) {
+        ItemStackKey key = new ItemStackKey(stack, true);
+        if (destinationCache.containsKey(key)) return destinationCache.get(key);
+        destinationCache.put(key, inserterNodes.stream().filter(p -> (p.channel == extractorCardCache.channel) && (p.isStackValidForCard(stack))).toList());
+        return destinationCache.get(key);
+    }
+
     //TODO Efficiency
 
     /** Extractor Cards call this, and try to find an inserter card to send their items to **/
@@ -110,7 +119,7 @@ public class LaserNodeBE extends BaseLaserBE {
         for (int slot = 0; slot < adjacentInventory.getSlots(); slot++) {
             ItemStack stackInSlot = adjacentInventory.getStackInSlot(slot);
             if (stackInSlot.isEmpty() || !(extractorCardCache.isStackValidForCard(stackInSlot))) continue;
-            for (InserterCardCache inserterCardCache : inserterNodes.stream().filter(p -> (p.channel == extractorCardCache.channel) && (p.isStackValidForCard(stackInSlot))).toList()) {
+            for (InserterCardCache inserterCardCache : getPossibleDestinations(extractorCardCache, stackInSlot)) {
                 LaserNodeBE be = getNodeAt(getWorldPos(inserterCardCache.relativePos));
                 if (be == null) continue;
                 IItemHandler possibleDestination = be.getAttachedInventory(inserterCardCache.direction).orElse(EMPTY);
@@ -172,6 +181,7 @@ public class LaserNodeBE extends BaseLaserBE {
     /**This method clears the non-persistent inventory node data variables and regenerates them from scratch*/
     public void refreshAllInvNodes() {
         inserterNodes.clear();
+        destinationCache.clear();
         for (BlockPos pos : otherNodesInNetwork) {
             checkInvNode(getWorldPos(pos));
         }
@@ -188,6 +198,7 @@ public class LaserNodeBE extends BaseLaserBE {
         BlockPos relativePos = getRelativePos(pos);
         //Remove this position from all caches, so we can repopulate below
         inserterNodes.removeIf(p -> p.relativePos.equals(relativePos));
+        destinationCache.clear(); //TODO maybe just remove destinations that match this blockPos
         if (be == null) return; //If the block position given doesn't contain a LaserNodeBE stop
         for (Direction direction : Direction.values()) {
             for (int slot = 0; slot < LaserNodeContainer.SLOTS; slot++) {
