@@ -110,6 +110,11 @@ public class BaseCard extends Item {
         return !compound.contains("itemextractamt") ? setItemExtractAmt(card, (byte) 1) : compound.getByte("itemextractamt");
     }
 
+    public static ItemStack getFilter(ItemStack card) {
+        CardItemHandler cardItemHandler = getInventory(card);
+        return cardItemHandler.getStackInSlot(0);
+    }
+
     public static boolean tickable(ItemStack card) {
         return !getNamedTransferMode(card).equals(TransferMode.INSERT);
     }

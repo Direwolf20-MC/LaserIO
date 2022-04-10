@@ -6,8 +6,8 @@ import com.direwolf20.laserio.common.containers.LaserNodeContainer;
 import com.direwolf20.laserio.common.containers.customhandler.NodeItemHandler;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.setup.Registration;
-import com.direwolf20.laserio.util.ExtractorCard;
-import com.direwolf20.laserio.util.InserterCard;
+import com.direwolf20.laserio.util.ExtractorCardCache;
+import com.direwolf20.laserio.util.InserterCardCache;
 import com.direwolf20.laserio.util.WeakConsumerWrapper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -42,8 +42,8 @@ public class LaserNodeBE extends BaseLaserBE {
 
     /** Variables for tracking and sending items/filters/etc **/
     private Set<BlockPos> otherNodesInNetwork = new HashSet<>();
-    private final List<InserterCard> inserterNodes = new ArrayList<>(); //All Inventory nodes that contain an inserter card
-    private final List<ExtractorCard> extractorCards = new ArrayList<>();
+    private final List<InserterCardCache> inserterNodes = new ArrayList<>(); //All Inventory nodes that contain an inserter card
+    private final List<ExtractorCardCache> extractorCardCaches = new ArrayList<>();
 
     /** Misc Variables **/
     private boolean discoveredNodes = false; //The first time this block entity loads, it'll run discovery to refresh itself
@@ -73,13 +73,13 @@ public class LaserNodeBE extends BaseLaserBE {
 
     /**Build a list of extractor cards this node has in it, for looping through**/
     public void findMyExtractors() {
-        this.extractorCards.clear();
+        this.extractorCardCaches.clear();
         for (Direction direction : Direction.values()) {
             for (int slot = 0; slot < LaserNodeContainer.SLOTS; slot++) {
                 ItemStack card = itemHandler[direction.ordinal()].getStackInSlot(slot);
                 if (card.getItem() instanceof BaseCard) {
                     if (BaseCard.getNamedTransferMode(card).equals(BaseCard.TransferMode.EXTRACT)) {
-                        extractorCards.add(new ExtractorCard(BaseCard.getItemExtractAmt(card), direction, BaseCard.getChannel(card)));
+                        extractorCardCaches.add(new ExtractorCardCache(BaseCard.getItemExtractAmt(card), direction, BaseCard.getChannel(card), BaseCard.getFilter(card)));
                     }
                 }
             }
@@ -88,8 +88,8 @@ public class LaserNodeBE extends BaseLaserBE {
 
     /**Loop through all the extractorCards and run the extractions**/
     public void extractItems() {
-        for (ExtractorCard extractorCard : extractorCards) {
-            sendItems(extractorCard);
+        for (ExtractorCardCache extractorCardCache : extractorCardCaches) {
+            sendItems(extractorCardCache);
         }
     }
 
@@ -105,23 +105,23 @@ public class LaserNodeBE extends BaseLaserBE {
 
     //TODO Efficiency
 
-    /**Extractor Cards call this, and try to find an inserter card to send their items to**/
-    public void sendItems(ExtractorCard extractorCard) {
-        IItemHandler adjacentInventory = getAttachedInventory(extractorCard.direction).orElse(EMPTY);
+    /** Extractor Cards call this, and try to find an inserter card to send their items to **/
+    public void sendItems(ExtractorCardCache extractorCardCache) {
+        IItemHandler adjacentInventory = getAttachedInventory(extractorCardCache.direction).orElse(EMPTY);
         for (int slot = 0; slot < adjacentInventory.getSlots(); slot++) {
             ItemStack stackInSlot = adjacentInventory.getStackInSlot(slot);
-            if (stackInSlot.isEmpty()) continue;
-            for (InserterCard inserterCard : inserterNodes.stream().filter(p -> p.channel == extractorCard.channel).collect(Collectors.toList())) {
-                LaserNodeBE be = getNodeAt(getWorldPos(inserterCard.relativePos));
+            if (stackInSlot.isEmpty() || !(extractorCardCache.isStackValidForCard(stackInSlot))) continue;
+            for (InserterCardCache inserterCardCache : inserterNodes.stream().filter(p -> p.channel == extractorCardCache.channel).collect(Collectors.toList())) {
+                LaserNodeBE be = getNodeAt(getWorldPos(inserterCardCache.relativePos));
                 if (be == null) continue;
-                IItemHandler possibleDestination = be.getAttachedInventory(inserterCard.direction).orElse(EMPTY);
+                IItemHandler possibleDestination = be.getAttachedInventory(inserterCardCache.direction).orElse(EMPTY);
                 if (possibleDestination.getSlots() == 0) continue;
-                ItemStack itemStack = adjacentInventory.extractItem(slot, extractorCard.extractAmt, true); //Pretend to pull the item out
+                ItemStack itemStack = adjacentInventory.extractItem(slot, extractorCardCache.extractAmt, true); //Pretend to pull the item out
                 ItemStack postInsertStack = ItemHandlerHelper.insertItem(possibleDestination, itemStack, false); //Attempt to insert the item
                 if (!postInsertStack.equals(itemStack, false)) { //If something changed
                     int countExtracted = postInsertStack.isEmpty() ? itemStack.getCount() : itemStack.getCount() - postInsertStack.getCount();
                     adjacentInventory.extractItem(slot, countExtracted, false); //Actually remove the number of items
-                    drawParticles(itemStack, extractorCard.direction, be, inserterCard.direction);
+                    drawParticles(itemStack, extractorCardCache.direction, be, inserterCardCache.direction);
                     return;
                 }
             }
@@ -199,7 +199,7 @@ public class LaserNodeBE extends BaseLaserBE {
                     } else if (BaseCard.getNamedTransferMode(card).equals(BaseCard.TransferMode.STOCK)) {
                         //getItems(card, direction);
                     } else if (BaseCard.getNamedTransferMode(card).equals(BaseCard.TransferMode.INSERT)) {
-                        inserterNodes.add(new InserterCard(relativePos, direction, BaseCard.getChannel(card)));
+                        inserterNodes.add(new InserterCardCache(relativePos, direction, BaseCard.getChannel(card), BaseCard.getFilter(card)));
                     }
                 }
             }
