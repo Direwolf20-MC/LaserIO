@@ -27,7 +27,6 @@ import net.minecraftforge.items.ItemStackHandler;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class LaserNodeBE extends BaseLaserBE {
     /** This blocks Item Handlers **/
@@ -111,7 +110,7 @@ public class LaserNodeBE extends BaseLaserBE {
         for (int slot = 0; slot < adjacentInventory.getSlots(); slot++) {
             ItemStack stackInSlot = adjacentInventory.getStackInSlot(slot);
             if (stackInSlot.isEmpty() || !(extractorCardCache.isStackValidForCard(stackInSlot))) continue;
-            for (InserterCardCache inserterCardCache : inserterNodes.stream().filter(p -> p.channel == extractorCardCache.channel).collect(Collectors.toList())) {
+            for (InserterCardCache inserterCardCache : inserterNodes.stream().filter(p -> (p.channel == extractorCardCache.channel) && (p.isStackValidForCard(stackInSlot))).toList()) {
                 LaserNodeBE be = getNodeAt(getWorldPos(inserterCardCache.relativePos));
                 if (be == null) continue;
                 IItemHandler possibleDestination = be.getAttachedInventory(inserterCardCache.direction).orElse(EMPTY);
