@@ -3,9 +3,12 @@ package com.direwolf20.laserio.client.screens;
 import com.direwolf20.laserio.client.screens.widgets.DireButton;
 import com.direwolf20.laserio.common.LaserIO;
 import com.direwolf20.laserio.common.containers.ItemCardContainer;
+import com.direwolf20.laserio.common.containers.customslot.CardSlot;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.common.items.cards.CardItem;
+import com.direwolf20.laserio.common.items.filters.FilterBasic;
 import com.direwolf20.laserio.common.network.PacketHandler;
+import com.direwolf20.laserio.common.network.packets.PacketOpenFilter;
 import com.direwolf20.laserio.common.network.packets.PacketUpdateCard;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -163,4 +166,16 @@ public class ItemCardScreen extends AbstractContainerScreen<ItemCardContainer> {
         return new TranslatableComponent(LaserIO.MODID + "." + key, args);
     }
 
+    @Override
+    public boolean mouseClicked(double x, double y, int btn) {
+        if (hoveredSlot == null || hoveredSlot.getItem().isEmpty() || !(hoveredSlot.getItem().getItem() instanceof FilterBasic))
+            return super.mouseClicked(x, y, btn);
+
+        if (btn == 1 && hoveredSlot instanceof CardSlot) { //Right click
+            int slot = hoveredSlot.getSlotIndex();
+            PacketHandler.sendToServer(new PacketOpenFilter(slot));
+            return true;
+        }
+        return super.mouseClicked(x, y, btn);
+    }
 }

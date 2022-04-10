@@ -3,6 +3,7 @@ package com.direwolf20.laserio.common.network;
 import com.direwolf20.laserio.common.LaserIO;
 import com.direwolf20.laserio.common.network.packets.PacketGhostSlot;
 import com.direwolf20.laserio.common.network.packets.PacketOpenCard;
+import com.direwolf20.laserio.common.network.packets.PacketOpenFilter;
 import com.direwolf20.laserio.common.network.packets.PacketUpdateCard;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -30,6 +31,7 @@ public class PacketHandler {
         // Server side
         HANDLER.registerMessage(id++, PacketUpdateCard.class, PacketUpdateCard::encode, PacketUpdateCard::decode, PacketUpdateCard.Handler::handle);
         HANDLER.registerMessage(id++, PacketOpenCard.class, PacketOpenCard::encode, PacketOpenCard::decode, PacketOpenCard.Handler::handle);
+        HANDLER.registerMessage(id++, PacketOpenFilter.class, PacketOpenFilter::encode, PacketOpenFilter::decode, PacketOpenFilter.Handler::handle);
         HANDLER.registerMessage(id++, PacketGhostSlot.class, PacketGhostSlot::encode, PacketGhostSlot::decode, PacketGhostSlot.Handler::handle);
         //HANDLER.registerMessage(id++, PacketExtractUpgrade.class,     PacketExtractUpgrade::encode,       PacketExtractUpgrade::decode,       PacketExtractUpgrade.Handler::handle);
 

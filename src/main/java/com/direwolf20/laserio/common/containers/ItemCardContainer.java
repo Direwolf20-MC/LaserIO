@@ -3,7 +3,6 @@ package com.direwolf20.laserio.common.containers;
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import com.direwolf20.laserio.common.containers.customhandler.CardItemHandler;
 import com.direwolf20.laserio.common.containers.customslot.CardSlot;
-import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.setup.Registration;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
@@ -123,10 +122,10 @@ public class ItemCardContainer extends AbstractContainerMenu {
     }
 
     @Override
-    public void removed(Player playerIn) {
+    public void removed(Player playerIn) { //TODO This fires when we open the filter container from the item container
         Level world = playerIn.getLevel();
         if (!world.isClientSide) {
-            BaseCard.setInventory(cardItem, handler);
+            //BaseCard.setInventory(cardItem, handler);
             if (!sourceContainer.equals(BlockPos.ZERO)) {
                 BlockEntity blockEntity = world.getBlockEntity(sourceContainer);
                 if (blockEntity instanceof LaserNodeBE)

@@ -3,7 +3,6 @@ package com.direwolf20.laserio.common.containers;
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import com.direwolf20.laserio.common.containers.customhandler.FilterBasicHandler;
 import com.direwolf20.laserio.common.containers.customslot.BasicFilterSlot;
-import com.direwolf20.laserio.common.items.filters.FilterBasic;
 import com.direwolf20.laserio.setup.Registration;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
@@ -106,10 +105,10 @@ public class BasicFilterContainer extends AbstractContainerMenu {
     }
 
     @Override
-    public void removed(Player playerIn) {
+    public void removed(Player playerIn) { //Todo see if we can send the player back to their last container screen?
         Level world = playerIn.getLevel();
         if (!world.isClientSide) {
-            FilterBasic.setInventory(filterItem, handler);
+            //FilterBasic.setInventory(filterItem, handler);
             if (!sourceContainer.equals(BlockPos.ZERO)) {
                 BlockEntity blockEntity = world.getBlockEntity(sourceContainer);
                 if (blockEntity instanceof LaserNodeBE)
