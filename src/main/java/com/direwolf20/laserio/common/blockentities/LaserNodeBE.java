@@ -46,7 +46,7 @@ public class LaserNodeBE extends BaseLaserBE {
     private final List<ExtractorCard> extractorCards = new ArrayList<>();
 
     /** Misc Variables **/
-    private boolean discoveredNodes = false;
+    private boolean discoveredNodes = false; //The first time this block entity loads, it'll run discovery to refresh itself
 
     public LaserNodeBE(BlockPos pos, BlockState state) {
         super(Registration.LaserNode_BE.get(), pos, state);
@@ -62,6 +62,7 @@ public class LaserNodeBE extends BaseLaserBE {
         }
     }
 
+    /** This is called by nodes when a connection is added/removed - the other node does the discovery and then tells this one about it **/
     public void setOtherNodesInNetwork(Set<BlockPos> otherNodesInNetwork) {
         this.otherNodesInNetwork.clear();
         for (BlockPos pos : otherNodesInNetwork) {
@@ -70,6 +71,7 @@ public class LaserNodeBE extends BaseLaserBE {
         refreshAllInvNodes(); //Seeing as the otherNodes list just got updated, we should refresh the InventoryNode content caches
     }
 
+    /**Build a list of extractor cards this node has in it, for looping through**/
     public void findMyExtractors() {
         this.extractorCards.clear();
         for (Direction direction : Direction.values()) {
@@ -84,6 +86,7 @@ public class LaserNodeBE extends BaseLaserBE {
         }
     }
 
+    /**Loop through all the extractorCards and run the extractions**/
     public void extractItems() {
         for (ExtractorCard extractorCard : extractorCards) {
             sendItems(extractorCard);
@@ -97,10 +100,12 @@ public class LaserNodeBE extends BaseLaserBE {
             findMyExtractors();
             discoveredNodes = true;
         }
-        extractItems();
+        extractItems(); //If this node has any extractors, do stuff with them
     }
 
     //TODO Efficiency
+
+    /**Extractor Cards call this, and try to find an inserter card to send their items to**/
     public void sendItems(ExtractorCard extractorCard) {
         IItemHandler adjacentInventory = getAttachedInventory(extractorCard.direction).orElse(EMPTY);
         for (int slot = 0; slot < adjacentInventory.getSlots(); slot++) {
@@ -123,6 +128,7 @@ public class LaserNodeBE extends BaseLaserBE {
         }
     }
 
+    /** Draw the particles between node and inventory**/
     public void drawParticles(ItemStack itemStack, Direction fromdirection, LaserNodeBE destinationBE, Direction destinationDirection) {
         ServerLevel serverWorld = (ServerLevel) level;
         //Extract
@@ -139,6 +145,7 @@ public class LaserNodeBE extends BaseLaserBE {
 
     }
 
+    /**TODO For the stocker mode**/
     public void getItems(ItemStack card, Direction direction) {
         IItemHandler adjacentInventory = getAttachedInventory(direction).orElse(EMPTY);
         if (adjacentInventory.getSlots() != 0) {
@@ -154,25 +161,21 @@ public class LaserNodeBE extends BaseLaserBE {
         findMyExtractors();
     }
 
+    /**When this node changes, tell other nodes to refresh their cache of it**/
     public void notifyOtherNodesOfChange() {
         for (BlockPos pos : otherNodesInNetwork) {
             LaserNodeBE node = getNodeAt(getWorldPos(pos));
             if (node == null) continue;
-            //System.out.println("Telling " + node.getBlockPos() + " to update inventory of " + this.getBlockPos());
             node.checkInvNode(this.getBlockPos());
         }
     }
 
-    /**
-     * This method clears the non-persistent inventory node data variables and regenerates them from scratch
-     */
+    /**This method clears the non-persistent inventory node data variables and regenerates them from scratch*/
     public void refreshAllInvNodes() {
-        //System.out.println("Scanning all inventory nodes at: " + getBlockPos());
         inserterNodes.clear();
         for (BlockPos pos : otherNodesInNetwork) {
             checkInvNode(getWorldPos(pos));
         }
-        //System.out.println(inserterNodes);
     }
 
     /**
@@ -182,7 +185,6 @@ public class LaserNodeBE extends BaseLaserBE {
      * This method is called by refreshAllInvNodes() or on demand when the contents of an inventory node's container is changed
      */
     public void checkInvNode(BlockPos pos) {
-        //System.out.println("Updating cache at: " + pos);
         LaserNodeBE be = getNodeAt(pos);
         BlockPos relativePos = getRelativePos(pos);
         //Remove this position from all caches, so we can repopulate below
@@ -192,36 +194,19 @@ public class LaserNodeBE extends BaseLaserBE {
             for (int slot = 0; slot < LaserNodeContainer.SLOTS; slot++) {
                 ItemStack card = be.itemHandler[direction.ordinal()].getStackInSlot(slot);
                 if (card.getItem() instanceof BaseCard) {
-                    //System.out.println("Found card at " + pos + ": " + BaseCard.getTransferMode(card));
                     if (BaseCard.getNamedTransferMode(card).equals(BaseCard.TransferMode.EXTRACT)) {
                         //sendItems(card, direction);
                     } else if (BaseCard.getNamedTransferMode(card).equals(BaseCard.TransferMode.STOCK)) {
                         //getItems(card, direction);
                     } else if (BaseCard.getNamedTransferMode(card).equals(BaseCard.TransferMode.INSERT)) {
-                        //getItems(card, direction);
                         inserterNodes.add(new InserterCard(relativePos, direction, BaseCard.getChannel(card)));
                     }
                 }
             }
         }
-        //Loop through all cards and update the cache'd data
-        /*for (int i = 0; i < handler.getSlots(); i++) {
-            ItemStack stack = handler.getStackInSlot(i);
-            if (stack.isEmpty()) continue;
-            addToFilterCache(pos, stack);
-            if (stack.getItem() instanceof CardExtractor)
-                extractorNodes.add(pos);
-            if (stack.getItem() instanceof CardInserter) {
-                inserterNodes.add(pos);
-            }
-            if (stack.getItem() instanceof CardProvider) {
-                providerNodes.add(pos);
-            }
-            if (stack.getItem() instanceof CardStocker)
-                stockerNodes.add(pos);
-        }*/
     }
 
+    /**Somehow this makes it so if you break an adjacent chest it immediately invalidates the cache of it**/
     public LazyOptional<IItemHandler> getAttachedInventory(Direction direction) {
         if (facingHandler[direction.ordinal()] != null) {
             return facingHandler[direction.ordinal()];
@@ -245,9 +230,7 @@ public class LaserNodeBE extends BaseLaserBE {
         return LazyOptional.empty();
     }
 
-    /**
-     * Called when a neighbor updates to invalidate the inventory cache
-     */
+    /** Called when a neighbor updates to invalidate the inventory cache */
     public void clearCachedInventories(int j) {
         this.facingHandler[j] = null;
     }

@@ -27,37 +27,7 @@ public class BaseLaserBE extends BlockEntity {
         super(type, pos, state);
     }
 
-    @Override
-    public ClientboundBlockEntityDataPacket getUpdatePacket() {
-        // Vanilla uses the type parameter to indicate which type of tile entity (command block, skull, or beacon?) is receiving the packet, but it seems like Forge has overridden this behavior
-        return ClientboundBlockEntityDataPacket.create(this);
-    }
-
-    @Override
-    public void handleUpdateTag(CompoundTag tag) {
-        this.load(tag);
-    }
-
-    @Override
-    public CompoundTag getUpdateTag() {
-        CompoundTag tag = new CompoundTag();
-        saveAdditional(tag);
-        return tag;
-    }
-
-    @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
-        this.load(pkt.getTag());
-    }
-
-    public void markDirtyClient() {
-        this.setChanged();
-        if (this.getLevel() != null) {
-            BlockState state = this.getLevel().getBlockState(this.getBlockPos());
-            this.getLevel().sendBlockUpdated(this.getBlockPos(), state, state, 3);
-        }
-    }
-
+    /** Gets the node at a specific world position, returning null if not a node */
     public LaserNodeBE getNodeAt(BlockPos pos) {
         BlockEntity be = level.getBlockEntity(pos);
         if (be instanceof LaserNodeBE) return (LaserNodeBE) be;
@@ -66,15 +36,14 @@ public class BaseLaserBE extends BlockEntity {
 
     /**
      * Resets all the cached node data and rediscovers the network by depth first searching (I think).
+     * Share what we've learned with all the InventoryNodes we found
      */
     public void discoverAllNodes() {
-        //System.out.println("Discovering All Nodes!");
         Set<BlockPos> otherNodesInNetwork = new HashSet<>(); //Fresh list of nodes
 
         Queue<BlockPos> nodesToCheck = new LinkedList<>();
         Set<BlockPos> checkedNodes = new HashSet<>();
         nodesToCheck.add(getBlockPos()); //We should add this block to itself, as a starting point -- also if its a node it'll add itself
-
 
         while (nodesToCheck.size() > 0) {
             BlockPos posToCheck = nodesToCheck.remove(); //Pop the stack
@@ -88,16 +57,14 @@ public class BaseLaserBE extends BlockEntity {
                     otherNodesInNetwork.add(posToCheck);
             }
         }
-        //System.out.println("Other Nodes: " + otherNodesInNetwork);
-        for (BlockPos pos : otherNodesInNetwork) {
-            //System.out.println("Copying discovered nodes to: " + pos);
+        for (BlockPos pos : otherNodesInNetwork) { //Go through all the inventory nodes we've found and tell them about all the inventory nodes...
             LaserNodeBE nodeBE = getNodeAt(pos);
             if (nodeBE == null) continue;
             nodeBE.setOtherNodesInNetwork(otherNodesInNetwork);
         }
     }
 
-
+    /**Add another node to this ones connected list*/
     public boolean addNode(BlockPos pos) {
         boolean success = connections.add(getRelativePos(pos));
         if (success) {
@@ -106,6 +73,7 @@ public class BaseLaserBE extends BlockEntity {
         return success;
     }
 
+    /**Helpers to translate between relative/world pos*/
     public BlockPos getWorldPos(BlockPos relativePos) {
         return getBlockPos().offset(relativePos);
     }
@@ -114,6 +82,7 @@ public class BaseLaserBE extends BlockEntity {
         return worldPos.subtract(getBlockPos());
     }
 
+    /**Only one of the nodes should render the laser connection - doesn't really matter which one*/
     public boolean addRenderNode(BlockPos pos) {
         boolean success = renderedConnections.add(getRelativePos(pos));
         if (success) {
@@ -122,9 +91,10 @@ public class BaseLaserBE extends BlockEntity {
         return success;
     }
 
+    /**Remove another nodes location from the list of connected nodes*/
     public boolean removeNode(BlockPos pos) {
         boolean success = connections.remove(getRelativePos(pos));
-        renderedConnections.remove(getRelativePos(pos));
+        renderedConnections.remove(getRelativePos(pos)); //Remove it from the rendered list as well
         if (success) {
             markDirtyClient();
         }
@@ -152,6 +122,11 @@ public class BaseLaserBE extends BlockEntity {
         return false;
     }
 
+    /**
+     * @param pos The Position in world you're disconnection this TE from.
+     * @return Was the disconnect successful
+     * Disconnects This Pos from Target Pos, and disconnects Target Pos from This pos
+     */
     public boolean removeConnection(BlockPos pos) {
         boolean success = removeNode(pos);
         if (success) {
@@ -163,10 +138,12 @@ public class BaseLaserBE extends BlockEntity {
         return success;
     }
 
+    /**Get the connections relative coordinates*/
     public Set<BlockPos> getConnections() {
         return connections;
     }
 
+    /**Get the connections world coordinates*/
     public Set<BlockPos> getWorldConnections() {
         Set<BlockPos> worldConnections = new HashSet<>();
         for (BlockPos relativePos : connections)
@@ -178,6 +155,7 @@ public class BaseLaserBE extends BlockEntity {
         return renderedConnections;
     }
 
+    /**Disconnect ALL connected nodes - called when the block is broken for example*/
     public void disconnectAllNodes() {
         for (BlockPos pos : connections) {
             BlockEntity be = level.getBlockEntity(getWorldPos(pos));
@@ -187,7 +165,7 @@ public class BaseLaserBE extends BlockEntity {
         }
     }
 
-    //Misc Methods for TE's
+    /**Misc Methods for TE's*/
     @Override
     public void load(CompoundTag tag) {
         super.load(tag);
@@ -224,17 +202,41 @@ public class BaseLaserBE extends BlockEntity {
         tag.put("renderedConnections", renderedConnections);
     }
 
-    /*@Override
-    public void setRemoved() {
-        if (!level.isClientSide())
-            disconnectAllNodes();
-        super.setRemoved();
-    }*/
-
     @Nonnull
     @Override
     public AABB getRenderBoundingBox() {
         return new AABB(getBlockPos().above(10).north(10).east(10), getBlockPos().below(10).south(10).west(10));
+    }
+
+    @Override
+    public ClientboundBlockEntityDataPacket getUpdatePacket() {
+        // Vanilla uses the type parameter to indicate which type of tile entity (command block, skull, or beacon?) is receiving the packet, but it seems like Forge has overridden this behavior
+        return ClientboundBlockEntityDataPacket.create(this);
+    }
+
+    @Override
+    public void handleUpdateTag(CompoundTag tag) {
+        this.load(tag);
+    }
+
+    @Override
+    public CompoundTag getUpdateTag() {
+        CompoundTag tag = new CompoundTag();
+        saveAdditional(tag);
+        return tag;
+    }
+
+    @Override
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
+        this.load(pkt.getTag());
+    }
+
+    public void markDirtyClient() {
+        this.setChanged();
+        if (this.getLevel() != null) {
+            BlockState state = this.getLevel().getBlockState(this.getBlockPos());
+            this.getLevel().sendBlockUpdated(this.getBlockPos(), state, state, 3);
+        }
     }
 
 }
