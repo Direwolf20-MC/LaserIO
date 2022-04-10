@@ -6,10 +6,9 @@ import com.direwolf20.laserio.common.containers.LaserNodeContainer;
 import com.direwolf20.laserio.common.containers.customhandler.NodeItemHandler;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.setup.Registration;
+import com.direwolf20.laserio.util.ExtractorCard;
 import com.direwolf20.laserio.util.InserterCard;
 import com.direwolf20.laserio.util.WeakConsumerWrapper;
-import it.unimi.dsi.fastutil.objects.Object2IntMap;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -28,6 +27,7 @@ import net.minecraftforge.items.ItemStackHandler;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class LaserNodeBE extends BaseLaserBE {
     /** This blocks Item Handlers **/
@@ -43,7 +43,7 @@ public class LaserNodeBE extends BaseLaserBE {
     /** Variables for tracking and sending items/filters/etc **/
     private Set<BlockPos> otherNodesInNetwork = new HashSet<>();
     private final List<InserterCard> inserterNodes = new ArrayList<>(); //All Inventory nodes that contain an inserter card
-    private final Object2IntMap<Direction> extractorCards = new Object2IntOpenHashMap<>();
+    private final List<ExtractorCard> extractorCards = new ArrayList<>();
 
     /** Misc Variables **/
     private boolean discoveredNodes = false;
@@ -63,7 +63,6 @@ public class LaserNodeBE extends BaseLaserBE {
     }
 
     public void setOtherNodesInNetwork(Set<BlockPos> otherNodesInNetwork) {
-        //System.out.println(this.getBlockPos() + " is updating other nodes in network!");
         this.otherNodesInNetwork.clear();
         for (BlockPos pos : otherNodesInNetwork) {
             this.otherNodesInNetwork.add(getRelativePos(pos));
@@ -78,7 +77,7 @@ public class LaserNodeBE extends BaseLaserBE {
                 ItemStack card = itemHandler[direction.ordinal()].getStackInSlot(slot);
                 if (card.getItem() instanceof BaseCard) {
                     if (BaseCard.getNamedTransferMode(card).equals(BaseCard.TransferMode.EXTRACT)) {
-                        extractorCards.put(direction, slot);
+                        extractorCards.add(new ExtractorCard(BaseCard.getItemExtractAmt(card), direction, BaseCard.getChannel(card)));
                     }
                 }
             }
@@ -86,8 +85,8 @@ public class LaserNodeBE extends BaseLaserBE {
     }
 
     public void extractItems() {
-        for (Map.Entry<Direction, Integer> entry : extractorCards.entrySet()) {
-            sendItems(itemHandler[entry.getKey().ordinal()].getStackInSlot(entry.getValue()), entry.getKey());
+        for (ExtractorCard extractorCard : extractorCards) {
+            sendItems(extractorCard);
         }
     }
 
@@ -102,22 +101,22 @@ public class LaserNodeBE extends BaseLaserBE {
     }
 
     //TODO Efficiency
-    public void sendItems(ItemStack card, Direction direction) {
-        IItemHandler adjacentInventory = getAttachedInventory(direction).orElse(EMPTY);
+    public void sendItems(ExtractorCard extractorCard) {
+        IItemHandler adjacentInventory = getAttachedInventory(extractorCard.direction).orElse(EMPTY);
         for (int slot = 0; slot < adjacentInventory.getSlots(); slot++) {
             ItemStack stackInSlot = adjacentInventory.getStackInSlot(slot);
             if (stackInSlot.isEmpty()) continue;
-            for (InserterCard inserterCard : inserterNodes) {
+            for (InserterCard inserterCard : inserterNodes.stream().filter(p -> p.channel == extractorCard.channel).collect(Collectors.toList())) {
                 LaserNodeBE be = getNodeAt(getWorldPos(inserterCard.relativePos));
                 if (be == null) continue;
                 IItemHandler possibleDestination = be.getAttachedInventory(inserterCard.direction).orElse(EMPTY);
                 if (possibleDestination.getSlots() == 0) continue;
-                ItemStack itemStack = adjacentInventory.extractItem(slot, BaseCard.getItemExtractAmt(card), true); //Pretend to pull the item out
+                ItemStack itemStack = adjacentInventory.extractItem(slot, extractorCard.extractAmt, true); //Pretend to pull the item out
                 ItemStack postInsertStack = ItemHandlerHelper.insertItem(possibleDestination, itemStack, false); //Attempt to insert the item
                 if (!postInsertStack.equals(itemStack, false)) { //If something changed
                     int countExtracted = postInsertStack.isEmpty() ? itemStack.getCount() : itemStack.getCount() - postInsertStack.getCount();
                     adjacentInventory.extractItem(slot, countExtracted, false); //Actually remove the number of items
-                    drawParticles(itemStack, direction, be, inserterCard.direction);
+                    drawParticles(itemStack, extractorCard.direction, be, inserterCard.direction);
                     return;
                 }
             }
