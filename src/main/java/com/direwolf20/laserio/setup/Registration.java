@@ -4,6 +4,7 @@ import com.direwolf20.laserio.common.blockentities.LaserConnectorBE;
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import com.direwolf20.laserio.common.blocks.LaserConnector;
 import com.direwolf20.laserio.common.blocks.LaserNode;
+import com.direwolf20.laserio.common.containers.BasicFilterContainer;
 import com.direwolf20.laserio.common.containers.ItemCardContainer;
 import com.direwolf20.laserio.common.containers.LaserNodeContainer;
 import com.direwolf20.laserio.common.items.LaserWrench;
@@ -65,6 +66,8 @@ public class Registration {
             () -> IForgeMenuType.create((windowId, inv, data) -> new LaserNodeContainer(windowId, data.readBlockPos(), inv, inv.player)));
     public static final RegistryObject<MenuType<ItemCardContainer>> ItemCard_Container = CONTAINERS.register("itemcard",
             () -> IForgeMenuType.create((windowId, inv, data) -> new ItemCardContainer(windowId, inv, inv.player, data)));
+    public static final RegistryObject<MenuType<BasicFilterContainer>> BasicFilter_Container = CONTAINERS.register("basicfilter",
+            () -> IForgeMenuType.create((windowId, inv, data) -> new BasicFilterContainer(windowId, inv, inv.player, data)));
 
 
     // Conveniance function: Take a RegistryObject<Block> and make a corresponding RegistryObject<Item> from it

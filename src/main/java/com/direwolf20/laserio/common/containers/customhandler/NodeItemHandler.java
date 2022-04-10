@@ -10,6 +10,10 @@ import javax.annotation.Nonnull;
 public class NodeItemHandler extends ItemStackHandler {
     LaserNodeBE blockEntity;
 
+    public NodeItemHandler(int size) {
+        super(size);
+    }
+
     public NodeItemHandler(int size, LaserNodeBE blockEntity) {
         super(size);
         this.blockEntity = blockEntity;
@@ -25,7 +29,7 @@ public class NodeItemHandler extends ItemStackHandler {
 
     @Override
     public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
-        return stack.getItem() instanceof BaseCard;//ForgeHooks.getBurnTime(stack, RecipeType.SMELTING) > 0;
+        return stack.getItem() instanceof BaseCard;
     }
 
     @Nonnull

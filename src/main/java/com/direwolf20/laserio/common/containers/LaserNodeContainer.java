@@ -1,8 +1,8 @@
 package com.direwolf20.laserio.common.containers;
 
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
-import com.direwolf20.laserio.common.containers.customslot.CardSlot;
-import com.direwolf20.laserio.common.items.cards.BaseCard;
+import com.direwolf20.laserio.common.containers.customhandler.NodeItemHandler;
+import com.direwolf20.laserio.common.containers.customslot.NodeSlot;
 import com.direwolf20.laserio.setup.Registration;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Inventory;
@@ -12,7 +12,7 @@ import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemStackHandler;
+import net.minecraftforge.items.SlotItemHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
 
 import javax.annotation.Nullable;
@@ -28,10 +28,10 @@ public class LaserNodeContainer extends AbstractContainerMenu {
     public LaserNodeBE tile;
 
     public LaserNodeContainer(int windowId, BlockPos pos, Inventory playerInventory, Player player) {
-        this((LaserNodeBE) playerInventory.player.level.getBlockEntity(pos), windowId, pos, playerInventory, player, new ItemStackHandler(SLOTS), ContainerLevelAccess.NULL);
+        this((LaserNodeBE) playerInventory.player.level.getBlockEntity(pos), windowId, pos, playerInventory, player, new NodeItemHandler(SLOTS), ContainerLevelAccess.NULL);
     }
 
-    public LaserNodeContainer(@Nullable LaserNodeBE tile, int windowId, BlockPos pos, Inventory playerInventory, Player player, IItemHandler handler, ContainerLevelAccess containerLevelAccess) {
+    public LaserNodeContainer(@Nullable LaserNodeBE tile, int windowId, BlockPos pos, Inventory playerInventory, Player player, NodeItemHandler handler, ContainerLevelAccess containerLevelAccess) {
         super(Registration.LaserNode_Container.get(), windowId);
         //blockEntity = player.getCommandSenderWorld().getBlockEntity(pos);
         this.playerEntity = player;
@@ -58,21 +58,17 @@ public class LaserNodeContainer extends AbstractContainerMenu {
             itemstack = stack.copy();
             //If its one of the 9 slots at the top try to move it into your inventory
             if (index < SLOTS) {
-                if (!this.moveItemStackTo(stack, SLOTS, this.playerInventory.getSlots(), false)) {
+                if (!this.moveItemStackTo(stack, SLOTS, 36 + SLOTS, true)) {
                     return ItemStack.EMPTY;
                 }
                 slot.onQuickCraft(stack, itemstack);
             } else {
-                if (stack.getItem() instanceof BaseCard) {
-                    if (!this.moveItemStackTo(stack, 0, SLOTS, false)) {
+                if (!this.moveItemStackTo(stack, 0, SLOTS, false)) {
+                    if (index < 27 + SLOTS && !this.moveItemStackTo(stack, 27 + SLOTS, 36 + SLOTS, false)) {
+                        return ItemStack.EMPTY;
+                    } else if (index < 36 + SLOTS && !this.moveItemStackTo(stack, SLOTS, 27 + SLOTS, false)) {
                         return ItemStack.EMPTY;
                     }
-                } else if (index < 36) {
-                    if (!this.moveItemStackTo(stack, 36, this.playerInventory.getSlots(), false)) {
-                        return ItemStack.EMPTY;
-                    }
-                } else if (index < 45 && !this.moveItemStackTo(stack, SLOTS, 36, false)) {
-                    return ItemStack.EMPTY;
                 }
             }
 
@@ -95,7 +91,10 @@ public class LaserNodeContainer extends AbstractContainerMenu {
 
     private int addSlotRange(IItemHandler handler, int index, int x, int y, int amount, int dx) {
         for (int i = 0; i < amount; i++) {
-            addSlot(new CardSlot(handler, index, x, y));
+            if (handler instanceof NodeItemHandler)
+                addSlot(new NodeSlot(handler, index, x, y));
+            else
+                addSlot(new SlotItemHandler(handler, index, x, y));
             x += dx;
             index++;
         }

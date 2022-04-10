@@ -2,7 +2,7 @@ package com.direwolf20.laserio.client.screens;
 
 import com.direwolf20.laserio.common.LaserIO;
 import com.direwolf20.laserio.common.containers.LaserNodeContainer;
-import com.direwolf20.laserio.common.containers.customslot.CardSlot;
+import com.direwolf20.laserio.common.containers.customslot.NodeSlot;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.common.network.PacketHandler;
 import com.direwolf20.laserio.common.network.packets.PacketOpenCard;
@@ -47,7 +47,7 @@ public class LaserNodeScreen extends AbstractContainerScreen<LaserNodeContainer>
         if (hoveredSlot == null || hoveredSlot.getItem().isEmpty() || !(hoveredSlot.getItem().getItem() instanceof BaseCard))
             return super.mouseClicked(x, y, btn);
 
-        if (btn == 1 && hoveredSlot instanceof CardSlot) { //Right click
+        if (btn == 1 && hoveredSlot instanceof NodeSlot) { //Right click
             int slot = hoveredSlot.getSlotIndex();
             PacketHandler.sendToServer(new PacketOpenCard(slot, container.tile.getBlockPos()));
             return true;
