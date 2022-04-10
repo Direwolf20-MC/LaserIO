@@ -4,6 +4,7 @@
   "item.laserio.card_energy": "Energy Card",
   "item.laserio.card_fluid": "Fluid Card",
   "item.laserio.card_item": "Item Card",
+  "item.laserio.filter_basic": "Basic Filter",
   "item.laserio.laser_wrench": "Laser Wrench",
   "itemGroup.LaserIO": "Tutorial",
   "message.logisticslasers.wrenchrange": "This block is too far away. Max range is 8",

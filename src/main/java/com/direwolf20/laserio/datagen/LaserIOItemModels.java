@@ -22,6 +22,6 @@ public class LaserIOItemModels extends ItemModelProvider {
         singleTexture(Registration.Card_Item.get().getRegistryName().getPath(), mcLoc("item/generated"), "layer0", modLoc("item/card_item"));
         singleTexture(Registration.Card_Fluid.get().getRegistryName().getPath(), mcLoc("item/generated"), "layer0", modLoc("item/card_fluid"));
         singleTexture(Registration.Card_Energy.get().getRegistryName().getPath(), mcLoc("item/generated"), "layer0", modLoc("item/card_energy"));
-
+        singleTexture(Registration.Filter_Basic.get().getRegistryName().getPath(), mcLoc("item/generated"), "layer0", modLoc("item/filter_basic"));
     }
 }

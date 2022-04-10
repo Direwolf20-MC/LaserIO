@@ -10,6 +10,7 @@ import com.direwolf20.laserio.common.items.LaserWrench;
 import com.direwolf20.laserio.common.items.cards.CardEnergy;
 import com.direwolf20.laserio.common.items.cards.CardFluid;
 import com.direwolf20.laserio.common.items.cards.CardItem;
+import com.direwolf20.laserio.common.items.filters.FilterBasic;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
@@ -57,6 +58,7 @@ public class Registration {
     public static final RegistryObject<Item> Card_Energy = ITEMS.register("card_energy", CardEnergy::new);
     public static final RegistryObject<Item> Card_Fluid = ITEMS.register("card_fluid", CardFluid::new);
     public static final RegistryObject<Item> Card_Item = ITEMS.register("card_item", CardItem::new);
+    public static final RegistryObject<Item> Filter_Basic = ITEMS.register("filter_basic", FilterBasic::new);
 
     //Containers
     public static final RegistryObject<MenuType<LaserNodeContainer>> LaserNode_Container = CONTAINERS.register("lasernode",

@@ -22,6 +22,7 @@ public class LaserIOLanguageProvider extends LanguageProvider {
         add(Registration.Card_Item.get(), "Item Card");
         add(Registration.Card_Fluid.get(), "Fluid Card");
         add(Registration.Card_Energy.get(), "Energy Card");
+        add(Registration.Filter_Basic.get(), "Basic Filter");
         add("message.logisticslasers.wrenchrange", "This block is too far away. Max range is 8");
         add("screen.laserio.extractamt", "Extract");
         add(SCREEN_LASERNODE, "Power generator");
