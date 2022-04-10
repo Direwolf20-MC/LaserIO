@@ -19,7 +19,7 @@ import net.minecraftforge.items.SlotItemHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
 
 public class ItemCardContainer extends AbstractContainerMenu {
-    public static final int SLOTS = 3;
+    public static final int SLOTS = 1;
     public CardItemHandler handler;
     public ItemStack cardItem;
     public Player playerEntity;
@@ -38,7 +38,7 @@ public class ItemCardContainer extends AbstractContainerMenu {
         this.playerInventory = new InvWrapper(playerInventory);
         this.cardItem = cardItem;
         if (handler != null)
-            addSlotRange(handler, 0, 62, 35, 3, 18);
+            addSlotRange(handler, 0, 80, 35, 1, 18);
 
         layoutPlayerInventorySlots(8, 84);
     }
