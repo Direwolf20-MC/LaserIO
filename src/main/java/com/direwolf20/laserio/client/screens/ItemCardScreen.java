@@ -1,5 +1,6 @@
 package com.direwolf20.laserio.client.screens;
 
+import com.direwolf20.laserio.client.screens.widgets.ChannelButton;
 import com.direwolf20.laserio.client.screens.widgets.DireButton;
 import com.direwolf20.laserio.common.LaserIO;
 import com.direwolf20.laserio.common.containers.ItemCardContainer;
@@ -89,10 +90,9 @@ public class ItemCardScreen extends AbstractContainerScreen<ItemCardContainer> {
             }
         }));
 
-        leftWidgets.add(new Button(left, top + 25, 50, 20, new TranslatableComponent(String.valueOf(BaseCard.getChannel(card)), currentChannel), (button) -> {
+        leftWidgets.add(new ChannelButton(left, top + 35, 20, 20, currentChannel, (button) -> {
             currentChannel = BaseCard.nextChannel(card);
-            button.setMessage(new TranslatableComponent(String.valueOf(BaseCard.getChannel(card)), currentChannel));
-
+            ((ChannelButton) button).setChannel(currentChannel);
         }));
 
         if (showExtractAmt()) {
