@@ -1,6 +1,7 @@
 package com.direwolf20.laserio.client.events;
 
 import com.direwolf20.laserio.client.renderer.BlockOverlayRender;
+import com.direwolf20.laserio.client.renderer.DelayedRenderer;
 import com.direwolf20.laserio.common.blockentities.basebe.BaseLaserBE;
 import com.direwolf20.laserio.common.items.LaserWrench;
 import net.minecraft.client.Minecraft;
@@ -23,6 +24,9 @@ public class ClientEvents {
             if (!selectedPos.equals(BlockPos.ZERO) && (be instanceof BaseLaserBE))
                 BlockOverlayRender.renderSelectedBlock(evt, selectedPos, (BaseLaserBE) be);
         }
+
+        //DelayedRenderer Renders
+        DelayedRenderer.render(evt.getPoseStack());
     }
 
     public static ItemStack getWrench(Player player) {

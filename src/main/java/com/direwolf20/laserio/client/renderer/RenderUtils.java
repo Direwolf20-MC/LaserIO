@@ -11,6 +11,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.phys.Vec3;
 
 import java.awt.*;
 
@@ -57,7 +58,7 @@ public class RenderUtils {
         builder.vertex(matrix, startX, endY, startZ).color(red, green, blue, alpha).endVertex();
     }
 
-    public static void drawLasers(BlockEntity be, BlockPos startBlock, BlockPos endBlock, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightsIn, int combinedOverlayIn) {
+    public static void drawLasersTile(BlockEntity be, BlockPos startBlock, BlockPos endBlock, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightsIn, int combinedOverlayIn) {
         Level level = be.getLevel();
         long gameTime = level.getGameTime();
         double v = gameTime * 0.04;
@@ -79,6 +80,34 @@ public class RenderUtils {
         drawLaser(builder, positionMatrix, endLaser, startLaser, 1, 0, 0, 0.5f, 0.025f, v, v + diffY * 1.5, be);
 
         matrixStackIn.popPose();
+    }
+
+    public static void drawLasersLast(BlockEntity be, BlockPos startBlock, BlockPos endBlock, PoseStack matrixStackIn) {
+        Level level = be.getLevel();
+        long gameTime = level.getGameTime();
+        double v = gameTime * 0.04;
+        MultiBufferSource.BufferSource buffer = Minecraft.getInstance().renderBuffers().bufferSource();
+        float diffX = endBlock.getX() + .5f - startBlock.getX();
+        float diffY = endBlock.getY() + .5f - startBlock.getY();
+        float diffZ = endBlock.getZ() + .5f - startBlock.getZ();
+
+
+        VertexConsumer builder;
+        Vec3 projectedView = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
+        matrixStackIn.pushPose();
+        Matrix4f positionMatrix = matrixStackIn.last().pose();
+
+        matrixStackIn.translate(startBlock.getX() - projectedView.x, startBlock.getY() - projectedView.y, startBlock.getZ() - projectedView.z);
+
+        builder = buffer.getBuffer(MyRenderType.CONNECTING_LASER);
+
+        Vector3f startLaser = new Vector3f(0.5f, .5f, 0.5f);
+        Vector3f endLaser = new Vector3f(diffX, diffY, diffZ);
+
+        drawLaser(builder, positionMatrix, endLaser, startLaser, 1, 0, 0, 0.33f, 0.025f, v, v + diffY * 1.5, be);
+
+        matrixStackIn.popPose();
+        buffer.endBatch(MyRenderType.CONNECTING_LASER); //This apparently is needed in RenderWorldLast
     }
 
     public static void drawConnectingLasers(BlockEntity be, BlockPos startBlock, BlockPos endBlock, PoseStack matrixStackIn, MultiBufferSource bufferIn, Vector3f offset, float r, float g, float b, float alpha, float thickness, float r2, float g2, float b2, float alpha2, float thickness2, boolean reverse) {
