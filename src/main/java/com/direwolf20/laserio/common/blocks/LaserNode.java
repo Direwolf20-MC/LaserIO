@@ -26,7 +26,9 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -34,9 +36,38 @@ import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.network.NetworkHooks;
 
 import javax.annotation.Nullable;
+import java.util.stream.Stream;
 
 public class LaserNode extends BaseLaserBlock implements EntityBlock {
-    private static final VoxelShape RENDER_SHAPE = Block.box(3.0D, 3.0D, 3.0D, 13.0D, 13.0D, 13.0D);
+    protected static final VoxelShape SHAPE = Stream.of(
+            Block.box(5, 4, 4, 11, 5, 5),
+            Block.box(5, 5, 5, 11, 11, 11),
+            Block.box(4, 11, 5, 5, 12, 11),
+            Block.box(5, 11, 11, 11, 12, 12),
+            Block.box(5, 11, 4, 11, 12, 5),
+            Block.box(4, 12, 3, 12, 13, 4),
+            Block.box(4, 12, 12, 12, 13, 13),
+            Block.box(5, 4, 11, 11, 5, 12),
+            Block.box(4, 3, 3, 12, 4, 4),
+            Block.box(4, 3, 12, 12, 4, 13),
+            Block.box(12, 3, 4, 13, 4, 12),
+            Block.box(3, 3, 4, 4, 4, 12),
+            Block.box(3, 3, 12, 4, 13, 13),
+            Block.box(3, 3, 3, 4, 13, 4),
+            Block.box(12, 3, 12, 13, 13, 13),
+            Block.box(12, 3, 3, 13, 13, 4),
+            Block.box(12, 12, 4, 13, 13, 12),
+            Block.box(3, 12, 4, 4, 13, 12),
+            Block.box(11, 11, 5, 12, 12, 11),
+            Block.box(4, 4, 5, 5, 5, 11),
+            Block.box(11, 4, 5, 12, 5, 11),
+            Block.box(4, 4, 4, 5, 12, 5),
+            Block.box(11, 4, 4, 12, 12, 5),
+            Block.box(4, 4, 11, 5, 12, 12),
+            Block.box(11, 4, 11, 12, 12, 12)
+    ).reduce((v1, v2) -> {
+        return Shapes.join(v1, v2, BooleanOp.OR);
+    }).get();
     public static final String SCREEN_LASERNODE = "screen.tutorial.powergen";
 
     public LaserNode() {
@@ -96,13 +127,13 @@ public class LaserNode extends BaseLaserBlock implements EntityBlock {
 
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter getter, BlockPos pos, CollisionContext context) {
-        return RENDER_SHAPE;
+        return SHAPE;
     }
 
     @SuppressWarnings("deprecation")
     @Override
     public VoxelShape getOcclusionShape(BlockState state, BlockGetter reader, BlockPos pos) {
-        return RENDER_SHAPE;
+        return SHAPE;
     }
 
     @Override

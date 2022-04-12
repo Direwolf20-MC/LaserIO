@@ -17,15 +17,15 @@ import java.awt.*;
 
 public class LaserNodeBERender extends BaseLaserBERender<LaserNodeBE> {
     private final Vector3f[] offsets = {
-            new Vector3f(0.675f, 0.675f, 0.5f),
-            new Vector3f(0.5f, 0.675f, 0.5f),
-            new Vector3f(0.325f, 0.675f, 0.5f),
-            new Vector3f(0.675f, 0.5f, 0.5f),
+            new Vector3f(0.65f, 0.65f, 0.5f),
+            new Vector3f(0.5f, 0.65f, 0.5f),
+            new Vector3f(0.35f, 0.65f, 0.5f),
+            new Vector3f(0.65f, 0.5f, 0.5f),
             new Vector3f(0.5f, 0.5f, 0.5f),
-            new Vector3f(0.325f, 0.5f, 0.5f),
-            new Vector3f(0.675f, 0.325f, 0.5f),
-            new Vector3f(0.5f, 0.325f, 0.5f),
-            new Vector3f(0.325f, 0.325f, 0.5f)
+            new Vector3f(0.35f, 0.5f, 0.5f),
+            new Vector3f(0.65f, 0.35f, 0.5f),
+            new Vector3f(0.5f, 0.35f, 0.5f),
+            new Vector3f(0.35f, 0.35f, 0.5f)
     };
     private final Color colors[] = {
             new Color(255, 255, 255),
