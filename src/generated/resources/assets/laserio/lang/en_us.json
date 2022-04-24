@@ -11,5 +11,6 @@
   "screen.laserio.allowlist": "Allow",
   "screen.laserio.comparenbt": "NBT",
   "screen.laserio.extractamt": "Extract",
+  "screen.laserio.lasernode": "Laser Node",
   "screen.tutorial.powergen": "Power generator"
 }

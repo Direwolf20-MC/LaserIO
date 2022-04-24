@@ -26,9 +26,7 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -36,10 +34,10 @@ import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.network.NetworkHooks;
 
 import javax.annotation.Nullable;
-import java.util.stream.Stream;
 
 public class LaserNode extends BaseLaserBlock implements EntityBlock {
-    protected static final VoxelShape SHAPE = Stream.of(
+    //This makes the shape fit the model perfectly, but introduces issues with clicking on specific sides of the block
+    /*protected static final VoxelShape SHAPE = Stream.of(
             Block.box(5, 4, 4, 11, 5, 5),
             Block.box(5, 5, 5, 11, 11, 11),
             Block.box(4, 11, 5, 5, 12, 11),
@@ -67,8 +65,9 @@ public class LaserNode extends BaseLaserBlock implements EntityBlock {
             Block.box(11, 4, 11, 12, 12, 12)
     ).reduce((v1, v2) -> {
         return Shapes.join(v1, v2, BooleanOp.OR);
-    }).get();
-    public static final String SCREEN_LASERNODE = "screen.tutorial.powergen";
+    }).get();*/
+    private static final VoxelShape SHAPE = Block.box(3.0D, 3.0D, 3.0D, 13.0D, 13.0D, 13.0D);
+    public static final String SCREEN_LASERNODE = "screen.laserio.lasernode";
 
     public LaserNode() {
         super();

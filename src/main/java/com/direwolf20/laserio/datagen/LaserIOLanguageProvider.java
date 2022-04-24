@@ -27,6 +27,7 @@ public class LaserIOLanguageProvider extends LanguageProvider {
         add("screen.laserio.extractamt", "Extract");
         add("screen.laserio.allowlist", "Allow");
         add("screen.laserio.comparenbt", "NBT");
+        add("screen.laserio.lasernode", "Laser Node");
         add(SCREEN_LASERNODE, "Power generator");
     }
 }
