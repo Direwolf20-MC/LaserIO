@@ -1,6 +1,7 @@
 package com.direwolf20.laserio.common.items;
 
 import com.direwolf20.laserio.common.blockentities.basebe.BaseLaserBE;
+import com.direwolf20.laserio.common.blocks.baseblocks.BaseLaserBlock;
 import com.direwolf20.laserio.setup.ModSetup;
 import com.direwolf20.laserio.util.VectorHelper;
 import net.minecraft.core.BlockPos;
@@ -14,11 +15,12 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.BlockHitResult;
 
 public class LaserWrench extends Item {
+    public static int maxDistance = 8;
+
     public LaserWrench() {
         super(new Item.Properties().tab(ModSetup.ITEM_GROUP));
     }
@@ -39,47 +41,46 @@ public class LaserWrench extends Item {
         if (level.isClientSide()) //No client
             return InteractionResultHolder.pass(wrench);
 
-        int range = 10;
-        int maxDistance = 8;
-        BlockHitResult lookingAt = VectorHelper.getLookingAt((Player) player, ClipContext.Fluid.NONE, range);
-        if (lookingAt == null || (level.getBlockState(VectorHelper.getLookingAt((Player) player, wrench, range).getBlockPos()) == Blocks.AIR.defaultBlockState())) {
+        int range = 10; // How far away you can click on blocks from
+        BlockHitResult lookingAt = VectorHelper.getLookingAt(player, ClipContext.Fluid.NONE, range);
+        if (lookingAt == null || !((level.getBlockState(VectorHelper.getLookingAt(player, wrench, range).getBlockPos()).getBlock() instanceof BaseLaserBlock))) {
             if (player.isShiftKeyDown()) {
                 storeConnectionPos(wrench, BlockPos.ZERO);
                 return InteractionResultHolder.pass(wrench);
             }
         }
-        BlockPos pos = lookingAt.getBlockPos();
-        BlockEntity be = level.getBlockEntity(pos);
-        if (!(be instanceof BaseLaserBE))
+        BlockPos targetPos = lookingAt.getBlockPos();
+        BlockEntity targetBE = level.getBlockEntity(targetPos);
+        if (!(targetBE instanceof BaseLaserBE))
             return InteractionResultHolder.pass(wrench);
 
         if (player.isShiftKeyDown()) {
             //If the wrench doesn't already have a connection, store this position
-            if (getConnectionPos(wrench).equals(BlockPos.ZERO))
-                storeConnectionPos(wrench, pos);
-            else {
-                //If the wrench's position equals this one, erase it
-                if (pos.equals(getConnectionPos(wrench))) {
-                    storeConnectionPos(wrench, BlockPos.ZERO);
-                    return InteractionResultHolder.pass(wrench);
-                }
-                BlockPos sourcePos = getConnectionPos(wrench);
-                BlockEntity sourceBE = level.getBlockEntity(sourcePos);
-                //If the target TE is not one of ours, erase it
-                if (!(sourceBE instanceof BaseLaserBE)) {
-                    storeConnectionPos(wrench, BlockPos.ZERO);
-                    return InteractionResultHolder.pass(wrench);
-                }
-                //If we're too far away - send an error to the client
-                if (!pos.closerThan(sourcePos, maxDistance)) {
-                    player.displayClientMessage(new TranslatableComponent("message.logisticslasers.wrenchrange", maxDistance), true);
-                    return InteractionResultHolder.pass(wrench);
-                }
-                //Try to add a connection - if it fails (likely because it already exists) remove the connection
-                if (!((BaseLaserBE) be).addConnection(sourcePos))
-                    ((BaseLaserBE) be).removeConnection(sourcePos);
+            if (getConnectionPos(wrench).equals(BlockPos.ZERO)) {
+                storeConnectionPos(wrench, targetPos);
+                return InteractionResultHolder.pass(wrench);
             }
+            //If the wrench's position equals this one, erase it
+            if (targetPos.equals(getConnectionPos(wrench))) {
+                storeConnectionPos(wrench, BlockPos.ZERO);
+                return InteractionResultHolder.pass(wrench);
+            }
+            BlockPos sourcePos = getConnectionPos(wrench);
+            BlockEntity sourceBE = level.getBlockEntity(sourcePos);
+            //If the Source TE is not one of ours, erase it
+            if (!(sourceBE instanceof BaseLaserBE)) {
+                storeConnectionPos(wrench, BlockPos.ZERO);
+                return InteractionResultHolder.pass(wrench);
+            }
+            //If we're too far away - send an error to the client
+            if (!targetPos.closerThan(sourcePos, maxDistance)) {
+                player.displayClientMessage(new TranslatableComponent("message.laserio.wrenchrange", maxDistance), true);
+                return InteractionResultHolder.pass(wrench);
+            }
+            //Connect or disconnect the nodes, depending on current state
+            ((BaseLaserBE) targetBE).handleConnection((BaseLaserBE) sourceBE);
         }
+
         //System.out.println(getConnectionPos(wrench));
         return InteractionResultHolder.pass(wrench);
     }

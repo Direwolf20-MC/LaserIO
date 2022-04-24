@@ -66,20 +66,7 @@ public class BaseLaserBE extends BlockEntity {
 
     /**Add another node to this ones connected list*/
     public boolean addNode(BlockPos pos) {
-        boolean success = connections.add(getRelativePos(pos));
-        if (success) {
-            markDirtyClient();
-        }
-        return success;
-    }
-
-    /**Helpers to translate between relative/world pos*/
-    public BlockPos getWorldPos(BlockPos relativePos) {
-        return getBlockPos().offset(relativePos);
-    }
-
-    public BlockPos getRelativePos(BlockPos worldPos) {
-        return worldPos.subtract(getBlockPos());
+        return connections.add(getRelativePos(pos));
     }
 
     /**Only one of the nodes should render the laser connection - doesn't really matter which one*/
@@ -91,51 +78,64 @@ public class BaseLaserBE extends BlockEntity {
         return success;
     }
 
-    /**Remove another nodes location from the list of connected nodes*/
+    /** Remove another nodes location from the list of connected nodes */
     public boolean removeNode(BlockPos pos) {
-        boolean success = connections.remove(getRelativePos(pos));
-        renderedConnections.remove(getRelativePos(pos)); //Remove it from the rendered list as well
+        BlockPos relativePos = getRelativePos(pos);
+        connections.remove(relativePos);
+        boolean success = renderedConnections.remove(relativePos); //Remove it from the rendered list as well, whether its there or not
         if (success) {
             markDirtyClient();
         }
         return success;
     }
 
-    /**
-     * @param pos The Position in world you're connecting this TE to.
-     * @return Was the connection successful
-     * Connects This Pos -> Target Pos, and connects Target Pos -> This pos
-     */
-    public boolean addConnection(BlockPos pos) {
-        BlockEntity blockEntity = level.getBlockEntity(pos);
-        if (!(blockEntity instanceof BaseLaserBE))
-            return false;
-        BaseLaserBE be = (BaseLaserBE) blockEntity;
+    /** Check to see if a worldPos is connected to this block **/
+    public boolean isNodeConnected(BlockPos pos) {
+        return connections.contains(getRelativePos(pos));
+    }
 
-        if (addNode(pos)) {
-            addRenderNode(pos);
-            boolean success = be.addNode(getBlockPos());
-            if (success)
-                discoverAllNodes();
-            return success;
+    /** Helpers to translate between relative/world pos */
+    public BlockPos getWorldPos(BlockPos relativePos) {
+        return getBlockPos().offset(relativePos);
+    }
+
+    public BlockPos getRelativePos(BlockPos worldPos) {
+        return worldPos.subtract(getBlockPos());
+    }
+
+    public void handleConnection(BaseLaserBE be) {
+        BlockPos connectingPos = be.getBlockPos();
+        if (isNodeConnected(connectingPos)) { //If these nodes are already connected, disconnect them
+            removeConnection(connectingPos, be);
+        } else {
+            addConnection(connectingPos, be);
         }
-        return false;
     }
 
     /**
-     * @param pos The Position in world you're disconnection this TE from.
-     * @return Was the disconnect successful
-     * Disconnects This Pos from Target Pos, and disconnects Target Pos from This pos
+     * @param connectingPos The Position in world you're connecting this TE to.
+     * @param be            The block entity being connected to this one (And vice versa)
+     *                      Connects This Pos -> Target Pos, and connects Target Pos -> This pos
      */
-    public boolean removeConnection(BlockPos pos) {
-        boolean success = removeNode(pos);
-        if (success) {
-            BaseLaserBE be = (BaseLaserBE) level.getBlockEntity(pos);
-            be.removeNode(getBlockPos());
-            discoverAllNodes();
-            be.discoverAllNodes();
-        }
-        return success;
+
+    public void addConnection(BlockPos connectingPos, BaseLaserBE be) {
+        addNode(connectingPos); // Add that node to this one
+        be.addNode(getBlockPos()); // Add this node to that one
+        addRenderNode(connectingPos); // Add the render on this node only
+        discoverAllNodes(); //Re discover this new network
+    }
+
+    /**
+     * @param connectingPos The block position in world you're disconnection this TE from.
+     * @param be            The block entity being disconnected from this one (And vice versa)
+     *                      Disconnects This Pos from Target Pos, and disconnects Target Pos from This pos
+     */
+
+    public void removeConnection(BlockPos connectingPos, BaseLaserBE be) {
+        removeNode(connectingPos); // Remove that node from this one
+        be.removeNode(getBlockPos()); // Remove this node from that one
+        discoverAllNodes(); //Re discover on both nodes in case we have separated 2 networks
+        be.discoverAllNodes();
     }
 
     /**Get the connections relative coordinates*/
@@ -157,12 +157,22 @@ public class BaseLaserBE extends BlockEntity {
 
     /**Disconnect ALL connected nodes - called when the block is broken for example*/
     public void disconnectAllNodes() {
+        Set<BaseLaserBE> connectionsToUpdate = new HashSet<>(); //We're going to want to rediscover the network on each disconnected node, but not until all disconnections are done
         for (BlockPos pos : connections) {
-            BlockEntity be = level.getBlockEntity(getWorldPos(pos));
+            BlockPos connectingPos = getWorldPos(pos);
+            BlockEntity be = level.getBlockEntity(connectingPos);
+
             if (be instanceof BaseLaserBE) {
-                ((BaseLaserBE) be).removeNode(getRelativePos(be.getBlockPos()));
+                ((BaseLaserBE) be).removeNode(getBlockPos()); // Remove this node from that one
+                connectionsToUpdate.add((BaseLaserBE) be);
             }
         }
+
+        connections.clear();
+        for (BaseLaserBE be : connectionsToUpdate)
+            be.discoverAllNodes(); //Tell the other node to re-discover their new (possibly disconnected) network(s)
+
+        discoverAllNodes(); //Typically this isn't really needed, but in case its used in some future point i guess it can't hurt
     }
 
     /**Misc Methods for TE's*/
