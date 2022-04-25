@@ -6,8 +6,8 @@ import net.minecraft.world.item.ItemStack;
 public class ExtractorCardCache extends BaseCardCache {
     public final byte extractAmt;
 
-    public ExtractorCardCache(byte extractAmt, Direction direction, byte channel, ItemStack filterCard) {
-        super(direction, channel, filterCard);
+    public ExtractorCardCache(byte extractAmt, Direction direction, byte channel, ItemStack filterCard, int cardSlot) {
+        super(direction, channel, filterCard, cardSlot);
         this.extractAmt = extractAmt;
     }
 }

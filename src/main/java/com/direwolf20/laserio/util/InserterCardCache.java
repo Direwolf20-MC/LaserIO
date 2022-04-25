@@ -7,8 +7,8 @@ import net.minecraft.world.item.ItemStack;
 public class InserterCardCache extends BaseCardCache {
     public final BlockPos relativePos;
 
-    public InserterCardCache(BlockPos relativePos, Direction direction, byte channel, ItemStack filterCard) {
-        super(direction, channel, filterCard);
+    public InserterCardCache(BlockPos relativePos, Direction direction, byte channel, ItemStack filterCard, int cardSlot) {
+        super(direction, channel, filterCard, cardSlot);
         this.relativePos = relativePos;
     }
 }

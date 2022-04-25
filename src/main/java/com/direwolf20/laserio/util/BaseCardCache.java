@@ -14,15 +14,18 @@ public class BaseCardCache {
     public final Direction direction;
     public final byte channel;
     public final ItemStack filterCard;
+    public final int cardSlot;
     public final Set<ItemStack> filteredItems;
+
     public final boolean isAllowList;
     public final boolean isCompareNBT;
     public final HashMap<ItemStackKey, Boolean> filterCache = new HashMap<>();
 
-    public BaseCardCache(Direction direction, byte channel, ItemStack filterCard) {
+    public BaseCardCache(Direction direction, byte channel, ItemStack filterCard, int cardSlot) {
         this.direction = direction;
         this.channel = channel;
         this.filterCard = filterCard;
+        this.cardSlot = cardSlot;
         if (filterCard.equals(ItemStack.EMPTY)) {
             filteredItems = new HashSet<>();
             isAllowList = false;

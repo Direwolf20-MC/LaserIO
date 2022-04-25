@@ -16,7 +16,7 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import java.awt.*;
 
 public class LaserNodeBERender extends BaseLaserBERender<LaserNodeBE> {
-    private final Vector3f[] offsets = {
+    private static final Vector3f[] offsets = {
             new Vector3f(0.65f, 0.65f, 0.5f),
             new Vector3f(0.5f, 0.65f, 0.5f),
             new Vector3f(0.35f, 0.65f, 0.5f),
@@ -64,7 +64,7 @@ public class LaserNodeBERender extends BaseLaserBERender<LaserNodeBE> {
                             float[] floatcolors = colors[BaseCard.getChannel(card)].getColorComponents(new float[3]);
                             boolean reverse = direction.equals(Direction.DOWN) ? true : false;
                             if (BaseCard.getNamedTransferMode(card) != BaseCard.TransferMode.INSERT) reverse = !reverse;
-                            RenderUtils.drawConnectingLasers(blockentity, BlockPos.ZERO, BlockPos.ZERO.relative(direction), matrixStackIn, bufferIn, findOffset(direction, slot), 0f, 1f, 0f, 1f, 0.025f, floatcolors[0], floatcolors[1], floatcolors[2], 1f, 0.0125f, reverse);
+                            RenderUtils.drawConnectingLasers(blockentity, BlockPos.ZERO, BlockPos.ZERO.relative(direction), matrixStackIn, bufferIn, findOffset(direction, slot), 0f, 1f, 0f, 1f, 0.0175f, floatcolors[0], floatcolors[1], floatcolors[2], 1f, 0.0125f, reverse);
                         }
                     }
                 }
@@ -72,7 +72,7 @@ public class LaserNodeBERender extends BaseLaserBERender<LaserNodeBE> {
         }
     }
 
-    public Vector3f findOffset(Direction direction, int slot) {
+    public static Vector3f findOffset(Direction direction, int slot) {
         Vector3f offsetVector = offsets[slot].copy();
         switch (direction) {
             case UP -> {
