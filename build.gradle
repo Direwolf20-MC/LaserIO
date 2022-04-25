@@ -151,6 +151,9 @@ repositories {
     maven { // TOP
         url "https://cursemaven.com"
     }
+
+    maven { url = 'https://modmaven.dev/' } // mek
+    maven { url = "https://www.cursemaven.com" } // curse mods
 }
 
 dependencies {
@@ -170,6 +173,10 @@ dependencies {
     //JEI
     compileOnly fg.deobf("mezz.jei:jei-${jei_version}:api")
     implementation fg.deobf("mezz.jei:jei-${jei_version}")
+
+    //Other mods for dev environment
+    runtimeOnly fg.deobf("mekanism:Mekanism:${mekanism_version}")
+    runtimeOnly fg.deobf("curse.maven:inventory-sorter-240633:3543137") // already on the forge maven
 
     //TOP
     //implementation fg.deobf("curse.maven:the-one-probe-245211:3550084")
