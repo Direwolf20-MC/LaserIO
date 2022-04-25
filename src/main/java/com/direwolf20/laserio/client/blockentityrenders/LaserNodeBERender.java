@@ -11,6 +11,7 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
 
 import java.awt.*;
@@ -61,6 +62,8 @@ public class LaserNodeBERender extends BaseLaserBERender<LaserNodeBE> {
                     ItemStack card = h.getStackInSlot(slot);
                     if (card.getItem() instanceof BaseCard) {
                         if (((BaseCard) card.getItem()).getCardType() == BaseCard.CardType.ITEM) {
+                            if (blockentity.getAttachedInventory(direction).equals(LazyOptional.empty()))
+                                continue;
                             float[] floatcolors = colors[BaseCard.getChannel(card)].getColorComponents(new float[3]);
                             boolean reverse = direction.equals(Direction.DOWN) ? true : false;
                             if (BaseCard.getNamedTransferMode(card) != BaseCard.TransferMode.INSERT) reverse = !reverse;
