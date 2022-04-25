@@ -153,14 +153,15 @@ public class LaserNodeBE extends BaseLaserBE {
         BlockPos toPos = getBlockPos();
         Vector3f extractOffset = LaserNodeBERender.findOffset(fromDirection, extractPosition);
         ItemFlowParticleData data = new ItemFlowParticleData(itemStack, toPos.getX() + extractOffset.x(), toPos.getY() + extractOffset.y(), toPos.getZ() + extractOffset.z(), 10);
-        serverWorld.sendParticles(data, fromPos.getX() + extractOffset.x(), fromPos.getY() + extractOffset.y(), fromPos.getZ() + extractOffset.z(), 8 * itemStack.getCount(), 0.025f, 0.025f, 0.025f, 0);
+        float randomSpread = 0.01f;
+        serverWorld.sendParticles(data, fromPos.getX() + extractOffset.x(), fromPos.getY() + extractOffset.y(), fromPos.getZ() + extractOffset.z(), 8 * itemStack.getCount(), randomSpread, randomSpread, randomSpread, 0);
 
         //Insert
         fromPos = destinationBE.getBlockPos();
         toPos = destinationBE.getBlockPos().relative(destinationDirection);
         Vector3f insertOffset = LaserNodeBERender.findOffset(destinationDirection, insertPosition);
         data = new ItemFlowParticleData(itemStack, toPos.getX() + insertOffset.x(), toPos.getY() + insertOffset.y(), toPos.getZ() + insertOffset.z(), 10);
-        serverWorld.sendParticles(data, fromPos.getX() + insertOffset.x(), fromPos.getY() + insertOffset.y(), fromPos.getZ() + insertOffset.z(), 8 * itemStack.getCount(), 0.025f, 0.025f, 0.025f, 0);
+        serverWorld.sendParticles(data, fromPos.getX() + insertOffset.x(), fromPos.getY() + insertOffset.y(), fromPos.getZ() + insertOffset.z(), 8 * itemStack.getCount(), randomSpread, randomSpread, randomSpread, 0);
 
     }
 
