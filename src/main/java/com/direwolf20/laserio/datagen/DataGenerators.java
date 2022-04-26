@@ -13,7 +13,7 @@ public class DataGenerators {
         DataGenerator generator = event.getGenerator();
         if (event.includeServer()) {
             //generator.addProvider(new LaserIORecipes(generator));
-            //generator.addProvider(new LaserIOLootTables(generator));
+            generator.addProvider(new LaserIOLootTables(generator));
             //LaserIOBlockTags blockTags = new LaserIOBlockTags(generator, event.getExistingFileHelper());
             //generator.addProvider(blockTags);
             //generator.addProvider(new LaserIOItemTags(generator, blockTags, event.getExistingFileHelper()));
