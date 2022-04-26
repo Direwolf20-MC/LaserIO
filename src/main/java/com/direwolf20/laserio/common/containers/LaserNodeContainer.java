@@ -64,11 +64,12 @@ public class LaserNodeContainer extends AbstractContainerMenu {
                 slot.onQuickCraft(stack, itemstack);
             } else {
                 if (!this.moveItemStackTo(stack, 0, SLOTS, false)) {
-                    if (index < 27 + SLOTS && !this.moveItemStackTo(stack, 27 + SLOTS, 36 + SLOTS, false)) {
+                    return ItemStack.EMPTY;
+                    /*if (index < 27 + SLOTS && !this.moveItemStackTo(stack, 27 + SLOTS, 36 + SLOTS, false)) {
                         return ItemStack.EMPTY;
                     } else if (index < 36 + SLOTS && !this.moveItemStackTo(stack, SLOTS, 27 + SLOTS, false)) {
                         return ItemStack.EMPTY;
-                    }
+                    }*/
                 }
             }
 
