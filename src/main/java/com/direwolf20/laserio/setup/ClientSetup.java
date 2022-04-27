@@ -4,6 +4,7 @@ import com.direwolf20.laserio.client.blockentityrenders.LaserConnectorBERender;
 import com.direwolf20.laserio.client.blockentityrenders.LaserNodeBERender;
 import com.direwolf20.laserio.client.events.ClientEvents;
 import com.direwolf20.laserio.client.screens.BasicFilterScreen;
+import com.direwolf20.laserio.client.screens.FilterCountScreen;
 import com.direwolf20.laserio.client.screens.ItemCardScreen;
 import com.direwolf20.laserio.client.screens.LaserNodeScreen;
 import com.direwolf20.laserio.common.LaserIO;
@@ -31,6 +32,7 @@ public class ClientSetup {
             MenuScreens.register(Registration.LaserNode_Container.get(), LaserNodeScreen::new);           // Attach our container to the screen
             MenuScreens.register(Registration.ItemCard_Container.get(), ItemCardScreen::new);           // Attach our container to the screen
             MenuScreens.register(Registration.BasicFilter_Container.get(), BasicFilterScreen::new);           // Attach our container to the screen
+            MenuScreens.register(Registration.FilterCount_Container.get(), FilterCountScreen::new);           // Attach our container to the screen
         });
 
     }

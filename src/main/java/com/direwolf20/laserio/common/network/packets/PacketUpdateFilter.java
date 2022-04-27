@@ -1,7 +1,9 @@
 package com.direwolf20.laserio.common.network.packets;
 
 import com.direwolf20.laserio.common.containers.BasicFilterContainer;
+import com.direwolf20.laserio.common.containers.FilterCountContainer;
 import com.direwolf20.laserio.common.items.filters.FilterBasic;
+import com.direwolf20.laserio.common.items.filters.FilterCount;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -43,6 +45,11 @@ public class PacketUpdateFilter {
                     ItemStack stack = ((BasicFilterContainer) container).filterItem;
                     FilterBasic.setAllowList(stack, msg.allowList);
                     FilterBasic.setCompareNBT(stack, msg.compareNBT);
+                }
+                if (container instanceof FilterCountContainer) {
+                    ItemStack stack = ((FilterCountContainer) container).filterItem;
+                    FilterCount.setAllowList(stack, msg.allowList);
+                    FilterCount.setCompareNBT(stack, msg.compareNBT);
                 }
             });
 

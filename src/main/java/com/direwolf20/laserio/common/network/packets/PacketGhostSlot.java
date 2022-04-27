@@ -1,6 +1,7 @@
 package com.direwolf20.laserio.common.network.packets;
 
 import com.direwolf20.laserio.common.containers.customslot.BasicFilterSlot;
+import com.direwolf20.laserio.common.containers.customslot.FilterCountSlot;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -13,19 +14,22 @@ import java.util.function.Supplier;
 public class PacketGhostSlot {
     private int slotNumber;
     private ItemStack stack;
+    private int count;
 
-    public PacketGhostSlot(int slotNumber, ItemStack stack) {
+    public PacketGhostSlot(int slotNumber, ItemStack stack, int count) {
         this.slotNumber = slotNumber;
         this.stack = stack;
+        this.count = count;
     }
 
     public static void encode(PacketGhostSlot msg, FriendlyByteBuf buffer) {
         buffer.writeInt(msg.slotNumber);
         buffer.writeItem(msg.stack);
+        buffer.writeInt(msg.count);
     }
 
     public static PacketGhostSlot decode(FriendlyByteBuf buffer) {
-        return new PacketGhostSlot(buffer.readInt(), buffer.readItem());
+        return new PacketGhostSlot(buffer.readInt(), buffer.readItem(), buffer.readInt());
     }
 
     public static class Handler {
@@ -40,8 +44,10 @@ public class PacketGhostSlot {
                     return;
 
                 Slot slot = container.slots.get(msg.slotNumber);
-                if (slot instanceof BasicFilterSlot)
-                    slot.set(msg.stack);
+                ItemStack stack = msg.stack;
+                stack.setCount(msg.count);
+                if (slot instanceof BasicFilterSlot || slot instanceof FilterCountSlot)
+                    slot.set(stack);
             });
 
             ctx.get().setPacketHandled(true);
