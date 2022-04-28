@@ -84,12 +84,14 @@ public class ItemHandlerUtil {
     public static class InventoryCounts {
         private final ArrayListMultimap<Item, ItemStack> itemMap = ArrayListMultimap.create();
         private int totalCount = 0;
+        private boolean isCompareNBT;
 
         public InventoryCounts() {
 
         }
 
-        public InventoryCounts(IItemHandler handler) {
+        public InventoryCounts(IItemHandler handler, boolean compareNBT) {
+            isCompareNBT = compareNBT;
             for (int i = 0; i < handler.getSlots(); i++) {
                 ItemStack stack = handler.getStackInSlot(i);
                 if (!stack.isEmpty()) {
@@ -145,7 +147,8 @@ public class ItemHandlerUtil {
         public void setCount(ItemStack stack) {
             if (stack.isEmpty()) return;
             for (ItemStack cacheStack : itemMap.get(stack.getItem())) {
-                if (ItemHandlerHelper.canItemStacksStack(cacheStack, stack)) {
+                boolean sameItems = isCompareNBT ? ItemHandlerHelper.canItemStacksStack(cacheStack, stack) : cacheStack.sameItem(stack);
+                if (sameItems) {
                     cacheStack.grow(stack.getCount());
                     totalCount += stack.getCount();
                     return;
@@ -172,7 +175,8 @@ public class ItemHandlerUtil {
 
         public int getCount(ItemStack stack) {
             for (ItemStack cacheStack : itemMap.get(stack.getItem())) {
-                if (ItemHandlerHelper.canItemStacksStack(cacheStack, stack))
+                boolean sameItems = isCompareNBT ? ItemHandlerHelper.canItemStacksStack(cacheStack, stack) : cacheStack.sameItem(stack);
+                if (sameItems)
                     return cacheStack.getCount();
             }
             return 0;

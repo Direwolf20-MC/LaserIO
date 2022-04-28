@@ -51,8 +51,6 @@ public class FilterCountContainer extends AbstractContainerMenu {
     public FilterCountContainer(int windowId, Inventory playerInventory, Player player, FilterCountHandler handler, BlockPos sourcePos, ItemStack filterItem, ContainerData cardData) {
         this(windowId, playerInventory, player, handler, filterItem, cardData);
         this.sourceContainer = sourcePos;
-        this.slotCounts = cardData;
-        addDataSlots(cardData);
     }
 
     public int getStackSize(int slot) {

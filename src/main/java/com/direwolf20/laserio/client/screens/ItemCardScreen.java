@@ -7,7 +7,7 @@ import com.direwolf20.laserio.common.containers.ItemCardContainer;
 import com.direwolf20.laserio.common.containers.customslot.CardSlot;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.common.items.cards.CardItem;
-import com.direwolf20.laserio.common.items.filters.FilterBasic;
+import com.direwolf20.laserio.common.items.filters.BaseFilter;
 import com.direwolf20.laserio.common.network.PacketHandler;
 import com.direwolf20.laserio.common.network.packets.PacketOpenFilter;
 import com.direwolf20.laserio.common.network.packets.PacketUpdateCard;
@@ -168,7 +168,7 @@ public class ItemCardScreen extends AbstractContainerScreen<ItemCardContainer> {
 
     @Override
     public boolean mouseClicked(double x, double y, int btn) {
-        if (hoveredSlot == null || hoveredSlot.getItem().isEmpty() || !(hoveredSlot.getItem().getItem() instanceof FilterBasic))
+        if (hoveredSlot == null || hoveredSlot.getItem().isEmpty() || !(hoveredSlot.getItem().getItem() instanceof BaseFilter))
             return super.mouseClicked(x, y, btn);
 
         if (btn == 1 && hoveredSlot instanceof CardSlot) { //Right click

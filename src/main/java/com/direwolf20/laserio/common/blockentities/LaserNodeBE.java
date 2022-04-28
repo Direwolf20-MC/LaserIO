@@ -6,6 +6,7 @@ import com.direwolf20.laserio.common.blockentities.basebe.BaseLaserBE;
 import com.direwolf20.laserio.common.containers.LaserNodeContainer;
 import com.direwolf20.laserio.common.containers.customhandler.NodeItemHandler;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
+import com.direwolf20.laserio.common.items.filters.BaseFilter;
 import com.direwolf20.laserio.common.items.filters.FilterBasic;
 import com.direwolf20.laserio.common.items.filters.FilterCount;
 import com.direwolf20.laserio.setup.Registration;
@@ -73,7 +74,7 @@ public class LaserNodeBE extends BaseLaserBE {
         refreshAllInvNodes(); //Seeing as the otherNodes list just got updated, we should refresh the InventoryNode content caches
     }
 
-    /**Build a list of extractor cards this node has in it, for looping through**/
+    /** Build a list of extractor cards this node has in it, for looping through **/
     public void findMyExtractors() {
         this.extractorCardCaches.clear();
         for (Direction direction : Direction.values()) {
@@ -88,7 +89,7 @@ public class LaserNodeBE extends BaseLaserBE {
         }
     }
 
-    /**Loop through all the extractorCards and run the extractions**/
+    /** Loop through all the extractorCards and run the extractions **/
     public void extractItems() {
         for (ExtractorCardCache extractorCardCache : extractorCardCaches) {
             sendItems(extractorCardCache);
@@ -133,65 +134,51 @@ public class LaserNodeBE extends BaseLaserBE {
                 IItemHandler possibleDestination = be.getAttachedInventory(inserterCardCache.direction).orElse(EMPTY);
                 if (possibleDestination.getSlots() == 0) continue;
                 ItemStack itemStack = adjacentInventory.extractItem(slot, extractorCardCache.extractAmt, true); //Pretend to pull the item out
-                ItemStack postInsertStack = determineTransfer(itemStack, possibleDestination, inserterCardCache);
-                if (!postInsertStack.equals(itemStack, false)) { //If something changed
-                    int countExtracted = postInsertStack.isEmpty() ? itemStack.getCount() : itemStack.getCount() - postInsertStack.getCount();
-                    adjacentInventory.extractItem(slot, countExtracted, false); //Actually remove the number of items
-                    drawParticles(itemStack, extractorCardCache.direction, be, inserterCardCache.direction, extractorCardCache.cardSlot, inserterCardCache.cardSlot);
-                    ItemHandlerHelper.insertItem(possibleDestination, itemStack, false);
-                    return;
-                }
+                int transferAmt = getTransferAmt(itemStack, possibleDestination, inserterCardCache);
+                if (transferAmt == 0) continue;  //If nothing fits in this destination, move onto the next
+                itemStack.setCount(transferAmt);
+                adjacentInventory.extractItem(slot, transferAmt, false); //Actually extract the number of items that fit
+                drawParticles(itemStack, extractorCardCache.direction, be, inserterCardCache.direction, extractorCardCache.cardSlot, inserterCardCache.cardSlot);
+                ItemHandlerHelper.insertItem(possibleDestination, itemStack, false); //Actually insert into the destination
+                return;
             }
         }
     }
 
     /**
-     * Attempts to insert @param stack into @param destitemHandler at @param toPos
-     * Takes into account items currently traveling through the network, and whether they will also fit in the destination
+     * Attempts to insert @param stack into @param destitemHandler
      *
      * @return how many items fit
      */
     public int testInsertToInventory(IItemHandler destitemHandler, ItemStack stack) {
         ItemStack tempStack = ItemHandlerHelper.insertItem(destitemHandler, stack, true);
         int remainder = tempStack.getCount();
-        int count = stack.getCount() - remainder; //How many items will fit in the inventory
-        return count;
+        return stack.getCount() - remainder;
     }
 
-    /** Determine how to transfer an itemstack into a destination inventory based on the filter in the inserterCard **/
-    public ItemStack determineTransfer(ItemStack itemStack, IItemHandler destinationInventory, InserterCardCache inserterCard) {
+    /** Determine how many items from @param itemStack can fit into @param destinationInventory based on the filter in @param inserterCard **/
+    public int getTransferAmt(ItemStack itemStack, IItemHandler destinationInventory, InserterCardCache inserterCard) {
         ItemStack insertFilter = inserterCard.filterCard;
         if (insertFilter.getItem() instanceof FilterBasic || insertFilter.isEmpty()) { // Basic cards send as many items as can fit into an inventory
-            return ItemHandlerHelper.insertItem(destinationInventory, itemStack, false); //Attempt to insert the item
+            return testInsertToInventory(destinationInventory, itemStack);
         } else if (insertFilter.getItem() instanceof FilterCount) { //Count cards send up to <X> amount determined by the filter
-            ItemHandlerUtil.InventoryCounts invCache = new ItemHandlerUtil.InventoryCounts(destinationInventory); //Cache the items in the destination
+            ItemHandlerUtil.InventoryCounts invCache = new ItemHandlerUtil.InventoryCounts(destinationInventory, BaseFilter.getCompareNBT(insertFilter)); //Cache the items in the destination
             int countOfItem = invCache.getCount(itemStack); //Find out how many of this itemStack we have in the target inventory
-            int desiredAmt = 128; //TODO Make this matter
+            int desiredAmt = 32; //TODO Make this matter
 
             if (countOfItem >= desiredAmt) { //Compare what we want to the target inventory, if we have enough return
-                return itemStack;
+                return 0;
             }
 
             //Doing this rather than copying.
             int neededAmt = desiredAmt - countOfItem; //How many items we need to fulfill this inventory
-            int originalItemStackAmt = itemStack.getCount(); //Store the size of the original item stack for re-applying later
             if (itemStack.getCount() > neededAmt) //If we're trying to send more items than needed
                 itemStack.setCount(neededAmt); //Set the size of the stack, rather than copying it
 
-            //Before we even try to insert the item, lets see how many can fit in the destination
-            int count = testInsertToInventory(destinationInventory, itemStack);
-            if (count == 0) { //If we can't fit any items in here, nope out!
-                itemStack.setCount(originalItemStackAmt);
-                return itemStack; //Return the original itemStack
-            }
-            if (count < itemStack.getCount()) { //If we can only fit 8 items, but were trying to get 16, adjust to 8
-                ItemStack copyStack = itemStack.copy();
-                copyStack.setCount(originalItemStackAmt - count); //Todo Change this method to return an int instead of copying
-                return copyStack;
-            } else
-                return ItemStack.EMPTY;
+            //Test how many of what we weed can actually fit into the destination and return that amount
+            return testInsertToInventory(destinationInventory, itemStack);
         }
-        return itemStack;
+        return 0;
     }
 
     /** Draw the particles between node and inventory **/
@@ -214,7 +201,7 @@ public class LaserNodeBE extends BaseLaserBE {
 
     }
 
-    /**TODO For the stocker mode**/
+    /** TODO For the stocker mode **/
     public void getItems(ItemStack card, Direction direction) {
         IItemHandler adjacentInventory = getAttachedInventory(direction).orElse(EMPTY);
         if (adjacentInventory.getSlots() != 0) {
@@ -230,7 +217,7 @@ public class LaserNodeBE extends BaseLaserBE {
         findMyExtractors();
     }
 
-    /**When this node changes, tell other nodes to refresh their cache of it**/
+    /** When this node changes, tell other nodes to refresh their cache of it **/
     public void notifyOtherNodesOfChange() {
         for (BlockPos pos : otherNodesInNetwork) {
             LaserNodeBE node = getNodeAt(getWorldPos(pos));
@@ -239,7 +226,7 @@ public class LaserNodeBE extends BaseLaserBE {
         }
     }
 
-    /**This method clears the non-persistent inventory node data variables and regenerates them from scratch*/
+    /** This method clears the non-persistent inventory node data variables and regenerates them from scratch */
     public void refreshAllInvNodes() {
         inserterNodes.clear();
         destinationCache.clear();
@@ -277,7 +264,7 @@ public class LaserNodeBE extends BaseLaserBE {
         }
     }
 
-    /**Somehow this makes it so if you break an adjacent chest it immediately invalidates the cache of it**/
+    /** Somehow this makes it so if you break an adjacent chest it immediately invalidates the cache of it **/
     public LazyOptional<IItemHandler> getAttachedInventory(Direction direction) {
         if (facingHandler[direction.ordinal()] != null) {
             return facingHandler[direction.ordinal()];

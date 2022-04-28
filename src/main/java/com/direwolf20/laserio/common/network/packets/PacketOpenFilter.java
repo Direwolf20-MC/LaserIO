@@ -1,14 +1,18 @@
 package com.direwolf20.laserio.common.network.packets;
 
 import com.direwolf20.laserio.common.containers.BasicFilterContainer;
+import com.direwolf20.laserio.common.containers.FilterCountContainer;
 import com.direwolf20.laserio.common.containers.ItemCardContainer;
 import com.direwolf20.laserio.common.containers.customhandler.FilterBasicHandler;
+import com.direwolf20.laserio.common.containers.customhandler.FilterCountHandler;
 import com.direwolf20.laserio.common.items.filters.FilterBasic;
+import com.direwolf20.laserio.common.items.filters.FilterCount;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.network.NetworkEvent;
@@ -46,11 +50,40 @@ public class PacketOpenFilter {
 
                 Slot slot = container.slots.get(msg.slotNumber);
                 ItemStack itemStack = slot.getItem();
-                FilterBasicHandler handler = FilterBasic.getInventory(itemStack);
+
 
                 if (itemStack.getItem() instanceof FilterBasic) {
+                    FilterBasicHandler handler = FilterBasic.getInventory(itemStack);
                     NetworkHooks.openGui(sender, new SimpleMenuProvider(
                             (windowId, playerInventory, playerEntity) -> new BasicFilterContainer(windowId, playerInventory, sender, handler, ((ItemCardContainer) container).sourceContainer, itemStack), new TranslatableComponent("")), (buf -> {
+                        buf.writeItem(itemStack);
+                    }));
+                }
+                if (itemStack.getItem() instanceof FilterCount) {
+                    FilterCountHandler handler = FilterCount.getInventory(itemStack);
+                    ContainerData slotCounts = new ContainerData() {
+                        @Override
+                        public int get(int index) {
+                            if (index < 15)
+                                return FilterCount.getInventory(itemStack).getStackInSlot(index).getCount();
+                            else
+                                throw new IllegalArgumentException("Invalid index: " + index);
+                        }
+
+                        @Override
+                        public void set(int index, int value) {
+                            throw new IllegalStateException("Cannot set values through IIntArray");
+                        }
+
+                        @Override
+                        public int getCount() {
+                            return 15;
+                        }
+                    };
+
+
+                    NetworkHooks.openGui(sender, new SimpleMenuProvider(
+                            (windowId, playerInventory, playerEntity) -> new FilterCountContainer(windowId, playerInventory, sender, handler, ((ItemCardContainer) container).sourceContainer, itemStack, slotCounts), new TranslatableComponent("")), (buf -> {
                         buf.writeItem(itemStack);
                     }));
                 }
