@@ -6,11 +6,10 @@ import com.direwolf20.laserio.common.blockentities.basebe.BaseLaserBE;
 import com.direwolf20.laserio.common.containers.LaserNodeContainer;
 import com.direwolf20.laserio.common.containers.customhandler.NodeItemHandler;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
+import com.direwolf20.laserio.common.items.filters.FilterBasic;
+import com.direwolf20.laserio.common.items.filters.FilterCount;
 import com.direwolf20.laserio.setup.Registration;
-import com.direwolf20.laserio.util.ExtractorCardCache;
-import com.direwolf20.laserio.util.InserterCardCache;
-import com.direwolf20.laserio.util.ItemStackKey;
-import com.direwolf20.laserio.util.WeakConsumerWrapper;
+import com.direwolf20.laserio.util.*;
 import com.mojang.math.Vector3f;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -134,15 +133,65 @@ public class LaserNodeBE extends BaseLaserBE {
                 IItemHandler possibleDestination = be.getAttachedInventory(inserterCardCache.direction).orElse(EMPTY);
                 if (possibleDestination.getSlots() == 0) continue;
                 ItemStack itemStack = adjacentInventory.extractItem(slot, extractorCardCache.extractAmt, true); //Pretend to pull the item out
-                ItemStack postInsertStack = ItemHandlerHelper.insertItem(possibleDestination, itemStack, false); //Attempt to insert the item
+                ItemStack postInsertStack = determineTransfer(itemStack, possibleDestination, inserterCardCache);
                 if (!postInsertStack.equals(itemStack, false)) { //If something changed
                     int countExtracted = postInsertStack.isEmpty() ? itemStack.getCount() : itemStack.getCount() - postInsertStack.getCount();
                     adjacentInventory.extractItem(slot, countExtracted, false); //Actually remove the number of items
                     drawParticles(itemStack, extractorCardCache.direction, be, inserterCardCache.direction, extractorCardCache.cardSlot, inserterCardCache.cardSlot);
+                    ItemHandlerHelper.insertItem(possibleDestination, itemStack, false);
                     return;
                 }
             }
         }
+    }
+
+    /**
+     * Attempts to insert @param stack into @param destitemHandler at @param toPos
+     * Takes into account items currently traveling through the network, and whether they will also fit in the destination
+     *
+     * @return how many items fit
+     */
+    public int testInsertToInventory(IItemHandler destitemHandler, ItemStack stack) {
+        ItemStack tempStack = ItemHandlerHelper.insertItem(destitemHandler, stack, true);
+        int remainder = tempStack.getCount();
+        int count = stack.getCount() - remainder; //How many items will fit in the inventory
+        return count;
+    }
+
+    /** Determine how to transfer an itemstack into a destination inventory based on the filter in the inserterCard **/
+    public ItemStack determineTransfer(ItemStack itemStack, IItemHandler destinationInventory, InserterCardCache inserterCard) {
+        ItemStack insertFilter = inserterCard.filterCard;
+        if (insertFilter.getItem() instanceof FilterBasic || insertFilter.isEmpty()) { // Basic cards send as many items as can fit into an inventory
+            return ItemHandlerHelper.insertItem(destinationInventory, itemStack, false); //Attempt to insert the item
+        } else if (insertFilter.getItem() instanceof FilterCount) { //Count cards send up to <X> amount determined by the filter
+            ItemHandlerUtil.InventoryCounts invCache = new ItemHandlerUtil.InventoryCounts(destinationInventory); //Cache the items in the destination
+            int countOfItem = invCache.getCount(itemStack); //Find out how many of this itemStack we have in the target inventory
+            int desiredAmt = 128; //TODO Make this matter
+
+            if (countOfItem >= desiredAmt) { //Compare what we want to the target inventory, if we have enough return
+                return itemStack;
+            }
+
+            //Doing this rather than copying.
+            int neededAmt = desiredAmt - countOfItem; //How many items we need to fulfill this inventory
+            int originalItemStackAmt = itemStack.getCount(); //Store the size of the original item stack for re-applying later
+            if (itemStack.getCount() > neededAmt) //If we're trying to send more items than needed
+                itemStack.setCount(neededAmt); //Set the size of the stack, rather than copying it
+
+            //Before we even try to insert the item, lets see how many can fit in the destination
+            int count = testInsertToInventory(destinationInventory, itemStack);
+            if (count == 0) { //If we can't fit any items in here, nope out!
+                itemStack.setCount(originalItemStackAmt);
+                return itemStack; //Return the original itemStack
+            }
+            if (count < itemStack.getCount()) { //If we can only fit 8 items, but were trying to get 16, adjust to 8
+                ItemStack copyStack = itemStack.copy();
+                copyStack.setCount(originalItemStackAmt - count); //Todo Change this method to return an int instead of copying
+                return copyStack;
+            } else
+                return ItemStack.EMPTY;
+        }
+        return itemStack;
     }
 
     /** Draw the particles between node and inventory **/

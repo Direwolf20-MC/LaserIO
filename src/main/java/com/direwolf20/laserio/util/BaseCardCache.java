@@ -1,5 +1,6 @@
 package com.direwolf20.laserio.util;
 
+import com.direwolf20.laserio.common.items.filters.BaseFilter;
 import com.direwolf20.laserio.common.items.filters.FilterBasic;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
@@ -32,8 +33,8 @@ public class BaseCardCache {
             isCompareNBT = false;
         } else {
             this.filteredItems = getFilteredItems();
-            isAllowList = FilterBasic.getAllowList(filterCard);
-            isCompareNBT = FilterBasic.getCompareNBT(filterCard);
+            isAllowList = BaseFilter.getAllowList(filterCard);
+            isCompareNBT = BaseFilter.getCompareNBT(filterCard);
         }
     }
 
