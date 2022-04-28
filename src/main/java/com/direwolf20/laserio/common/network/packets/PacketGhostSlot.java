@@ -1,6 +1,6 @@
 package com.direwolf20.laserio.common.network.packets;
 
-import com.direwolf20.laserio.common.containers.customslot.BasicFilterSlot;
+import com.direwolf20.laserio.common.containers.customslot.FilterBasicSlot;
 import com.direwolf20.laserio.common.containers.customslot.FilterCountSlot;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
@@ -46,7 +46,7 @@ public class PacketGhostSlot {
                 Slot slot = container.slots.get(msg.slotNumber);
                 ItemStack stack = msg.stack;
                 stack.setCount(msg.count);
-                if (slot instanceof BasicFilterSlot || slot instanceof FilterCountSlot)
+                if (slot instanceof FilterBasicSlot || slot instanceof FilterCountSlot)
                     slot.set(stack);
             });
 

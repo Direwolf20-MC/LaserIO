@@ -1,8 +1,8 @@
 package com.direwolf20.laserio.common.containers;
 
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
-import com.direwolf20.laserio.common.containers.customhandler.NodeItemHandler;
-import com.direwolf20.laserio.common.containers.customslot.NodeSlot;
+import com.direwolf20.laserio.common.containers.customhandler.LaserNodeItemHandler;
+import com.direwolf20.laserio.common.containers.customslot.LaserNodeSlot;
 import com.direwolf20.laserio.setup.Registration;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Inventory;
@@ -28,10 +28,10 @@ public class LaserNodeContainer extends AbstractContainerMenu {
     public LaserNodeBE tile;
 
     public LaserNodeContainer(int windowId, BlockPos pos, Inventory playerInventory, Player player) {
-        this((LaserNodeBE) playerInventory.player.level.getBlockEntity(pos), windowId, pos, playerInventory, player, new NodeItemHandler(SLOTS), ContainerLevelAccess.NULL);
+        this((LaserNodeBE) playerInventory.player.level.getBlockEntity(pos), windowId, pos, playerInventory, player, new LaserNodeItemHandler(SLOTS), ContainerLevelAccess.NULL);
     }
 
-    public LaserNodeContainer(@Nullable LaserNodeBE tile, int windowId, BlockPos pos, Inventory playerInventory, Player player, NodeItemHandler handler, ContainerLevelAccess containerLevelAccess) {
+    public LaserNodeContainer(@Nullable LaserNodeBE tile, int windowId, BlockPos pos, Inventory playerInventory, Player player, LaserNodeItemHandler handler, ContainerLevelAccess containerLevelAccess) {
         super(Registration.LaserNode_Container.get(), windowId);
         //blockEntity = player.getCommandSenderWorld().getBlockEntity(pos);
         this.playerEntity = player;
@@ -92,8 +92,8 @@ public class LaserNodeContainer extends AbstractContainerMenu {
 
     private int addSlotRange(IItemHandler handler, int index, int x, int y, int amount, int dx) {
         for (int i = 0; i < amount; i++) {
-            if (handler instanceof NodeItemHandler)
-                addSlot(new NodeSlot(handler, index, x, y));
+            if (handler instanceof LaserNodeItemHandler)
+                addSlot(new LaserNodeSlot(handler, index, x, y));
             else
                 addSlot(new SlotItemHandler(handler, index, x, y));
             x += dx;

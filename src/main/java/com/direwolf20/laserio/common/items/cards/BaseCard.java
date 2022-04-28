@@ -1,6 +1,6 @@
 package com.direwolf20.laserio.common.items.cards;
 
-import com.direwolf20.laserio.common.containers.ItemCardContainer;
+import com.direwolf20.laserio.common.containers.CardItemContainer;
 import com.direwolf20.laserio.common.containers.customhandler.CardItemHandler;
 import com.direwolf20.laserio.setup.ModSetup;
 import net.minecraft.nbt.CompoundTag;
@@ -47,7 +47,7 @@ public class BaseCard extends Item {
 
         CardItemHandler handler = getInventory(itemstack);
         NetworkHooks.openGui((ServerPlayer) player, new SimpleMenuProvider(
-                (windowId, playerInventory, playerEntity) -> new ItemCardContainer(windowId, playerInventory, player, handler, itemstack), new TranslatableComponent("")), (buf -> {
+                (windowId, playerInventory, playerEntity) -> new CardItemContainer(windowId, playerInventory, player, handler, itemstack), new TranslatableComponent("")), (buf -> {
             buf.writeItem(itemstack);
         }));
 
@@ -56,9 +56,9 @@ public class BaseCard extends Item {
 
     public static CardItemHandler getInventory(ItemStack stack) {
         CompoundTag compound = stack.getOrCreateTag();
-        CardItemHandler handler = new CardItemHandler(ItemCardContainer.SLOTS, stack);
+        CardItemHandler handler = new CardItemHandler(CardItemContainer.SLOTS, stack);
         handler.deserializeNBT(compound.getCompound("inv"));
-        return !compound.contains("inv") ? setInventory(stack, new CardItemHandler(ItemCardContainer.SLOTS, stack)) : handler;
+        return !compound.contains("inv") ? setInventory(stack, new CardItemHandler(CardItemContainer.SLOTS, stack)) : handler;
     }
 
     public static CardItemHandler setInventory(ItemStack stack, CardItemHandler handler) {

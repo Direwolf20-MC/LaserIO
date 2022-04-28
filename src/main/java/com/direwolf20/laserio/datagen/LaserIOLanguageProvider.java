@@ -22,6 +22,7 @@ public class LaserIOLanguageProvider extends LanguageProvider {
         add(Registration.Card_Fluid.get(), "Fluid Card");
         add(Registration.Card_Energy.get(), "Energy Card");
         add(Registration.Filter_Basic.get(), "Basic Filter");
+        add(Registration.Filter_Count.get(), "Counting Filter");
 
         add("screen.laserio.extractamt", "Extract");
         add("screen.laserio.allowlist", "Allow");

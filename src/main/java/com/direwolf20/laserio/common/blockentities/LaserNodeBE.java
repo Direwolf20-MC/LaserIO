@@ -4,7 +4,7 @@ import com.direwolf20.laserio.client.blockentityrenders.LaserNodeBERender;
 import com.direwolf20.laserio.client.particles.itemparticle.ItemFlowParticleData;
 import com.direwolf20.laserio.common.blockentities.basebe.BaseLaserBE;
 import com.direwolf20.laserio.common.containers.LaserNodeContainer;
-import com.direwolf20.laserio.common.containers.customhandler.NodeItemHandler;
+import com.direwolf20.laserio.common.containers.customhandler.LaserNodeItemHandler;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.common.items.filters.BaseFilter;
 import com.direwolf20.laserio.common.items.filters.FilterBasic;
@@ -33,8 +33,8 @@ import java.util.*;
 
 public class LaserNodeBE extends BaseLaserBE {
     /** This blocks Item Handlers **/
-    private final NodeItemHandler[] itemHandler = new NodeItemHandler[6]; //The item stacks in each side of the node, for local use only
-    private final LazyOptional<NodeItemHandler>[] handler = new LazyOptional[6]; //The capability thingy gives this one out for others to access?
+    private final LaserNodeItemHandler[] itemHandler = new LaserNodeItemHandler[6]; //The item stacks in each side of the node, for local use only
+    private final LazyOptional<LaserNodeItemHandler>[] handler = new LazyOptional[6]; //The capability thingy gives this one out for others to access?
     private final IItemHandler EMPTY = new ItemStackHandler(0);
 
     /** Adjacent Inventory Handlers **/
@@ -55,7 +55,7 @@ public class LaserNodeBE extends BaseLaserBE {
         super(Registration.LaserNode_BE.get(), pos, state);
         for (Direction direction : Direction.values()) {
             final int j = direction.ordinal();
-            itemHandler[j] = new NodeItemHandler(9, this);
+            itemHandler[j] = new LaserNodeItemHandler(9, this);
             handler[j] = LazyOptional.of(() -> itemHandler[j]);
             facingInvalidator.add(new WeakConsumerWrapper<>(this, (te, handler) -> {
                 if (te.facingHandler[j] == handler) {

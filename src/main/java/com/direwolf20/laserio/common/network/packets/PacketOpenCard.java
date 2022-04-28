@@ -1,6 +1,6 @@
 package com.direwolf20.laserio.common.network.packets;
 
-import com.direwolf20.laserio.common.containers.ItemCardContainer;
+import com.direwolf20.laserio.common.containers.CardItemContainer;
 import com.direwolf20.laserio.common.containers.customhandler.CardItemHandler;
 import com.direwolf20.laserio.common.items.cards.CardItem;
 import net.minecraft.core.BlockPos;
@@ -103,7 +103,7 @@ public class PacketOpenCard {
                 }*/
                 if (itemStack.getItem() instanceof CardItem) {
                     NetworkHooks.openGui(sender, new SimpleMenuProvider(
-                            (windowId, playerInventory, playerEntity) -> new ItemCardContainer(windowId, playerInventory, sender, handler, msg.sourcePos, itemStack), new TranslatableComponent("")), (buf -> {
+                            (windowId, playerInventory, playerEntity) -> new CardItemContainer(windowId, playerInventory, sender, handler, msg.sourcePos, itemStack), new TranslatableComponent("")), (buf -> {
                         buf.writeItem(itemStack);
                     }));
                 } /*else if (itemStack.getItem() instanceof CardInserterTag) {

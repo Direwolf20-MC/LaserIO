@@ -7,8 +7,8 @@ import net.minecraftforge.items.SlotItemHandler;
 
 import javax.annotation.Nonnull;
 
-public class CardSlot extends SlotItemHandler {
-    public CardSlot(IItemHandler itemHandler, int index, int xPosition, int yPosition) {
+public class CardItemSlot extends SlotItemHandler {
+    public CardItemSlot(IItemHandler itemHandler, int index, int xPosition, int yPosition) {
         super(itemHandler, index, xPosition, yPosition);
     }
 

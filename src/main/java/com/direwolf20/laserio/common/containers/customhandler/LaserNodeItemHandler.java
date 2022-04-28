@@ -7,14 +7,14 @@ import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
 
-public class NodeItemHandler extends ItemStackHandler {
+public class LaserNodeItemHandler extends ItemStackHandler {
     LaserNodeBE blockEntity;
 
-    public NodeItemHandler(int size) {
+    public LaserNodeItemHandler(int size) {
         super(size);
     }
 
-    public NodeItemHandler(int size, LaserNodeBE blockEntity) {
+    public LaserNodeItemHandler(int size, LaserNodeBE blockEntity) {
         super(size);
         this.blockEntity = blockEntity;
     }

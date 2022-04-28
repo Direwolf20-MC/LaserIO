@@ -4,9 +4,9 @@ import com.direwolf20.laserio.common.blockentities.LaserConnectorBE;
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import com.direwolf20.laserio.common.blocks.LaserConnector;
 import com.direwolf20.laserio.common.blocks.LaserNode;
-import com.direwolf20.laserio.common.containers.BasicFilterContainer;
+import com.direwolf20.laserio.common.containers.CardItemContainer;
+import com.direwolf20.laserio.common.containers.FilterBasicContainer;
 import com.direwolf20.laserio.common.containers.FilterCountContainer;
-import com.direwolf20.laserio.common.containers.ItemCardContainer;
 import com.direwolf20.laserio.common.containers.LaserNodeContainer;
 import com.direwolf20.laserio.common.items.LaserWrench;
 import com.direwolf20.laserio.common.items.cards.CardEnergy;
@@ -67,10 +67,10 @@ public class Registration {
     //Containers
     public static final RegistryObject<MenuType<LaserNodeContainer>> LaserNode_Container = CONTAINERS.register("lasernode",
             () -> IForgeMenuType.create((windowId, inv, data) -> new LaserNodeContainer(windowId, data.readBlockPos(), inv, inv.player)));
-    public static final RegistryObject<MenuType<ItemCardContainer>> ItemCard_Container = CONTAINERS.register("itemcard",
-            () -> IForgeMenuType.create((windowId, inv, data) -> new ItemCardContainer(windowId, inv, inv.player, data)));
-    public static final RegistryObject<MenuType<BasicFilterContainer>> BasicFilter_Container = CONTAINERS.register("basicfilter",
-            () -> IForgeMenuType.create((windowId, inv, data) -> new BasicFilterContainer(windowId, inv, inv.player, data)));
+    public static final RegistryObject<MenuType<CardItemContainer>> CardItem_Container = CONTAINERS.register("carditem",
+            () -> IForgeMenuType.create((windowId, inv, data) -> new CardItemContainer(windowId, inv, inv.player, data)));
+    public static final RegistryObject<MenuType<FilterBasicContainer>> FilterBasic_Container = CONTAINERS.register("filterbasic",
+            () -> IForgeMenuType.create((windowId, inv, data) -> new FilterBasicContainer(windowId, inv, inv.player, data)));
     public static final RegistryObject<MenuType<FilterCountContainer>> FilterCount_Container = CONTAINERS.register("filtercount",
             () -> IForgeMenuType.create((windowId, inv, data) -> new FilterCountContainer(windowId, inv, inv.player, data)));
 

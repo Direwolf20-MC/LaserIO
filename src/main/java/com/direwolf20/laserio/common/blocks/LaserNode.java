@@ -3,7 +3,7 @@ package com.direwolf20.laserio.common.blocks;
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import com.direwolf20.laserio.common.blocks.baseblocks.BaseLaserBlock;
 import com.direwolf20.laserio.common.containers.LaserNodeContainer;
-import com.direwolf20.laserio.common.containers.customhandler.NodeItemHandler;
+import com.direwolf20.laserio.common.containers.customhandler.LaserNodeItemHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -91,7 +91,7 @@ public class LaserNode extends BaseLaserBlock implements EntityBlock {
 
                             @Override
                             public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player playerEntity) {
-                                return new LaserNodeContainer((LaserNodeBE) be, windowId, pos, playerInventory, playerEntity, (NodeItemHandler) h, ContainerLevelAccess.create(be.getLevel(), be.getBlockPos()));
+                                return new LaserNodeContainer((LaserNodeBE) be, windowId, pos, playerInventory, playerEntity, (LaserNodeItemHandler) h, ContainerLevelAccess.create(be.getLevel(), be.getBlockPos()));
                             }
                         };
                         NetworkHooks.openGui((ServerPlayer) player, containerProvider, be.getBlockPos());

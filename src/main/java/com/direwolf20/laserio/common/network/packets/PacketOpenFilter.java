@@ -1,8 +1,8 @@
 package com.direwolf20.laserio.common.network.packets;
 
-import com.direwolf20.laserio.common.containers.BasicFilterContainer;
+import com.direwolf20.laserio.common.containers.CardItemContainer;
+import com.direwolf20.laserio.common.containers.FilterBasicContainer;
 import com.direwolf20.laserio.common.containers.FilterCountContainer;
-import com.direwolf20.laserio.common.containers.ItemCardContainer;
 import com.direwolf20.laserio.common.containers.customhandler.FilterBasicHandler;
 import com.direwolf20.laserio.common.containers.customhandler.FilterCountHandler;
 import com.direwolf20.laserio.common.items.filters.FilterBasic;
@@ -45,7 +45,7 @@ public class PacketOpenFilter {
                     return;
 
                 AbstractContainerMenu container = sender.containerMenu;
-                if (container == null || !(container instanceof ItemCardContainer))
+                if (container == null || !(container instanceof CardItemContainer))
                     return;
 
                 Slot slot = container.slots.get(msg.slotNumber);
@@ -55,7 +55,7 @@ public class PacketOpenFilter {
                 if (itemStack.getItem() instanceof FilterBasic) {
                     FilterBasicHandler handler = FilterBasic.getInventory(itemStack);
                     NetworkHooks.openGui(sender, new SimpleMenuProvider(
-                            (windowId, playerInventory, playerEntity) -> new BasicFilterContainer(windowId, playerInventory, sender, handler, ((ItemCardContainer) container).sourceContainer, itemStack), new TranslatableComponent("")), (buf -> {
+                            (windowId, playerInventory, playerEntity) -> new FilterBasicContainer(windowId, playerInventory, sender, handler, ((CardItemContainer) container).sourceContainer, itemStack), new TranslatableComponent("")), (buf -> {
                         buf.writeItem(itemStack);
                     }));
                 }
@@ -83,7 +83,7 @@ public class PacketOpenFilter {
 
 
                     NetworkHooks.openGui(sender, new SimpleMenuProvider(
-                            (windowId, playerInventory, playerEntity) -> new FilterCountContainer(windowId, playerInventory, sender, handler, ((ItemCardContainer) container).sourceContainer, itemStack, slotCounts), new TranslatableComponent("")), (buf -> {
+                            (windowId, playerInventory, playerEntity) -> new FilterCountContainer(windowId, playerInventory, sender, handler, ((CardItemContainer) container).sourceContainer, itemStack, slotCounts), new TranslatableComponent("")), (buf -> {
                         buf.writeItem(itemStack);
                     }));
                 }

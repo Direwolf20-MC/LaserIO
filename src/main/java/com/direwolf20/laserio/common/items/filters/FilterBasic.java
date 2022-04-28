@@ -1,6 +1,6 @@
 package com.direwolf20.laserio.common.items.filters;
 
-import com.direwolf20.laserio.common.containers.BasicFilterContainer;
+import com.direwolf20.laserio.common.containers.FilterBasicContainer;
 import com.direwolf20.laserio.common.containers.customhandler.FilterBasicHandler;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.TranslatableComponent;
@@ -26,7 +26,7 @@ public class FilterBasic extends BaseFilter {
 
         FilterBasicHandler handler = getInventory(itemstack);
         NetworkHooks.openGui((ServerPlayer) player, new SimpleMenuProvider(
-                (windowId, playerInventory, playerEntity) -> new BasicFilterContainer(windowId, playerInventory, player, handler, itemstack), new TranslatableComponent("")), (buf -> {
+                (windowId, playerInventory, playerEntity) -> new FilterBasicContainer(windowId, playerInventory, player, handler, itemstack), new TranslatableComponent("")), (buf -> {
             buf.writeItem(itemstack);
         }));
 
@@ -35,9 +35,9 @@ public class FilterBasic extends BaseFilter {
 
     public static FilterBasicHandler getInventory(ItemStack stack) {
         CompoundTag compound = stack.getOrCreateTag();
-        FilterBasicHandler handler = new FilterBasicHandler(BasicFilterContainer.SLOTS, stack);
+        FilterBasicHandler handler = new FilterBasicHandler(FilterBasicContainer.SLOTS, stack);
         handler.deserializeNBT(compound.getCompound("inv"));
-        return !compound.contains("inv") ? setInventory(stack, new FilterBasicHandler(BasicFilterContainer.SLOTS, stack)) : handler;
+        return !compound.contains("inv") ? setInventory(stack, new FilterBasicHandler(FilterBasicContainer.SLOTS, stack)) : handler;
     }
 
     public static FilterBasicHandler setInventory(ItemStack stack, FilterBasicHandler handler) {

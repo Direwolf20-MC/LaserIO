@@ -2,8 +2,8 @@ package com.direwolf20.laserio.client.screens;
 
 import com.direwolf20.laserio.client.screens.widgets.WhitelistButton;
 import com.direwolf20.laserio.common.LaserIO;
-import com.direwolf20.laserio.common.containers.BasicFilterContainer;
-import com.direwolf20.laserio.common.containers.customslot.BasicFilterSlot;
+import com.direwolf20.laserio.common.containers.FilterBasicContainer;
+import com.direwolf20.laserio.common.containers.customslot.FilterBasicSlot;
 import com.direwolf20.laserio.common.items.filters.FilterBasic;
 import com.direwolf20.laserio.common.network.PacketHandler;
 import com.direwolf20.laserio.common.network.packets.PacketGhostSlot;
@@ -23,15 +23,15 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BasicFilterScreen extends AbstractContainerScreen<BasicFilterContainer> {
+public class FilterBasicScreen extends AbstractContainerScreen<FilterBasicContainer> {
     private final ResourceLocation GUI = new ResourceLocation(LaserIO.MODID, "textures/gui/basicfilter.png");
 
-    protected final BasicFilterContainer container;
+    protected final FilterBasicContainer container;
     private ItemStack filter;
     private boolean isAllowList;
     private boolean isCompareNBT;
 
-    public BasicFilterScreen(BasicFilterContainer container, Inventory inv, Component name) {
+    public FilterBasicScreen(FilterBasicContainer container, Inventory inv, Component name) {
         super(container, inv, name);
         this.container = container;
         this.filter = container.filterItem;
@@ -113,7 +113,7 @@ public class BasicFilterScreen extends AbstractContainerScreen<BasicFilterContai
 
     @Override
     public boolean mouseClicked(double x, double y, int btn) {
-        if (hoveredSlot == null || !(hoveredSlot instanceof BasicFilterSlot))
+        if (hoveredSlot == null || !(hoveredSlot instanceof FilterBasicSlot))
             return super.mouseClicked(x, y, btn);
 
         // By splitting the stack we can get air easily :) perfect removal basically

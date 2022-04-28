@@ -1,6 +1,6 @@
 package com.direwolf20.laserio.common.network.packets;
 
-import com.direwolf20.laserio.common.containers.BasicFilterContainer;
+import com.direwolf20.laserio.common.containers.FilterBasicContainer;
 import com.direwolf20.laserio.common.containers.FilterCountContainer;
 import com.direwolf20.laserio.common.items.filters.FilterBasic;
 import com.direwolf20.laserio.common.items.filters.FilterCount;
@@ -41,8 +41,8 @@ public class PacketUpdateFilter {
                 if (container == null)
                     return;
 
-                if (container instanceof BasicFilterContainer) {
-                    ItemStack stack = ((BasicFilterContainer) container).filterItem;
+                if (container instanceof FilterBasicContainer) {
+                    ItemStack stack = ((FilterBasicContainer) container).filterItem;
                     FilterBasic.setAllowList(stack, msg.allowList);
                     FilterBasic.setCompareNBT(stack, msg.compareNBT);
                 }

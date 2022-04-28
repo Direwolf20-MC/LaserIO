@@ -3,8 +3,8 @@ package com.direwolf20.laserio.client.screens;
 import com.direwolf20.laserio.client.screens.widgets.ChannelButton;
 import com.direwolf20.laserio.client.screens.widgets.DireButton;
 import com.direwolf20.laserio.common.LaserIO;
-import com.direwolf20.laserio.common.containers.ItemCardContainer;
-import com.direwolf20.laserio.common.containers.customslot.CardSlot;
+import com.direwolf20.laserio.common.containers.CardItemContainer;
+import com.direwolf20.laserio.common.containers.customslot.CardItemSlot;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.common.items.cards.CardItem;
 import com.direwolf20.laserio.common.items.filters.BaseFilter;
@@ -28,10 +28,10 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ItemCardScreen extends AbstractContainerScreen<ItemCardContainer> {
+public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
     private final ResourceLocation GUI = new ResourceLocation(LaserIO.MODID, "textures/gui/itemcard.png");
 
-    protected final ItemCardContainer container;
+    protected final CardItemContainer container;
     private byte currentMode;
     private byte currentChannel;
     private byte currentItemExtractAmt;
@@ -39,7 +39,7 @@ public class ItemCardScreen extends AbstractContainerScreen<ItemCardContainer> {
     //private boolean isWhitelist;
     //private boolean isNBTFilter;
 
-    public ItemCardScreen(ItemCardContainer container, Inventory inv, Component name) {
+    public CardItemScreen(CardItemContainer container, Inventory inv, Component name) {
         super(container, inv, name);
         this.container = container;
         this.card = container.cardItem;
@@ -171,7 +171,7 @@ public class ItemCardScreen extends AbstractContainerScreen<ItemCardContainer> {
         if (hoveredSlot == null || hoveredSlot.getItem().isEmpty() || !(hoveredSlot.getItem().getItem() instanceof BaseFilter))
             return super.mouseClicked(x, y, btn);
 
-        if (btn == 1 && hoveredSlot instanceof CardSlot) { //Right click
+        if (btn == 1 && hoveredSlot instanceof CardItemSlot) { //Right click
             int slot = hoveredSlot.getSlotIndex();
             PacketHandler.sendToServer(new PacketOpenFilter(slot));
             return true;

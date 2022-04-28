@@ -1,6 +1,6 @@
 package com.direwolf20.laserio.common.network.packets;
 
-import com.direwolf20.laserio.common.containers.ItemCardContainer;
+import com.direwolf20.laserio.common.containers.CardItemContainer;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
@@ -42,8 +42,8 @@ public class PacketUpdateCard {
                 if (container == null)
                     return;
 
-                if (container instanceof ItemCardContainer) {
-                    ItemStack stack = ((ItemCardContainer) container).cardItem;
+                if (container instanceof CardItemContainer) {
+                    ItemStack stack = ((CardItemContainer) container).cardItem;
                     BaseCard.setTransferMode(stack, msg.mode);
                     BaseCard.setChannel(stack, msg.channel);
                     BaseCard.setItemExtractAmt(stack, msg.extractAmt);

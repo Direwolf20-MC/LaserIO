@@ -26,15 +26,15 @@ public class BaseLaserBlock extends Block {
     @SuppressWarnings("deprecation")
     @Override
     public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult result) {
-        if (!world.isClientSide) {
+        /*if (!world.isClientSide) {
             BlockEntity blockEntity = world.getBlockEntity(pos);
             if (blockEntity instanceof BaseLaserBE) {
                 System.out.println("Connections: " + ((BaseLaserBE) blockEntity).getConnections());
                 System.out.println("RenderedConnections: " + ((BaseLaserBE) blockEntity).getRenderedConnections());
             }
             return InteractionResult.SUCCESS;
-        }
-        return InteractionResult.SUCCESS;
+        }*/
+        return super.use(state, world, pos, player, hand, result);
     }
 
     @Override

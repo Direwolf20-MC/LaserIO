@@ -2,7 +2,7 @@ package com.direwolf20.laserio.common.containers;
 
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import com.direwolf20.laserio.common.containers.customhandler.FilterBasicHandler;
-import com.direwolf20.laserio.common.containers.customslot.BasicFilterSlot;
+import com.direwolf20.laserio.common.containers.customslot.FilterBasicSlot;
 import com.direwolf20.laserio.setup.Registration;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
@@ -17,7 +17,7 @@ import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
 
-public class BasicFilterContainer extends AbstractContainerMenu {
+public class FilterBasicContainer extends AbstractContainerMenu {
     public static final int SLOTS = 15;
     public FilterBasicHandler handler;
     public ItemStack filterItem;
@@ -25,13 +25,13 @@ public class BasicFilterContainer extends AbstractContainerMenu {
     private IItemHandler playerInventory;
     public BlockPos sourceContainer = BlockPos.ZERO;
 
-    public BasicFilterContainer(int windowId, Inventory playerInventory, Player player, FriendlyByteBuf extraData) {
+    public FilterBasicContainer(int windowId, Inventory playerInventory, Player player, FriendlyByteBuf extraData) {
         this(windowId, playerInventory, player, new FilterBasicHandler(SLOTS, ItemStack.EMPTY), ItemStack.EMPTY);
         filterItem = extraData.readItem();
     }
 
-    public BasicFilterContainer(int windowId, Inventory playerInventory, Player player, FilterBasicHandler handler, ItemStack filterItem) {
-        super(Registration.BasicFilter_Container.get(), windowId);
+    public FilterBasicContainer(int windowId, Inventory playerInventory, Player player, FilterBasicHandler handler, ItemStack filterItem) {
+        super(Registration.FilterBasic_Container.get(), windowId);
         playerEntity = player;
         this.handler = handler;
         this.playerInventory = new InvWrapper(playerInventory);
@@ -42,7 +42,7 @@ public class BasicFilterContainer extends AbstractContainerMenu {
         layoutPlayerInventorySlots(8, 84);
     }
 
-    public BasicFilterContainer(int windowId, Inventory playerInventory, Player player, FilterBasicHandler handler, BlockPos sourcePos, ItemStack filterItem) {
+    public FilterBasicContainer(int windowId, Inventory playerInventory, Player player, FilterBasicHandler handler, BlockPos sourcePos, ItemStack filterItem) {
         this(windowId, playerInventory, player, handler, filterItem);
         this.sourceContainer = sourcePos;
     }
@@ -78,7 +78,7 @@ public class BasicFilterContainer extends AbstractContainerMenu {
     private int addSlotRange(IItemHandler handler, int index, int x, int y, int amount, int dx) {
         for (int i = 0; i < amount; i++) {
             if (handler instanceof FilterBasicHandler)
-                addSlot(new BasicFilterSlot(handler, index, x, y));
+                addSlot(new FilterBasicSlot(handler, index, x, y));
             else
                 addSlot(new SlotItemHandler(handler, index, x, y));
             x += dx;

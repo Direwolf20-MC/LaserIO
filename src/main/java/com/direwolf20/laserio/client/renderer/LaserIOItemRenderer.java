@@ -17,6 +17,7 @@ import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nullable;
 
+/** This class is used to make the numbers on items in the FilterCountContainer smaller when greater than 100 **/
 public class LaserIOItemRenderer extends ItemRenderer {
     public LaserIOItemRenderer(TextureManager textureManager, ModelManager modelManager, ItemColors itemColors, BlockEntityWithoutLevelRenderer blockEntityWithoutLevelRenderer) {
         super(textureManager, modelManager, itemColors, blockEntityWithoutLevelRenderer);

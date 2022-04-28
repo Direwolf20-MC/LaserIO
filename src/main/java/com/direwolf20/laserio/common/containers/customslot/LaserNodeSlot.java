@@ -7,8 +7,8 @@ import net.minecraftforge.items.SlotItemHandler;
 
 import javax.annotation.Nonnull;
 
-public class NodeSlot extends SlotItemHandler {
-    public NodeSlot(IItemHandler itemHandler, int index, int xPosition, int yPosition) {
+public class LaserNodeSlot extends SlotItemHandler {
+    public LaserNodeSlot(IItemHandler itemHandler, int index, int xPosition, int yPosition) {
         super(itemHandler, index, xPosition, yPosition);
     }
 
