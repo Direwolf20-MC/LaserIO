@@ -10,14 +10,12 @@ public class ItemStackKey {
     public final Item item;
     public final CompoundTag nbt;
     private final int hash;
-    private final boolean compareNBT;
 
 
     public ItemStackKey(ItemStack stack, boolean compareNBT) {
         this.item = stack.getItem();
         this.nbt = compareNBT ? stack.getTag() : new CompoundTag();
         this.hash = Objects.hash(item, nbt);
-        this.compareNBT = compareNBT;
     }
 
     @Override

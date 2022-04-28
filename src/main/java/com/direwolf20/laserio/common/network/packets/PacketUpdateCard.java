@@ -43,7 +43,7 @@ public class PacketUpdateCard {
                     return;
 
                 if (container instanceof ItemCardContainer) {
-                    ItemStack stack = ((ItemCardContainer) container).cardItem; //ToDo Support for offhand?
+                    ItemStack stack = ((ItemCardContainer) container).cardItem;
                     BaseCard.setTransferMode(stack, msg.mode);
                     BaseCard.setChannel(stack, msg.channel);
                     BaseCard.setItemExtractAmt(stack, msg.extractAmt);

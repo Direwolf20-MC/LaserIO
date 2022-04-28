@@ -156,15 +156,15 @@ public class LaserNodeBE extends BaseLaserBE {
         return stack.getCount() - remainder;
     }
 
-    /** Determine how many items from @param itemStack can fit into @param destinationInventory based on the filter in @param inserterCard **/
-    public int getTransferAmt(ItemStack itemStack, IItemHandler destinationInventory, InserterCardCache inserterCard) {
-        ItemStack insertFilter = inserterCard.filterCard;
+    /** Determine how many items from @param itemStack can fit into @param destinationInventory based on the filter in @param inserterCardCache **/
+    public int getTransferAmt(ItemStack itemStack, IItemHandler destinationInventory, InserterCardCache inserterCardCache) {
+        ItemStack insertFilter = inserterCardCache.filterCard;
         if (insertFilter.getItem() instanceof FilterBasic || insertFilter.isEmpty()) { // Basic cards send as many items as can fit into an inventory
             return testInsertToInventory(destinationInventory, itemStack);
         } else if (insertFilter.getItem() instanceof FilterCount) { //Count cards send up to <X> amount determined by the filter
             ItemHandlerUtil.InventoryCounts invCache = new ItemHandlerUtil.InventoryCounts(destinationInventory, BaseFilter.getCompareNBT(insertFilter)); //Cache the items in the destination
             int countOfItem = invCache.getCount(itemStack); //Find out how many of this itemStack we have in the target inventory
-            int desiredAmt = 32; //TODO Make this matter
+            int desiredAmt = inserterCardCache.getFilterAmt(itemStack); //Find out how many we want from the InserterCardCache
 
             if (countOfItem >= desiredAmt) { //Compare what we want to the target inventory, if we have enough return
                 return 0;

@@ -21,7 +21,6 @@ public class FilterBasic extends BaseFilter {
 
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
-        //TODO Fix dupe bug with multiple cards in hand when right clicked.
         ItemStack itemstack = player.getItemInHand(hand);
         if (level.isClientSide()) return new InteractionResultHolder<>(InteractionResult.PASS, itemstack);
 

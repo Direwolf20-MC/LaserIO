@@ -44,7 +44,6 @@ public class PacketHandler {
     }
 
     public static void sendToAll(Object msg, Level level) {
-        //Todo Maybe only send to nearby players?
         for (Player player : level.players()) {
             if (!(player instanceof FakePlayer))
                 HANDLER.sendTo(msg, ((ServerPlayer) player).connection.connection, NetworkDirection.PLAY_TO_CLIENT);
