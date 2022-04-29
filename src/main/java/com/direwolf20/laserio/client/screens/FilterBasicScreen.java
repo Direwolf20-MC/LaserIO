@@ -56,12 +56,12 @@ public class FilterBasicScreen extends AbstractContainerScreen<FilterBasicContai
         int left = baseX - 85;
         int top = baseY - 80;
 
-        leftWidgets.add(new WhitelistButton(left + 5, top + 10, 10, 10, isAllowList, (button) -> {
+        leftWidgets.add(new WhitelistButton(left + 5, top + 10, 16, 16, isAllowList, (button) -> {
             isAllowList = !isAllowList;
             ((WhitelistButton) button).setWhitelist(isAllowList);
         }));
 
-        leftWidgets.add(new WhitelistButton(left + 5, top + 30, 10, 10, isCompareNBT, (button) -> {
+        leftWidgets.add(new WhitelistButton(left + 5, top + 40, 16, 16, isCompareNBT, (button) -> {
             isCompareNBT = !isCompareNBT;
             ((WhitelistButton) button).setWhitelist(isCompareNBT);
         }));
@@ -76,7 +76,7 @@ public class FilterBasicScreen extends AbstractContainerScreen<FilterBasicContai
     @Override
     protected void renderLabels(PoseStack stack, int mouseX, int mouseY) {
         font.draw(stack, new TranslatableComponent("screen.laserio.allowlist").getString(), 5, 5, Color.DARK_GRAY.getRGB());
-        font.draw(stack, new TranslatableComponent("screen.laserio.comparenbt").getString(), 5, 25, Color.DARK_GRAY.getRGB());
+        font.draw(stack, new TranslatableComponent("screen.laserio.comparenbt").getString(), 7, 35, Color.DARK_GRAY.getRGB());
         //super.renderLabels(matrixStack, x, y);
     }
 
