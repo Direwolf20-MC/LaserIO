@@ -1,6 +1,6 @@
 package com.direwolf20.laserio.client.screens;
 
-import com.direwolf20.laserio.client.screens.widgets.WhitelistButton;
+import com.direwolf20.laserio.client.screens.widgets.ToggleButton;
 import com.direwolf20.laserio.common.LaserIO;
 import com.direwolf20.laserio.common.containers.FilterBasicContainer;
 import com.direwolf20.laserio.common.containers.customslot.FilterBasicSlot;
@@ -8,6 +8,7 @@ import com.direwolf20.laserio.common.items.filters.FilterBasic;
 import com.direwolf20.laserio.common.network.PacketHandler;
 import com.direwolf20.laserio.common.network.packets.PacketGhostSlot;
 import com.direwolf20.laserio.common.network.packets.PacketUpdateFilter;
+import com.direwolf20.laserio.util.MiscTools;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -19,7 +20,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,6 +42,18 @@ public class FilterBasicScreen extends AbstractContainerScreen<FilterBasicContai
         this.renderBackground(matrixStack);
         super.render(matrixStack, mouseX, mouseY, partialTicks);
         this.renderTooltip(matrixStack, mouseX, mouseY);
+        if (MiscTools.inBounds(getGuiLeft() + 5, getGuiTop() + 10, 16, 16, mouseX, mouseY)) {
+            if (isAllowList)
+                this.renderTooltip(matrixStack, new TranslatableComponent("screen.laserio.allowlist"), mouseX, mouseY);
+            else
+                this.renderTooltip(matrixStack, new TranslatableComponent("screen.laserio.denylist"), mouseX, mouseY);
+        }
+        if (MiscTools.inBounds(getGuiLeft() + 5, getGuiTop() + 25, 16, 16, mouseX, mouseY)) {
+            if (isCompareNBT)
+                this.renderTooltip(matrixStack, new TranslatableComponent("screen.laserio.nbttrue"), mouseX, mouseY);
+            else
+                this.renderTooltip(matrixStack, new TranslatableComponent("screen.laserio.nbtfalse"), mouseX, mouseY);
+        }
     }
 
     @Override
@@ -52,18 +64,22 @@ public class FilterBasicScreen extends AbstractContainerScreen<FilterBasicContai
         this.isAllowList = FilterBasic.getAllowList(filter);
         this.isCompareNBT = FilterBasic.getCompareNBT(filter);
 
-        int baseX = width / 2, baseY = height / 2;
-        int left = baseX - 85;
-        int top = baseY - 80;
+        ResourceLocation[] allowListTextures = new ResourceLocation[2];
+        allowListTextures[0] = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/allowlistfalse.png");
+        allowListTextures[1] = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/allowlisttrue.png");
 
-        leftWidgets.add(new WhitelistButton(left + 5, top + 10, 16, 16, isAllowList, (button) -> {
+        leftWidgets.add(new ToggleButton(getGuiLeft() + 5, getGuiTop() + 5, 16, 16, allowListTextures, isAllowList ? 1 : 0, (button) -> {
             isAllowList = !isAllowList;
-            ((WhitelistButton) button).setWhitelist(isAllowList);
+            ((ToggleButton) button).setTexturePosition(isAllowList ? 1 : 0);
         }));
 
-        leftWidgets.add(new WhitelistButton(left + 5, top + 40, 16, 16, isCompareNBT, (button) -> {
+        ResourceLocation[] nbtTextures = new ResourceLocation[2];
+        nbtTextures[0] = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/matchnbtfalse.png");
+        nbtTextures[1] = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/matchnbttrue.png");
+
+        leftWidgets.add(new ToggleButton(getGuiLeft() + 5, getGuiTop() + 25, 16, 16, nbtTextures, isCompareNBT ? 1 : 0, (button) -> {
             isCompareNBT = !isCompareNBT;
-            ((WhitelistButton) button).setWhitelist(isCompareNBT);
+            ((ToggleButton) button).setTexturePosition(isCompareNBT ? 1 : 0);
         }));
 
         // Lay the buttons out, too lazy to figure out the math every damn time.
@@ -75,8 +91,8 @@ public class FilterBasicScreen extends AbstractContainerScreen<FilterBasicContai
 
     @Override
     protected void renderLabels(PoseStack stack, int mouseX, int mouseY) {
-        font.draw(stack, new TranslatableComponent("screen.laserio.allowlist").getString(), 5, 5, Color.DARK_GRAY.getRGB());
-        font.draw(stack, new TranslatableComponent("screen.laserio.comparenbt").getString(), 7, 35, Color.DARK_GRAY.getRGB());
+        //font.draw(stack, new TranslatableComponent("screen.laserio.allowlist").getString(), 5, 5, Color.DARK_GRAY.getRGB());
+        //font.draw(stack, new TranslatableComponent("screen.laserio.comparenbt").getString(), 7, 35, Color.DARK_GRAY.getRGB());
         //super.renderLabels(matrixStack, x, y);
     }
 

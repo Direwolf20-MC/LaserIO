@@ -47,4 +47,9 @@ public class ChannelButton extends Button {
     public void setChannel(int channel) {
         this.channel = channel;
     }
+
+    @Override
+    public void renderToolTip(PoseStack stack, int x, int y) {
+        super.renderToolTip(stack, x, y);
+    }
 }

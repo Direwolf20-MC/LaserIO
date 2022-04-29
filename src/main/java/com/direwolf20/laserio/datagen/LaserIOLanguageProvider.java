@@ -29,6 +29,10 @@ public class LaserIOLanguageProvider extends LanguageProvider {
         add("screen.laserio.comparenbt", "NBT");
         add("screen.laserio.lasernode", "Laser Node");
 
+        add("screen.laserio.denylist", "Deny");
+        add("screen.laserio.nbttrue", "Match NBT");
+        add("screen.laserio.nbtfalse", "Ignore NBT");
+
         add("message.laserio.wrenchrange", "Connection exceeds maximum range of %d");
     }
 }

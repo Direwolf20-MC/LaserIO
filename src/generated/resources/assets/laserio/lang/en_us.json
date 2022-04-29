@@ -5,11 +5,15 @@
   "item.laserio.card_fluid": "Fluid Card",
   "item.laserio.card_item": "Item Card",
   "item.laserio.filter_basic": "Basic Filter",
+  "item.laserio.filter_count": "Counting Filter",
   "item.laserio.laser_wrench": "Laser Wrench",
   "itemGroup.LaserIO": "LaserIO",
   "message.laserio.wrenchrange": "Connection exceeds maximum range of %d",
   "screen.laserio.allowlist": "Allow",
   "screen.laserio.comparenbt": "NBT",
+  "screen.laserio.denylist": "Deny",
   "screen.laserio.extractamt": "Extract",
-  "screen.laserio.lasernode": "Laser Node"
+  "screen.laserio.lasernode": "Laser Node",
+  "screen.laserio.nbtfalse": "Ignore NBT",
+  "screen.laserio.nbttrue": "Match NBT"
 }
