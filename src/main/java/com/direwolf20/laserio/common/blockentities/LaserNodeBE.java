@@ -128,7 +128,11 @@ public class LaserNodeBE extends BaseLaserBE {
     public List<InserterCardCache> getPossibleDestinations(ExtractorCardCache extractorCardCache, ItemStack stack) {
         ItemStackKey key = new ItemStackKey(stack, true);
         if (destinationCache.containsKey(key)) return destinationCache.get(key);
-        destinationCache.put(key, inserterNodes.stream().filter(p -> (p.channel == extractorCardCache.channel) && (p.isStackValidForCard(stack))).toList());
+        destinationCache.put(key, inserterNodes.stream().filter(p ->
+                (p.channel == extractorCardCache.channel)
+                        && (p.isStackValidForCard(stack))
+                        && (!(p.relativePos.equals(BlockPos.ZERO) && p.direction.equals(extractorCardCache.direction)))
+        ).toList());
         return destinationCache.get(key);
     }
 
