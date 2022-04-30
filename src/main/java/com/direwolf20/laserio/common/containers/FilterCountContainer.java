@@ -74,7 +74,6 @@ public class FilterCountContainer extends AbstractContainerMenu {
         Slot slot = this.slots.get(index);
         if (slot != null && slot.hasItem()) {
             ItemStack currentStack = slot.getItem().copy();
-            currentStack.setCount(1);
             //Only do this if we click from the players inventory
             if (index >= SLOTS) {
                 for (int i = 0; i < SLOTS; i++) { //Prevents the same item from going in there more than once.

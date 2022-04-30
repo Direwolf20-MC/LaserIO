@@ -1,6 +1,5 @@
 package com.direwolf20.laserio.common.blockentities;
 
-import com.direwolf20.laserio.client.blockentityrenders.LaserNodeBERender;
 import com.direwolf20.laserio.client.particles.itemparticle.ItemFlowParticleData;
 import com.direwolf20.laserio.common.blockentities.basebe.BaseLaserBE;
 import com.direwolf20.laserio.common.containers.LaserNodeContainer;
@@ -31,7 +30,20 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
+import static com.direwolf20.laserio.util.MiscTools.findOffset;
+
 public class LaserNodeBE extends BaseLaserBE {
+    private static final Vector3f[] offsets = { //Used for where to draw particles from
+            new Vector3f(0.65f, 0.65f, 0.5f),
+            new Vector3f(0.5f, 0.65f, 0.5f),
+            new Vector3f(0.35f, 0.65f, 0.5f),
+            new Vector3f(0.65f, 0.5f, 0.5f),
+            new Vector3f(0.5f, 0.5f, 0.5f),
+            new Vector3f(0.35f, 0.5f, 0.5f),
+            new Vector3f(0.65f, 0.35f, 0.5f),
+            new Vector3f(0.5f, 0.35f, 0.5f),
+            new Vector3f(0.35f, 0.35f, 0.5f)
+    };
     /** This blocks Item Handlers **/
     private final LaserNodeItemHandler[] itemHandler = new LaserNodeItemHandler[6]; //The item stacks in each side of the node, for local use only
     private final LazyOptional<LaserNodeItemHandler>[] handler = new LazyOptional[6]; //The capability thingy gives this one out for others to access?
@@ -187,7 +199,7 @@ public class LaserNodeBE extends BaseLaserBE {
         //Extract
         BlockPos fromPos = getBlockPos().relative(fromDirection);
         BlockPos toPos = getBlockPos();
-        Vector3f extractOffset = LaserNodeBERender.findOffset(fromDirection, extractPosition);
+        Vector3f extractOffset = findOffset(fromDirection, extractPosition, offsets);
         ItemFlowParticleData data = new ItemFlowParticleData(itemStack, toPos.getX() + extractOffset.x(), toPos.getY() + extractOffset.y(), toPos.getZ() + extractOffset.z(), 10);
         float randomSpread = 0.01f;
         serverWorld.sendParticles(data, fromPos.getX() + extractOffset.x(), fromPos.getY() + extractOffset.y(), fromPos.getZ() + extractOffset.z(), 8 * itemStack.getCount(), randomSpread, randomSpread, randomSpread, 0);
@@ -195,7 +207,7 @@ public class LaserNodeBE extends BaseLaserBE {
         //Insert
         fromPos = destinationBE.getBlockPos();
         toPos = destinationBE.getBlockPos().relative(destinationDirection);
-        Vector3f insertOffset = LaserNodeBERender.findOffset(destinationDirection, insertPosition);
+        Vector3f insertOffset = findOffset(destinationDirection, insertPosition, offsets);
         data = new ItemFlowParticleData(itemStack, toPos.getX() + insertOffset.x(), toPos.getY() + insertOffset.y(), toPos.getZ() + insertOffset.z(), 10);
         serverWorld.sendParticles(data, fromPos.getX() + insertOffset.x(), fromPos.getY() + insertOffset.y(), fromPos.getZ() + insertOffset.z(), 8 * itemStack.getCount(), randomSpread, randomSpread, randomSpread, 0);
 

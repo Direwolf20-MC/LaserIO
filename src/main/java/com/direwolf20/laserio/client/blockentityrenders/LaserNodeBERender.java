@@ -16,6 +16,8 @@ import net.minecraftforge.items.CapabilityItemHandler;
 
 import java.awt.*;
 
+import static com.direwolf20.laserio.util.MiscTools.findOffset;
+
 public class LaserNodeBERender extends BaseLaserBERender<LaserNodeBE> {
     private static final Vector3f[] offsets = {
             new Vector3f(0.65f, 0.65f, 0.5f),
@@ -67,40 +69,11 @@ public class LaserNodeBERender extends BaseLaserBERender<LaserNodeBE> {
                             float[] floatcolors = colors[BaseCard.getChannel(card)].getColorComponents(new float[3]);
                             boolean reverse = direction.equals(Direction.DOWN) ? true : false;
                             if (BaseCard.getNamedTransferMode(card) != BaseCard.TransferMode.INSERT) reverse = !reverse;
-                            RenderUtils.drawConnectingLasers(blockentity, BlockPos.ZERO, BlockPos.ZERO.relative(direction), matrixStackIn, bufferIn, findOffset(direction, slot), 0f, 1f, 0f, 1f, 0.0175f, floatcolors[0], floatcolors[1], floatcolors[2], 1f, 0.0125f, reverse);
+                            RenderUtils.drawConnectingLasers(blockentity, BlockPos.ZERO, BlockPos.ZERO.relative(direction), matrixStackIn, bufferIn, findOffset(direction, slot, offsets), 0f, 1f, 0f, 1f, 0.0175f, floatcolors[0], floatcolors[1], floatcolors[2], 1f, 0.0125f, reverse);
                         }
                     }
                 }
             });
         }
-    }
-
-    public static Vector3f findOffset(Direction direction, int slot) {
-        Vector3f offsetVector = offsets[slot].copy();
-        switch (direction) {
-            case UP -> {
-                offsetVector.transform(Vector3f.XP.rotationDegrees(-270));
-                offsetVector.add(0, 1, 0);
-            }
-            case DOWN -> {
-                offsetVector.transform(Vector3f.XP.rotationDegrees(-90));
-                offsetVector.add(0, 0, 1);
-                //reverse = false;
-            }
-            //case NORTH -> offsetVector;
-            case EAST -> {
-                offsetVector.transform(Vector3f.YP.rotationDegrees(-90));
-                offsetVector.add(1, 0, 0);
-            }
-            case SOUTH -> {
-                offsetVector.transform(Vector3f.YP.rotationDegrees(-180));
-                offsetVector.add(1, 0, 1);
-            }
-            case WEST -> {
-                offsetVector.transform(Vector3f.YP.rotationDegrees(-270));
-                offsetVector.add(0, 0, 1);
-            }
-        }
-        return offsetVector;
     }
 }
