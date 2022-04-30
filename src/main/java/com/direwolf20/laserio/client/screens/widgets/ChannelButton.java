@@ -40,7 +40,7 @@ public class ChannelButton extends Button {
         fill(stack, this.x + 2, this.y + 2, this.x + this.width - 2, this.y + this.height - 2, colors[channel].getRGB());
         Font font = Minecraft.getInstance().font;
         int j = this.channel == 0 ? colors[15].getRGB() : getFGColor();
-        font.draw(stack, String.valueOf(channel), this.x + this.width / 4, this.y + (this.height - 8) / 2, j);
+        //font.draw(stack, String.valueOf(channel), this.x + this.width / 4, this.y + (this.height - 8) / 2, j);
         //drawCenteredString(stack, font, String.valueOf(channel), this.x + this.width / 2, this.y + (this.height - 8) / 2, j | Mth.ceil(this.alpha * 255.0F) << 24);
     }
 

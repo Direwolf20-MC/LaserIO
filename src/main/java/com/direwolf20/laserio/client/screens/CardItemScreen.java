@@ -2,6 +2,7 @@ package com.direwolf20.laserio.client.screens;
 
 import com.direwolf20.laserio.client.screens.widgets.ChannelButton;
 import com.direwolf20.laserio.client.screens.widgets.DireButton;
+import com.direwolf20.laserio.client.screens.widgets.ToggleButton;
 import com.direwolf20.laserio.common.LaserIO;
 import com.direwolf20.laserio.common.containers.CardItemContainer;
 import com.direwolf20.laserio.common.containers.customslot.CardItemSlot;
@@ -11,14 +12,15 @@ import com.direwolf20.laserio.common.items.filters.BaseFilter;
 import com.direwolf20.laserio.common.network.PacketHandler;
 import com.direwolf20.laserio.common.network.packets.PacketOpenFilter;
 import com.direwolf20.laserio.common.network.packets.PacketUpdateCard;
+import com.direwolf20.laserio.util.MiscTools;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.components.AbstractWidget;
-import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
@@ -36,8 +38,6 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
     private byte currentChannel;
     private byte currentItemExtractAmt;
     private ItemStack card;
-    //private boolean isWhitelist;
-    //private boolean isNBTFilter;
 
     public CardItemScreen(CardItemContainer container, Inventory inv, Component name) {
         super(container, inv, name);
@@ -50,6 +50,16 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
         this.renderBackground(matrixStack);
         super.render(matrixStack, mouseX, mouseY, partialTicks);
         this.renderTooltip(matrixStack, mouseX, mouseY);
+        TranslatableComponent translatableComponents[] = new TranslatableComponent[3];
+        translatableComponents[0] = new TranslatableComponent("screen.laserio.insert");
+        translatableComponents[1] = new TranslatableComponent("screen.laserio.extract");
+        translatableComponents[2] = new TranslatableComponent("screen.laserio.stock");
+        if (MiscTools.inBounds(getGuiLeft() + 5, getGuiTop() + 5, 16, 16, mouseX, mouseY)) {
+            this.renderTooltip(matrixStack, translatableComponents[currentMode], mouseX, mouseY);
+        }
+        if (MiscTools.inBounds(getGuiLeft() + 5, getGuiTop() + 35, 16, 16, mouseX, mouseY)) {
+            this.renderTooltip(matrixStack, new TextComponent(String.valueOf(currentChannel)), mouseX, mouseY);
+        }
     }
 
     @Override
@@ -78,9 +88,15 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
             currentItemExtractAmt = (byte) (Math.min(currentItemExtractAmt + change, 64));
         });
 
-        leftWidgets.add(new Button(left, top, 50, 20, new TranslatableComponent(BaseCard.TransferMode.values()[currentMode].name(), currentMode), (button) -> {
+        ResourceLocation[] allowListTextures = new ResourceLocation[3];
+        allowListTextures[0] = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/modeinserter.png");
+        allowListTextures[1] = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/modeextractor.png");
+        allowListTextures[2] = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/modeprovider.png");
+
+        leftWidgets.add(new ToggleButton(getGuiLeft() + 5, getGuiTop() + 5, 16, 16, allowListTextures, currentMode, (button) -> {
             currentMode = BaseCard.nextTransferMode(card);
-            button.setMessage(new TranslatableComponent(BaseCard.TransferMode.values()[currentMode].name(), currentMode));
+            ((ToggleButton) button).setTexturePosition(currentMode);
+            //button.setMessage(new TranslatableComponent(BaseCard.TransferMode.values()[currentMode].name(), currentMode));
             if (currentMode == 1) {
                 addRenderableWidget(plusButton);
                 addRenderableWidget(minusButton);
@@ -90,7 +106,20 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
             }
         }));
 
-        leftWidgets.add(new ChannelButton(left, top + 35, 20, 20, currentChannel, (button) -> {
+        /*leftWidgets.add(new Button(left, top, 50, 20, new TranslatableComponent(BaseCard.TransferMode.values()[currentMode].name(), currentMode), (button) -> {
+            currentMode = BaseCard.nextTransferMode(card);
+            button.setMessage(new TranslatableComponent(BaseCard.TransferMode.values()[currentMode].name(), currentMode));
+            if (currentMode == 1) {
+                addRenderableWidget(plusButton);
+                addRenderableWidget(minusButton);
+            } else {
+                removeWidget(plusButton);
+                removeWidget(minusButton);
+            }
+        }));*/
+
+
+        leftWidgets.add(new ChannelButton(getGuiLeft() + 5, getGuiTop() + 35, 16, 16, currentChannel, (button) -> {
             currentChannel = BaseCard.nextChannel(card);
             ((ChannelButton) button).setChannel(currentChannel);
         }));
