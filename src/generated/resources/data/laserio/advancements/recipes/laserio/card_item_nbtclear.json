@@ -1,0 +1,34 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "laserio:card_item_nbtclear"
+    ]
+  },
+  "criteria": {
+    "has_card_item": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "laserio:card_item"
+            ]
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "laserio:card_item_nbtclear"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_card_item",
+      "has_the_recipe"
+    ]
+  ]
+}
