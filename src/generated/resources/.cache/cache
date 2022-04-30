@@ -1,4 +1,4 @@
-2f191dac1d0e3afae53e25f29237e0c272054a92 assets/laserio/lang/en_us.json
+b13acf853ed567a711469de611e4359772313eb5 assets/laserio/lang/en_us.json
 a54a7787d6ae6b7e3097e0116d0191b3b7502bf7 assets/laserio/models/item/card_energy.json
 a202b855bd6a5693d2645d05f150f51dc5621dc0 assets/laserio/models/item/card_fluid.json
 173161de647cc9746227e8b381e7c7f15410262c assets/laserio/models/item/card_item.json
@@ -7,5 +7,11 @@ c15661e6248d1169e158735b11d5a4839b53c01f assets/laserio/models/item/filter_count
 ede5727632c4e4e718e4ec0cd8be4585760186d7 assets/laserio/models/item/laser_connector.json
 5bc93f0389b331cb7e2f6ae303e88ebd5c4b59a8 assets/laserio/models/item/laser_node.json
 f078ab97fe0309dbc315d95974a60e441f37515c assets/laserio/models/item/laser_wrench.json
+2c32d1e95d2ff0046a413a1575edbfec04678461 assets/laserio/models/item/logic_chip.json
+e1e7cda56571876f5f38f190311be8346a122bf4 assets/laserio/models/item/logic_chip_raw.json
+7d459478511bdaa96c705c76ec046da711fb42e0 data/laserio/advancements/recipes/laserio/logic_chip_raw.json
 d0a9bd770fa4ac669626c1c8b07c197352550402 data/laserio/loot_tables/blocks/laser_connector.json
 943db5dfdaa8bad875dbae800312eebe4b53ed1a data/laserio/loot_tables/blocks/laser_node.json
+8008e21a5cb8221d98389bef9e0847a0b3720691 data/laserio/recipes/logic_chip_raw.json
+5a8bbdc2d4755e4d70f32681bc16b88bef2a8ace data/minecraft/advancements/recipes/laserio/logic_chip.json
+93865ad4c46f9a5adb6aa6db17951bffe2388dfe data/minecraft/recipes/logic_chip.json

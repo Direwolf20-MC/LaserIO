@@ -9,6 +9,8 @@ import com.direwolf20.laserio.common.containers.FilterBasicContainer;
 import com.direwolf20.laserio.common.containers.FilterCountContainer;
 import com.direwolf20.laserio.common.containers.LaserNodeContainer;
 import com.direwolf20.laserio.common.items.LaserWrench;
+import com.direwolf20.laserio.common.items.LogicChip;
+import com.direwolf20.laserio.common.items.LogicChipRaw;
 import com.direwolf20.laserio.common.items.cards.CardEnergy;
 import com.direwolf20.laserio.common.items.cards.CardFluid;
 import com.direwolf20.laserio.common.items.cards.CardItem;
@@ -63,6 +65,8 @@ public class Registration {
     public static final RegistryObject<Item> Card_Item = ITEMS.register("card_item", CardItem::new);
     public static final RegistryObject<Item> Filter_Basic = ITEMS.register("filter_basic", FilterBasic::new);
     public static final RegistryObject<Item> Filter_Count = ITEMS.register("filter_count", FilterCount::new);
+    public static final RegistryObject<Item> Logic_Chip = ITEMS.register("logic_chip", LogicChip::new);
+    public static final RegistryObject<Item> Logic_Chip_Raw = ITEMS.register("logic_chip_raw", LogicChipRaw::new);
 
     //Containers
     public static final RegistryObject<MenuType<LaserNodeContainer>> LaserNode_Container = CONTAINERS.register("lasernode",

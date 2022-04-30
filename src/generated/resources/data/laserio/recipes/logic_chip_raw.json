@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "laserio",
+  "pattern": [
+    "rgr",
+    "cqc",
+    "rgr"
+  ],
+  "key": {
+    "r": {
+      "tag": "forge:dusts/redstone"
+    },
+    "q": {
+      "tag": "forge:storage_blocks/quartz"
+    },
+    "g": {
+      "tag": "forge:nuggets/gold"
+    },
+    "c": {
+      "item": "minecraft:clay_ball"
+    }
+  },
+  "result": {
+    "item": "laserio:logic_chip_raw",
+    "count": 4
+  }
+}

@@ -10,7 +10,7 @@ public class ModSetup {
         PacketHandler.register();
     }
 
-    public static final String TAB_NAME = "LaserIO";
+    public static final String TAB_NAME = "laserio";
     public static final CreativeModeTab ITEM_GROUP = new CreativeModeTab(TAB_NAME) {
         @Override
         public ItemStack makeIcon() {

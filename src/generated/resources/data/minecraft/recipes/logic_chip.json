@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:smelting",
+  "ingredient": {
+    "item": "laserio:logic_chip_raw"
+  },
+  "result": "laserio:logic_chip",
+  "experience": 1.0,
+  "cookingtime": 100
+}
