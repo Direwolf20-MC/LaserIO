@@ -132,6 +132,11 @@ public class BaseCard extends Item {
         return setChannel(card, (byte) (k == 15 ? 0 : k + 1));
     }
 
+    public static byte previousChannel(ItemStack card) {
+        byte k = getChannel(card);
+        return setChannel(card, (byte) (k == 0 ? 15 : k - 1));
+    }
+
     public static byte setItemExtractAmt(ItemStack card, byte itemextractamt) {
         card.getOrCreateTag().putByte("itemextractamt", itemextractamt);
         return itemextractamt;

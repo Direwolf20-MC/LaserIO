@@ -16,6 +16,7 @@ import com.direwolf20.laserio.util.MiscTools;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -38,6 +39,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
     private byte currentChannel;
     private byte currentItemExtractAmt;
     private ItemStack card;
+    private ChannelButton channelButton;
 
     public CardItemScreen(CardItemContainer container, Inventory inv, Component name) {
         super(container, inv, name);
@@ -71,17 +73,13 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
         currentChannel = BaseCard.getChannel(card);
         currentItemExtractAmt = BaseCard.getItemExtractAmt(card);
 
-        int baseX = width / 2, baseY = height / 2;
-        int left = baseX - 85;
-        int top = baseY - 80;
-
-        DireButton plusButton = new DireButton(left + 130, top + 11, 10, 10, new TranslatableComponent("-"), (button) -> {
+        DireButton plusButton = new DireButton(getGuiLeft() + 134, getGuiTop() + 14, 10, 10, new TranslatableComponent("-"), (button) -> {
             int change = -1;
             if (Screen.hasShiftDown()) change *= 10;
             if (Screen.hasControlDown()) change *= 64;
             currentItemExtractAmt = (byte) (Math.max(currentItemExtractAmt + change, 1));
         });
-        DireButton minusButton = new DireButton(left + 155, top + 11, 10, 10, new TranslatableComponent("+"), (button) -> {
+        DireButton minusButton = new DireButton(getGuiLeft() + 159, getGuiTop() + 14, 10, 10, new TranslatableComponent("+"), (button) -> {
             int change = 1;
             if (Screen.hasShiftDown()) change *= 10;
             if (Screen.hasControlDown()) change *= 64;
@@ -106,23 +104,11 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
             }
         }));
 
-        /*leftWidgets.add(new Button(left, top, 50, 20, new TranslatableComponent(BaseCard.TransferMode.values()[currentMode].name(), currentMode), (button) -> {
-            currentMode = BaseCard.nextTransferMode(card);
-            button.setMessage(new TranslatableComponent(BaseCard.TransferMode.values()[currentMode].name(), currentMode));
-            if (currentMode == 1) {
-                addRenderableWidget(plusButton);
-                addRenderableWidget(minusButton);
-            } else {
-                removeWidget(plusButton);
-                removeWidget(minusButton);
-            }
-        }));*/
-
-
-        leftWidgets.add(new ChannelButton(getGuiLeft() + 5, getGuiTop() + 35, 16, 16, currentChannel, (button) -> {
+        this.channelButton = new ChannelButton(getGuiLeft() + 5, getGuiTop() + 35, 16, 16, currentChannel, (button) -> {
             currentChannel = BaseCard.nextChannel(card);
             ((ChannelButton) button).setChannel(currentChannel);
-        }));
+        });
+        leftWidgets.add(channelButton);
 
         if (showExtractAmt()) {
             leftWidgets.add(plusButton);
@@ -145,7 +131,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
         if (showExtractAmt()) {
             font.draw(stack, new TranslatableComponent("screen.laserio.extractamt").getString(), 132, 5, Color.DARK_GRAY.getRGB());
             String extractAmt = Integer.toString(currentItemExtractAmt);
-            font.draw(stack, new TranslatableComponent(extractAmt).getString(), 150 - font.width(extractAmt) / 3, 15, Color.DARK_GRAY.getRGB());
+            font.draw(stack, new TranslatableComponent(extractAmt).getString(), 150 - font.width(extractAmt) / 3, 16, Color.DARK_GRAY.getRGB());
         }
         //super.renderLabels(matrixStack, x, y);
     }
@@ -197,6 +183,15 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
 
     @Override
     public boolean mouseClicked(double x, double y, int btn) {
+        if (MiscTools.inBounds(getGuiLeft() + 5, getGuiTop() + 35, 16, 16, x, y)) {
+            if (btn == 0)
+                currentChannel = BaseCard.nextChannel(card);
+            else if (btn == 1)
+                currentChannel = BaseCard.previousChannel(card);
+            channelButton.setChannel(currentChannel);
+            channelButton.playDownSound(Minecraft.getInstance().getSoundManager());
+            return true;
+        }
         if (hoveredSlot == null || hoveredSlot.getItem().isEmpty() || !(hoveredSlot.getItem().getItem() instanceof BaseFilter))
             return super.mouseClicked(x, y, btn);
 
