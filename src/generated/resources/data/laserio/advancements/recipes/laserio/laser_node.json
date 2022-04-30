@@ -1,0 +1,34 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "laserio:laser_node"
+    ]
+  },
+  "criteria": {
+    "has_logic_connector": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "laserio:laser_connector"
+            ]
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "laserio:laser_node"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_logic_connector",
+      "has_the_recipe"
+    ]
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "laserio",
+  "pattern": [
+    " g ",
+    "rbr",
+    "iii"
+  ],
+  "key": {
+    "g": {
+      "tag": "forge:glass"
+    },
+    "i": {
+      "tag": "forge:ingots/iron"
+    },
+    "r": {
+      "tag": "forge:dusts/redstone"
+    },
+    "b": {
+      "item": "laserio:logic_chip"
+    }
+  },
+  "result": {
+    "item": "laserio:laser_connector"
+  }
+}

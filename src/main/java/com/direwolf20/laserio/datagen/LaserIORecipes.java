@@ -105,5 +105,22 @@ public class LaserIORecipes extends RecipeProvider {
                 .unlockedBy("has_filter_basic", InventoryChangeTrigger.TriggerInstance.hasItems(Registration.Filter_Basic.get()))
                 .save(consumer);
 
+        //NBT Clearing Recipes
+        ShapelessRecipeBuilder.shapeless(Registration.Card_Item.get())
+                .requires(Registration.Card_Item.get())
+                .group("laserio")
+                .unlockedBy("has_card_item", InventoryChangeTrigger.TriggerInstance.hasItems(Registration.Card_Item.get()))
+                .save(consumer, Registration.Card_Item.getId() + "_nbtclear");
+        ShapelessRecipeBuilder.shapeless(Registration.Filter_Basic.get())
+                .requires(Registration.Filter_Basic.get())
+                .group("laserio")
+                .unlockedBy("has_filter_basic", InventoryChangeTrigger.TriggerInstance.hasItems(Registration.Filter_Basic.get()))
+                .save(consumer, Registration.Filter_Basic.getId() + "_nbtclear");
+        ShapelessRecipeBuilder.shapeless(Registration.Filter_Count.get())
+                .requires(Registration.Filter_Count.get())
+                .group("laserio")
+                .unlockedBy("has_filter_count", InventoryChangeTrigger.TriggerInstance.hasItems(Registration.Filter_Count.get()))
+                .save(consumer, Registration.Filter_Count.getId() + "_nbtclear");
+
     }
 }

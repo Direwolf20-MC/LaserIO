@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "laserio",
+  "pattern": [
+    "igi",
+    "gbg",
+    "igi"
+  ],
+  "key": {
+    "i": {
+      "tag": "forge:ingots/iron"
+    },
+    "g": {
+      "tag": "forge:glass_panes"
+    },
+    "b": {
+      "item": "laserio:laser_connector"
+    }
+  },
+  "result": {
+    "item": "laserio:laser_node"
+  }
+}

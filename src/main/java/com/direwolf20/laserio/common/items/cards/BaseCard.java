@@ -59,6 +59,32 @@ public class BaseCard extends Item {
         return new InteractionResultHolder<>(InteractionResult.PASS, itemstack);
     }
 
+    @Override
+    /**
+     * ItemStack sensitive version of getContainerItem. Returns a full ItemStack
+     * instance of the result.
+     *
+     * @param itemStack The current ItemStack
+     * @return The resulting ItemStack
+     */
+    public ItemStack getContainerItem(ItemStack itemStack) {
+        if (!hasContainerItem(itemStack)) {
+            return ItemStack.EMPTY;
+        }
+        return getInventory(itemStack).getStackInSlot(0);
+    }
+
+    /**
+     * ItemStack sensitive version of hasContainerItem
+     *
+     * @param stack The current item stack
+     * @return True if this item has a 'container'
+     */
+    @Override
+    public boolean hasContainerItem(ItemStack stack) {
+        return !getInventory(stack).getStackInSlot(0).equals(ItemStack.EMPTY);
+    }
+
     public static CardItemHandler getInventory(ItemStack stack) {
         CompoundTag compound = stack.getOrCreateTag();
         CardItemHandler handler = new CardItemHandler(CardItemContainer.SLOTS, stack);
