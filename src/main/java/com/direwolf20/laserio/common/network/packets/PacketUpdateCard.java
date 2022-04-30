@@ -14,21 +14,24 @@ public class PacketUpdateCard {
     byte mode;
     byte channel;
     byte extractAmt;
+    short priority;
 
-    public PacketUpdateCard(byte mode, byte channel, byte extractAmt) {
+    public PacketUpdateCard(byte mode, byte channel, byte extractAmt, short priority) {
         this.mode = mode;
         this.channel = channel;
         this.extractAmt = extractAmt;
+        this.priority = priority;
     }
 
     public static void encode(PacketUpdateCard msg, FriendlyByteBuf buffer) {
         buffer.writeByte(msg.mode);
         buffer.writeByte(msg.channel);
         buffer.writeByte(msg.extractAmt);
+        buffer.writeShort(msg.priority);
     }
 
     public static PacketUpdateCard decode(FriendlyByteBuf buffer) {
-        return new PacketUpdateCard(buffer.readByte(), buffer.readByte(), buffer.readByte());
+        return new PacketUpdateCard(buffer.readByte(), buffer.readByte(), buffer.readByte(), buffer.readShort());
     }
 
     public static class Handler {
@@ -47,6 +50,7 @@ public class PacketUpdateCard {
                     BaseCard.setTransferMode(stack, msg.mode);
                     BaseCard.setChannel(stack, msg.channel);
                     BaseCard.setItemExtractAmt(stack, msg.extractAmt);
+                    BaseCard.setPriority(stack, msg.priority);
                 }
             });
 

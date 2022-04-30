@@ -27,6 +27,7 @@ public class LaserIOLanguageProvider extends LanguageProvider {
         add(Registration.Logic_Chip_Raw.get(), "Raw Logic Chip");
 
         add("screen.laserio.extractamt", "Extract");
+        add("screen.laserio.priority", "Priority");
         add("screen.laserio.allowlist", "Allow");
         add("screen.laserio.comparenbt", "NBT");
         add("screen.laserio.lasernode", "Laser Node");

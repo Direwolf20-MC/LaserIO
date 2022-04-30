@@ -20,5 +20,6 @@
   "screen.laserio.lasernode": "Laser Node",
   "screen.laserio.nbtfalse": "Ignore NBT",
   "screen.laserio.nbttrue": "Match NBT",
+  "screen.laserio.priority": "Priority",
   "screen.laserio.stock": "Stock (Not Implemented)"
 }

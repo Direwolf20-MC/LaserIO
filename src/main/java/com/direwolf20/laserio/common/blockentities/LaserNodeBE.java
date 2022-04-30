@@ -125,14 +125,18 @@ public class LaserNodeBE extends BaseLaserBE {
         }*/
     }
 
+    public void sortInserters() {
+        this.inserterNodes.sort(Comparator.comparingDouble(InserterCardCache::getDistance));
+        this.inserterNodes.sort(Comparator.comparingInt(InserterCardCache::getPriority).reversed());
+    }
+
     public List<InserterCardCache> getPossibleDestinations(ExtractorCardCache extractorCardCache, ItemStack stack) {
         ItemStackKey key = new ItemStackKey(stack, true);
         if (destinationCache.containsKey(key)) return destinationCache.get(key);
-        destinationCache.put(key, inserterNodes.stream().filter(p ->
-                (p.channel == extractorCardCache.channel)
+        destinationCache.put(key, inserterNodes.stream().filter(p -> (p.channel == extractorCardCache.channel)
                         && (p.isStackValidForCard(stack))
-                        && (!(p.relativePos.equals(BlockPos.ZERO) && p.direction.equals(extractorCardCache.direction)))
-        ).toList());
+                        && (!(p.relativePos.equals(BlockPos.ZERO) && p.direction.equals(extractorCardCache.direction))))
+                .toList());
         return destinationCache.get(key);
     }
 
@@ -238,7 +242,7 @@ public class LaserNodeBE extends BaseLaserBE {
         for (BlockPos pos : otherNodesInNetwork) {
             LaserNodeBE node = getNodeAt(getWorldPos(pos));
             if (node == null) continue;
-            node.checkInvNode(this.getBlockPos());
+            node.checkInvNode(this.getBlockPos(), true);
         }
     }
 
@@ -247,8 +251,9 @@ public class LaserNodeBE extends BaseLaserBE {
         inserterNodes.clear();
         destinationCache.clear();
         for (BlockPos pos : otherNodesInNetwork) {
-            checkInvNode(getWorldPos(pos));
+            checkInvNode(getWorldPos(pos), false);
         }
+        sortInserters();
     }
 
     /**
@@ -257,7 +262,7 @@ public class LaserNodeBE extends BaseLaserBE {
      * Also populates the providerNodes and stockerNodes variables, so we know which inventory nodes provide or keep in stock items.
      * This method is called by refreshAllInvNodes() or on demand when the contents of an inventory node's container is changed
      */
-    public void checkInvNode(BlockPos pos) {
+    public void checkInvNode(BlockPos pos, boolean sortInserters) {
         LaserNodeBE be = getNodeAt(pos);
         BlockPos relativePos = getRelativePos(pos);
         //Remove this position from all caches, so we can repopulate below
@@ -273,11 +278,12 @@ public class LaserNodeBE extends BaseLaserBE {
                     } else if (BaseCard.getNamedTransferMode(card).equals(BaseCard.TransferMode.STOCK)) {
                         //getItems(card, direction);
                     } else if (BaseCard.getNamedTransferMode(card).equals(BaseCard.TransferMode.INSERT)) {
-                        inserterNodes.add(new InserterCardCache(relativePos, direction, BaseCard.getChannel(card), BaseCard.getFilter(card), slot));
+                        inserterNodes.add(new InserterCardCache(relativePos, direction, BaseCard.getChannel(card), BaseCard.getFilter(card), slot, BaseCard.getPriority(card)));
                     }
                 }
             }
         }
+        if (sortInserters) sortInserters();
     }
 
     /** Somehow this makes it so if you break an adjacent chest it immediately invalidates the cache of it **/

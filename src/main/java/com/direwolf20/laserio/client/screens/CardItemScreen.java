@@ -38,6 +38,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
     private byte currentMode;
     private byte currentChannel;
     private byte currentItemExtractAmt;
+    private short currentPriority;
     private ItemStack card;
     private ChannelButton channelButton;
 
@@ -72,18 +73,33 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
         currentMode = BaseCard.getTransferMode(card);
         currentChannel = BaseCard.getChannel(card);
         currentItemExtractAmt = BaseCard.getItemExtractAmt(card);
+        currentPriority = BaseCard.getPriority(card);
 
-        DireButton plusButton = new DireButton(getGuiLeft() + 134, getGuiTop() + 14, 10, 10, new TranslatableComponent("-"), (button) -> {
-            int change = -1;
-            if (Screen.hasShiftDown()) change *= 10;
-            if (Screen.hasControlDown()) change *= 64;
-            currentItemExtractAmt = (byte) (Math.max(currentItemExtractAmt + change, 1));
+        DireButton plusButton = new DireButton(getGuiLeft() + 140, getGuiTop() + 14, 10, 10, new TranslatableComponent("-"), (button) -> {
+            if (currentMode == 0) {
+                int change = -1;
+                if (Screen.hasShiftDown()) change *= 10;
+                if (Screen.hasControlDown()) change *= 64;
+                currentPriority = (short) (Math.max(currentPriority + change, -4096));
+            } else if (currentMode == 1) {
+                int change = -1;
+                if (Screen.hasShiftDown()) change *= 10;
+                if (Screen.hasControlDown()) change *= 64;
+                currentItemExtractAmt = (byte) (Math.max(currentItemExtractAmt + change, 1));
+            }
         });
-        DireButton minusButton = new DireButton(getGuiLeft() + 159, getGuiTop() + 14, 10, 10, new TranslatableComponent("+"), (button) -> {
-            int change = 1;
-            if (Screen.hasShiftDown()) change *= 10;
-            if (Screen.hasControlDown()) change *= 64;
-            currentItemExtractAmt = (byte) (Math.min(currentItemExtractAmt + change, 64));
+        DireButton minusButton = new DireButton(getGuiLeft() + 154, getGuiTop() + 14, 10, 10, new TranslatableComponent("+"), (button) -> {
+            if (currentMode == 0) {
+                int change = 1;
+                if (Screen.hasShiftDown()) change *= 10;
+                if (Screen.hasControlDown()) change *= 64;
+                currentPriority = (short) (Math.min(currentPriority + change, 4096));
+            } else if (currentMode == 1) {
+                int change = 1;
+                if (Screen.hasShiftDown()) change *= 10;
+                if (Screen.hasControlDown()) change *= 64;
+                currentItemExtractAmt = (byte) (Math.min(currentItemExtractAmt + change, 64));
+            }
         });
 
         ResourceLocation[] allowListTextures = new ResourceLocation[3];
@@ -95,10 +111,12 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
             currentMode = BaseCard.nextTransferMode(card);
             ((ToggleButton) button).setTexturePosition(currentMode);
             //button.setMessage(new TranslatableComponent(BaseCard.TransferMode.values()[currentMode].name(), currentMode));
-            if (currentMode == 1) {
-                addRenderableWidget(plusButton);
-                addRenderableWidget(minusButton);
-            } else {
+            if (currentMode < 2) {
+                if (!renderables.contains(plusButton)) {
+                    addRenderableWidget(plusButton);
+                    addRenderableWidget(minusButton);
+                }
+            } else if (currentMode == 2) {
                 removeWidget(plusButton);
                 removeWidget(minusButton);
             }
@@ -110,7 +128,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
         });
         leftWidgets.add(channelButton);
 
-        if (showExtractAmt()) {
+        if (showExtractAmt() || showPriority()) {
             leftWidgets.add(plusButton);
             leftWidgets.add(minusButton);
         }
@@ -126,12 +144,22 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
         return card.getItem() instanceof CardItem && BaseCard.getNamedTransferMode(card) == BaseCard.TransferMode.EXTRACT;
     }
 
+    private boolean showPriority() {
+        return card.getItem() instanceof CardItem && BaseCard.getNamedTransferMode(card) == BaseCard.TransferMode.INSERT;
+    }
+
     @Override
     protected void renderLabels(PoseStack stack, int mouseX, int mouseY) {
         if (showExtractAmt()) {
-            font.draw(stack, new TranslatableComponent("screen.laserio.extractamt").getString(), 132, 5, Color.DARK_GRAY.getRGB());
+            font.draw(stack, new TranslatableComponent("screen.laserio.extractamt").getString() + ":", 97, 5, Color.DARK_GRAY.getRGB());
             String extractAmt = Integer.toString(currentItemExtractAmt);
-            font.draw(stack, new TranslatableComponent(extractAmt).getString(), 150 - font.width(extractAmt) / 3, 16, Color.DARK_GRAY.getRGB());
+            font.draw(stack, new TextComponent(extractAmt).getString(), 150 - font.width(extractAmt) / 2, 5, Color.DARK_GRAY.getRGB());
+        }
+        if (showPriority()) {
+            font.draw(stack, new TranslatableComponent("screen.laserio.priority").getString() + ":", 97, 5, Color.DARK_GRAY.getRGB());
+            String priority = Integer.toString(currentPriority);
+            //drawCenteredString(stack, font, priority, 110 + font.width("-4096"), 5, Color.DARK_GRAY.getRGB());
+            font.draw(stack, new TextComponent(priority).getString(), 153 - font.width(priority) / 2, 5, Color.DARK_GRAY.getRGB());
         }
         //super.renderLabels(matrixStack, x, y);
     }
@@ -151,7 +179,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
 
     @Override
     public void onClose() {
-        PacketHandler.sendToServer(new PacketUpdateCard(currentMode, currentChannel, currentItemExtractAmt));
+        PacketHandler.sendToServer(new PacketUpdateCard(currentMode, currentChannel, currentItemExtractAmt, currentPriority));
         super.onClose();
     }
 

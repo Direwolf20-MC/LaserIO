@@ -147,6 +147,16 @@ public class BaseCard extends Item {
         return !compound.contains("itemextractamt") ? setItemExtractAmt(card, (byte) 1) : compound.getByte("itemextractamt");
     }
 
+    public static short setPriority(ItemStack card, short priority) {
+        card.getOrCreateTag().putShort("priority", priority);
+        return priority;
+    }
+
+    public static short getPriority(ItemStack card) {
+        CompoundTag compound = card.getOrCreateTag();
+        return !compound.contains("priority") ? setPriority(card, (short) 0) : compound.getShort("priority");
+    }
+
     public static ItemStack getFilter(ItemStack card) {
         CardItemHandler cardItemHandler = getInventory(card);
         return cardItemHandler.getStackInSlot(0);
