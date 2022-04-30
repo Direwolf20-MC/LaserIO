@@ -40,6 +40,11 @@ public class BaseCard extends Item {
     }
 
     @Override
+    public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged) {
+        return false;
+    }
+
+    @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         //TODO Fix dupe bug with multiple cards in hand when right clicked.
         ItemStack itemstack = player.getItemInHand(hand);

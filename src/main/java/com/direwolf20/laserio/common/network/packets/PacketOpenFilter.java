@@ -55,8 +55,9 @@ public class PacketOpenFilter {
                 if (itemStack.getItem() instanceof FilterBasic) {
                     FilterBasicHandler handler = FilterBasic.getInventory(itemStack);
                     NetworkHooks.openGui(sender, new SimpleMenuProvider(
-                            (windowId, playerInventory, playerEntity) -> new FilterBasicContainer(windowId, playerInventory, sender, handler, ((CardItemContainer) container).sourceContainer, itemStack), new TranslatableComponent("")), (buf -> {
+                            (windowId, playerInventory, playerEntity) -> new FilterBasicContainer(windowId, playerInventory, sender, handler, ((CardItemContainer) container).sourceContainer, itemStack, ((CardItemContainer) container).cardItem), new TranslatableComponent("")), (buf -> {
                         buf.writeItem(itemStack);
+                        buf.writeItem(((CardItemContainer) container).cardItem);
                     }));
                 }
                 if (itemStack.getItem() instanceof FilterCount) {
@@ -83,8 +84,9 @@ public class PacketOpenFilter {
 
 
                     NetworkHooks.openGui(sender, new SimpleMenuProvider(
-                            (windowId, playerInventory, playerEntity) -> new FilterCountContainer(windowId, playerInventory, sender, handler, ((CardItemContainer) container).sourceContainer, itemStack, slotCounts), new TranslatableComponent("")), (buf -> {
+                            (windowId, playerInventory, playerEntity) -> new FilterCountContainer(windowId, playerInventory, sender, handler, ((CardItemContainer) container).sourceContainer, itemStack, slotCounts, ((CardItemContainer) container).cardItem), new TranslatableComponent("")), (buf -> {
                         buf.writeItem(itemStack);
+                        buf.writeItem(((CardItemContainer) container).cardItem);
                     }));
                 }
             });

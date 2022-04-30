@@ -1,7 +1,7 @@
 package com.direwolf20.laserio.client.screens;
 
 import com.direwolf20.laserio.client.renderer.LaserIOItemRenderer;
-import com.direwolf20.laserio.client.screens.widgets.WhitelistButton;
+import com.direwolf20.laserio.client.screens.widgets.ToggleButton;
 import com.direwolf20.laserio.common.LaserIO;
 import com.direwolf20.laserio.common.containers.FilterCountContainer;
 import com.direwolf20.laserio.common.containers.customslot.FilterCountSlot;
@@ -9,6 +9,7 @@ import com.direwolf20.laserio.common.items.filters.FilterCount;
 import com.direwolf20.laserio.common.network.PacketHandler;
 import com.direwolf20.laserio.common.network.packets.PacketGhostSlot;
 import com.direwolf20.laserio.common.network.packets.PacketUpdateFilter;
+import com.direwolf20.laserio.util.MiscTools;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -24,7 +25,6 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,6 +48,12 @@ public class FilterCountScreen extends AbstractContainerScreen<FilterCountContai
         this.renderBackground(matrixStack);
         super.render(matrixStack, mouseX, mouseY, partialTicks);
         this.renderTooltip(matrixStack, mouseX, mouseY);
+        if (MiscTools.inBounds(getGuiLeft() + 5, getGuiTop() + 25, 16, 16, mouseX, mouseY)) {
+            if (isCompareNBT)
+                this.renderTooltip(matrixStack, new TranslatableComponent("screen.laserio.nbttrue"), mouseX, mouseY);
+            else
+                this.renderTooltip(matrixStack, new TranslatableComponent("screen.laserio.nbtfalse"), mouseX, mouseY);
+        }
     }
 
     @Override
@@ -61,18 +67,13 @@ public class FilterCountScreen extends AbstractContainerScreen<FilterCountContai
         this.isAllowList = FilterCount.getAllowList(filter);
         this.isCompareNBT = FilterCount.getCompareNBT(filter);
 
-        int baseX = width / 2, baseY = height / 2;
-        int left = baseX - 85;
-        int top = baseY - 80;
+        ResourceLocation[] nbtTextures = new ResourceLocation[2];
+        nbtTextures[0] = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/matchnbtfalse.png");
+        nbtTextures[1] = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/matchnbttrue.png");
 
-        leftWidgets.add(new WhitelistButton(left + 5, top + 10, 10, 10, isAllowList, (button) -> {
-            isAllowList = !isAllowList;
-            ((WhitelistButton) button).setWhitelist(isAllowList);
-        }));
-
-        leftWidgets.add(new WhitelistButton(left + 5, top + 30, 10, 10, isCompareNBT, (button) -> {
+        leftWidgets.add(new ToggleButton(getGuiLeft() + 5, getGuiTop() + 25, 16, 16, nbtTextures, isCompareNBT ? 1 : 0, (button) -> {
             isCompareNBT = !isCompareNBT;
-            ((WhitelistButton) button).setWhitelist(isCompareNBT);
+            ((ToggleButton) button).setTexturePosition(isCompareNBT ? 1 : 0);
         }));
 
         // Lay the buttons out, too lazy to figure out the math every damn time.
@@ -84,8 +85,8 @@ public class FilterCountScreen extends AbstractContainerScreen<FilterCountContai
 
     @Override
     protected void renderLabels(PoseStack stack, int mouseX, int mouseY) {
-        font.draw(stack, new TranslatableComponent("screen.laserio.allowlist").getString(), 5, 5, Color.DARK_GRAY.getRGB());
-        font.draw(stack, new TranslatableComponent("screen.laserio.comparenbt").getString(), 5, 25, Color.DARK_GRAY.getRGB());
+        //font.draw(stack, new TranslatableComponent("screen.laserio.allowlist").getString(), 5, 5, Color.DARK_GRAY.getRGB());
+        //font.draw(stack, new TranslatableComponent("screen.laserio.comparenbt").getString(), 5, 25, Color.DARK_GRAY.getRGB());
         //super.renderLabels(matrixStack, x, y);
     }
 

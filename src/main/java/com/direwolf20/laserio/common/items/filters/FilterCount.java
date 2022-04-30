@@ -53,6 +53,7 @@ public class FilterCount extends BaseFilter {
         NetworkHooks.openGui((ServerPlayer) player, new SimpleMenuProvider(
                 (windowId, playerInventory, playerEntity) -> new FilterCountContainer(windowId, playerInventory, player, handler, itemstack, slotCounts), new TranslatableComponent("")), (buf -> {
             buf.writeItem(itemstack);
+            buf.writeItem(ItemStack.EMPTY);
         }));
 
         return new InteractionResultHolder<>(InteractionResult.PASS, itemstack);
@@ -89,5 +90,16 @@ public class FilterCount extends BaseFilter {
         }
         stack.getOrCreateTag().put("counts", countList);
         return handler;
+    }
+
+    /** Filter Counts are always allowLists **/
+    public static boolean getAllowList(ItemStack stack) {
+        CompoundTag compound = stack.getOrCreateTag();
+        return !compound.contains("allowList") ? setAllowList(stack, false) : compound.getBoolean("allowList");
+    }
+
+    public static boolean setAllowList(ItemStack stack, boolean allowList) {
+        stack.getOrCreateTag().putBoolean("allowList", true);
+        return true;
     }
 }

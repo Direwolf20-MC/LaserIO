@@ -8,7 +8,7 @@ import net.minecraftforge.items.ItemStackHandler;
 import javax.annotation.Nonnull;
 
 public class CardItemHandler extends ItemStackHandler {
-    ItemStack stack;
+    public ItemStack stack;
 
     public CardItemHandler(int size, ItemStack itemStack) {
         super(size);

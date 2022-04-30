@@ -1,8 +1,10 @@
 package com.direwolf20.laserio.common.containers;
 
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
+import com.direwolf20.laserio.common.containers.customhandler.CardItemHandler;
 import com.direwolf20.laserio.common.containers.customhandler.FilterCountHandler;
 import com.direwolf20.laserio.common.containers.customslot.FilterCountSlot;
+import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.setup.Registration;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
@@ -24,6 +26,7 @@ public class FilterCountContainer extends AbstractContainerMenu {
     public FilterCountHandler handler;
     public ItemStack filterItem;
     public Player playerEntity;
+    public ItemStack sourceCard = ItemStack.EMPTY;
     private IItemHandler playerInventory;
     public BlockPos sourceContainer = BlockPos.ZERO;
     public ContainerData slotCounts;
@@ -31,6 +34,7 @@ public class FilterCountContainer extends AbstractContainerMenu {
     public FilterCountContainer(int windowId, Inventory playerInventory, Player player, FriendlyByteBuf extraData) {
         this(windowId, playerInventory, player, new FilterCountHandler(SLOTS, ItemStack.EMPTY), ItemStack.EMPTY, new SimpleContainerData(15));
         filterItem = extraData.readItem();
+        this.sourceCard = extraData.readItem();
     }
 
     public FilterCountContainer(int windowId, Inventory playerInventory, Player player, FilterCountHandler handler, ItemStack filterItem, ContainerData cardData) {
@@ -48,9 +52,10 @@ public class FilterCountContainer extends AbstractContainerMenu {
         addDataSlots(cardData);
     }
 
-    public FilterCountContainer(int windowId, Inventory playerInventory, Player player, FilterCountHandler handler, BlockPos sourcePos, ItemStack filterItem, ContainerData cardData) {
+    public FilterCountContainer(int windowId, Inventory playerInventory, Player player, FilterCountHandler handler, BlockPos sourcePos, ItemStack filterItem, ContainerData cardData, ItemStack sourceCard) {
         this(windowId, playerInventory, player, handler, filterItem, cardData);
         this.sourceContainer = sourcePos;
+        this.sourceCard = sourceCard;
     }
 
     public int getStackSize(int slot) {
@@ -118,6 +123,11 @@ public class FilterCountContainer extends AbstractContainerMenu {
     public void removed(Player playerIn) { //Todo see if we can send the player back to their last container screen?
         Level world = playerIn.getLevel();
         if (!world.isClientSide) {
+            if (!sourceCard.equals(ItemStack.EMPTY)) { //Workaround to the card not always saving...
+                CardItemHandler cardHandler = new CardItemHandler(1, sourceCard);
+                cardHandler.setStackInSlot(0, filterItem);
+                BaseCard.setInventory(sourceCard, cardHandler);
+            }
             if (!sourceContainer.equals(BlockPos.ZERO)) {
                 BlockEntity blockEntity = world.getBlockEntity(sourceContainer);
                 if (blockEntity instanceof LaserNodeBE)

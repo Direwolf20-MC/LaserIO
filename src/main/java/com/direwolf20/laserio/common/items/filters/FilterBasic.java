@@ -28,6 +28,7 @@ public class FilterBasic extends BaseFilter {
         NetworkHooks.openGui((ServerPlayer) player, new SimpleMenuProvider(
                 (windowId, playerInventory, playerEntity) -> new FilterBasicContainer(windowId, playerInventory, player, handler, itemstack), new TranslatableComponent("")), (buf -> {
             buf.writeItem(itemstack);
+            buf.writeItem(ItemStack.EMPTY);
         }));
 
         return new InteractionResultHolder<>(InteractionResult.PASS, itemstack);
