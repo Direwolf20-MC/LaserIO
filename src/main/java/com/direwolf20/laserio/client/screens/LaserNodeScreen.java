@@ -49,7 +49,7 @@ public class LaserNodeScreen extends AbstractContainerScreen<LaserNodeContainer>
 
         if (btn == 1 && hoveredSlot instanceof LaserNodeSlot) { //Right click
             int slot = hoveredSlot.getSlotIndex();
-            PacketHandler.sendToServer(new PacketOpenCard(slot, container.tile.getBlockPos()));
+            PacketHandler.sendToServer(new PacketOpenCard(slot, container.tile.getBlockPos(), hasShiftDown()));
             return true;
         }
         return super.mouseClicked(x, y, btn);
