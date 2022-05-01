@@ -33,3 +33,4 @@ efdb031ace3eb4c8582f409119d340693069d65a data/laserio/recipes/laser_node.json
 8008e21a5cb8221d98389bef9e0847a0b3720691 data/laserio/recipes/logic_chip_raw.json
 5a8bbdc2d4755e4d70f32681bc16b88bef2a8ace data/minecraft/advancements/recipes/laserio/logic_chip.json
 93865ad4c46f9a5adb6aa6db17951bffe2388dfe data/minecraft/recipes/logic_chip.json
+c677eb1f4b934afbbdec3ac307c2c01ad944ccbf data/minecraft/tags/blocks/mineable/pickaxe.json
