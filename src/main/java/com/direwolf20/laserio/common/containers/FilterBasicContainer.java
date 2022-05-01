@@ -11,6 +11,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -56,6 +57,15 @@ public class FilterBasicContainer extends AbstractContainerMenu {
     public boolean stillValid(Player playerIn) {
         return true;
         //return playerIn.getMainHandItem().equals(cardItem); //TODO Validate this and check offhand?
+    }
+
+    @Override
+    public void clicked(int slotId, int dragType, ClickType clickTypeIn, Player player) {
+        if (slotId >= 0 && slotId < SLOTS) {
+            System.out.println("Skipping!");
+            return;
+        }
+        super.clicked(slotId, dragType, clickTypeIn, player);
     }
 
     @Override

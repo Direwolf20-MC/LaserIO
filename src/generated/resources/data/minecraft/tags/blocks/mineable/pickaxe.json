@@ -1,0 +1,7 @@
+{
+  "replace": false,
+  "values": [
+    "laserio:laser_node",
+    "laserio:laser_connector"
+  ]
+}
