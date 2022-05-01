@@ -110,6 +110,11 @@ public class LaserNodeBE extends BaseLaserBE {
 
     public void tickServer() {
         if (level.isClientSide) return;
+        /*if (level.getGameTime() % 40 == 0) {
+            System.out.println("My chunk is loaded == " + level.isLoaded(getBlockPos()));
+            System.out.println("I am alive at: " + getBlockPos());
+            System.out.println("Inserter cache: " + inserterNodes.size());
+        }*/
         if (!discoveredNodes) { //On world / chunk reload, lets rediscover the network, including this block's extractor cards.
             discoverAllNodes();
             findMyExtractors();
@@ -140,6 +145,18 @@ public class LaserNodeBE extends BaseLaserBE {
         return destinationCache.get(key);
     }
 
+    public boolean chunksLoaded(BlockPos nodePos, BlockPos destinationPos) {
+        if (!level.isLoaded(nodePos)) {
+            //System.out.println(nodePos + " node is unloaded, returning false");
+            return false;
+        }
+        if (!level.isLoaded(destinationPos)) {
+            //System.out.println(destinationPos + " chest is unloaded, returning false");
+            return false;
+        }
+        return true;
+    }
+
     //TODO Efficiency
 
     /** Extractor Cards call this, and try to find an inserter card to send their items to **/
@@ -149,6 +166,10 @@ public class LaserNodeBE extends BaseLaserBE {
             ItemStack stackInSlot = adjacentInventory.getStackInSlot(slot);
             if (stackInSlot.isEmpty() || !(extractorCardCache.isStackValidForCard(stackInSlot))) continue;
             for (InserterCardCache inserterCardCache : getPossibleDestinations(extractorCardCache, stackInSlot)) {
+                BlockPos nodeWorldPos = getWorldPos(inserterCardCache.relativePos);
+                if (!chunksLoaded(nodeWorldPos, nodeWorldPos.relative(inserterCardCache.direction)))
+                    continue; //Skip this if the node is unloaded
+
                 LaserNodeBE be = getNodeAt(getWorldPos(inserterCardCache.relativePos));
                 if (be == null) continue;
                 IItemHandler possibleDestination = be.getAttachedInventory(inserterCardCache.direction).orElse(EMPTY);

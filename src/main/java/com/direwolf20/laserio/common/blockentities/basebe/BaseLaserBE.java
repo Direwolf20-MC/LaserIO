@@ -39,6 +39,7 @@ public class BaseLaserBE extends BlockEntity {
      * Share what we've learned with all the InventoryNodes we found
      */
     public void discoverAllNodes() {
+        //System.out.println("Discovering all nodes at: " + getBlockPos());
         Set<BlockPos> otherNodesInNetwork = new HashSet<>(); //Fresh list of nodes
 
         Queue<BlockPos> nodesToCheck = new LinkedList<>();

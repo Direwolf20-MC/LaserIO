@@ -178,6 +178,9 @@ dependencies {
     runtimeOnly fg.deobf("mekanism:Mekanism:${mekanism_version}")
     runtimeOnly fg.deobf("curse.maven:inventory-sorter-240633:3543137") // already on the forge maven
 
+    //Trash Cans
+    //runtimeOnly fg.deobf("curse.maven:supermartijn642s-core-lib-454372:3773952") // already on the forge maven
+    //runtimeOnly fg.deobf("curse.maven:trash-cans-394535:3773710") // already on the forge maven
     //TOP
     //implementation fg.deobf("curse.maven:the-one-probe-245211:3550084")
     // For more info...
