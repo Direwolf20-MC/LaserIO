@@ -49,8 +49,9 @@ public class CardItemContainer extends AbstractContainerMenu {
 
     @Override
     public boolean stillValid(Player playerIn) {
+        if (sourceContainer.equals(BlockPos.ZERO))
+            return playerIn.getMainHandItem().equals(cardItem) || playerIn.getOffhandItem().equals(cardItem);
         return true;
-        //return playerIn.getMainHandItem().equals(cardItem); //TODO Validate this and check offhand?
     }
 
     @Override
