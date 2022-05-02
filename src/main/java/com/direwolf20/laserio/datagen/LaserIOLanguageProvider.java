@@ -32,6 +32,13 @@ public class LaserIOLanguageProvider extends LanguageProvider {
         add("screen.laserio.comparenbt", "NBT");
         add("screen.laserio.lasernode", "Laser Node");
 
+        add("screen.laserio.up", "Up");
+        add("screen.laserio.down", "Down");
+        add("screen.laserio.north", "North");
+        add("screen.laserio.south", "South");
+        add("screen.laserio.west", "West");
+        add("screen.laserio.east", "East");
+
         add("screen.laserio.extract", "Extract");
         add("screen.laserio.insert", "Insert");
         add("screen.laserio.stock", "Stock (Not Implemented)");

@@ -14,12 +14,18 @@
   "screen.laserio.allowlist": "Allow",
   "screen.laserio.comparenbt": "NBT",
   "screen.laserio.denylist": "Deny",
+  "screen.laserio.down": "Down",
+  "screen.laserio.east": "East",
   "screen.laserio.extract": "Extract",
   "screen.laserio.extractamt": "Extract",
   "screen.laserio.insert": "Insert",
   "screen.laserio.lasernode": "Laser Node",
   "screen.laserio.nbtfalse": "Ignore NBT",
   "screen.laserio.nbttrue": "Match NBT",
+  "screen.laserio.north": "North",
   "screen.laserio.priority": "Priority",
-  "screen.laserio.stock": "Stock (Not Implemented)"
+  "screen.laserio.south": "South",
+  "screen.laserio.stock": "Stock (Not Implemented)",
+  "screen.laserio.up": "Up",
+  "screen.laserio.west": "West"
 }

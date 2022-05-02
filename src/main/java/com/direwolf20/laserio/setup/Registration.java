@@ -70,7 +70,7 @@ public class Registration {
 
     //Containers
     public static final RegistryObject<MenuType<LaserNodeContainer>> LaserNode_Container = CONTAINERS.register("lasernode",
-            () -> IForgeMenuType.create((windowId, inv, data) -> new LaserNodeContainer(windowId, data.readBlockPos(), inv, inv.player)));
+            () -> IForgeMenuType.create((windowId, inv, data) -> new LaserNodeContainer(windowId, inv, inv.player, data)));
     public static final RegistryObject<MenuType<CardItemContainer>> CardItem_Container = CONTAINERS.register("carditem",
             () -> IForgeMenuType.create((windowId, inv, data) -> new CardItemContainer(windowId, inv, inv.player, data)));
     public static final RegistryObject<MenuType<FilterBasicContainer>> FilterBasic_Container = CONTAINERS.register("filterbasic",

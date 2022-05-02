@@ -4,7 +4,7 @@ import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import com.direwolf20.laserio.common.containers.customhandler.LaserNodeItemHandler;
 import com.direwolf20.laserio.common.containers.customslot.LaserNodeSlot;
 import com.direwolf20.laserio.setup.Registration;
-import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -26,16 +26,18 @@ public class LaserNodeContainer extends AbstractContainerMenu {
 
     // Tile can be null and shouldn't be used for accessing any data that needs to be up to date on both sides
     public LaserNodeBE tile;
+    public byte side;
 
-    public LaserNodeContainer(int windowId, BlockPos pos, Inventory playerInventory, Player player) {
-        this((LaserNodeBE) playerInventory.player.level.getBlockEntity(pos), windowId, pos, playerInventory, player, new LaserNodeItemHandler(SLOTS), ContainerLevelAccess.NULL);
+    public LaserNodeContainer(int windowId, Inventory playerInventory, Player player, FriendlyByteBuf extraData) {
+        this((LaserNodeBE) playerInventory.player.level.getBlockEntity(extraData.readBlockPos()), windowId, extraData.readByte(), playerInventory, player, new LaserNodeItemHandler(SLOTS), ContainerLevelAccess.NULL);
     }
 
-    public LaserNodeContainer(@Nullable LaserNodeBE tile, int windowId, BlockPos pos, Inventory playerInventory, Player player, LaserNodeItemHandler handler, ContainerLevelAccess containerLevelAccess) {
+    public LaserNodeContainer(@Nullable LaserNodeBE tile, int windowId, byte side, Inventory playerInventory, Player player, LaserNodeItemHandler handler, ContainerLevelAccess containerLevelAccess) {
         super(Registration.LaserNode_Container.get(), windowId);
         //blockEntity = player.getCommandSenderWorld().getBlockEntity(pos);
         this.playerEntity = player;
         this.tile = tile;
+        this.side = side;
         this.playerInventory = new InvWrapper(playerInventory);
         this.containerLevelAccess = containerLevelAccess;
         if (handler != null)

@@ -68,10 +68,13 @@ public class PacketOpenNode {
 
                         @Override
                         public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player playerEntity) {
-                            return new LaserNodeContainer((LaserNodeBE) be, windowId, msg.sourcePos, playerInventory, playerEntity, (LaserNodeItemHandler) h, ContainerLevelAccess.create(be.getLevel(), be.getBlockPos()));
+                            return new LaserNodeContainer((LaserNodeBE) be, windowId, msg.side, playerInventory, playerEntity, (LaserNodeItemHandler) h, ContainerLevelAccess.create(be.getLevel(), be.getBlockPos()));
                         }
                     };
-                    NetworkHooks.openGui(sender, containerProvider, be.getBlockPos());
+                    NetworkHooks.openGui(sender, containerProvider, (buf -> {
+                        buf.writeBlockPos(msg.sourcePos);
+                        buf.writeByte(msg.side);
+                    }));
                 });
 
 
