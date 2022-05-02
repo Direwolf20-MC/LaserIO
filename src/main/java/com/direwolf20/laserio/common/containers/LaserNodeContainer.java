@@ -39,9 +39,9 @@ public class LaserNodeContainer extends AbstractContainerMenu {
         this.playerInventory = new InvWrapper(playerInventory);
         this.containerLevelAccess = containerLevelAccess;
         if (handler != null)
-            addSlotBox(handler, 0, 62, 17, 3, 18, 3, 18);
+            addSlotBox(handler, 0, 62, 32, 3, 18, 3, 18);
 
-        layoutPlayerInventorySlots(8, 84);
+        layoutPlayerInventorySlots(8, 99);
     }
 
     @Override

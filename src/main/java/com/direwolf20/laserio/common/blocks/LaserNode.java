@@ -79,24 +79,20 @@ public class LaserNode extends BaseLaserBlock implements EntityBlock {
         if (!level.isClientSide) {
             BlockEntity be = level.getBlockEntity(pos);
             if (be instanceof LaserNodeBE) {
-                if (player.isShiftKeyDown()) {
-                    ((LaserNodeBE) be).discoverAllNodes();
-                } else {
-                    be.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, result.getDirection()).ifPresent(h -> {
-                        MenuProvider containerProvider = new MenuProvider() {
-                            @Override
-                            public Component getDisplayName() {
-                                return new TranslatableComponent(SCREEN_LASERNODE);
-                            }
+                be.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, result.getDirection()).ifPresent(h -> {
+                    MenuProvider containerProvider = new MenuProvider() {
+                        @Override
+                        public Component getDisplayName() {
+                            return new TranslatableComponent(SCREEN_LASERNODE);
+                        }
 
-                            @Override
-                            public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player playerEntity) {
-                                return new LaserNodeContainer((LaserNodeBE) be, windowId, pos, playerInventory, playerEntity, (LaserNodeItemHandler) h, ContainerLevelAccess.create(be.getLevel(), be.getBlockPos()));
-                            }
-                        };
-                        NetworkHooks.openGui((ServerPlayer) player, containerProvider, be.getBlockPos());
-                    });
-                }
+                        @Override
+                        public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player playerEntity) {
+                            return new LaserNodeContainer((LaserNodeBE) be, windowId, pos, playerInventory, playerEntity, (LaserNodeItemHandler) h, ContainerLevelAccess.create(be.getLevel(), be.getBlockPos()));
+                        }
+                    };
+                    NetworkHooks.openGui((ServerPlayer) player, containerProvider, be.getBlockPos());
+                });
             } else {
                 throw new IllegalStateException("Our named container provider is missing!");
             }
