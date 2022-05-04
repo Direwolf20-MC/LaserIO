@@ -2,6 +2,11 @@ package com.direwolf20.laserio.util;
 
 import com.mojang.math.Vector3f;
 import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MiscTools {
     public static boolean inBounds(int x, int y, int w, int h, double ox, double oy) {
@@ -35,5 +40,24 @@ public class MiscTools {
             }
         }
         return offsetVector;
+    }
+
+    public static ListTag stringListToNBT(List<String> list) {
+        ListTag nbtList = new ListTag();
+        for (String string : list) {
+            CompoundTag tag = new CompoundTag();
+            tag.putString("list", string);
+            nbtList.add(tag);
+        }
+        return nbtList;
+    }
+
+    public static List<String> NBTToStringList(ListTag nbtList) {
+        List<String> list = new ArrayList<>();
+        for (int i = 0; i < nbtList.size(); i++) {
+            CompoundTag tag = nbtList.getCompound(i);
+            list.add(tag.getString("list"));
+        }
+        return list;
     }
 }

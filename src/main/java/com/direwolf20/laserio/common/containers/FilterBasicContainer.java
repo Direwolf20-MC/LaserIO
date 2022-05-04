@@ -62,7 +62,7 @@ public class FilterBasicContainer extends AbstractContainerMenu {
     @Override
     public void clicked(int slotId, int dragType, ClickType clickTypeIn, Player player) {
         if (slotId >= 0 && slotId < SLOTS) {
-            System.out.println("Skipping!");
+            //System.out.println("Skipping!");
             return;
         }
         super.clicked(slotId, dragType, clickTypeIn, player);

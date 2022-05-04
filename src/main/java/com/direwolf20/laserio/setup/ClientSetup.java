@@ -3,10 +3,7 @@ package com.direwolf20.laserio.setup;
 import com.direwolf20.laserio.client.blockentityrenders.LaserConnectorBERender;
 import com.direwolf20.laserio.client.blockentityrenders.LaserNodeBERender;
 import com.direwolf20.laserio.client.events.ClientEvents;
-import com.direwolf20.laserio.client.screens.CardItemScreen;
-import com.direwolf20.laserio.client.screens.FilterBasicScreen;
-import com.direwolf20.laserio.client.screens.FilterCountScreen;
-import com.direwolf20.laserio.client.screens.LaserNodeScreen;
+import com.direwolf20.laserio.client.screens.*;
 import com.direwolf20.laserio.common.LaserIO;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
@@ -33,6 +30,7 @@ public class ClientSetup {
             MenuScreens.register(Registration.CardItem_Container.get(), CardItemScreen::new);           // Attach our container to the screen
             MenuScreens.register(Registration.FilterBasic_Container.get(), FilterBasicScreen::new);           // Attach our container to the screen
             MenuScreens.register(Registration.FilterCount_Container.get(), FilterCountScreen::new);           // Attach our container to the screen
+            MenuScreens.register(Registration.FilterTag_Container.get(), FilterTagScreen::new);           // Attach our container to the screen
         });
 
     }

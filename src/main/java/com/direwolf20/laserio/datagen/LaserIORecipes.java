@@ -100,7 +100,13 @@ public class LaserIORecipes extends RecipeProvider {
                 .save(consumer);
         ShapelessRecipeBuilder.shapeless(Registration.Filter_Count.get(), 1)
                 .requires(Registration.Filter_Basic.get(), 1)
-                .requires(Items.DISPENSER, 1)
+                .requires(Items.OBSERVER, 1)
+                .group("laserio")
+                .unlockedBy("has_filter_basic", InventoryChangeTrigger.TriggerInstance.hasItems(Registration.Filter_Basic.get()))
+                .save(consumer);
+        ShapelessRecipeBuilder.shapeless(Registration.Filter_Tag.get(), 1)
+                .requires(Registration.Filter_Basic.get(), 1)
+                .requires(Items.PAPER, 1)
                 .group("laserio")
                 .unlockedBy("has_filter_basic", InventoryChangeTrigger.TriggerInstance.hasItems(Registration.Filter_Basic.get()))
                 .save(consumer);
