@@ -8,6 +8,7 @@ import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.common.items.filters.BaseFilter;
 import com.direwolf20.laserio.common.items.filters.FilterBasic;
 import com.direwolf20.laserio.common.items.filters.FilterCount;
+import com.direwolf20.laserio.common.items.filters.FilterTag;
 import com.direwolf20.laserio.setup.Registration;
 import com.direwolf20.laserio.util.*;
 import com.mojang.math.Vector3f;
@@ -200,7 +201,7 @@ public class LaserNodeBE extends BaseLaserBE {
     /** Determine how many items from @param itemStack can fit into @param destinationInventory based on the filter in @param inserterCardCache **/
     public int getTransferAmt(ItemStack itemStack, IItemHandler destinationInventory, InserterCardCache inserterCardCache) {
         ItemStack insertFilter = inserterCardCache.filterCard;
-        if (insertFilter.getItem() instanceof FilterBasic || insertFilter.isEmpty()) { // Basic cards send as many items as can fit into an inventory
+        if (insertFilter.getItem() instanceof FilterBasic || insertFilter.isEmpty() || insertFilter.getItem() instanceof FilterTag) { // Basic cards send as many items as can fit into an inventory
             return testInsertToInventory(destinationInventory, itemStack);
         } else if (insertFilter.getItem() instanceof FilterCount) { //Count cards send up to <X> amount determined by the filter
             ItemHandlerUtil.InventoryCounts invCache = new ItemHandlerUtil.InventoryCounts(destinationInventory, BaseFilter.getCompareNBT(insertFilter)); //Cache the items in the destination

@@ -3,10 +3,12 @@ package com.direwolf20.laserio.common.network.packets;
 import com.direwolf20.laserio.common.containers.CardItemContainer;
 import com.direwolf20.laserio.common.containers.FilterBasicContainer;
 import com.direwolf20.laserio.common.containers.FilterCountContainer;
+import com.direwolf20.laserio.common.containers.FilterTagContainer;
 import com.direwolf20.laserio.common.containers.customhandler.FilterBasicHandler;
 import com.direwolf20.laserio.common.containers.customhandler.FilterCountHandler;
 import com.direwolf20.laserio.common.items.filters.FilterBasic;
 import com.direwolf20.laserio.common.items.filters.FilterCount;
+import com.direwolf20.laserio.common.items.filters.FilterTag;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.TranslatableComponent;
@@ -74,6 +76,14 @@ public class PacketOpenFilter {
                     (windowId, playerInventory, playerEntity) -> new FilterCountContainer(windowId, playerInventory, sender, handler, sourcePos, filterItem, slotCounts, cardItem), new TranslatableComponent("")), (buf -> {
                 buf.writeItem(filterItem);
                 buf.writeItem(cardItem);
+            }));
+        }
+        if (filterItem.getItem() instanceof FilterTag) {
+            FilterBasicHandler handler = FilterBasic.getInventory(filterItem);
+            NetworkHooks.openGui(sender, new SimpleMenuProvider(
+                    (windowId, playerInventory, playerEntity) -> new FilterTagContainer(windowId, playerInventory, sender, handler, sourcePos, filterItem, cardItem), new TranslatableComponent("")), (buf -> {
+                buf.writeItem(filterItem);
+                buf.writeItem(ItemStack.EMPTY);
             }));
         }
     }

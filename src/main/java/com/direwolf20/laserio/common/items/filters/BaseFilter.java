@@ -10,9 +10,14 @@ public class BaseFilter extends Item {
         super(new Item.Properties().tab(ModSetup.ITEM_GROUP));
     }
 
+    @Override
+    public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged) {
+        return false;
+    }
+
     public static boolean getAllowList(ItemStack stack) {
         CompoundTag compound = stack.getOrCreateTag();
-        return !compound.contains("allowList") ? setAllowList(stack, false) : compound.getBoolean("allowList");
+        return !compound.contains("allowList") ? setAllowList(stack, true) : compound.getBoolean("allowList");
     }
 
     public static boolean setAllowList(ItemStack stack, boolean allowList) {

@@ -95,7 +95,7 @@ public class FilterCount extends BaseFilter {
     /** Filter Counts are always allowLists **/
     public static boolean getAllowList(ItemStack stack) {
         CompoundTag compound = stack.getOrCreateTag();
-        return !compound.contains("allowList") ? setAllowList(stack, false) : compound.getBoolean("allowList");
+        return !compound.contains("allowList") ? setAllowList(stack, true) : compound.getBoolean("allowList");
     }
 
     public static boolean setAllowList(ItemStack stack, boolean allowList) {

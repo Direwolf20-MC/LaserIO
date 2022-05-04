@@ -1,6 +1,5 @@
 package com.direwolf20.laserio.common.items.filters;
 
-import com.direwolf20.laserio.common.containers.FilterBasicContainer;
 import com.direwolf20.laserio.common.containers.FilterTagContainer;
 import com.direwolf20.laserio.common.containers.customhandler.FilterBasicHandler;
 import com.direwolf20.laserio.util.MiscTools;
@@ -43,9 +42,9 @@ public class FilterTag extends BaseFilter {
 
     public static FilterBasicHandler getInventory(ItemStack stack) {
         CompoundTag compound = stack.getOrCreateTag();
-        FilterBasicHandler handler = new FilterBasicHandler(FilterBasicContainer.SLOTS, stack);
+        FilterBasicHandler handler = new FilterBasicHandler(FilterTagContainer.SLOTS, stack);
         handler.deserializeNBT(compound.getCompound("inv"));
-        return !compound.contains("inv") ? setInventory(stack, new FilterBasicHandler(FilterBasicContainer.SLOTS, stack)) : handler;
+        return !compound.contains("inv") ? setInventory(stack, new FilterBasicHandler(FilterTagContainer.SLOTS, stack)) : handler;
     }
 
     public static FilterBasicHandler setInventory(ItemStack stack, FilterBasicHandler handler) {

@@ -3,15 +3,15 @@ package com.direwolf20.laserio.util;
 import com.direwolf20.laserio.common.items.filters.BaseFilter;
 import com.direwolf20.laserio.common.items.filters.FilterBasic;
 import com.direwolf20.laserio.common.items.filters.FilterCount;
+import com.direwolf20.laserio.common.items.filters.FilterTag;
 import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.core.Direction;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.ItemStackHandler;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class BaseCardCache {
     public final Direction direction;
@@ -19,6 +19,7 @@ public class BaseCardCache {
     public final ItemStack filterCard;
     public final int cardSlot;
     public final Set<ItemStack> filteredItems;
+    public final List<String> filterTags;
 
     public final boolean isAllowList;
     public final boolean isCompareNBT;
@@ -32,10 +33,12 @@ public class BaseCardCache {
         this.cardSlot = cardSlot;
         if (filterCard.equals(ItemStack.EMPTY)) {
             filteredItems = new HashSet<>();
+            filterTags = new ArrayList<>();
             isAllowList = false;
             isCompareNBT = false;
         } else {
             this.filteredItems = getFilteredItems();
+            this.filterTags = getFilterTags();
             isAllowList = BaseFilter.getAllowList(filterCard);
             isCompareNBT = BaseFilter.getCompareNBT(filterCard);
         }
@@ -75,14 +78,32 @@ public class BaseCardCache {
         return filteredItems;
     }
 
+    public List<String> getFilterTags() {
+        List<String> filterTags = new ArrayList<>();
+        if (filterCard.getItem() instanceof FilterTag) {
+            filterTags = FilterTag.getTags(filterCard);
+        }
+        return filterTags;
+    }
+
     public boolean isStackValidForCard(ItemStack testStack) {
         if (filterCard.equals(ItemStack.EMPTY)) return true; //If theres no filter in the card
         ItemStackKey key = new ItemStackKey(testStack, isCompareNBT);
         if (filterCache.containsKey(key)) return filterCache.get(key);
-        for (ItemStack stack : filteredItems) {
-            if (key.equals(new ItemStackKey(stack, isCompareNBT))) {
-                filterCache.put(key, isAllowList);
-                return isAllowList;
+        if (filterCard.getItem() instanceof FilterTag) {
+            for (TagKey tagKey : testStack.getItem().builtInRegistryHolder().tags().toList()) {
+                String tag = tagKey.location().toString().toLowerCase(Locale.ROOT);
+                if (filterTags.contains(tag)) {
+                    filterCache.put(key, isAllowList);
+                    return isAllowList;
+                }
+            }
+        } else {
+            for (ItemStack stack : filteredItems) {
+                if (key.equals(new ItemStackKey(stack, isCompareNBT))) {
+                    filterCache.put(key, isAllowList);
+                    return isAllowList;
+                }
             }
         }
         filterCache.put(key, !isAllowList);
