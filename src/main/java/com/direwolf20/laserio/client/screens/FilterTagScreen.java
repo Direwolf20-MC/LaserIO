@@ -1,5 +1,6 @@
 package com.direwolf20.laserio.client.screens;
 
+import com.direwolf20.laserio.client.renderer.LaserIOItemRenderer;
 import com.direwolf20.laserio.client.screens.widgets.IconButton;
 import com.direwolf20.laserio.client.screens.widgets.ToggleButton;
 import com.direwolf20.laserio.common.LaserIO;
@@ -14,16 +15,21 @@ import com.direwolf20.laserio.util.MiscTools;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -44,6 +50,8 @@ public class FilterTagScreen extends AbstractContainerScreen<FilterTagContainer>
     List<String> displayTags;
     List<String> tags = new ArrayList<>();
     List<String> stackInSlotTags = new ArrayList<>();
+    int cycleRenders = 0;
+    LaserIOItemRenderer tagItemRenderer;
 
 
     public FilterTagScreen(FilterTagContainer container, Inventory inv, Component name) {
@@ -53,6 +61,10 @@ public class FilterTagScreen extends AbstractContainerScreen<FilterTagContainer>
         this.imageWidth = 200;
         this.imageHeight = 254;
         this.tags = FilterTag.getTags(filter);
+        Minecraft minecraft = Minecraft.getInstance();
+        BlockEntityWithoutLevelRenderer blockentitywithoutlevelrenderer = new BlockEntityWithoutLevelRenderer(minecraft.getBlockEntityRenderDispatcher(), minecraft.getEntityModels());
+        tagItemRenderer = new LaserIOItemRenderer(minecraft.getTextureManager(), minecraft.getModelManager(), minecraft.getItemColors(), blockentitywithoutlevelrenderer);
+
     }
 
     @Override
@@ -66,6 +78,7 @@ public class FilterTagScreen extends AbstractContainerScreen<FilterTagContainer>
             else
                 this.renderTooltip(matrixStack, new TranslatableComponent("screen.laserio.denylist"), mouseX, mouseY);
         }
+        cycleRenders++;
         int availableItemsstartX = getGuiLeft() + 7;
         int availableItemstartY = getGuiTop() + 47;
         int color = 0x885B5B5B;
@@ -83,6 +96,7 @@ public class FilterTagScreen extends AbstractContainerScreen<FilterTagContainer>
 
         ItemStack stackInSlot = container.handler.getStackInSlot(0);
         stackInSlotTags = new ArrayList<>();
+
         if (!stackInSlot.isEmpty()) {
             stackInSlot.getItem().builtInRegistryHolder().tags().forEach(t -> {
                 String tag = t.location().toString().toLowerCase(Locale.ROOT);
@@ -106,9 +120,15 @@ public class FilterTagScreen extends AbstractContainerScreen<FilterTagContainer>
         overSlot = -1;
 
         for (String tag : stackInSlotTags) {
+            List<Item> tagItems = ForgeRegistries.ITEMS.tags().getTag(ItemTags.create(new ResourceLocation(tag))).stream().toList();
+            ItemStack drawStack = new ItemStack(tagItems.get((cycleRenders / 120) % tagItems.size()));
+            matrixStack.pushPose();
+            tagItemRenderer.renderGuiItem(8f, drawStack, (availableItemsstartX) - 4, (tagStartY) - 5, itemRenderer.getModel(drawStack, null, null, 0));
+            matrixStack.popPose();
+
             matrixStack.pushPose();
             matrixStack.scale(0.75f, 0.75f, 0.75f);
-            font.draw(matrixStack, tag, availableItemsstartX / 0.75f, tagStartY / 0.75f, Color.BLUE.getRGB());
+            font.draw(matrixStack, tag, availableItemsstartX / 0.75f + 16, tagStartY / 0.75f, Color.BLUE.getRGB());
             matrixStack.popPose();
 
             if (MiscTools.inBounds(availableItemsstartX, tagStartY - 2, 160, 8, mouseX, mouseY)) {
@@ -120,6 +140,8 @@ public class FilterTagScreen extends AbstractContainerScreen<FilterTagContainer>
                 RenderSystem.disableDepthTest();
                 RenderSystem.colorMask(true, true, true, false);
                 fillGradient(matrixStack, availableItemsstartX - 1, tagStartY - 2, availableItemsstartX + 160, tagStartY + 8, color, color);
+                if (MiscTools.inBounds(availableItemsstartX, tagStartY - 2, 8, 8, mouseX, mouseY))
+                    this.renderTooltip(matrixStack, drawStack, mouseX, mouseY);
                 RenderSystem.colorMask(true, true, true, true);
                 matrixStack.popPose();
             }
@@ -148,9 +170,15 @@ public class FilterTagScreen extends AbstractContainerScreen<FilterTagContainer>
         }
 
         for (String tag : displayTags) {
+            List<Item> tagItems = ForgeRegistries.ITEMS.tags().getTag(ItemTags.create(new ResourceLocation(tag))).stream().toList();
+            ItemStack drawStack = new ItemStack(tagItems.get((cycleRenders / 120) % tagItems.size()));
+            matrixStack.pushPose();
+            tagItemRenderer.renderGuiItem(8f, drawStack, (availableItemsstartX) - 4, (tagStartY) - 5, itemRenderer.getModel(drawStack, null, null, 0));
+            matrixStack.popPose();
+
             matrixStack.pushPose();
             matrixStack.scale(0.75f, 0.75f, 0.75f);
-            font.draw(matrixStack, tag, availableItemsstartX / 0.75f, tagStartY / 0.75f, Color.DARK_GRAY.getRGB());
+            font.draw(matrixStack, tag, availableItemsstartX / 0.75f + 16, tagStartY / 0.75f, Color.DARK_GRAY.getRGB());
             matrixStack.popPose();
 
             if (MiscTools.inBounds(availableItemsstartX, tagStartY - 2, 160, 8, mouseX, mouseY)) {
@@ -162,6 +190,8 @@ public class FilterTagScreen extends AbstractContainerScreen<FilterTagContainer>
                 RenderSystem.disableDepthTest();
                 RenderSystem.colorMask(true, true, true, false);
                 fillGradient(matrixStack, availableItemsstartX - 1, tagStartY - 2, availableItemsstartX + 160, tagStartY + 8, color, color);
+                if (MiscTools.inBounds(availableItemsstartX, tagStartY - 2, 8, 8, mouseX, mouseY))
+                    this.renderTooltip(matrixStack, drawStack, mouseX, mouseY);
                 RenderSystem.colorMask(true, true, true, true);
                 matrixStack.popPose();
             }
