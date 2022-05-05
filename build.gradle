@@ -176,7 +176,10 @@ dependencies {
 
     //Other mods for dev environment
     runtimeOnly fg.deobf("mekanism:Mekanism:${mekanism_version}")
-    runtimeOnly fg.deobf("curse.maven:inventory-sorter-240633:3543137") // already on the forge maven
+    //runtimeOnly fg.deobf("curse.maven:inventory-sorter-240633:3543137") // already on the forge maven
+
+    //MouseTweaks
+    //runtimeOnly fg.deobf("curse.maven:mouse-tweaks-60089:3578801")
 
     //Trash Cans
     //runtimeOnly fg.deobf("curse.maven:supermartijn642s-core-lib-454372:3773952") // already on the forge maven
