@@ -50,5 +50,16 @@ public class LaserIOLanguageProvider extends LanguageProvider {
         add("screen.laserio.nbtfalse", "Ignore NBT");
 
         add("message.laserio.wrenchrange", "Connection exceeds maximum range of %d");
+
+        add("laserio.tooltip.item.show_settings", "Hold shift to show settings");
+        add("laserio.tooltip.item.card.mode", "Mode: %1");
+        add("laserio.tooltip.item.filter.type", "Type: %1");
+        /*add("", "");
+        add("", "");
+        add("", "");
+        add("", "");
+        add("", "");*/
+
+        //add("", "");
     }
 }
