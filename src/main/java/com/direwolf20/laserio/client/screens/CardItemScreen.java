@@ -255,6 +255,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
 
         if (btn == 1 && hoveredSlot instanceof CardItemSlot) { //Right click
             int slot = hoveredSlot.getSlotIndex();
+            PacketHandler.sendToServer(new PacketUpdateCard(currentMode, currentChannel, currentItemExtractAmt, currentPriority, currentSneaky));
             PacketHandler.sendToServer(new PacketOpenFilter(slot));
             return true;
         }
