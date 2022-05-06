@@ -121,14 +121,9 @@ public class FilterTagScreen extends AbstractContainerScreen<FilterTagContainer>
 
         int itemStackMin = (page * tagsPerPage);
         int itemStackMax = Math.min((page * tagsPerPage) + tagsPerPage, tempTags.size());
-        System.out.println(itemStackMin + ".." + itemStackMax + ".." + tempTags.size());
 
-        try {
-            displayTags = tempTags.subList(itemStackMin, itemStackMax);
-        } catch (Exception e) {
-            System.out.println(e);
-            return;
-        }
+        displayTags = tempTags.subList(itemStackMin, itemStackMax);
+
         int tagStartY = availableItemstartY;
 
         int slot = 0;
