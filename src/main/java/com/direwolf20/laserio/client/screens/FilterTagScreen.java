@@ -33,6 +33,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
@@ -83,11 +84,7 @@ public class FilterTagScreen extends AbstractContainerScreen<FilterTagContainer>
         int availableItemstartY = getGuiTop() + 47;
         int color = 0x885B5B5B;
 
-        if (page > maxPages)
-            page = maxPages;
-
         matrixStack.pushPose();
-        //RenderSystem.disableLighting();
         RenderSystem.disableDepthTest();
         RenderSystem.colorMask(true, true, true, false);
         fillGradient(matrixStack, availableItemsstartX - 2, availableItemstartY - 4, availableItemsstartX + 162, availableItemstartY + 110, color, color);
@@ -96,6 +93,8 @@ public class FilterTagScreen extends AbstractContainerScreen<FilterTagContainer>
 
         ItemStack stackInSlot = container.handler.getStackInSlot(0);
         stackInSlotTags = new ArrayList<>();
+        this.displayTags = new ArrayList<>();
+
 
         if (!stackInSlot.isEmpty()) {
             stackInSlot.getItem().builtInRegistryHolder().tags().forEach(t -> {
@@ -106,68 +105,34 @@ public class FilterTagScreen extends AbstractContainerScreen<FilterTagContainer>
         }
 
         int tagsPerPage = 11;
-        maxPages = (int) Math.floor((double) (tags.size() + stackInSlotTags.size()) / (tagsPerPage + 1));
 
+
+        stackInSlotTags.sort(Comparator.naturalOrder());
+        tags.sort(Comparator.naturalOrder());
+
+        List<String> tempTags = new ArrayList<>();
+        tempTags.addAll(0, tags);
+        tempTags.addAll(0, stackInSlotTags);
+
+        maxPages = Math.max((int) Math.ceil((double) tempTags.size() / tagsPerPage) - 1, 0);
+        if (page > maxPages) page = maxPages;
         String pagesLabel = MagicHelpers.withSuffix(page + 1) + " / " + MagicHelpers.withSuffix(maxPages + 1);
         font.draw(matrixStack, pagesLabel, (availableItemsstartX - 2) / 2 + (availableItemsstartX + 162) / 2 - font.width(pagesLabel) / 2, getGuiTop() + 160, Color.DARK_GRAY.getRGB());
 
         int itemStackMin = (page * tagsPerPage);
-        int itemStackMax = Math.min((page * tagsPerPage) + tagsPerPage, tags.size());
-        displayTags = tags.subList(itemStackMin, itemStackMax);
+        int itemStackMax = Math.min((page * tagsPerPage) + tagsPerPage, tempTags.size());
+        System.out.println(itemStackMin + ".." + itemStackMax + ".." + tempTags.size());
+
+        try {
+            displayTags = tempTags.subList(itemStackMin, itemStackMax);
+        } catch (Exception e) {
+            System.out.println(e);
+            return;
+        }
         int tagStartY = availableItemstartY;
 
         int slot = 0;
         overSlot = -1;
-
-        for (String tag : stackInSlotTags) {
-            List<Item> tagItems = ForgeRegistries.ITEMS.tags().getTag(ItemTags.create(new ResourceLocation(tag))).stream().toList();
-            ItemStack drawStack = new ItemStack(tagItems.get((cycleRenders / 120) % tagItems.size()));
-            matrixStack.pushPose();
-            tagItemRenderer.renderGuiItem(8f, drawStack, (availableItemsstartX) - 4, (tagStartY) - 5, itemRenderer.getModel(drawStack, null, null, 0));
-            matrixStack.popPose();
-
-            matrixStack.pushPose();
-            matrixStack.scale(0.75f, 0.75f, 0.75f);
-            font.draw(matrixStack, tag, availableItemsstartX / 0.75f + 16, tagStartY / 0.75f, Color.BLUE.getRGB());
-            matrixStack.popPose();
-
-            if (MiscTools.inBounds(availableItemsstartX, tagStartY - 2, 160, 8, mouseX, mouseY)) {
-                overSlot = slot;
-                color = -2130706433;// : 0xFF5B5B5B;
-
-                matrixStack.pushPose();
-                //RenderSystem.disableLighting();
-                RenderSystem.disableDepthTest();
-                RenderSystem.colorMask(true, true, true, false);
-                fillGradient(matrixStack, availableItemsstartX - 1, tagStartY - 2, availableItemsstartX + 160, tagStartY + 8, color, color);
-                if (MiscTools.inBounds(availableItemsstartX, tagStartY - 2, 8, 8, mouseX, mouseY))
-                    this.renderTooltip(matrixStack, drawStack, mouseX, mouseY);
-                RenderSystem.colorMask(true, true, true, true);
-                matrixStack.popPose();
-            }
-
-            if (slot == selectedSlot) {
-                color = 0xFF00FF00;
-
-                matrixStack.pushPose();
-                //RenderSystem.disableLighting();
-                RenderSystem.disableDepthTest();
-                RenderSystem.colorMask(true, true, true, false);
-
-                int x1 = availableItemsstartX + 160;
-                int y1 = tagStartY + 10;
-                hLine(matrixStack, availableItemsstartX - 2, x1 - 0, tagStartY - 2, color);
-                hLine(matrixStack, availableItemsstartX - 2, x1 - 0, y1 - 3, color);
-                vLine(matrixStack, availableItemsstartX - 2, tagStartY - 2, y1 - 2, color);
-                vLine(matrixStack, x1 - 0, tagStartY - 2, y1 - 2, color);
-
-                RenderSystem.colorMask(true, true, true, true);
-                matrixStack.popPose();
-            }
-
-            tagStartY += 10;
-            slot++;
-        }
 
         for (String tag : displayTags) {
             List<Item> tagItems = ForgeRegistries.ITEMS.tags().getTag(ItemTags.create(new ResourceLocation(tag))).stream().toList();
@@ -178,7 +143,8 @@ public class FilterTagScreen extends AbstractContainerScreen<FilterTagContainer>
 
             matrixStack.pushPose();
             matrixStack.scale(0.75f, 0.75f, 0.75f);
-            font.draw(matrixStack, tag, availableItemsstartX / 0.75f + 16, tagStartY / 0.75f, Color.DARK_GRAY.getRGB());
+            int fontColor = stackInSlotTags.contains(tag) ? Color.BLUE.getRGB() : Color.DARK_GRAY.getRGB();
+            font.draw(matrixStack, tag, availableItemsstartX / 0.75f + 16, tagStartY / 0.75f, fontColor);
             matrixStack.popPose();
 
             if (MiscTools.inBounds(availableItemsstartX, tagStartY - 2, 160, 8, mouseX, mouseY)) {
@@ -186,7 +152,6 @@ public class FilterTagScreen extends AbstractContainerScreen<FilterTagContainer>
                 color = -2130706433;// : 0xFF5B5B5B;
 
                 matrixStack.pushPose();
-                //RenderSystem.disableLighting();
                 RenderSystem.disableDepthTest();
                 RenderSystem.colorMask(true, true, true, false);
                 fillGradient(matrixStack, availableItemsstartX - 1, tagStartY - 2, availableItemsstartX + 160, tagStartY + 8, color, color);
@@ -200,7 +165,6 @@ public class FilterTagScreen extends AbstractContainerScreen<FilterTagContainer>
                 color = 0xFFFF0000;
 
                 matrixStack.pushPose();
-                //RenderSystem.disableLighting();
                 RenderSystem.disableDepthTest();
                 RenderSystem.colorMask(true, true, true, false);
 
@@ -255,8 +219,9 @@ public class FilterTagScreen extends AbstractContainerScreen<FilterTagContainer>
                         container.handler.setStackInSlot(0, ItemStack.EMPTY);
                     } else {
                         if (selectedSlot != -1) {
-                            if (selectedSlot <= stackInSlotTags.size()) {
-                                tags.add(stackInSlotTags.get(selectedSlot));
+                            String tag = displayTags.get(selectedSlot);
+                            if (!tags.contains(tag)) {
+                                tags.add(tag);
                                 selectedSlot = -1;
                             }
                         }
@@ -269,10 +234,8 @@ public class FilterTagScreen extends AbstractContainerScreen<FilterTagContainer>
         ResourceLocation remove = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/remove.png");
         Button removeButton = new IconButton(getGuiLeft() + 135, getGuiTop() + 5, 16, 16, remove, (button) -> {
             if (selectedSlot != -1) {
-                if (selectedSlot >= stackInSlotTags.size()) {
-                    tags.remove(displayTags.get(selectedSlot - stackInSlotTags.size()));
-                    selectedSlot = -1;
-                }
+                tags.remove(displayTags.get(selectedSlot));
+                selectedSlot = -1;
             }
         });
         leftWidgets.add(removeButton);
@@ -374,14 +337,17 @@ public class FilterTagScreen extends AbstractContainerScreen<FilterTagContainer>
             if (hasShiftDown()) {
                 if (selectedSlot != -1) {
                     if (selectedSlot >= stackInSlotTags.size()) {
-                        tags.remove(displayTags.get(selectedSlot - stackInSlotTags.size()));
+                        tags.remove(displayTags.get(selectedSlot));
                         selectedSlot = -1;
                         return true;
                     }
                     if (selectedSlot < stackInSlotTags.size()) {
-                        tags.add(stackInSlotTags.get(selectedSlot));
-                        selectedSlot = -1;
-                        return true;
+                        String tag = displayTags.get(selectedSlot);
+                        if (!tags.contains(tag)) {
+                            tags.add(tag);
+                            selectedSlot = -1;
+                            return true;
+                        }
                     }
                 }
             }
