@@ -4,6 +4,7 @@ import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import com.direwolf20.laserio.common.blocks.baseblocks.BaseLaserBlock;
 import com.direwolf20.laserio.common.containers.LaserNodeContainer;
 import com.direwolf20.laserio.common.containers.customhandler.LaserNodeItemHandler;
+import com.direwolf20.laserio.common.items.cards.BaseCard;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -17,6 +18,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerLevelAccess;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -31,6 +33,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.network.NetworkHooks;
 
 import javax.annotation.Nullable;
@@ -79,23 +82,32 @@ public class LaserNode extends BaseLaserBlock implements EntityBlock {
         if (!level.isClientSide) {
             BlockEntity be = level.getBlockEntity(pos);
             if (be instanceof LaserNodeBE) {
-                be.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, result.getDirection()).ifPresent(h -> {
-                    MenuProvider containerProvider = new MenuProvider() {
-                        @Override
-                        public Component getDisplayName() {
-                            return new TranslatableComponent(SCREEN_LASERNODE);
-                        }
+                ItemStack heldItem = player.getMainHandItem();
+                if (heldItem.getItem() instanceof BaseCard) {
+                    LazyOptional<IItemHandler> itemHandler = be.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, result.getDirection());
+                    itemHandler.ifPresent(h -> {
+                        ItemStack remainingStack = ItemHandlerHelper.insertItem(h, heldItem, false);
+                        player.setItemInHand(InteractionHand.MAIN_HAND, remainingStack);
+                    });
+                } else {
+                    be.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, result.getDirection()).ifPresent(h -> {
+                        MenuProvider containerProvider = new MenuProvider() {
+                            @Override
+                            public Component getDisplayName() {
+                                return new TranslatableComponent(SCREEN_LASERNODE);
+                            }
 
-                        @Override
-                        public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player playerEntity) {
-                            return new LaserNodeContainer((LaserNodeBE) be, windowId, (byte) result.getDirection().ordinal(), playerInventory, playerEntity, (LaserNodeItemHandler) h, ContainerLevelAccess.create(be.getLevel(), be.getBlockPos()));
-                        }
-                    };
-                    NetworkHooks.openGui((ServerPlayer) player, containerProvider, (buf -> {
-                        buf.writeBlockPos(pos);
-                        buf.writeByte((byte) result.getDirection().ordinal());
-                    }));
-                });
+                            @Override
+                            public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player playerEntity) {
+                                return new LaserNodeContainer((LaserNodeBE) be, windowId, (byte) result.getDirection().ordinal(), playerInventory, playerEntity, (LaserNodeItemHandler) h, ContainerLevelAccess.create(be.getLevel(), be.getBlockPos()));
+                            }
+                        };
+                        NetworkHooks.openGui((ServerPlayer) player, containerProvider, (buf -> {
+                            buf.writeBlockPos(pos);
+                            buf.writeByte((byte) result.getDirection().ordinal());
+                        }));
+                    });
+                }
             } else {
                 throw new IllegalStateException("Our named container provider is missing!");
             }

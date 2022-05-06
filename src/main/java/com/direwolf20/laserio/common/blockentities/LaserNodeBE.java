@@ -357,7 +357,7 @@ public class LaserNodeBE extends BaseLaserBE {
 
     /** Called when a neighbor updates to invalidate the inventory cache */
     public void clearCachedInventories(SideConnection sideConnection) {
-        System.out.println("Clearing: " + sideConnection.nodeSide.getName() + " - " + sideConnection.sneakySide.getName());
+        //System.out.println("Clearing: " + sideConnection.nodeSide.getName() + " - " + sideConnection.sneakySide.getName());
         this.facingHandler.remove(sideConnection);
     }
 
