@@ -170,7 +170,21 @@ public class FilterCountScreen extends AbstractContainerScreen<FilterCountContai
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
-        return super.mouseScrolled(mouseX, mouseY, delta);
+        if (hoveredSlot == null || !(hoveredSlot instanceof FilterCountSlot))
+            return super.mouseScrolled(mouseX, mouseY, delta);
+
+        ItemStack slotStack = hoveredSlot.getItem();
+        if (slotStack.isEmpty()) return true;
+        int amt = (int) delta;
+        if (Screen.hasShiftDown()) amt *= 10;
+        if (Screen.hasControlDown()) amt *= 64;
+        if (amt + slotStack.getCount() > 4096) amt = 4096 - slotStack.getCount();
+        if (slotStack.getCount() + amt <= 0)
+            amt = (slotStack.getCount() * -1) + 1;
+        slotStack.grow(amt);
+
+        PacketHandler.sendToServer(new PacketGhostSlot(hoveredSlot.index, slotStack, slotStack.getCount()));
+        return true;
     }
 
     private static TranslatableComponent getTrans(String key, Object... args) {
