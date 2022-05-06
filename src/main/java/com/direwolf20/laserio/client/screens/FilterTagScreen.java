@@ -369,6 +369,14 @@ public class FilterTagScreen extends AbstractContainerScreen<FilterTagContainer>
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
+        if (hoveredSlot == null) {
+            if (delta == 1.0) {
+                if (page < maxPages) page++;
+            } else {
+                if (page > 0) page--;
+            }
+        }
+
         return super.mouseScrolled(mouseX, mouseY, delta);
     }
 
