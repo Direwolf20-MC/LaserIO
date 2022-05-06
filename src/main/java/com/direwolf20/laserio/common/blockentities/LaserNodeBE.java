@@ -52,9 +52,15 @@ public class LaserNodeBE extends BaseLaserBE {
     private final IItemHandler EMPTY = new ItemStackHandler(0);
 
     /** Adjacent Inventory Handlers **/
-    @Nullable
-    private LazyOptional<IItemHandler>[] facingHandler = new LazyOptional[6];
-    private final List<NonNullConsumer<LazyOptional<IItemHandler>>> facingInvalidator = new ArrayList<>(); //Lambda to call when a lazy optional is invalidated. Final variable to reduce memory usage
+    private record SideConnection(Direction nodeSide, Direction sneakySide) {
+    }
+
+    private Map<SideConnection, LazyOptional<IItemHandler>> facingHandler = new HashMap<>();
+    private final Map<SideConnection, NonNullConsumer<LazyOptional<IItemHandler>>> connectionInvalidator = new HashMap<>();
+
+    /**The Old way**/
+    //private LazyOptional<IItemHandler>[] facingHandler = new LazyOptional[6];
+    //private final List<NonNullConsumer<LazyOptional<IItemHandler>>> facingInvalidator = new ArrayList<>(); //Lambda to call when a lazy optional is invalidated. Final variable to reduce memory usage
 
     /** Variables for tracking and sending items/filters/etc **/
     private Set<BlockPos> otherNodesInNetwork = new HashSet<>();
@@ -71,11 +77,11 @@ public class LaserNodeBE extends BaseLaserBE {
             final int j = direction.ordinal();
             itemHandler[j] = new LaserNodeItemHandler(9, this);
             handler[j] = LazyOptional.of(() -> itemHandler[j]);
-            facingInvalidator.add(new WeakConsumerWrapper<>(this, (te, handler) -> {
+            /*facingInvalidator.add(new WeakConsumerWrapper<>(this, (te, handler) -> {
                 if (te.facingHandler[j] == handler) {
                     te.clearCachedInventories(j);
                 }
-            }));
+            }));*/
         }
     }
 
@@ -96,7 +102,7 @@ public class LaserNodeBE extends BaseLaserBE {
                 ItemStack card = itemHandler[direction.ordinal()].getStackInSlot(slot);
                 if (card.getItem() instanceof BaseCard) {
                     if (BaseCard.getNamedTransferMode(card).equals(BaseCard.TransferMode.EXTRACT)) {
-                        extractorCardCaches.add(new ExtractorCardCache(BaseCard.getItemExtractAmt(card), direction, BaseCard.getChannel(card), BaseCard.getFilter(card), slot));
+                        extractorCardCaches.add(new ExtractorCardCache(direction, card, slot));
                     }
                 }
             }
@@ -163,7 +169,7 @@ public class LaserNodeBE extends BaseLaserBE {
 
     /** Extractor Cards call this, and try to find an inserter card to send their items to **/
     public void sendItems(ExtractorCardCache extractorCardCache) {
-        IItemHandler adjacentInventory = getAttachedInventory(extractorCardCache.direction).orElse(EMPTY);
+        IItemHandler adjacentInventory = getAttachedInventory(extractorCardCache.direction, extractorCardCache.sneaky).orElse(EMPTY);
         for (int slot = 0; slot < adjacentInventory.getSlots(); slot++) {
             ItemStack stackInSlot = adjacentInventory.getStackInSlot(slot);
             if (stackInSlot.isEmpty() || !(extractorCardCache.isStackValidForCard(stackInSlot))) continue;
@@ -174,7 +180,7 @@ public class LaserNodeBE extends BaseLaserBE {
 
                 LaserNodeBE be = getNodeAt(getWorldPos(inserterCardCache.relativePos));
                 if (be == null) continue;
-                IItemHandler possibleDestination = be.getAttachedInventory(inserterCardCache.direction).orElse(EMPTY);
+                IItemHandler possibleDestination = be.getAttachedInventory(inserterCardCache.direction, inserterCardCache.sneaky).orElse(EMPTY);
                 if (possibleDestination.getSlots() == 0) continue;
                 ItemStack itemStack = adjacentInventory.extractItem(slot, extractorCardCache.extractAmt, true); //Pretend to pull the item out
                 int transferAmt = getTransferAmt(itemStack, possibleDestination, inserterCardCache);
@@ -246,15 +252,16 @@ public class LaserNodeBE extends BaseLaserBE {
 
     /** TODO For the stocker mode **/
     public void getItems(ItemStack card, Direction direction) {
-        IItemHandler adjacentInventory = getAttachedInventory(direction).orElse(EMPTY);
+        /*IItemHandler adjacentInventory = getAttachedInventory(direction).orElse(EMPTY);
         if (adjacentInventory.getSlots() != 0) {
             //System.out.println("Getting for: " + getBlockPos().relative(direction));
-        }
+        }*/
     }
 
     /** Called when changes happen - such as a card going into a side, or a card being modified via container **/
     public void updateThisNode() {
         setChanged();
+        //this.facingHandler2 = new HashMap<>();
         notifyOtherNodesOfChange();
         markDirtyClient();
         findMyExtractors();
@@ -301,7 +308,7 @@ public class LaserNodeBE extends BaseLaserBE {
                     } else if (BaseCard.getNamedTransferMode(card).equals(BaseCard.TransferMode.STOCK)) {
                         //getItems(card, direction);
                     } else if (BaseCard.getNamedTransferMode(card).equals(BaseCard.TransferMode.INSERT)) {
-                        inserterNodes.add(new InserterCardCache(relativePos, direction, BaseCard.getChannel(card), BaseCard.getFilter(card), slot, BaseCard.getPriority(card)));
+                        inserterNodes.add(new InserterCardCache(relativePos, direction, card, slot));
                     }
                 }
             }
@@ -310,9 +317,14 @@ public class LaserNodeBE extends BaseLaserBE {
     }
 
     /** Somehow this makes it so if you break an adjacent chest it immediately invalidates the cache of it **/
-    public LazyOptional<IItemHandler> getAttachedInventory(Direction direction) {
-        if (facingHandler[direction.ordinal()] != null) {
-            return facingHandler[direction.ordinal()];
+    public LazyOptional<IItemHandler> getAttachedInventory(Direction direction, Byte sneakySide) {
+        Direction inventorySide = direction.getOpposite();
+        if (sneakySide != -1)
+            inventorySide = Direction.values()[sneakySide];
+        SideConnection sideConnection = new SideConnection(direction, inventorySide);
+        LazyOptional<IItemHandler> testHandler = (facingHandler.get(sideConnection));
+        if (testHandler != null && testHandler.isPresent()) {
+            return testHandler;
         }
 
         // if no inventory cached yet, find a new one
@@ -320,22 +332,33 @@ public class LaserNodeBE extends BaseLaserBE {
         BlockEntity be = level.getBlockEntity(getBlockPos().relative(direction));
         // if we have a TE and its an item handler, try extracting from that
         if (be != null) {
-            LazyOptional<IItemHandler> handler = be.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction.getOpposite());
+            LazyOptional<IItemHandler> handler = be.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, inventorySide);
             if (handler.isPresent()) {
                 // add the invalidator
-                handler.addListener(facingInvalidator.get(direction.ordinal()));
+                handler.addListener(getInvalidator(sideConnection));
                 // cache and return
-                return facingHandler[direction.ordinal()] = handler;
+                facingHandler.put(sideConnection, handler);
+                return handler;
             }
         }
         // no item handler, cache empty
-        facingHandler[direction.ordinal()] = null;
+        facingHandler.remove(sideConnection);
         return LazyOptional.empty();
     }
 
+    private NonNullConsumer<LazyOptional<IItemHandler>> getInvalidator(SideConnection sideConnection) {
+        return connectionInvalidator.computeIfAbsent(sideConnection, c -> new WeakConsumerWrapper<>(this, (te, handler) -> {
+            if (te.facingHandler.get(sideConnection) == handler) {
+                te.clearCachedInventories(sideConnection);
+            }
+        }));
+    }
+
+
     /** Called when a neighbor updates to invalidate the inventory cache */
-    public void clearCachedInventories(int j) {
-        this.facingHandler[j] = null;
+    public void clearCachedInventories(SideConnection sideConnection) {
+        System.out.println("Clearing: " + sideConnection.nodeSide.getName() + " - " + sideConnection.sneakySide.getName());
+        this.facingHandler.remove(sideConnection);
     }
 
     @Nonnull

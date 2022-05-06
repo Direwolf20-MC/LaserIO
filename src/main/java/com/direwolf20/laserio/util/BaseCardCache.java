@@ -1,5 +1,6 @@
 package com.direwolf20.laserio.util;
 
+import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.common.items.filters.BaseFilter;
 import com.direwolf20.laserio.common.items.filters.FilterBasic;
 import com.direwolf20.laserio.common.items.filters.FilterCount;
@@ -15,21 +16,25 @@ import java.util.*;
 
 public class BaseCardCache {
     public final Direction direction;
+    public final ItemStack cardItem;
     public final byte channel;
     public final ItemStack filterCard;
     public final int cardSlot;
     public final Set<ItemStack> filteredItems;
     public final List<String> filterTags;
+    public final byte sneaky;
 
     public final boolean isAllowList;
     public final boolean isCompareNBT;
     public final Map<ItemStackKey, Boolean> filterCache = new Object2BooleanOpenHashMap<>();
     public final Map<ItemStackKey, Integer> filterCounts = new Object2IntOpenHashMap<>();
 
-    public BaseCardCache(Direction direction, byte channel, ItemStack filterCard, int cardSlot) {
+    public BaseCardCache(Direction direction, ItemStack cardItem, int cardSlot) {
+        this.cardItem = cardItem;
         this.direction = direction;
-        this.channel = channel;
-        this.filterCard = filterCard;
+        this.sneaky = BaseCard.getSneaky(cardItem);
+        this.channel = BaseCard.getChannel(cardItem);
+        this.filterCard = BaseCard.getFilter(cardItem);
         this.cardSlot = cardSlot;
         if (filterCard.equals(ItemStack.EMPTY)) {
             filteredItems = new HashSet<>();
