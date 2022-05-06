@@ -18,6 +18,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
@@ -39,8 +40,19 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
     private byte currentChannel;
     private byte currentItemExtractAmt;
     private short currentPriority;
+    private byte currentSneaky;
     private ItemStack card;
     private ChannelButton channelButton;
+
+    private final String[] sneakyNames = {
+            "screen.laserio.default",
+            "screen.laserio.down",
+            "screen.laserio.up",
+            "screen.laserio.north",
+            "screen.laserio.south",
+            "screen.laserio.west",
+            "screen.laserio.east",
+    };
 
     public CardItemScreen(CardItemContainer container, Inventory inv, Component name) {
         super(container, inv, name);
@@ -63,6 +75,9 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
         if (MiscTools.inBounds(getGuiLeft() + 5, getGuiTop() + 35, 16, 16, mouseX, mouseY)) {
             this.renderTooltip(matrixStack, new TextComponent(String.valueOf(currentChannel)), mouseX, mouseY);
         }
+        if (MiscTools.inBounds(getGuiLeft() + 5, getGuiTop() + 65, 16, 16, mouseX, mouseY)) {
+            this.renderTooltip(matrixStack, new TranslatableComponent(String.valueOf(sneakyNames[currentSneaky + 1])), mouseX, mouseY);
+        }
     }
 
     @Override
@@ -74,6 +89,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
         currentChannel = BaseCard.getChannel(card);
         currentItemExtractAmt = BaseCard.getItemExtractAmt(card);
         currentPriority = BaseCard.getPriority(card);
+        currentSneaky = BaseCard.getSneaky(card);
 
         DireButton plusButton = new DireButton(getGuiLeft() + 140, getGuiTop() + 14, 10, 10, new TranslatableComponent("-"), (button) -> {
             if (currentMode == 0) {
@@ -133,6 +149,20 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
             leftWidgets.add(minusButton);
         }
 
+        ResourceLocation[] sneakyTextures = new ResourceLocation[7];
+        sneakyTextures[0] = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/sneaky.png");
+        sneakyTextures[1] = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/sneaky-down.png");
+        sneakyTextures[2] = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/sneaky-up.png");
+        sneakyTextures[3] = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/sneaky-north.png");
+        sneakyTextures[4] = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/sneaky-south.png");
+        sneakyTextures[5] = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/sneaky-west.png");
+        sneakyTextures[6] = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/sneaky-east.png");
+        Button sneakyButton = new ToggleButton(getGuiLeft() + 5, getGuiTop() + 65, 16, 16, sneakyTextures, currentSneaky + 1, (button) -> {
+            currentSneaky = BaseCard.nextSneaky(card);
+            ((ToggleButton) button).setTexturePosition(currentSneaky + 1);
+        });
+        leftWidgets.add(sneakyButton);
+
         // Lay the buttons out, too lazy to figure out the math every damn time.
         // Ordered by where you add them.
         for (int i = 0; i < leftWidgets.size(); i++) {
@@ -179,7 +209,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
 
     @Override
     public void onClose() {
-        PacketHandler.sendToServer(new PacketUpdateCard(currentMode, currentChannel, currentItemExtractAmt, currentPriority));
+        PacketHandler.sendToServer(new PacketUpdateCard(currentMode, currentChannel, currentItemExtractAmt, currentPriority, currentSneaky));
         super.onClose();
     }
 

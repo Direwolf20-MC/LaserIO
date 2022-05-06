@@ -14,6 +14,7 @@
   "message.laserio.wrenchrange": "Connection exceeds maximum range of %d",
   "screen.laserio.allowlist": "Allow",
   "screen.laserio.comparenbt": "NBT",
+  "screen.laserio.default": "Default",
   "screen.laserio.denylist": "Deny",
   "screen.laserio.down": "Down",
   "screen.laserio.east": "East",

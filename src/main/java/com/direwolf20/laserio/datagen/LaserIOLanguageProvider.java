@@ -33,6 +33,7 @@ public class LaserIOLanguageProvider extends LanguageProvider {
         add("screen.laserio.comparenbt", "NBT");
         add("screen.laserio.lasernode", "Laser Node");
 
+        add("screen.laserio.default", "Default");
         add("screen.laserio.up", "Up");
         add("screen.laserio.down", "Down");
         add("screen.laserio.north", "North");

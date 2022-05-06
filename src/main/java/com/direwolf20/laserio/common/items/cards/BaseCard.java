@@ -162,6 +162,26 @@ public class BaseCard extends Item {
         return cardItemHandler.getStackInSlot(0);
     }
 
+    public static byte setSneaky(ItemStack card, byte sneaky) {
+        card.getOrCreateTag().putByte("sneaky", sneaky);
+        return sneaky;
+    }
+
+    public static byte getSneaky(ItemStack card) {
+        CompoundTag compound = card.getOrCreateTag();
+        return !compound.contains("sneaky") ? setSneaky(card, (byte) -1) : compound.getByte("sneaky");
+    }
+
+    public static byte nextSneaky(ItemStack card) {
+        byte k = getSneaky(card);
+        return setSneaky(card, (byte) (k == 5 ? -1 : k + 1));
+    }
+
+    public static byte previousSneaky(ItemStack card) {
+        byte k = getSneaky(card);
+        return setSneaky(card, (byte) (k == -1 ? 5 : k - 1));
+    }
+
     public static boolean tickable(ItemStack card) {
         return !getNamedTransferMode(card).equals(TransferMode.INSERT);
     }

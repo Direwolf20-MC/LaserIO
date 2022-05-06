@@ -15,12 +15,14 @@ public class PacketUpdateCard {
     byte channel;
     byte extractAmt;
     short priority;
+    byte sneaky;
 
-    public PacketUpdateCard(byte mode, byte channel, byte extractAmt, short priority) {
+    public PacketUpdateCard(byte mode, byte channel, byte extractAmt, short priority, byte sneaky) {
         this.mode = mode;
         this.channel = channel;
         this.extractAmt = extractAmt;
         this.priority = priority;
+        this.sneaky = sneaky;
     }
 
     public static void encode(PacketUpdateCard msg, FriendlyByteBuf buffer) {
@@ -28,10 +30,11 @@ public class PacketUpdateCard {
         buffer.writeByte(msg.channel);
         buffer.writeByte(msg.extractAmt);
         buffer.writeShort(msg.priority);
+        buffer.writeByte(msg.sneaky);
     }
 
     public static PacketUpdateCard decode(FriendlyByteBuf buffer) {
-        return new PacketUpdateCard(buffer.readByte(), buffer.readByte(), buffer.readByte(), buffer.readShort());
+        return new PacketUpdateCard(buffer.readByte(), buffer.readByte(), buffer.readByte(), buffer.readShort(), buffer.readByte());
     }
 
     public static class Handler {
@@ -51,6 +54,7 @@ public class PacketUpdateCard {
                     BaseCard.setChannel(stack, msg.channel);
                     BaseCard.setItemExtractAmt(stack, msg.extractAmt);
                     BaseCard.setPriority(stack, msg.priority);
+                    BaseCard.setSneaky(stack, msg.sneaky);
                 }
             });
 
