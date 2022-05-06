@@ -30,6 +30,7 @@ import net.minecraftforge.items.ItemStackHandler;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import static com.direwolf20.laserio.util.MiscTools.findOffset;
 
@@ -57,8 +58,8 @@ public class LaserNodeBE extends BaseLaserBE {
 
     /** Variables for tracking and sending items/filters/etc **/
     private Set<BlockPos> otherNodesInNetwork = new HashSet<>();
-    private final List<InserterCardCache> inserterNodes = new ArrayList<>(); //All Inventory nodes that contain an inserter card
-    private final List<ExtractorCardCache> extractorCardCaches = new ArrayList<>();
+    private final List<InserterCardCache> inserterNodes = new CopyOnWriteArrayList<>(); //All Inventory nodes that contain an inserter card
+    private final List<ExtractorCardCache> extractorCardCaches = new CopyOnWriteArrayList<>();
     private final HashMap<ItemStackKey, List<InserterCardCache>> destinationCache = new HashMap<>();
 
     /** Misc Variables **/
