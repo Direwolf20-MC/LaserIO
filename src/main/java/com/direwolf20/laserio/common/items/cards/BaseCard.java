@@ -7,6 +7,7 @@ import com.direwolf20.laserio.setup.ModSetup;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -28,6 +29,7 @@ import net.minecraftforge.network.NetworkHooks;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Locale;
 
 public class BaseCard extends Item {
     protected BaseCard.CardType CARDTYPE;
@@ -87,6 +89,14 @@ public class BaseCard extends Item {
                 int channel = getChannel(stack);
                 toWrite.append(tooltipMaker(String.valueOf(channel), LaserNodeBERender.colors[channel].getRGB()));
                 tooltip.add(toWrite);
+
+                int sneakyMode = getSneaky(stack);
+                if (sneakyMode != -1) {
+                    toWrite = tooltipMaker("laserio.tooltip.item.card.sneaky", ChatFormatting.GRAY.getColor());
+                    toWrite.append(tooltipMaker("laserio.tooltip.item.card.sneaky." + Direction.values()[sneakyMode].toString().toUpperCase(Locale.ROOT), ChatFormatting.DARK_GREEN.getColor()));
+                    tooltip.add(toWrite);
+                }
+
             } catch (Exception e) {
                 System.out.println(e);
             }
