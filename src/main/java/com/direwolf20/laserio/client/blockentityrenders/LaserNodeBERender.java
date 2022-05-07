@@ -30,7 +30,7 @@ public class LaserNodeBERender extends BaseLaserBERender<LaserNodeBE> {
             new Vector3f(0.5f, 0.35f, 0.5f),
             new Vector3f(0.35f, 0.35f, 0.5f)
     };
-    private final Color colors[] = {
+    public static final Color colors[] = {
             new Color(255, 255, 255),
             new Color(249, 128, 29),
             new Color(198, 79, 189),

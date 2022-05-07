@@ -1,12 +1,16 @@
 package com.direwolf20.laserio.common.items.cards;
 
+import com.direwolf20.laserio.client.blockentityrenders.LaserNodeBERender;
 import com.direwolf20.laserio.common.containers.CardItemContainer;
 import com.direwolf20.laserio.common.containers.customhandler.CardItemHandler;
 import com.direwolf20.laserio.setup.ModSetup;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -63,12 +67,38 @@ public class BaseCard extends Item {
         boolean sneakPressed = Screen.hasShiftDown();
 
         if (!sneakPressed) {
-            //tooltip.add(new TranslatableComponent("laserio.tooltip.item.show_settings")
-            //        .withStyle(ChatFormatting.GRAY));
+            tooltip.add(new TranslatableComponent("laserio.tooltip.item.show_settings")
+                    .withStyle(ChatFormatting.GRAY));
         } else {
-            //tooltip.add(new TranslatableComponent("laserio.tooltip.item.card.mode", "Extract"));
-            //tooltip.add(TextComponentUtil)
+            try {
+                String currentMode = getNamedTransferMode(stack).toString();
+                MutableComponent toWrite = tooltipMaker("laserio.tooltip.item.card.mode", ChatFormatting.GRAY.getColor());
+                int modeColor = ChatFormatting.GRAY.getColor();
+                if (currentMode.equals("EXTRACT"))
+                    modeColor = ChatFormatting.RED.getColor();
+                else if (currentMode.equals("INSERT"))
+                    modeColor = ChatFormatting.GREEN.getColor();
+                else if (currentMode.equals("STOCK"))
+                    modeColor = ChatFormatting.BLUE.getColor();
+                toWrite.append(tooltipMaker("laserio.tooltip.item.card.mode." + currentMode, modeColor));
+                tooltip.add(toWrite);
+
+                toWrite = tooltipMaker("laserio.tooltip.item.card.channel", ChatFormatting.GRAY.getColor());
+                int channel = getChannel(stack);
+                toWrite.append(tooltipMaker(String.valueOf(channel), LaserNodeBERender.colors[channel].getRGB()));
+                tooltip.add(toWrite);
+            } catch (Exception e) {
+                System.out.println(e);
+            }
         }
+    }
+
+    public MutableComponent tooltipMaker(String string, int color) {
+        Style style = Style.EMPTY;
+        style = style.withColor(color);
+        MutableComponent current = new TranslatableComponent(string);
+        current.setStyle(style);
+        return current;
     }
 
     @Override

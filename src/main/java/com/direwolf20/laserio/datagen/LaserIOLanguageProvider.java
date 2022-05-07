@@ -52,13 +52,14 @@ public class LaserIOLanguageProvider extends LanguageProvider {
         add("message.laserio.wrenchrange", "Connection exceeds maximum range of %d");
 
         add("laserio.tooltip.item.show_settings", "Hold shift to show settings");
-        add("laserio.tooltip.item.card.mode", "Mode: %1");
-        add("laserio.tooltip.item.filter.type", "Type: %1");
-        /*add("", "");
-        add("", "");
-        add("", "");
-        add("", "");
-        add("", "");*/
+        add("laserio.tooltip.item.card.mode", "Mode: ");
+        add("laserio.tooltip.item.card.channel", "Channel: ");
+        add("laserio.tooltip.item.filter.type", "Type: ");
+        add("laserio.tooltip.item.card.mode.EXTRACT", "Extract");
+        add("laserio.tooltip.item.card.mode.INSERT", "Insert");
+        add("laserio.tooltip.item.card.mode.STOCK", "Stock");
+        //add("", "");
+        //add("", "");
 
         //add("", "");
     }
