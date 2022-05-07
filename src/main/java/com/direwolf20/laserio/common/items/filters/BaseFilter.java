@@ -1,10 +1,15 @@
 package com.direwolf20.laserio.common.items.filters;
 
+import com.direwolf20.laserio.client.events.EventTooltip;
 import com.direwolf20.laserio.setup.ModSetup;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -14,6 +19,9 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Optional;
+
+import static com.direwolf20.laserio.util.MiscTools.tooltipMaker;
 
 public class BaseFilter extends Item {
     public BaseFilter() {
@@ -34,16 +42,41 @@ public class BaseFilter extends Item {
         boolean sneakPressed = Screen.hasShiftDown();
 
         if (!sneakPressed) {
-            //tooltip.add(new TranslatableComponent("laserio.tooltip.item.show_settings")
-            //        .withStyle(ChatFormatting.GRAY));
+            tooltip.add(new TranslatableComponent("laserio.tooltip.item.show_settings")
+                    .withStyle(ChatFormatting.GRAY));
         } else {
-            //tooltip.add(new TranslatableComponent("laserio.tooltip.item.filter.type"));
+            MutableComponent toWrite = tooltipMaker("laserio.tooltip.item.filter.type", ChatFormatting.GRAY.getColor());
+            boolean allowMode = getAllowList(stack);
+            String allowString = allowMode ? "laserio.tooltip.item.filter.type.allow" : "laserio.tooltip.item.filter.type.deny";
+            int allowColor = allowMode ? ChatFormatting.GREEN.getColor() : ChatFormatting.RED.getColor();
+            toWrite.append(tooltipMaker(allowString, allowColor));
+            tooltip.add(toWrite);
+
+            if (!(stack.getItem() instanceof FilterTag)) {
+                toWrite = tooltipMaker("laserio.tooltip.item.filter.nbt", ChatFormatting.GRAY.getColor());
+                boolean nbtMode = getCompareNBT(stack);
+                String nbtString = nbtMode ? "laserio.tooltip.item.filter.nbt.allow" : "laserio.tooltip.item.filter.nbt.deny";
+                int nbtColor = nbtMode ? ChatFormatting.GREEN.getColor() : ChatFormatting.RED.getColor();
+                toWrite.append(tooltipMaker(nbtString, nbtColor));
+                tooltip.add(toWrite);
+            }
+
+            if (!(stack.getItem() instanceof FilterTag)) {
+
+            }
         }
     }
 
     @Override
     public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged) {
         return false;
+    }
+
+    @Override
+    public Optional<TooltipComponent> getTooltipImage(ItemStack itemStack) {
+        if (itemStack.getItem() instanceof FilterTag)
+            return super.getTooltipImage(itemStack);
+        return Optional.of(new EventTooltip.CopyPasteTooltipComponent.Data(itemStack));
     }
 
     public static boolean getAllowList(ItemStack stack) {

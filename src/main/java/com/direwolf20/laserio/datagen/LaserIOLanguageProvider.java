@@ -51,10 +51,10 @@ public class LaserIOLanguageProvider extends LanguageProvider {
 
         add("message.laserio.wrenchrange", "Connection exceeds maximum range of %d");
 
+        //Card Tooltips
         add("laserio.tooltip.item.show_settings", "Hold shift to show settings");
         add("laserio.tooltip.item.card.mode", "Mode: ");
         add("laserio.tooltip.item.card.channel", "Channel: ");
-        add("laserio.tooltip.item.filter.type", "Type: ");
         add("laserio.tooltip.item.card.mode.EXTRACT", "Extract");
         add("laserio.tooltip.item.card.mode.INSERT", "Insert");
         add("laserio.tooltip.item.card.mode.STOCK", "Stock");
@@ -66,6 +66,13 @@ public class LaserIOLanguageProvider extends LanguageProvider {
         add("laserio.tooltip.item.card.sneaky.WEST", "West");
         add("laserio.tooltip.item.card.sneaky.EAST", "East");
 
+        //Filter Tooltips
+        add("laserio.tooltip.item.filter.type", "Type: ");
+        add("laserio.tooltip.item.filter.type.allow", "Allow");
+        add("laserio.tooltip.item.filter.type.deny", "Deny");
+        add("laserio.tooltip.item.filter.nbt", "Match NBT: ");
+        add("laserio.tooltip.item.filter.nbt.allow", "True");
+        add("laserio.tooltip.item.filter.nbt.deny", "False");
 
         //add("", "");
     }

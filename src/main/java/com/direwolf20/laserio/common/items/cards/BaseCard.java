@@ -11,7 +11,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -30,6 +29,8 @@ import net.minecraftforge.network.NetworkHooks;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Locale;
+
+import static com.direwolf20.laserio.util.MiscTools.tooltipMaker;
 
 public class BaseCard extends Item {
     protected BaseCard.CardType CARDTYPE;
@@ -101,14 +102,6 @@ public class BaseCard extends Item {
                 System.out.println(e);
             }
         }
-    }
-
-    public MutableComponent tooltipMaker(String string, int color) {
-        Style style = Style.EMPTY;
-        style = style.withColor(color);
-        MutableComponent current = new TranslatableComponent(string);
-        current.setStyle(style);
-        return current;
     }
 
     @Override

@@ -92,6 +92,53 @@ public class LaserIOItemRenderer extends ItemRenderer {
         }
     }
 
+    public void renderGuiItemDecorations(Font font, ItemStack itemstack, int x, int y, @Nullable String altText, float scale) {
+        if (!itemstack.isEmpty()) {
+            PoseStack posestack = new PoseStack();
+            if (itemstack.getCount() != 1 || altText != null) {
+                String textToDraw = altText == null ? String.valueOf(itemstack.getCount()) : altText;
+                posestack.translate(0.0D, 0.0D, (double) (this.blitOffset + 600.0F));
+                MultiBufferSource.BufferSource multibuffersource$buffersource = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
+                posestack.pushPose();
+                posestack.translate(0, y, 300);
+                posestack.scale(scale, scale, scale);
+                font.drawInBatch(textToDraw, (float) (x + 13 - font.width(textToDraw) * scale) / scale, (float) (17), 16777215, true, posestack.last().pose(), multibuffersource$buffersource, false, 0, 15728880);
+                posestack.popPose();
+                multibuffersource$buffersource.endBatch();
+            }
+
+            if (itemstack.isBarVisible()) {
+                RenderSystem.disableDepthTest();
+                RenderSystem.disableTexture();
+                RenderSystem.disableBlend();
+                Tesselator tesselator = Tesselator.getInstance();
+                BufferBuilder bufferbuilder = tesselator.getBuilder();
+                int i = itemstack.getBarWidth();
+                int j = itemstack.getBarColor();
+                this.fillRect(bufferbuilder, x + 2, y + 13, 13, 2, 0, 0, 0, 255);
+                this.fillRect(bufferbuilder, x + (int) (2 / scale), y + 13, (int) (i * scale), 1, j >> 16 & 255, j >> 8 & 255, j & 255, 255);
+                RenderSystem.enableBlend();
+                RenderSystem.enableTexture();
+                RenderSystem.enableDepthTest();
+            }
+
+            LocalPlayer localplayer = Minecraft.getInstance().player;
+            float f = localplayer == null ? 0.0F : localplayer.getCooldowns().getCooldownPercent(itemstack.getItem(), Minecraft.getInstance().getFrameTime());
+            if (f > 0.0F) {
+                RenderSystem.disableDepthTest();
+                RenderSystem.disableTexture();
+                RenderSystem.enableBlend();
+                RenderSystem.defaultBlendFunc();
+                Tesselator tesselator1 = Tesselator.getInstance();
+                BufferBuilder bufferbuilder1 = tesselator1.getBuilder();
+                this.fillRect(bufferbuilder1, x, y + Mth.floor(16.0F * (1.0F - f)), 16, Mth.ceil(16.0F * f), 255, 255, 255, 127);
+                RenderSystem.enableTexture();
+                RenderSystem.enableDepthTest();
+            }
+
+        }
+    }
+
     public void renderGuiItem(float scale, ItemStack p_115128_, int p_115129_, int p_115130_, BakedModel p_115131_) {
         Minecraft.getInstance().getTextureManager().getTexture(TextureAtlas.LOCATION_BLOCKS).setFilter(false, false);
         RenderSystem.setShaderTexture(0, TextureAtlas.LOCATION_BLOCKS);
@@ -100,7 +147,7 @@ public class LaserIOItemRenderer extends ItemRenderer {
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         PoseStack posestack = RenderSystem.getModelViewStack();
         posestack.pushPose();
-        posestack.translate((double) p_115129_, (double) p_115130_, (double) (100.0F + this.blitOffset));
+        posestack.translate((double) p_115129_, (double) p_115130_, (double) (500.0F + this.blitOffset));
         posestack.translate(8.0D, 8.0D, 0.0D);
         posestack.scale(1.0F, -1.0F, 1.0F);
         posestack.scale(scale, scale, scale);

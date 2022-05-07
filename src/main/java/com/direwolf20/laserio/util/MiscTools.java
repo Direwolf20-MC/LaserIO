@@ -4,6 +4,9 @@ import com.mojang.math.Vector3f;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TranslatableComponent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,5 +62,13 @@ public class MiscTools {
             list.add(tag.getString("list"));
         }
         return list;
+    }
+
+    public static MutableComponent tooltipMaker(String string, int color) {
+        Style style = Style.EMPTY;
+        style = style.withColor(color);
+        MutableComponent current = new TranslatableComponent(string);
+        current.setStyle(style);
+        return current;
     }
 }
