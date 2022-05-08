@@ -74,8 +74,6 @@ public class BaseFilter extends Item {
 
     @Override
     public Optional<TooltipComponent> getTooltipImage(ItemStack itemStack) {
-        if (itemStack.getItem() instanceof FilterTag)
-            return super.getTooltipImage(itemStack);
         return Optional.of(new EventTooltip.CopyPasteTooltipComponent.Data(itemStack));
     }
 
