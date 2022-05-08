@@ -75,7 +75,7 @@ public class LaserNodeBE extends BaseLaserBE {
         super(Registration.LaserNode_BE.get(), pos, state);
         for (Direction direction : Direction.values()) {
             final int j = direction.ordinal();
-            itemHandler[j] = new LaserNodeItemHandler(9, this);
+            itemHandler[j] = new LaserNodeItemHandler(LaserNodeContainer.SLOTS, this);
             handler[j] = LazyOptional.of(() -> itemHandler[j]);
             /*facingInvalidator.add(new WeakConsumerWrapper<>(this, (te, handler) -> {
                 if (te.facingHandler[j] == handler) {
@@ -98,7 +98,7 @@ public class LaserNodeBE extends BaseLaserBE {
     public void findMyExtractors() {
         this.extractorCardCaches.clear();
         for (Direction direction : Direction.values()) {
-            for (int slot = 0; slot < LaserNodeContainer.SLOTS; slot++) {
+            for (int slot = 0; slot < LaserNodeContainer.CARDSLOTS; slot++) {
                 ItemStack card = itemHandler[direction.ordinal()].getStackInSlot(slot);
                 if (card.getItem() instanceof BaseCard) {
                     if (BaseCard.getNamedTransferMode(card).equals(BaseCard.TransferMode.EXTRACT)) {
@@ -260,8 +260,8 @@ public class LaserNodeBE extends BaseLaserBE {
 
     /** Called when changes happen - such as a card going into a side, or a card being modified via container **/
     public void updateThisNode() {
+        //System.out.println("Updating node at: " + getBlockPos());
         setChanged();
-        //this.facingHandler2 = new HashMap<>();
         notifyOtherNodesOfChange();
         markDirtyClient();
         findMyExtractors();
@@ -300,7 +300,7 @@ public class LaserNodeBE extends BaseLaserBE {
         destinationCache.clear(); //TODO maybe just remove destinations that match this blockPos
         if (be == null) return; //If the block position given doesn't contain a LaserNodeBE stop
         for (Direction direction : Direction.values()) {
-            for (int slot = 0; slot < LaserNodeContainer.SLOTS; slot++) {
+            for (int slot = 0; slot < LaserNodeContainer.CARDSLOTS; slot++) {
                 ItemStack card = be.itemHandler[direction.ordinal()].getStackInSlot(slot);
                 if (card.getItem() instanceof BaseCard) {
                     if (BaseCard.getNamedTransferMode(card).equals(BaseCard.TransferMode.EXTRACT)) {
@@ -375,6 +375,9 @@ public class LaserNodeBE extends BaseLaserBE {
         for (int i = 0; i < Direction.values().length; i++) {
             if (tag.contains("Inventory" + i)) {
                 itemHandler[i].deserializeNBT(tag.getCompound("Inventory" + i));
+                if (itemHandler[i].getSlots() < LaserNodeContainer.SLOTS) {
+                    itemHandler[i].reSize(LaserNodeContainer.SLOTS);
+                }
             }
         }
         super.load(tag);

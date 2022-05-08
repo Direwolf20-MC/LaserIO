@@ -26,16 +26,14 @@ public class CardItemHandler extends ItemStackHandler {
     public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
         if (slot == 0)
             return stack.getItem() instanceof BaseFilter;
-        else
-            return stack.getItem() instanceof OverclockerCard;
+        return stack.getItem() instanceof OverclockerCard;
     }
 
     @Override
     public int getSlotLimit(int slot) {
         if (slot == 0)
             return 1;
-        else
-            return 4;
+        return 4;
     }
 
     public void reSize(int size) {
