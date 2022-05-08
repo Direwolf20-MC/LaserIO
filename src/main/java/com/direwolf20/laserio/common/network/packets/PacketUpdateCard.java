@@ -52,7 +52,11 @@ public class PacketUpdateCard {
                     ItemStack stack = ((CardItemContainer) container).cardItem;
                     BaseCard.setTransferMode(stack, msg.mode);
                     BaseCard.setChannel(stack, msg.channel);
-                    BaseCard.setItemExtractAmt(stack, msg.extractAmt);
+                    byte extractAmt = msg.extractAmt;
+                    if (extractAmt > Math.max(container.getSlot(1).getItem().getCount() * 16, 1)) {
+                        extractAmt = (byte) Math.max(container.getSlot(1).getItem().getCount() * 16, 1);
+                    }
+                    BaseCard.setItemExtractAmt(stack, extractAmt);
                     BaseCard.setPriority(stack, msg.priority);
                     BaseCard.setSneaky(stack, msg.sneaky);
                 }

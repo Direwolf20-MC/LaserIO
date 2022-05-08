@@ -114,7 +114,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
                 int change = 1;
                 if (Screen.hasShiftDown()) change *= 10;
                 if (Screen.hasControlDown()) change *= 64;
-                currentItemExtractAmt = (byte) (Math.min(currentItemExtractAmt + change, 64));
+                currentItemExtractAmt = (byte) (Math.min(currentItemExtractAmt + change, Math.max(container.getSlot(1).getItem().getCount() * 16, 1)));
             }
         });
 
