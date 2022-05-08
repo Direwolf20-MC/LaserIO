@@ -9,6 +9,7 @@ import com.direwolf20.laserio.common.items.filters.BaseFilter;
 import com.direwolf20.laserio.common.items.filters.FilterBasic;
 import com.direwolf20.laserio.common.items.filters.FilterCount;
 import com.direwolf20.laserio.common.items.filters.FilterTag;
+import com.direwolf20.laserio.common.items.upgrades.OverclockerNode;
 import com.direwolf20.laserio.setup.Registration;
 import com.direwolf20.laserio.util.*;
 import com.mojang.math.Vector3f;
@@ -49,6 +50,7 @@ public class LaserNodeBE extends BaseLaserBE {
     /** This blocks Item Handlers **/
     private final LaserNodeItemHandler[] itemHandler = new LaserNodeItemHandler[6]; //The item stacks in each side of the node, for local use only
     private final LazyOptional<LaserNodeItemHandler>[] handler = new LazyOptional[6]; //The capability thingy gives this one out for others to access?
+    private final int[] overclockers = new int[6];
     private final IItemHandler EMPTY = new ItemStackHandler(0);
 
     /** Adjacent Inventory Handlers **/
@@ -94,6 +96,18 @@ public class LaserNodeBE extends BaseLaserBE {
         refreshAllInvNodes(); //Seeing as the otherNodes list just got updated, we should refresh the InventoryNode content caches
     }
 
+    public void updateOverclockers() {
+        for (Direction direction : Direction.values()) {
+            int slot = 9; //The Overclockers Slot
+            ItemStack overclockerStack = itemHandler[direction.ordinal()].getStackInSlot(slot);
+            if (overclockerStack.isEmpty())
+                overclockers[direction.ordinal()] = 0;
+            if (overclockerStack.getItem() instanceof OverclockerNode) {
+                overclockers[direction.ordinal()] = overclockerStack.getCount();
+            }
+        }
+    }
+
     /** Build a list of extractor cards this node has in it, for looping through **/
     public void findMyExtractors() {
         this.extractorCardCaches.clear();
@@ -111,8 +125,15 @@ public class LaserNodeBE extends BaseLaserBE {
 
     /** Loop through all the extractorCards and run the extractions **/
     public void extractItems() {
-        for (ExtractorCardCache extractorCardCache : extractorCardCaches) {
-            sendItems(extractorCardCache);
+        if (this.level.getGameTime() % 20 != 0)
+            return;
+        for (Direction direction : Direction.values()) {
+            int countCardsHandled = 0;
+            for (ExtractorCardCache extractorCardCache : extractorCardCaches.stream().filter(p -> p.direction.equals(direction)).toList()) {
+                if (countCardsHandled <= overclockers[direction.ordinal()])
+                    if (sendItems(extractorCardCache))
+                        countCardsHandled++;
+            }
         }
     }
 
@@ -126,6 +147,7 @@ public class LaserNodeBE extends BaseLaserBE {
         if (!discoveredNodes) { //On world / chunk reload, lets rediscover the network, including this block's extractor cards.
             discoverAllNodes();
             findMyExtractors();
+            updateOverclockers();
             discoveredNodes = true;
         }
         extractItems(); //If this node has any extractors, do stuff with them
@@ -168,7 +190,7 @@ public class LaserNodeBE extends BaseLaserBE {
     //TODO Efficiency
 
     /** Extractor Cards call this, and try to find an inserter card to send their items to **/
-    public void sendItems(ExtractorCardCache extractorCardCache) {
+    public boolean sendItems(ExtractorCardCache extractorCardCache) {
         IItemHandler adjacentInventory = getAttachedInventory(extractorCardCache.direction, extractorCardCache.sneaky).orElse(EMPTY);
         for (int slot = 0; slot < adjacentInventory.getSlots(); slot++) {
             ItemStack stackInSlot = adjacentInventory.getStackInSlot(slot);
@@ -189,9 +211,10 @@ public class LaserNodeBE extends BaseLaserBE {
                 adjacentInventory.extractItem(slot, transferAmt, false); //Actually extract the number of items that fit
                 drawParticles(itemStack, extractorCardCache.direction, be, inserterCardCache.direction, extractorCardCache.cardSlot, inserterCardCache.cardSlot);
                 ItemHandlerHelper.insertItem(possibleDestination, itemStack, false); //Actually insert into the destination
-                return;
+                return true;
             }
         }
+        return false;
     }
 
     /**
@@ -265,6 +288,7 @@ public class LaserNodeBE extends BaseLaserBE {
         notifyOtherNodesOfChange();
         markDirtyClient();
         findMyExtractors();
+        updateOverclockers();
     }
 
     /** When this node changes, tell other nodes to refresh their cache of it **/
