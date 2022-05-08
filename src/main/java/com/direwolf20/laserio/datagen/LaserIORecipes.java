@@ -36,7 +36,7 @@ public class LaserIORecipes extends RecipeProvider {
         SimpleCookingRecipeBuilder.smelting(Ingredient.of(Registration.Logic_Chip_Raw.get()),
                         Registration.Logic_Chip.get(), 1.0f, 100)
                 .unlockedBy("has_raw_chip", inventoryTrigger(ItemPredicate.Builder.item().of(Registration.Logic_Chip_Raw.get()).build()))
-                .save(consumer, "logic_chip");
+                .save(consumer);
 
         //Blocks
         ShapedRecipeBuilder.shaped(Registration.LaserConnector.get(), 1)
