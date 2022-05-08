@@ -112,15 +112,16 @@ public class BaseCard extends Item {
 
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
-        //TODO Fix dupe bug with multiple cards in hand when right clicked.
         ItemStack itemstack = player.getItemInHand(hand);
         if (level.isClientSide()) return new InteractionResultHolder<>(InteractionResult.PASS, itemstack);
 
         CardItemHandler handler = getInventory(itemstack);
+
         NetworkHooks.openGui((ServerPlayer) player, new SimpleMenuProvider(
                 (windowId, playerInventory, playerEntity) -> new CardItemContainer(windowId, playerInventory, player, handler, itemstack), new TranslatableComponent("")), (buf -> {
             buf.writeItem(itemstack);
         }));
+
 
         return new InteractionResultHolder<>(InteractionResult.PASS, itemstack);
     }
@@ -155,6 +156,8 @@ public class BaseCard extends Item {
         CompoundTag compound = stack.getOrCreateTag();
         CardItemHandler handler = new CardItemHandler(CardItemContainer.SLOTS, stack);
         handler.deserializeNBT(compound.getCompound("inv"));
+        if (handler.getSlots() < CardItemContainer.SLOTS)
+            handler.reSize(CardItemContainer.SLOTS);
         return !compound.contains("inv") ? setInventory(stack, new CardItemHandler(CardItemContainer.SLOTS, stack)) : handler;
     }
 
