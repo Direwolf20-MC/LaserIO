@@ -127,6 +127,11 @@ public class LaserIORecipes extends RecipeProvider {
                 .group("laserio")
                 .unlockedBy("has_filter_count", InventoryChangeTrigger.TriggerInstance.hasItems(Registration.Filter_Count.get()))
                 .save(consumer, Registration.Filter_Count.getId() + "_nbtclear");
+        ShapelessRecipeBuilder.shapeless(Registration.Filter_Tag.get())
+                .requires(Registration.Filter_Tag.get())
+                .group("laserio")
+                .unlockedBy("has_filter_tag", InventoryChangeTrigger.TriggerInstance.hasItems(Registration.Filter_Tag.get()))
+                .save(consumer, Registration.Filter_Tag.getId() + "_nbtclear");
 
     }
 }

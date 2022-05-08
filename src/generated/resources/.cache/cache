@@ -1,7 +1,6 @@
 bb0e51b663d061f7454ff2b0d4d76dba1a6d6070 assets/laserio/lang/en_us.json
 a54a7787d6ae6b7e3097e0116d0191b3b7502bf7 assets/laserio/models/item/card_energy.json
 a202b855bd6a5693d2645d05f150f51dc5621dc0 assets/laserio/models/item/card_fluid.json
-173161de647cc9746227e8b381e7c7f15410262c assets/laserio/models/item/card_item.json
 4eb00592c18006de8ed3573a59681a6637ee772b assets/laserio/models/item/filter_basic.json
 c15661e6248d1169e158735b11d5a4839b53c01f assets/laserio/models/item/filter_count.json
 41f7e423eca2fb09d75e9ac8c71e0958c6b79ae1 assets/laserio/models/item/filter_tag.json
@@ -17,6 +16,7 @@ cc74b62372f46a18966f636b8560760a322c2ebd data/laserio/advancements/recipes/laser
 7545d188da5fb5881fa86eb75bbd8f2b5fdf7305 data/laserio/advancements/recipes/laserio/filter_count.json
 7ca757decbc6039093f1f2c5731d74a8ac308ceb data/laserio/advancements/recipes/laserio/filter_count_nbtclear.json
 07e21d22cd573440b3e8fc0d99d359a6a9f6ef43 data/laserio/advancements/recipes/laserio/filter_tag.json
+8fa150b93454de7a595c37c6766e023cf7faca57 data/laserio/advancements/recipes/laserio/filter_tag_nbtclear.json
 fa6da189dbe528d7fdaa178f68d0e39dd9b32bf6 data/laserio/advancements/recipes/laserio/laser_connector.json
 4e944b39194b8fe3af99fec2e9bcc34ea0415efc data/laserio/advancements/recipes/laserio/laser_node.json
 b9efbb321ac639e2e536cc544e906484921d9bd3 data/laserio/advancements/recipes/laserio/laser_wrench.json
@@ -30,6 +30,7 @@ d0a9bd770fa4ac669626c1c8b07c197352550402 data/laserio/loot_tables/blocks/laser_c
 4709806c3f46f1c719a5834205d8b5877d4d520b data/laserio/recipes/filter_count.json
 2c7166c8b3322e33d6f2ca2450cc88b47d574753 data/laserio/recipes/filter_count_nbtclear.json
 99e4d898e8cf2d8a422944ebfbc6abd1507110f3 data/laserio/recipes/filter_tag.json
+5b0a98b6b93c483bef4be03d9df7ea8a3e52b863 data/laserio/recipes/filter_tag_nbtclear.json
 64d6cd8adfc2c731a788a6a403635cfc35eb0f80 data/laserio/recipes/laser_connector.json
 efdb031ace3eb4c8582f409119d340693069d65a data/laserio/recipes/laser_node.json
 4a6501f6daaf5f370abbe83c375b6729ed64d127 data/laserio/recipes/laser_wrench.json
