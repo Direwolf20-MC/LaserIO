@@ -1,4 +1,4 @@
-bb0e51b663d061f7454ff2b0d4d76dba1a6d6070 assets/laserio/lang/en_us.json
+cb33bb4f614a79498cb9b35b73bfdf4970b7af8f assets/laserio/lang/en_us.json
 a54a7787d6ae6b7e3097e0116d0191b3b7502bf7 assets/laserio/models/item/card_energy.json
 a202b855bd6a5693d2645d05f150f51dc5621dc0 assets/laserio/models/item/card_fluid.json
 4eb00592c18006de8ed3573a59681a6637ee772b assets/laserio/models/item/filter_basic.json
@@ -9,6 +9,8 @@ ede5727632c4e4e718e4ec0cd8be4585760186d7 assets/laserio/models/item/laser_connec
 f078ab97fe0309dbc315d95974a60e441f37515c assets/laserio/models/item/laser_wrench.json
 2c32d1e95d2ff0046a413a1575edbfec04678461 assets/laserio/models/item/logic_chip.json
 e1e7cda56571876f5f38f190311be8346a122bf4 assets/laserio/models/item/logic_chip_raw.json
+f0a6f3c6387d669d27040cab69453995d7c19224 assets/laserio/models/item/overclocker_card.json
+29b1fdfcfa5dccd723ba9146e18ac774f75079a9 assets/laserio/models/item/overclocker_node.json
 425ecf739117ffa51672f492342db151009c0ca1 data/laserio/advancements/recipes/laserio/card_item.json
 05ef393b3453e9b906d0ec69778be19e557a439e data/laserio/advancements/recipes/laserio/card_item_nbtclear.json
 cc74b62372f46a18966f636b8560760a322c2ebd data/laserio/advancements/recipes/laserio/filter_basic.json

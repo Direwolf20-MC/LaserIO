@@ -10,6 +10,8 @@
   "item.laserio.laser_wrench": "Laser Wrench",
   "item.laserio.logic_chip": "Logic Chip",
   "item.laserio.logic_chip_raw": "Raw Logic Chip",
+  "item.laserio.overclocker_card": "Card Overclocker",
+  "item.laserio.overclocker_node": "Node Overclocker",
   "itemGroup.laserio": "LaserIO",
   "laserio.tooltip.item.card.channel": "Channel: ",
   "laserio.tooltip.item.card.mode": "Mode: ",
