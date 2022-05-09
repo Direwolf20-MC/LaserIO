@@ -3,6 +3,7 @@ package com.direwolf20.laserio.common.containers;
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import com.direwolf20.laserio.common.containers.customhandler.CardItemHandler;
 import com.direwolf20.laserio.common.containers.customslot.CardItemSlot;
+import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.setup.Registration;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
@@ -18,7 +19,7 @@ import net.minecraftforge.items.SlotItemHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
 
 public class CardItemContainer extends AbstractContainerMenu {
-    public static final int SLOTS = 1;
+    public static final int SLOTS = 2;
     public CardItemHandler handler;
     public ItemStack cardItem;
     public Player playerEntity;
@@ -36,8 +37,10 @@ public class CardItemContainer extends AbstractContainerMenu {
         this.handler = handler;
         this.playerInventory = new InvWrapper(playerInventory);
         this.cardItem = cardItem;
-        if (handler != null)
+        if (handler != null) {
             addSlotRange(handler, 0, 80, 35, 1, 18);
+            addSlotRange(handler, 1, 152, 63, 1, 18);
+        }
 
         layoutPlayerInventorySlots(8, 84);
     }
@@ -70,12 +73,9 @@ public class CardItemContainer extends AbstractContainerMenu {
             } else {
                 if (!this.moveItemStackTo(stack, 0, SLOTS, false)) {
                     return ItemStack.EMPTY;
-                    /*if (index < 27 + SLOTS && !this.moveItemStackTo(stack, 27 + SLOTS, 36 + SLOTS, false)) {
-                        return ItemStack.EMPTY;
-                    } else if (index < 36 + SLOTS && !this.moveItemStackTo(stack, SLOTS, 27 + SLOTS, false)) {
-                        return ItemStack.EMPTY;
-                    }*/
                 }
+                if (!playerIn.level.isClientSide())
+                    BaseCard.setInventory(cardItem, handler);
             }
 
             if (stack.isEmpty()) {
@@ -96,7 +96,7 @@ public class CardItemContainer extends AbstractContainerMenu {
 
     private int addSlotRange(IItemHandler handler, int index, int x, int y, int amount, int dx) {
         for (int i = 0; i < amount; i++) {
-            if (handler instanceof CardItemHandler)
+            if (handler instanceof CardItemHandler && index == 0)
                 addSlot(new CardItemSlot(handler, index, x, y));
             else
                 addSlot(new SlotItemHandler(handler, index, x, y));

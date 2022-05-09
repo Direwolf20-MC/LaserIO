@@ -9,6 +9,7 @@ import com.direwolf20.laserio.common.items.filters.BaseFilter;
 import com.direwolf20.laserio.common.items.filters.FilterBasic;
 import com.direwolf20.laserio.common.items.filters.FilterCount;
 import com.direwolf20.laserio.common.items.filters.FilterTag;
+import com.direwolf20.laserio.common.items.upgrades.OverclockerNode;
 import com.direwolf20.laserio.setup.Registration;
 import com.direwolf20.laserio.util.*;
 import com.mojang.math.Vector3f;
@@ -46,9 +47,8 @@ public class LaserNodeBE extends BaseLaserBE {
             new Vector3f(0.5f, 0.35f, 0.5f),
             new Vector3f(0.35f, 0.35f, 0.5f)
     };
-    /** This blocks Item Handlers **/
-    private final LaserNodeItemHandler[] itemHandler = new LaserNodeItemHandler[6]; //The item stacks in each side of the node, for local use only
-    private final LazyOptional<LaserNodeItemHandler>[] handler = new LazyOptional[6]; //The capability thingy gives this one out for others to access?
+    /** A cache of this blocks sides - data we need to reference frequently **/
+    private final NodeSideCache[] nodeSideCaches = new NodeSideCache[6];
     private final IItemHandler EMPTY = new ItemStackHandler(0);
 
     /** Adjacent Inventory Handlers **/
@@ -58,14 +58,9 @@ public class LaserNodeBE extends BaseLaserBE {
     private Map<SideConnection, LazyOptional<IItemHandler>> facingHandler = new HashMap<>();
     private final Map<SideConnection, NonNullConsumer<LazyOptional<IItemHandler>>> connectionInvalidator = new HashMap<>();
 
-    /**The Old way**/
-    //private LazyOptional<IItemHandler>[] facingHandler = new LazyOptional[6];
-    //private final List<NonNullConsumer<LazyOptional<IItemHandler>>> facingInvalidator = new ArrayList<>(); //Lambda to call when a lazy optional is invalidated. Final variable to reduce memory usage
-
     /** Variables for tracking and sending items/filters/etc **/
     private Set<BlockPos> otherNodesInNetwork = new HashSet<>();
     private final List<InserterCardCache> inserterNodes = new CopyOnWriteArrayList<>(); //All Inventory nodes that contain an inserter card
-    private final List<ExtractorCardCache> extractorCardCaches = new CopyOnWriteArrayList<>();
     private final HashMap<ItemStackKey, List<InserterCardCache>> destinationCache = new HashMap<>();
 
     /** Misc Variables **/
@@ -75,13 +70,8 @@ public class LaserNodeBE extends BaseLaserBE {
         super(Registration.LaserNode_BE.get(), pos, state);
         for (Direction direction : Direction.values()) {
             final int j = direction.ordinal();
-            itemHandler[j] = new LaserNodeItemHandler(9, this);
-            handler[j] = LazyOptional.of(() -> itemHandler[j]);
-            /*facingInvalidator.add(new WeakConsumerWrapper<>(this, (te, handler) -> {
-                if (te.facingHandler[j] == handler) {
-                    te.clearCachedInventories(j);
-                }
-            }));*/
+            LaserNodeItemHandler tempHandler = new LaserNodeItemHandler(LaserNodeContainer.SLOTS, this);
+            nodeSideCaches[j] = new NodeSideCache(tempHandler, LazyOptional.of(() -> tempHandler), 0);
         }
     }
 
@@ -94,15 +84,29 @@ public class LaserNodeBE extends BaseLaserBE {
         refreshAllInvNodes(); //Seeing as the otherNodes list just got updated, we should refresh the InventoryNode content caches
     }
 
+    public void updateOverclockers() {
+        for (Direction direction : Direction.values()) {
+            int slot = 9; //The Overclockers Slot
+            NodeSideCache nodeSideCache = nodeSideCaches[direction.ordinal()];
+            ItemStack overclockerStack = nodeSideCache.itemHandler.getStackInSlot(slot);
+            if (overclockerStack.isEmpty())
+                nodeSideCache.overClocker = 0;
+            if (overclockerStack.getItem() instanceof OverclockerNode) {
+                nodeSideCache.overClocker = overclockerStack.getCount();
+            }
+        }
+    }
+
     /** Build a list of extractor cards this node has in it, for looping through **/
     public void findMyExtractors() {
-        this.extractorCardCaches.clear();
         for (Direction direction : Direction.values()) {
-            for (int slot = 0; slot < LaserNodeContainer.SLOTS; slot++) {
-                ItemStack card = itemHandler[direction.ordinal()].getStackInSlot(slot);
+            NodeSideCache nodeSideCache = nodeSideCaches[direction.ordinal()];
+            nodeSideCache.extractorCardCaches.clear();
+            for (int slot = 0; slot < LaserNodeContainer.CARDSLOTS; slot++) {
+                ItemStack card = nodeSideCache.itemHandler.getStackInSlot(slot);
                 if (card.getItem() instanceof BaseCard) {
                     if (BaseCard.getNamedTransferMode(card).equals(BaseCard.TransferMode.EXTRACT)) {
-                        extractorCardCaches.add(new ExtractorCardCache(direction, card, slot));
+                        nodeSideCache.extractorCardCaches.add(new ExtractorCardCache(direction, card, slot));
                     }
                 }
             }
@@ -111,8 +115,14 @@ public class LaserNodeBE extends BaseLaserBE {
 
     /** Loop through all the extractorCards and run the extractions **/
     public void extractItems() {
-        for (ExtractorCardCache extractorCardCache : extractorCardCaches) {
-            sendItems(extractorCardCache);
+        for (Direction direction : Direction.values()) {
+            NodeSideCache nodeSideCache = nodeSideCaches[direction.ordinal()];
+            int countCardsHandled = 0;
+            for (ExtractorCardCache extractorCardCache : nodeSideCache.extractorCardCaches) {
+                if (countCardsHandled <= nodeSideCache.overClocker)
+                    if (sendItems(extractorCardCache))
+                        countCardsHandled++;
+            }
         }
     }
 
@@ -126,6 +136,7 @@ public class LaserNodeBE extends BaseLaserBE {
         if (!discoveredNodes) { //On world / chunk reload, lets rediscover the network, including this block's extractor cards.
             discoverAllNodes();
             findMyExtractors();
+            updateOverclockers();
             discoveredNodes = true;
         }
         extractItems(); //If this node has any extractors, do stuff with them
@@ -145,6 +156,7 @@ public class LaserNodeBE extends BaseLaserBE {
 
     public List<InserterCardCache> getPossibleDestinations(ExtractorCardCache extractorCardCache, ItemStack stack) {
         ItemStackKey key = new ItemStackKey(stack, true);
+        //Todo fix this for multiple cards to the same inventory - HashMap<extractorCardCache, destinationCache> - ensure equals match
         if (destinationCache.containsKey(key)) return destinationCache.get(key);
         destinationCache.put(key, inserterNodes.stream().filter(p -> (p.channel == extractorCardCache.channel)
                         && (p.isStackValidForCard(stack))
@@ -168,7 +180,7 @@ public class LaserNodeBE extends BaseLaserBE {
     //TODO Efficiency
 
     /** Extractor Cards call this, and try to find an inserter card to send their items to **/
-    public void sendItems(ExtractorCardCache extractorCardCache) {
+    public boolean sendItems(ExtractorCardCache extractorCardCache) {
         IItemHandler adjacentInventory = getAttachedInventory(extractorCardCache.direction, extractorCardCache.sneaky).orElse(EMPTY);
         for (int slot = 0; slot < adjacentInventory.getSlots(); slot++) {
             ItemStack stackInSlot = adjacentInventory.getStackInSlot(slot);
@@ -189,9 +201,10 @@ public class LaserNodeBE extends BaseLaserBE {
                 adjacentInventory.extractItem(slot, transferAmt, false); //Actually extract the number of items that fit
                 drawParticles(itemStack, extractorCardCache.direction, be, inserterCardCache.direction, extractorCardCache.cardSlot, inserterCardCache.cardSlot);
                 ItemHandlerHelper.insertItem(possibleDestination, itemStack, false); //Actually insert into the destination
-                return;
+                return true;
             }
         }
+        return false;
     }
 
     /**
@@ -260,11 +273,12 @@ public class LaserNodeBE extends BaseLaserBE {
 
     /** Called when changes happen - such as a card going into a side, or a card being modified via container **/
     public void updateThisNode() {
+        //System.out.println("Updating node at: " + getBlockPos());
         setChanged();
-        //this.facingHandler2 = new HashMap<>();
         notifyOtherNodesOfChange();
         markDirtyClient();
         findMyExtractors();
+        updateOverclockers();
     }
 
     /** When this node changes, tell other nodes to refresh their cache of it **/
@@ -300,8 +314,9 @@ public class LaserNodeBE extends BaseLaserBE {
         destinationCache.clear(); //TODO maybe just remove destinations that match this blockPos
         if (be == null) return; //If the block position given doesn't contain a LaserNodeBE stop
         for (Direction direction : Direction.values()) {
-            for (int slot = 0; slot < LaserNodeContainer.SLOTS; slot++) {
-                ItemStack card = be.itemHandler[direction.ordinal()].getStackInSlot(slot);
+            NodeSideCache nodeSideCache = be.nodeSideCaches[direction.ordinal()];
+            for (int slot = 0; slot < LaserNodeContainer.CARDSLOTS; slot++) {
+                ItemStack card = nodeSideCache.itemHandler.getStackInSlot(slot);
                 if (card.getItem() instanceof BaseCard) {
                     if (BaseCard.getNamedTransferMode(card).equals(BaseCard.TransferMode.EXTRACT)) {
                         //sendItems(card, direction);
@@ -365,7 +380,7 @@ public class LaserNodeBE extends BaseLaserBE {
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
         if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY && side != null) {
-            return handler[side.ordinal()].cast();
+            return nodeSideCaches[side.ordinal()].handlerLazyOptional.cast();
         }
         return super.getCapability(cap, side);
     }
@@ -373,8 +388,12 @@ public class LaserNodeBE extends BaseLaserBE {
     @Override
     public void load(CompoundTag tag) {
         for (int i = 0; i < Direction.values().length; i++) {
+            NodeSideCache nodeSideCache = nodeSideCaches[i];
             if (tag.contains("Inventory" + i)) {
-                itemHandler[i].deserializeNBT(tag.getCompound("Inventory" + i));
+                nodeSideCache.itemHandler.deserializeNBT(tag.getCompound("Inventory" + i));
+                if (nodeSideCache.itemHandler.getSlots() < LaserNodeContainer.SLOTS) {
+                    nodeSideCache.itemHandler.reSize(LaserNodeContainer.SLOTS);
+                }
             }
         }
         super.load(tag);
@@ -384,13 +403,15 @@ public class LaserNodeBE extends BaseLaserBE {
     @Override
     public void saveAdditional(CompoundTag tag) {
         super.saveAdditional(tag);
-        for (int i = 0; i < Direction.values().length; i++)
-            tag.put("Inventory" + i, itemHandler[i].serializeNBT());
+        for (int i = 0; i < Direction.values().length; i++) {
+            NodeSideCache nodeSideCache = nodeSideCaches[i];
+            tag.put("Inventory" + i, nodeSideCache.itemHandler.serializeNBT());
+        }
     }
 
     @Override
     public void setRemoved() {
         super.setRemoved();
-        Arrays.stream(handler).forEach(e -> e.invalidate());
+        Arrays.stream(nodeSideCaches).forEach(e -> e.handlerLazyOptional.invalidate());
     }
 }

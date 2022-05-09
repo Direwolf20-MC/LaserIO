@@ -14,6 +14,8 @@ import com.direwolf20.laserio.common.items.cards.CardItem;
 import com.direwolf20.laserio.common.items.filters.FilterBasic;
 import com.direwolf20.laserio.common.items.filters.FilterCount;
 import com.direwolf20.laserio.common.items.filters.FilterTag;
+import com.direwolf20.laserio.common.items.upgrades.OverclockerCard;
+import com.direwolf20.laserio.common.items.upgrades.OverclockerNode;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
@@ -66,6 +68,8 @@ public class Registration {
     public static final RegistryObject<Item> Filter_Tag = ITEMS.register("filter_tag", FilterTag::new);
     public static final RegistryObject<Item> Logic_Chip = ITEMS.register("logic_chip", LogicChip::new);
     public static final RegistryObject<Item> Logic_Chip_Raw = ITEMS.register("logic_chip_raw", LogicChipRaw::new);
+    public static final RegistryObject<Item> Overclocker_Card = ITEMS.register("overclocker_card", OverclockerCard::new);
+    public static final RegistryObject<Item> Overclocker_Node = ITEMS.register("overclocker_node", OverclockerNode::new);
 
     //Containers
     public static final RegistryObject<MenuType<LaserNodeContainer>> LaserNode_Container = CONTAINERS.register("lasernode",

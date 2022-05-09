@@ -111,6 +111,28 @@ public class LaserIORecipes extends RecipeProvider {
                 .unlockedBy("has_filter_basic", InventoryChangeTrigger.TriggerInstance.hasItems(Registration.Filter_Basic.get()))
                 .save(consumer);
 
+        //Upgrades
+        ShapedRecipeBuilder.shaped(Registration.Overclocker_Card.get(), 1)
+                .pattern(" g ")
+                .pattern("rpr")
+                .pattern("ggg")
+                .define('r', Tags.Items.DUSTS_REDSTONE)
+                .define('p', Registration.Logic_Chip.get())
+                .define('g', Tags.Items.INGOTS_GOLD)
+                .group("laserio")
+                .unlockedBy("has_logic_chip", InventoryChangeTrigger.TriggerInstance.hasItems(Registration.Logic_Chip.get()))
+                .save(consumer);
+        ShapedRecipeBuilder.shaped(Registration.Overclocker_Node.get(), 1)
+                .pattern(" g ")
+                .pattern("rpr")
+                .pattern("ggg")
+                .define('r', Tags.Items.DUSTS_REDSTONE)
+                .define('p', Registration.Logic_Chip.get())
+                .define('g', Tags.Items.GEMS_DIAMOND)
+                .group("laserio")
+                .unlockedBy("has_logic_chip", InventoryChangeTrigger.TriggerInstance.hasItems(Registration.Logic_Chip.get()))
+                .save(consumer);
+
         //NBT Clearing Recipes
         ShapelessRecipeBuilder.shapeless(Registration.Card_Item.get())
                 .requires(Registration.Card_Item.get())

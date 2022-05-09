@@ -18,8 +18,8 @@ import net.minecraftforge.items.wrapper.InvWrapper;
 import javax.annotation.Nullable;
 
 public class LaserNodeContainer extends AbstractContainerMenu {
-    //private BlockEntity blockEntity;
-    public static final int SLOTS = 9;
+    public static final int SLOTS = 10;
+    public static final int CARDSLOTS = 9;
     private Player playerEntity;
     private IItemHandler playerInventory;
     ContainerLevelAccess containerLevelAccess;
@@ -34,14 +34,15 @@ public class LaserNodeContainer extends AbstractContainerMenu {
 
     public LaserNodeContainer(@Nullable LaserNodeBE tile, int windowId, byte side, Inventory playerInventory, Player player, LaserNodeItemHandler handler, ContainerLevelAccess containerLevelAccess) {
         super(Registration.LaserNode_Container.get(), windowId);
-        //blockEntity = player.getCommandSenderWorld().getBlockEntity(pos);
         this.playerEntity = player;
         this.tile = tile;
         this.side = side;
         this.playerInventory = new InvWrapper(playerInventory);
         this.containerLevelAccess = containerLevelAccess;
-        if (handler != null)
+        if (handler != null) {
             addSlotBox(handler, 0, 62, 32, 3, 18, 3, 18);
+            addSlotRange(handler, 9, 152, 78, 1, 18);
+        }
 
         layoutPlayerInventorySlots(8, 99);
     }
@@ -67,11 +68,9 @@ public class LaserNodeContainer extends AbstractContainerMenu {
             } else {
                 if (!this.moveItemStackTo(stack, 0, SLOTS, false)) {
                     return ItemStack.EMPTY;
-                    /*if (index < 27 + SLOTS && !this.moveItemStackTo(stack, 27 + SLOTS, 36 + SLOTS, false)) {
-                        return ItemStack.EMPTY;
-                    } else if (index < 36 + SLOTS && !this.moveItemStackTo(stack, SLOTS, 27 + SLOTS, false)) {
-                        return ItemStack.EMPTY;
-                    }*/
+                }
+                if (!playerIn.level.isClientSide() && !(tile == null)) {
+                    tile.updateThisNode();
                 }
             }
 
@@ -94,7 +93,7 @@ public class LaserNodeContainer extends AbstractContainerMenu {
 
     private int addSlotRange(IItemHandler handler, int index, int x, int y, int amount, int dx) {
         for (int i = 0; i < amount; i++) {
-            if (handler instanceof LaserNodeItemHandler)
+            if (handler instanceof LaserNodeItemHandler && index < 9)
                 addSlot(new LaserNodeSlot(handler, index, x, y));
             else
                 addSlot(new SlotItemHandler(handler, index, x, y));
