@@ -162,7 +162,6 @@ public class BaseCard extends Item {
     }
 
     public static CardItemHandler setInventory(ItemStack stack, CardItemHandler handler) {
-        System.out.println("Saving Inventory");
         stack.getOrCreateTag().put("inv", handler.serializeNBT());
         return handler;
     }

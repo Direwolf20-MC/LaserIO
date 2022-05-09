@@ -4,6 +4,7 @@ import com.direwolf20.laserio.client.particles.itemparticle.ItemFlowParticleData
 import com.direwolf20.laserio.common.blockentities.basebe.BaseLaserBE;
 import com.direwolf20.laserio.common.containers.LaserNodeContainer;
 import com.direwolf20.laserio.common.containers.customhandler.LaserNodeItemHandler;
+import com.direwolf20.laserio.common.events.ServerTickHandler;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.common.items.filters.BaseFilter;
 import com.direwolf20.laserio.common.items.filters.FilterBasic;
@@ -13,10 +14,11 @@ import com.direwolf20.laserio.common.items.upgrades.OverclockerNode;
 import com.direwolf20.laserio.setup.Registration;
 import com.direwolf20.laserio.util.*;
 import com.mojang.math.Vector3f;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -62,6 +64,8 @@ public class LaserNodeBE extends BaseLaserBE {
     private Set<BlockPos> otherNodesInNetwork = new HashSet<>();
     private final List<InserterCardCache> inserterNodes = new CopyOnWriteArrayList<>(); //All Inventory nodes that contain an inserter card
     private final HashMap<ItemStackKey, List<InserterCardCache>> destinationCache = new HashMap<>();
+    private List<ParticleData> particleData = new ArrayList<>();
+    private Random random = new Random();
 
     /** Misc Variables **/
     private boolean discoveredNodes = false; //The first time this block entity loads, it'll run discovery to refresh itself
@@ -126,8 +130,11 @@ public class LaserNodeBE extends BaseLaserBE {
         }
     }
 
+    public void tickClient() {
+        drawParticlesClient();
+    }
+
     public void tickServer() {
-        if (level.isClientSide) return;
         /*if (level.getGameTime() % 40 == 0) {
             System.out.println("My chunk is loaded == " + level.isLoaded(getBlockPos()));
             System.out.println("I am alive at: " + getBlockPos());
@@ -243,9 +250,60 @@ public class LaserNodeBE extends BaseLaserBE {
         return 0;
     }
 
+    public void drawParticlesClient() {
+        if (particleData.isEmpty()) return;
+        ClientLevel clientLevel = (ClientLevel) level;
+        for (ParticleData partData : particleData) {
+            //Extract
+            Direction fromDirection = Direction.values()[partData.fromDirection];
+            ItemStack itemStack = new ItemStack(Item.byId(partData.item), partData.itemCount);
+            BlockPos fromPos = getBlockPos().relative(fromDirection);
+            BlockPos toPos = getBlockPos();
+            Vector3f extractOffset = findOffset(fromDirection, partData.extractPosition, offsets);
+            ItemFlowParticleData data = new ItemFlowParticleData(itemStack, toPos.getX() + extractOffset.x(), toPos.getY() + extractOffset.y(), toPos.getZ() + extractOffset.z(), 10);
+            float randomSpread = 0.01f;
+            //int count = Math.min(8 + itemStack.getCount()*4, 128);
+            int min = 1;
+            int max = 64;
+            int minPart = 8;
+            int maxPart = 64;
+            int count = ((maxPart - minPart) * (itemStack.getCount() - min)) / (max - min) + minPart;
+            for (int i = 0; i < count; ++i) {
+                double d1 = this.random.nextGaussian() * (double) randomSpread;
+                double d3 = this.random.nextGaussian() * (double) randomSpread;
+                double d5 = this.random.nextGaussian() * (double) randomSpread;
+                clientLevel.addParticle(data, fromPos.getX() + extractOffset.x() + d1, fromPos.getY() + extractOffset.y() + d3, fromPos.getZ() + extractOffset.z() + d5, 0, 0, 0);
+            }
+            //clientLevel.addParticle(data, fromPos.getX() + extractOffset.x(), fromPos.getY() + extractOffset.y(), fromPos.getZ() + extractOffset.z(), 8 * itemStack.getCount(), randomSpread, randomSpread, randomSpread, 0);
+
+            //Insert
+            Direction toDirection = Direction.values()[partData.toDirection];
+            fromPos = partData.toNode;
+            toPos = fromPos.relative(toDirection);
+            Vector3f insertOffset = findOffset(toDirection, partData.insertPosition, offsets);
+            data = new ItemFlowParticleData(itemStack, toPos.getX() + insertOffset.x(), toPos.getY() + insertOffset.y(), toPos.getZ() + insertOffset.z(), 10);
+            for (int i = 0; i < count; ++i) {
+                double d1 = this.random.nextGaussian() * (double) randomSpread;
+                double d3 = this.random.nextGaussian() * (double) randomSpread;
+                double d5 = this.random.nextGaussian() * (double) randomSpread;
+                clientLevel.addParticle(data, fromPos.getX() + insertOffset.x() + d1, fromPos.getY() + insertOffset.y() + d3, fromPos.getZ() + insertOffset.z() + d5, 0, 0, 0);
+            }
+            //clientLevel.addParticle(data, fromPos.getX() + insertOffset.x(), fromPos.getY() + insertOffset.y(), fromPos.getZ() + insertOffset.z(), 8 * itemStack.getCount(), randomSpread, randomSpread, randomSpread, 0);
+
+        }
+        particleData.clear();
+    }
+
+    /** Adds from the PacketNodeParticles a set of particles to draw next client tick **/
+    public void addParticleData(ParticleData particleData) {
+        this.particleData.add(particleData);
+    }
+
     /** Draw the particles between node and inventory **/
     public void drawParticles(ItemStack itemStack, Direction fromDirection, LaserNodeBE destinationBE, Direction destinationDirection, int extractPosition, int insertPosition) {
-        ServerLevel serverWorld = (ServerLevel) level;
+        ServerTickHandler.addToList(new ParticleData(Item.getId(itemStack.getItem()), (byte) itemStack.getCount(), this.getBlockPos(), (byte) fromDirection.ordinal(), destinationBE.getBlockPos(), (byte) destinationDirection.ordinal(), (byte) extractPosition, (byte) insertPosition), level);
+
+        /*ServerLevel serverWorld = (ServerLevel) level;
         //Extract
         BlockPos fromPos = getBlockPos().relative(fromDirection);
         BlockPos toPos = getBlockPos();
@@ -260,7 +318,7 @@ public class LaserNodeBE extends BaseLaserBE {
         Vector3f insertOffset = findOffset(destinationDirection, insertPosition, offsets);
         data = new ItemFlowParticleData(itemStack, toPos.getX() + insertOffset.x(), toPos.getY() + insertOffset.y(), toPos.getZ() + insertOffset.z(), 10);
         serverWorld.sendParticles(data, fromPos.getX() + insertOffset.x(), fromPos.getY() + insertOffset.y(), fromPos.getZ() + insertOffset.z(), 8 * itemStack.getCount(), randomSpread, randomSpread, randomSpread, 0);
-
+        */
     }
 
     /** TODO For the stocker mode **/

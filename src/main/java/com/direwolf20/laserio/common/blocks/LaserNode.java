@@ -120,7 +120,11 @@ public class LaserNode extends BaseLaserBlock implements EntityBlock {
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
         if (level.isClientSide()) {
-            return null;
+            return (lvl, pos, blockState, t) -> {
+                if (t instanceof LaserNodeBE tile) {
+                    tile.tickClient();
+                }
+            };
         }
         return (lvl, pos, blockState, t) -> {
             if (t instanceof LaserNodeBE tile) {
