@@ -156,6 +156,7 @@ public class LaserNodeBE extends BaseLaserBE {
 
     public List<InserterCardCache> getPossibleDestinations(ExtractorCardCache extractorCardCache, ItemStack stack) {
         ItemStackKey key = new ItemStackKey(stack, true);
+        //Todo fix this for multiple cards to the same inventory - HashMap<extractorCardCache, destinationCache> - ensure equals match
         if (destinationCache.containsKey(key)) return destinationCache.get(key);
         destinationCache.put(key, inserterNodes.stream().filter(p -> (p.channel == extractorCardCache.channel)
                         && (p.isStackValidForCard(stack))
