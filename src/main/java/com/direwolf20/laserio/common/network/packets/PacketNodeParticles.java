@@ -2,8 +2,10 @@ package com.direwolf20.laserio.common.network.packets;
 
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import com.direwolf20.laserio.util.ParticleData;
+import com.direwolf20.laserio.util.ParticleRenderData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.api.distmarker.Dist;
@@ -66,10 +68,18 @@ public class PacketNodeParticles {
         List<ParticleData> tempList = msg.particleList;
 
         for (ParticleData data : tempList) {
+            //Extract
             BlockPos fromPos = data.fromNode;
-            BlockEntity clientTE = Minecraft.getInstance().level.getBlockEntity(fromPos);
-            if (!(clientTE instanceof LaserNodeBE)) return;
-            ((LaserNodeBE) clientTE).addParticleData(data);
+            BlockEntity fromTE = Minecraft.getInstance().level.getBlockEntity(fromPos);
+            if (!(fromTE instanceof LaserNodeBE)) return;
+            ((LaserNodeBE) fromTE).addParticleData(new ParticleRenderData(data.item, data.itemCount, fromPos.relative(Direction.values()[data.fromDirection]), data.fromDirection, data.fromNode, data.extractPosition));
+
+            //Insert
+            BlockPos toPos = data.toNode;
+            BlockEntity toTE = Minecraft.getInstance().level.getBlockEntity(toPos);
+            if (!(toTE instanceof LaserNodeBE)) return;
+            ((LaserNodeBE) toTE).addParticleData(new ParticleRenderData(data.item, data.itemCount, data.toNode, data.toDirection, toPos.relative(Direction.values()[data.toDirection]), data.insertPosition));
+
         }
     }
 }

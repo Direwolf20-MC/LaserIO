@@ -64,7 +64,7 @@ public class LaserNodeBE extends BaseLaserBE {
     private Set<BlockPos> otherNodesInNetwork = new HashSet<>();
     private final List<InserterCardCache> inserterNodes = new CopyOnWriteArrayList<>(); //All Inventory nodes that contain an inserter card
     private final HashMap<ItemStackKey, List<InserterCardCache>> destinationCache = new HashMap<>();
-    private List<ParticleData> particleData = new ArrayList<>();
+    private List<ParticleRenderData> particleRenderData = new ArrayList<>();
     private Random random = new Random();
 
     /** Misc Variables **/
@@ -132,6 +132,7 @@ public class LaserNodeBE extends BaseLaserBE {
 
     public void tickClient() {
         drawParticlesClient();
+        particleRenderData.clear();
     }
 
     public void tickServer() {
@@ -251,52 +252,38 @@ public class LaserNodeBE extends BaseLaserBE {
     }
 
     public void drawParticlesClient() {
-        if (particleData.isEmpty()) return;
+        if (particleRenderData.isEmpty()) return;
         ClientLevel clientLevel = (ClientLevel) level;
-        for (ParticleData partData : particleData) {
-            //Extract
-            Direction fromDirection = Direction.values()[partData.fromDirection];
+        int particlesDrawnThisTick = 0;
+        for (ParticleRenderData partData : particleRenderData) {
+            //if (particlesDrawnThisTick > 64) return;
             ItemStack itemStack = new ItemStack(Item.byId(partData.item), partData.itemCount);
-            BlockPos fromPos = getBlockPos().relative(fromDirection);
-            BlockPos toPos = getBlockPos();
-            Vector3f extractOffset = findOffset(fromDirection, partData.extractPosition, offsets);
+            BlockPos toPos = partData.toPos;
+            BlockPos fromPos = partData.fromPos;
+            Direction direction = Direction.values()[partData.direction];
+
+            Vector3f extractOffset = findOffset(direction, partData.position, offsets);
             ItemFlowParticleData data = new ItemFlowParticleData(itemStack, toPos.getX() + extractOffset.x(), toPos.getY() + extractOffset.y(), toPos.getZ() + extractOffset.z(), 10);
             float randomSpread = 0.01f;
-            //int count = Math.min(8 + itemStack.getCount()*4, 128);
             int min = 1;
             int max = 64;
             int minPart = 8;
             int maxPart = 64;
             int count = ((maxPart - minPart) * (itemStack.getCount() - min)) / (max - min) + minPart;
             for (int i = 0; i < count; ++i) {
+                particlesDrawnThisTick++;
                 double d1 = this.random.nextGaussian() * (double) randomSpread;
                 double d3 = this.random.nextGaussian() * (double) randomSpread;
                 double d5 = this.random.nextGaussian() * (double) randomSpread;
                 clientLevel.addParticle(data, fromPos.getX() + extractOffset.x() + d1, fromPos.getY() + extractOffset.y() + d3, fromPos.getZ() + extractOffset.z() + d5, 0, 0, 0);
             }
-            //clientLevel.addParticle(data, fromPos.getX() + extractOffset.x(), fromPos.getY() + extractOffset.y(), fromPos.getZ() + extractOffset.z(), 8 * itemStack.getCount(), randomSpread, randomSpread, randomSpread, 0);
-
-            //Insert
-            Direction toDirection = Direction.values()[partData.toDirection];
-            fromPos = partData.toNode;
-            toPos = fromPos.relative(toDirection);
-            Vector3f insertOffset = findOffset(toDirection, partData.insertPosition, offsets);
-            data = new ItemFlowParticleData(itemStack, toPos.getX() + insertOffset.x(), toPos.getY() + insertOffset.y(), toPos.getZ() + insertOffset.z(), 10);
-            for (int i = 0; i < count; ++i) {
-                double d1 = this.random.nextGaussian() * (double) randomSpread;
-                double d3 = this.random.nextGaussian() * (double) randomSpread;
-                double d5 = this.random.nextGaussian() * (double) randomSpread;
-                clientLevel.addParticle(data, fromPos.getX() + insertOffset.x() + d1, fromPos.getY() + insertOffset.y() + d3, fromPos.getZ() + insertOffset.z() + d5, 0, 0, 0);
-            }
-            //clientLevel.addParticle(data, fromPos.getX() + insertOffset.x(), fromPos.getY() + insertOffset.y(), fromPos.getZ() + insertOffset.z(), 8 * itemStack.getCount(), randomSpread, randomSpread, randomSpread, 0);
-
         }
-        particleData.clear();
+        System.out.println(particlesDrawnThisTick);
     }
 
     /** Adds from the PacketNodeParticles a set of particles to draw next client tick **/
-    public void addParticleData(ParticleData particleData) {
-        this.particleData.add(particleData);
+    public void addParticleData(ParticleRenderData particleRenderData) {
+        this.particleRenderData.add(particleRenderData);
     }
 
     /** Draw the particles between node and inventory **/
