@@ -63,7 +63,7 @@ public class LaserNodeBE extends BaseLaserBE {
     /** Variables for tracking and sending items/filters/etc **/
     private Set<BlockPos> otherNodesInNetwork = new HashSet<>();
     private final List<InserterCardCache> inserterNodes = new CopyOnWriteArrayList<>(); //All Inventory nodes that contain an inserter card
-    private final HashMap<ItemStackKey, List<InserterCardCache>> destinationCache = new HashMap<>();
+    private final HashMap<ExtractorCardCache, HashMap<ItemStackKey, List<InserterCardCache>>> destinationCache = new HashMap<>();
     private List<ParticleRenderData> particleRenderData = new ArrayList<>();
     private Random random = new Random();
 
@@ -164,13 +164,27 @@ public class LaserNodeBE extends BaseLaserBE {
 
     public List<InserterCardCache> getPossibleDestinations(ExtractorCardCache extractorCardCache, ItemStack stack) {
         ItemStackKey key = new ItemStackKey(stack, true);
-        //Todo fix this for multiple cards to the same inventory - HashMap<extractorCardCache, destinationCache> - ensure equals match
-        if (destinationCache.containsKey(key)) return destinationCache.get(key);
-        destinationCache.put(key, inserterNodes.stream().filter(p -> (p.channel == extractorCardCache.channel)
-                        && (p.isStackValidForCard(stack))
-                        && (!(p.relativePos.equals(BlockPos.ZERO) && p.direction.equals(extractorCardCache.direction))))
-                .toList());
-        return destinationCache.get(key);
+        if (destinationCache.containsKey(extractorCardCache)) {
+            if (destinationCache.get(extractorCardCache).containsKey(key))
+                return destinationCache.get(extractorCardCache).get(key);
+            else {
+                List<InserterCardCache> nodes = inserterNodes.stream().filter(p -> (p.channel == extractorCardCache.channel)
+                                && (p.isStackValidForCard(stack))
+                                && (!(p.relativePos.equals(BlockPos.ZERO) && p.direction.equals(extractorCardCache.direction))))
+                        .toList();
+                destinationCache.get(extractorCardCache).put(key, nodes);
+                return nodes;
+            }
+        } else {
+            List<InserterCardCache> nodes = inserterNodes.stream().filter(p -> (p.channel == extractorCardCache.channel)
+                            && (p.isStackValidForCard(stack))
+                            && (!(p.relativePos.equals(BlockPos.ZERO) && p.direction.equals(extractorCardCache.direction))))
+                    .toList();
+            HashMap<ItemStackKey, List<InserterCardCache>> tempMap = new HashMap<>();
+            tempMap.put(key, nodes);
+            destinationCache.put(extractorCardCache, tempMap);
+            return nodes;
+        }
     }
 
     public boolean chunksLoaded(BlockPos nodePos, BlockPos destinationPos) {
