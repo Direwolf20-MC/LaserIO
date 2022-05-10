@@ -254,7 +254,7 @@ public class LaserNodeBE extends BaseLaserBE {
     public void drawParticlesClient() {
         if (particleRenderData.isEmpty()) return;
         ClientLevel clientLevel = (ClientLevel) level;
-        int particlesDrawnThisTick = 0;
+        //int particlesDrawnThisTick = 0;
         for (ParticleRenderData partData : particleRenderData) {
             //if (particlesDrawnThisTick > 64) return;
             ItemStack itemStack = new ItemStack(Item.byId(partData.item), partData.itemCount);
@@ -271,14 +271,14 @@ public class LaserNodeBE extends BaseLaserBE {
             int maxPart = 64;
             int count = ((maxPart - minPart) * (itemStack.getCount() - min)) / (max - min) + minPart;
             for (int i = 0; i < count; ++i) {
-                particlesDrawnThisTick++;
+                //particlesDrawnThisTick++;
                 double d1 = this.random.nextGaussian() * (double) randomSpread;
                 double d3 = this.random.nextGaussian() * (double) randomSpread;
                 double d5 = this.random.nextGaussian() * (double) randomSpread;
                 clientLevel.addParticle(data, fromPos.getX() + extractOffset.x() + d1, fromPos.getY() + extractOffset.y() + d3, fromPos.getZ() + extractOffset.z() + d5, 0, 0, 0);
             }
         }
-        System.out.println(particlesDrawnThisTick);
+        //System.out.println(particlesDrawnThisTick);
     }
 
     /** Adds from the PacketNodeParticles a set of particles to draw next client tick **/
