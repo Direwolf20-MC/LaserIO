@@ -17,25 +17,32 @@ import javax.annotation.Nonnull;
 
 public class ItemHandlerUtil {
     @Nonnull
-    public static ItemStack extractItem(IItemHandler source, @Nonnull ItemStack incstack, boolean simulate) {
+    public static ItemStack extractItem(IItemHandler source, @Nonnull ItemStack incstack, boolean simulate, boolean isCompareNBT) {
         if (source == null || incstack.isEmpty())
             return incstack;
 
-        int amtGotten = 0;
+        //int amtGotten = 0;
         int amtRemaining = incstack.getCount();
-        ItemStack stack = incstack.copy();
+        ItemStackKey key = new ItemStackKey(incstack, isCompareNBT);
+        //ItemStack stack = incstack.copy();
+        ItemStack tempStack = ItemStack.EMPTY;
         for (int i = 0; i < source.getSlots(); i++) {
             ItemStack stackInSlot = source.getStackInSlot(i);
-            if (ItemHandlerHelper.canItemStacksStack(stackInSlot, stack)) {
+            if (key.equals(new ItemStackKey(stackInSlot, isCompareNBT))) {
                 int extractAmt = Math.min(amtRemaining, stackInSlot.getCount());
-                ItemStack tempStack = source.extractItem(i, extractAmt, simulate);
-                amtGotten += tempStack.getCount();
+                if (tempStack.isEmpty()) //If this is our first pass, make the temp stack == the extracted stack
+                    tempStack = source.extractItem(i, extractAmt, simulate);
+                else if (ItemHandlerHelper.canItemStacksStack(tempStack, stackInSlot)) //If this is our 2nd pass, the 2 itemstacks should stack, so do a grow()
+                    tempStack.grow(extractAmt);
+                else //This in theory should never happen but who knows
+                    return tempStack;
+                //amtGotten += tempStack.getCount();
                 amtRemaining -= tempStack.getCount();
                 if (amtRemaining == 0) break;
             }
         }
-        stack.setCount(amtGotten);
-        return stack;
+        //stack.setCount(amtGotten);
+        return tempStack;
     }
 
     public static ItemStack extractIngredient(IItemHandler source, @Nonnull Ingredient ingredient, boolean simulate) {

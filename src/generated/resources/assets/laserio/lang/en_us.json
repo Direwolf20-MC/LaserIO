@@ -40,7 +40,7 @@
   "screen.laserio.down": "Down",
   "screen.laserio.east": "East",
   "screen.laserio.extract": "Extract",
-  "screen.laserio.extractamt": "Extract",
+  "screen.laserio.extractamt": "Transfer Speed",
   "screen.laserio.insert": "Insert",
   "screen.laserio.lasernode": "Laser Node",
   "screen.laserio.nbtfalse": "Ignore NBT",

@@ -12,7 +12,10 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.ItemStackHandler;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 public class BaseCardCache {
     public final Direction direction;
@@ -20,7 +23,7 @@ public class BaseCardCache {
     public final byte channel;
     public final ItemStack filterCard;
     public final int cardSlot;
-    public final Set<ItemStack> filteredItems;
+    public final List<ItemStack> filteredItems;
     public final List<String> filterTags;
     public final byte sneaky;
 
@@ -37,7 +40,7 @@ public class BaseCardCache {
         this.filterCard = BaseCard.getFilter(cardItem);
         this.cardSlot = cardSlot;
         if (filterCard.equals(ItemStack.EMPTY)) {
-            filteredItems = new HashSet<>();
+            filteredItems = new ArrayList<>();
             filterTags = new ArrayList<>();
             isAllowList = false;
             isCompareNBT = false;
@@ -68,8 +71,8 @@ public class BaseCardCache {
         return 0; //Should never get here in theory
     }
 
-    public Set<ItemStack> getFilteredItems() {
-        Set<ItemStack> filteredItems = new HashSet<>();
+    public List<ItemStack> getFilteredItems() {
+        List<ItemStack> filteredItems = new ArrayList<>();
         ItemStackHandler filterSlotHandler;
         if (filterCard.getItem() instanceof FilterBasic)
             filterSlotHandler = FilterBasic.getInventory(filterCard);

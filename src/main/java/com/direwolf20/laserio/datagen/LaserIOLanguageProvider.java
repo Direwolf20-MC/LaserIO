@@ -29,7 +29,7 @@ public class LaserIOLanguageProvider extends LanguageProvider {
         add(Registration.Overclocker_Card.get(), "Card Overclocker");
         add(Registration.Overclocker_Node.get(), "Node Overclocker");
 
-        add("screen.laserio.extractamt", "Extract");
+        add("screen.laserio.extractamt", "Transfer Speed");
         add("screen.laserio.priority", "Priority");
         add("screen.laserio.allowlist", "Allow");
         add("screen.laserio.comparenbt", "NBT");

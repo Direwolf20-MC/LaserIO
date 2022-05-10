@@ -97,7 +97,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
                 if (Screen.hasShiftDown()) change *= 10;
                 if (Screen.hasControlDown()) change *= 64;
                 currentPriority = (short) (Math.max(currentPriority + change, -4096));
-            } else if (currentMode == 1) {
+            } else {
                 int change = -1;
                 if (Screen.hasShiftDown()) change *= 10;
                 if (Screen.hasControlDown()) change *= 64;
@@ -110,7 +110,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
                 if (Screen.hasShiftDown()) change *= 10;
                 if (Screen.hasControlDown()) change *= 64;
                 currentPriority = (short) (Math.min(currentPriority + change, 4096));
-            } else if (currentMode == 1) {
+            } else {
                 int change = 1;
                 if (Screen.hasShiftDown()) change *= 10;
                 if (Screen.hasControlDown()) change *= 64;
@@ -126,16 +126,6 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
         leftWidgets.add(new ToggleButton(getGuiLeft() + 5, getGuiTop() + 5, 16, 16, allowListTextures, currentMode, (button) -> {
             currentMode = BaseCard.nextTransferMode(card);
             ((ToggleButton) button).setTexturePosition(currentMode);
-            //button.setMessage(new TranslatableComponent(BaseCard.TransferMode.values()[currentMode].name(), currentMode));
-            if (currentMode < 2) {
-                if (!renderables.contains(plusButton)) {
-                    addRenderableWidget(plusButton);
-                    addRenderableWidget(minusButton);
-                }
-            } else if (currentMode == 2) {
-                removeWidget(plusButton);
-                removeWidget(minusButton);
-            }
         }));
 
         this.channelButton = new ChannelButton(getGuiLeft() + 5, getGuiTop() + 35, 16, 16, currentChannel, (button) -> {
@@ -144,10 +134,8 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
         });
         leftWidgets.add(channelButton);
 
-        if (showExtractAmt() || showPriority()) {
-            leftWidgets.add(plusButton);
-            leftWidgets.add(minusButton);
-        }
+        leftWidgets.add(plusButton);
+        leftWidgets.add(minusButton);
 
         ResourceLocation[] sneakyTextures = new ResourceLocation[7];
         sneakyTextures[0] = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/sneaky.png");
@@ -171,7 +159,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
     }
 
     private boolean showExtractAmt() {
-        return card.getItem() instanceof CardItem && BaseCard.getNamedTransferMode(card) == BaseCard.TransferMode.EXTRACT;
+        return card.getItem() instanceof CardItem && BaseCard.getNamedTransferMode(card) != BaseCard.TransferMode.INSERT;
     }
 
     private boolean showPriority() {
@@ -181,7 +169,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
     @Override
     protected void renderLabels(PoseStack stack, int mouseX, int mouseY) {
         if (showExtractAmt()) {
-            font.draw(stack, new TranslatableComponent("screen.laserio.extractamt").getString() + ":", 97, 5, Color.DARK_GRAY.getRGB());
+            font.draw(stack, new TranslatableComponent("screen.laserio.extractamt").getString() + ":", 57, 5, Color.DARK_GRAY.getRGB());
             String extractAmt = Integer.toString(currentItemExtractAmt);
             font.draw(stack, new TextComponent(extractAmt).getString(), 150 - font.width(extractAmt) / 2, 5, Color.DARK_GRAY.getRGB());
         }

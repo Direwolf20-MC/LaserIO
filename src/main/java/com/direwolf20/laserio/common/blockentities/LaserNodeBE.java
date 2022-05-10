@@ -63,7 +63,7 @@ public class LaserNodeBE extends BaseLaserBE {
     /** Variables for tracking and sending items/filters/etc **/
     private Set<BlockPos> otherNodesInNetwork = new HashSet<>();
     private final List<InserterCardCache> inserterNodes = new CopyOnWriteArrayList<>(); //All Inventory nodes that contain an inserter card
-    private final HashMap<ExtractorCardCache, HashMap<ItemStackKey, List<InserterCardCache>>> destinationCache = new HashMap<>();
+    private final HashMap<ExtractorCardCache, HashMap<ItemStackKey, List<InserterCardCache>>> inserterCache = new HashMap<>();
     private List<ParticleRenderData> particleRenderData = new ArrayList<>();
     private Random random = new Random();
 
@@ -101,6 +101,22 @@ public class LaserNodeBE extends BaseLaserBE {
         }
     }
 
+    /** Build a list of stocker cards this node has in it, for looping through **/
+    public void findMyStockers() {
+        for (Direction direction : Direction.values()) {
+            NodeSideCache nodeSideCache = nodeSideCaches[direction.ordinal()];
+            nodeSideCache.stockerCardCaches.clear();
+            for (int slot = 0; slot < LaserNodeContainer.CARDSLOTS; slot++) {
+                ItemStack card = nodeSideCache.itemHandler.getStackInSlot(slot);
+                if (card.getItem() instanceof BaseCard) {
+                    if (BaseCard.getNamedTransferMode(card).equals(BaseCard.TransferMode.STOCK)) {
+                        nodeSideCache.stockerCardCaches.add(new StockerCardCache(direction, card, slot));
+                    }
+                }
+            }
+        }
+    }
+
     /** Build a list of extractor cards this node has in it, for looping through **/
     public void findMyExtractors() {
         for (Direction direction : Direction.values()) {
@@ -123,9 +139,14 @@ public class LaserNodeBE extends BaseLaserBE {
             NodeSideCache nodeSideCache = nodeSideCaches[direction.ordinal()];
             int countCardsHandled = 0;
             for (ExtractorCardCache extractorCardCache : nodeSideCache.extractorCardCaches) {
-                if (countCardsHandled <= nodeSideCache.overClocker)
-                    if (sendItems(extractorCardCache))
-                        countCardsHandled++;
+                if (countCardsHandled > nodeSideCache.overClocker) return;
+                if (sendItems(extractorCardCache))
+                    countCardsHandled++;
+            }
+            for (StockerCardCache stockerCardCache : nodeSideCache.stockerCardCaches) {
+                if (countCardsHandled > nodeSideCache.overClocker) return;
+                if (stockItems(stockerCardCache))
+                    countCardsHandled++;
             }
         }
     }
@@ -144,6 +165,7 @@ public class LaserNodeBE extends BaseLaserBE {
         if (!discoveredNodes) { //On world / chunk reload, lets rediscover the network, including this block's extractor cards.
             discoverAllNodes();
             findMyExtractors();
+            findMyStockers();
             updateOverclockers();
             discoveredNodes = true;
         }
@@ -162,17 +184,18 @@ public class LaserNodeBE extends BaseLaserBE {
         this.inserterNodes.sort(Comparator.comparingInt(InserterCardCache::getPriority).reversed());
     }
 
-    public List<InserterCardCache> getPossibleDestinations(ExtractorCardCache extractorCardCache, ItemStack stack) {
+    /** Multipurpose: finds all inserters that can be extracted to OR stocked from **/
+    public List<InserterCardCache> getPossibleInserters(ExtractorCardCache extractorCardCache, ItemStack stack) {
         ItemStackKey key = new ItemStackKey(stack, true);
-        if (destinationCache.containsKey(extractorCardCache)) {
-            if (destinationCache.get(extractorCardCache).containsKey(key))
-                return destinationCache.get(extractorCardCache).get(key);
+        if (inserterCache.containsKey(extractorCardCache)) {
+            if (inserterCache.get(extractorCardCache).containsKey(key))
+                return inserterCache.get(extractorCardCache).get(key);
             else {
                 List<InserterCardCache> nodes = inserterNodes.stream().filter(p -> (p.channel == extractorCardCache.channel)
                                 && (p.isStackValidForCard(stack))
                                 && (!(p.relativePos.equals(BlockPos.ZERO) && p.direction.equals(extractorCardCache.direction))))
                         .toList();
-                destinationCache.get(extractorCardCache).put(key, nodes);
+                inserterCache.get(extractorCardCache).put(key, nodes);
                 return nodes;
             }
         } else {
@@ -182,7 +205,7 @@ public class LaserNodeBE extends BaseLaserBE {
                     .toList();
             HashMap<ItemStackKey, List<InserterCardCache>> tempMap = new HashMap<>();
             tempMap.put(key, nodes);
-            destinationCache.put(extractorCardCache, tempMap);
+            inserterCache.put(extractorCardCache, tempMap);
             return nodes;
         }
     }
@@ -207,7 +230,7 @@ public class LaserNodeBE extends BaseLaserBE {
         for (int slot = 0; slot < adjacentInventory.getSlots(); slot++) {
             ItemStack stackInSlot = adjacentInventory.getStackInSlot(slot);
             if (stackInSlot.isEmpty() || !(extractorCardCache.isStackValidForCard(stackInSlot))) continue;
-            for (InserterCardCache inserterCardCache : getPossibleDestinations(extractorCardCache, stackInSlot)) {
+            for (InserterCardCache inserterCardCache : getPossibleInserters(extractorCardCache, stackInSlot)) {
                 BlockPos nodeWorldPos = getWorldPos(inserterCardCache.relativePos);
                 if (!chunksLoaded(nodeWorldPos, nodeWorldPos.relative(inserterCardCache.direction)))
                     continue; //Skip this if the node is unloaded
@@ -221,12 +244,69 @@ public class LaserNodeBE extends BaseLaserBE {
                 if (transferAmt == 0) continue;  //If nothing fits in this destination, move onto the next
                 itemStack.setCount(transferAmt);
                 adjacentInventory.extractItem(slot, transferAmt, false); //Actually extract the number of items that fit
-                drawParticles(itemStack, extractorCardCache.direction, be, inserterCardCache.direction, extractorCardCache.cardSlot, inserterCardCache.cardSlot);
+                drawParticles(itemStack, extractorCardCache.direction, this, be, inserterCardCache.direction, extractorCardCache.cardSlot, inserterCardCache.cardSlot);
                 ItemHandlerHelper.insertItem(possibleDestination, itemStack, false); //Actually insert into the destination
                 return true;
             }
         }
         return false;
+    }
+
+    /** Stocker Cards call this, and try to find an inserter card to pull their items from **/
+    public boolean stockItems(StockerCardCache stockerCardCache) {
+        IItemHandler adjacentInventory = getAttachedInventory(stockerCardCache.direction, stockerCardCache.sneaky).orElse(EMPTY);
+        ItemStack filter = stockerCardCache.filterCard;
+        if (filter.isEmpty() || !stockerCardCache.isAllowList) { //Needs a filter - at least for now? Also must be in whitelist mode
+            return false;
+        }
+        if (filter.getItem() instanceof FilterBasic) {
+            List<ItemStack> filteredItems = stockerCardCache.getFilteredItems();
+            for (ItemStack stack : filteredItems) {
+                int originalCount = stack.getCount(); //store the original stack size
+                stack.setCount(stockerCardCache.extractAmt); //Adjust the stack size to how much we want
+                int amountFit = testInsertToInventory(adjacentInventory, stack); //How many will fit in our inventory
+                if (amountFit == 0) {
+                    stack.setCount(originalCount);
+                    continue; //Check the next item in the list if we can't fit any more of this in here
+                }
+                if (amountFit < stack.getCount()) //Todo exact Transfer Mode Maybe?
+                    stack.setCount(amountFit); //If less than what we want fits, adjust it
+                boolean foundItems = findItemStackForStocker(stack, stockerCardCache, adjacentInventory);
+                if (foundItems) return true;
+            }
+        } else if (filter.getItem() instanceof FilterCount) {
+            ItemHandlerUtil.InventoryCounts invCache = new ItemHandlerUtil.InventoryCounts(adjacentInventory, BaseFilter.getCompareNBT(filter));
+
+        } else if (filter.getItem() instanceof FilterTag) {
+
+        }
+        return false;
+    }
+
+    public boolean findItemStackForStocker(ItemStack itemStack, StockerCardCache stockerCardCache, IItemHandler stockerInventory) {
+        int origItemsWanted = itemStack.getCount();
+        int itemsStillneeded = origItemsWanted;
+        for (InserterCardCache inserterCardCache : getPossibleInserters(stockerCardCache, itemStack)) {
+            BlockPos nodeWorldPos = getWorldPos(inserterCardCache.relativePos);
+            if (!chunksLoaded(nodeWorldPos, nodeWorldPos.relative(inserterCardCache.direction)))
+                continue; //Skip this if the node is unloaded
+
+            LaserNodeBE be = getNodeAt(getWorldPos(inserterCardCache.relativePos));
+            if (be == null) continue;
+            IItemHandler possibleSource = be.getAttachedInventory(inserterCardCache.direction, inserterCardCache.sneaky).orElse(EMPTY);
+            if (possibleSource.getSlots() == 0) continue;
+            ItemStack extractedItemStack = ItemHandlerUtil.extractItem(possibleSource, itemStack, false, stockerCardCache.isCompareNBT); //Try to pull out the items we need from this location
+            if (extractedItemStack.isEmpty())
+                continue; //If we didn't find anything in this inventory, move onto the next
+            drawParticles(extractedItemStack, inserterCardCache.direction, be, this, stockerCardCache.direction, inserterCardCache.cardSlot, stockerCardCache.cardSlot);
+            ItemHandlerHelper.insertItem(stockerInventory, extractedItemStack, false); //Actually insert into the destination
+            itemsStillneeded = itemsStillneeded - extractedItemStack.getCount();
+            itemStack.setCount(itemsStillneeded); //Adjust the stack size to how many more items we need, maybe zero
+            if (itemStack.getCount() == 0) return true; //If zero, return true
+        }
+        if (origItemsWanted != itemStack.getCount())
+            return true; //If we got SOMETHING
+        return false; //If we got NOTHING
     }
 
     /**
@@ -301,8 +381,8 @@ public class LaserNodeBE extends BaseLaserBE {
     }
 
     /** Draw the particles between node and inventory **/
-    public void drawParticles(ItemStack itemStack, Direction fromDirection, LaserNodeBE destinationBE, Direction destinationDirection, int extractPosition, int insertPosition) {
-        ServerTickHandler.addToList(new ParticleData(Item.getId(itemStack.getItem()), (byte) itemStack.getCount(), this.getBlockPos(), (byte) fromDirection.ordinal(), destinationBE.getBlockPos(), (byte) destinationDirection.ordinal(), (byte) extractPosition, (byte) insertPosition), level);
+    public void drawParticles(ItemStack itemStack, Direction fromDirection, LaserNodeBE sourceBE, LaserNodeBE destinationBE, Direction destinationDirection, int extractPosition, int insertPosition) {
+        ServerTickHandler.addToList(new ParticleData(Item.getId(itemStack.getItem()), (byte) itemStack.getCount(), sourceBE.getBlockPos(), (byte) fromDirection.ordinal(), destinationBE.getBlockPos(), (byte) destinationDirection.ordinal(), (byte) extractPosition, (byte) insertPosition), level);
 
         /*ServerLevel serverWorld = (ServerLevel) level;
         //Extract
@@ -337,6 +417,7 @@ public class LaserNodeBE extends BaseLaserBE {
         notifyOtherNodesOfChange();
         markDirtyClient();
         findMyExtractors();
+        findMyStockers();
         updateOverclockers();
     }
 
@@ -352,7 +433,7 @@ public class LaserNodeBE extends BaseLaserBE {
     /** This method clears the non-persistent inventory node data variables and regenerates them from scratch */
     public void refreshAllInvNodes() {
         inserterNodes.clear();
-        destinationCache.clear();
+        inserterCache.clear();
         for (BlockPos pos : otherNodesInNetwork) {
             checkInvNode(getWorldPos(pos), false);
         }
@@ -370,7 +451,7 @@ public class LaserNodeBE extends BaseLaserBE {
         BlockPos relativePos = getRelativePos(pos);
         //Remove this position from all caches, so we can repopulate below
         inserterNodes.removeIf(p -> p.relativePos.equals(relativePos));
-        destinationCache.clear(); //TODO maybe just remove destinations that match this blockPos
+        inserterCache.clear(); //TODO maybe just remove destinations that match this blockPos
         if (be == null) return; //If the block position given doesn't contain a LaserNodeBE stop
         for (Direction direction : Direction.values()) {
             NodeSideCache nodeSideCache = be.nodeSideCaches[direction.ordinal()];
