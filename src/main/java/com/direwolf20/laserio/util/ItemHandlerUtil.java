@@ -22,10 +22,14 @@ public class ItemHandlerUtil {
 
     @Nonnull
     public static ExtractResult extractItem(IItemHandler source, @Nonnull ItemStack incstack, boolean simulate, boolean isCompareNBT) {
+        return extractItem(source, incstack, incstack.getCount(), simulate, isCompareNBT);
+    }
+
+    @Nonnull
+    public static ExtractResult extractItem(IItemHandler source, @Nonnull ItemStack incstack, int amtRemaining, boolean simulate, boolean isCompareNBT) {
         if (source == null || incstack.isEmpty())
             return new ExtractResult(incstack, -1);
 
-        int amtRemaining = incstack.getCount();
         ItemStackKey key = new ItemStackKey(incstack, isCompareNBT);
         ItemStack tempStack = ItemStack.EMPTY;
         for (int i = 0; i < source.getSlots(); i++) {
