@@ -16,15 +16,17 @@ import javax.annotation.Nonnull;
 
 
 public class ItemHandlerUtil {
-    @Nonnull
-    public static ItemStack extractItem(IItemHandler source, @Nonnull ItemStack incstack, boolean simulate, boolean isCompareNBT) {
-        if (source == null || incstack.isEmpty())
-            return incstack;
+    public record ExtractResult(ItemStack itemStack, int slot) {
 
-        //int amtGotten = 0;
+    }
+
+    @Nonnull
+    public static ExtractResult extractItem(IItemHandler source, @Nonnull ItemStack incstack, boolean simulate, boolean isCompareNBT) {
+        if (source == null || incstack.isEmpty())
+            return new ExtractResult(incstack, -1);
+
         int amtRemaining = incstack.getCount();
         ItemStackKey key = new ItemStackKey(incstack, isCompareNBT);
-        //ItemStack stack = incstack.copy();
         ItemStack tempStack = ItemStack.EMPTY;
         for (int i = 0; i < source.getSlots(); i++) {
             ItemStack stackInSlot = source.getStackInSlot(i);
@@ -35,14 +37,13 @@ public class ItemHandlerUtil {
                 else if (ItemHandlerHelper.canItemStacksStack(tempStack, stackInSlot)) //If this is our 2nd pass, the 2 itemstacks should stack, so do a grow()
                     tempStack.grow(extractAmt);
                 else //This in theory should never happen but who knows
-                    return tempStack;
-                //amtGotten += tempStack.getCount();
+                    return new ExtractResult(tempStack, i);
                 amtRemaining -= tempStack.getCount();
-                if (amtRemaining == 0) break;
+                if (amtRemaining == 0)
+                    return new ExtractResult(tempStack, i); // If we found all we need, return the stack and the last slot we got it from
             }
         }
-        //stack.setCount(amtGotten);
-        return tempStack;
+        return new ExtractResult(tempStack, -1); // If we didn't get all we need, return the stack we did get and no slot cache
     }
 
     public static ItemStack extractIngredient(IItemHandler source, @Nonnull Ingredient ingredient, boolean simulate) {
@@ -57,6 +58,10 @@ public class ItemHandlerUtil {
             }
         }
         return ItemStack.EMPTY;
+    }
+
+    public static boolean doItemsMatch(ItemStack a, ItemStack b, boolean isCompareNBT) {
+        return isCompareNBT ? ItemHandlerHelper.canItemStacksStack(a, b) : a.sameItem(b);
     }
 
     public static boolean areItemsStackable(ItemStack toInsert, ItemStack inSlot) {

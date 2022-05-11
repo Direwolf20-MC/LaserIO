@@ -18,6 +18,14 @@ public class ItemStackKey {
         this.hash = Objects.hash(item, nbt);
     }
 
+    public ItemStack getStack() {
+        return new ItemStack(item, 1, nbt);
+    }
+
+    public ItemStack getStack(int amt) {
+        return new ItemStack(item, amt, nbt);
+    }
+
     @Override
     public int hashCode() {
         return hash;

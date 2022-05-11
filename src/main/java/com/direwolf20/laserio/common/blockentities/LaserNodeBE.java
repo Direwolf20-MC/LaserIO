@@ -14,6 +14,7 @@ import com.direwolf20.laserio.common.items.upgrades.OverclockerNode;
 import com.direwolf20.laserio.setup.Registration;
 import com.direwolf20.laserio.util.*;
 import com.mojang.math.Vector3f;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -67,6 +68,17 @@ public class LaserNodeBE extends BaseLaserBE {
     private List<ParticleRenderData> particleRenderData = new ArrayList<>();
     private Random random = new Random();
 
+    private record StockerRequest(StockerCardCache stockerCardCache, ItemStackKey itemStackKey) {
+
+    }
+
+    private record StockerSource(InserterCardCache inserterCardCache, int slot) {
+
+    }
+
+    private final Map<StockerRequest, StockerSource> stockerDestinationCache = new HashMap<>();
+    private final Map<StockerCardCache, Integer> stockerSleepers = new Object2IntOpenHashMap<>();
+
     /** Misc Variables **/
     private boolean discoveredNodes = false; //The first time this block entity loads, it'll run discovery to refresh itself
 
@@ -106,6 +118,7 @@ public class LaserNodeBE extends BaseLaserBE {
         for (Direction direction : Direction.values()) {
             NodeSideCache nodeSideCache = nodeSideCaches[direction.ordinal()];
             nodeSideCache.stockerCardCaches.clear();
+            this.stockerDestinationCache.clear();
             for (int slot = 0; slot < LaserNodeContainer.CARDSLOTS; slot++) {
                 ItemStack card = nodeSideCache.itemHandler.getStackInSlot(slot);
                 if (card.getItem() instanceof BaseCard) {
@@ -144,6 +157,16 @@ public class LaserNodeBE extends BaseLaserBE {
                     countCardsHandled++;
             }
             for (StockerCardCache stockerCardCache : nodeSideCache.stockerCardCaches) {
+                if (stockerSleepers.containsKey(stockerCardCache)) {
+                    int sleepRemaining = stockerSleepers.get(stockerCardCache);
+                    //System.out.println("Stock card at " + this.getBlockPos() + " in slot " + stockerCardCache.cardSlot + " has " + sleepRemaining + " sleep time remaining, decrementing by 1 - worldtime: " + level.getGameTime());
+                    sleepRemaining--;
+                    if (sleepRemaining == 1)
+                        stockerSleepers.remove(stockerCardCache);
+                    else
+                        stockerSleepers.put(stockerCardCache, sleepRemaining);
+                    continue;
+                }
                 if (countCardsHandled > nodeSideCache.overClocker) return;
                 if (stockItems(stockerCardCache))
                     countCardsHandled++;
@@ -271,9 +294,22 @@ public class LaserNodeBE extends BaseLaserBE {
                 }
                 if (amountFit < stack.getCount()) //Todo exact Transfer Mode Maybe?
                     stack.setCount(amountFit); //If less than what we want fits, adjust it
-                boolean foundItems = findItemStackForStocker(stack, stockerCardCache, adjacentInventory);
-                if (foundItems) return true;
+                int itemsStillNeeded = stack.getCount() - tryStockerCache(stack, stockerCardCache, adjacentInventory);
+                if (itemsStillNeeded == 0) {
+                    stack.setCount(originalCount);
+                    return true;
+                }
+                stack.setCount(itemsStillNeeded);
+                //System.out.println("Didn't find enough in the cache, still need " + itemsStillNeeded + " items");
+                boolean foundItems = findItemStackForStocker(stack, stockerCardCache, adjacentInventory); //Start looking for this item
+                if (foundItems) {
+                    stack.setCount(originalCount);
+                    return true;
+                }
             }
+            //If we get to this line of code, it means we found none of the filer
+            System.out.println("Stock card at " + this.getBlockPos() + " in slot " + stockerCardCache.cardSlot + " has found nothing. Adding to sleeper list with 40 ticks at gametime: " + level.getGameTime());
+            stockerSleepers.put(stockerCardCache, 40);
         } else if (filter.getItem() instanceof FilterCount) {
             ItemHandlerUtil.InventoryCounts invCache = new ItemHandlerUtil.InventoryCounts(adjacentInventory, BaseFilter.getCompareNBT(filter));
 
@@ -283,9 +319,67 @@ public class LaserNodeBE extends BaseLaserBE {
         return false;
     }
 
+    /**
+     * Trys to pull from the last place we found this item - checking the same slot first, then the rest of the inventory.
+     * Returns the amount of items extracted.
+     */
+    public int tryStockerCache(ItemStack itemStack, StockerCardCache stockerCardCache, IItemHandler stockerInventory) {
+        ItemStackKey key = new ItemStackKey(itemStack, stockerCardCache.isCompareNBT);
+        StockerRequest stockRequest = new StockerRequest(stockerCardCache, key);
+        if (stockerDestinationCache.containsKey(stockRequest)) {
+            int origItemsWanted = itemStack.getCount();
+            int itemsStillNeeded = origItemsWanted;
+            StockerSource checkSource = stockerDestinationCache.get(stockRequest);
+            //System.out.println("Cache found, trying to pull from: " + getWorldPos(checkSource.inserterCardCache.relativePos));
+            BlockPos nodeWorldPos = getWorldPos(checkSource.inserterCardCache.relativePos);
+            if (!chunksLoaded(nodeWorldPos, nodeWorldPos.relative(checkSource.inserterCardCache.direction)))
+                return 0; //Skip this if the node is unloaded
+
+            LaserNodeBE be = getNodeAt(getWorldPos(checkSource.inserterCardCache.relativePos));
+            if (be == null) return 0; //If for some reason this Block Entity no longer exists - shouldn't ever happen
+
+            IItemHandler possibleSource = be.getAttachedInventory(checkSource.inserterCardCache.direction, checkSource.inserterCardCache.sneaky).orElse(EMPTY);
+            if (possibleSource.getSlots() == 0)
+                return 0; //If the attached inventory no longer exists - shouldn't ever happen
+
+            ItemStack stackInSlot = possibleSource.getStackInSlot(checkSource.slot);
+            if (ItemHandlerUtil.doItemsMatch(stackInSlot, key.getStack(), stockerCardCache.isCompareNBT)) {
+                int extractAmt = Math.min(itemsStillNeeded, stackInSlot.getCount()); //Find out how many to extract
+                ItemStack extractedItemStack = possibleSource.extractItem(checkSource.slot, extractAmt, false); //Extract Items
+                drawParticles(extractedItemStack, checkSource.inserterCardCache.direction, be, this, stockerCardCache.direction, checkSource.inserterCardCache.cardSlot, stockerCardCache.cardSlot);
+                ItemHandlerHelper.insertItem(stockerInventory, extractedItemStack, false); //Actually insert into the destination
+                //System.out.println("Got "+extractedItemStack.getCount()+" items from cache slot " + checkSource.slot);
+                itemsStillNeeded = itemsStillNeeded - extractedItemStack.getCount();
+                if (itemsStillNeeded == 0)
+                    return extractedItemStack.getCount(); //If we got all that we need, return the amount we got
+            }
+            //System.out.println("Still need " + itemsStillNeeded + " items - checking chest at " + getWorldPos(checkSource.inserterCardCache.relativePos));
+            itemStack.setCount(itemsStillNeeded); //We only reach this point if we still have items to extract
+            ItemHandlerUtil.ExtractResult extractResult = ItemHandlerUtil.extractItem(possibleSource, itemStack, false, stockerCardCache.isCompareNBT); //Try to pull out the items we need from this location
+            if (extractResult.itemStack().isEmpty()) {
+                //System.out.println("This chest no longer has any of the item, removing from cache");
+                stockerDestinationCache.remove(stockRequest);
+                return origItemsWanted - itemsStillNeeded; //Return how many items we actually got
+            }
+
+            //System.out.println("Got " + extractResult.itemStack().getCount() + " items from slot " + extractResult.slot() + " in the chest");
+            drawParticles(extractResult.itemStack(), checkSource.inserterCardCache.direction, be, this, stockerCardCache.direction, checkSource.inserterCardCache.cardSlot, stockerCardCache.cardSlot);
+            ItemHandlerHelper.insertItem(stockerInventory, extractResult.itemStack(), false); //Actually insert into the destination
+            itemsStillNeeded = itemsStillNeeded - extractResult.itemStack().getCount();
+            itemStack.setCount(itemsStillNeeded); //Adjust the stack size to how many more items we need, maybe zero
+            if (extractResult.slot() != -1) {//If we got it from another slot in the chest, update the cache
+                //System.out.println("Updating cache at: " + getWorldPos(checkSource.inserterCardCache.relativePos) + " to slot " + extractResult.slot());
+                stockerDestinationCache.put(new StockerRequest(stockerCardCache, key), new StockerSource(checkSource.inserterCardCache, extractResult.slot()));
+            }
+            return origItemsWanted - itemsStillNeeded; //Return how many items we actually got
+        }
+        return 0;
+    }
+
     public boolean findItemStackForStocker(ItemStack itemStack, StockerCardCache stockerCardCache, IItemHandler stockerInventory) {
+        System.out.println("Scanning all inventories for item");
         int origItemsWanted = itemStack.getCount();
-        int itemsStillneeded = origItemsWanted;
+        int itemsStillNeeded = origItemsWanted;
         for (InserterCardCache inserterCardCache : getPossibleInserters(stockerCardCache, itemStack)) {
             BlockPos nodeWorldPos = getWorldPos(inserterCardCache.relativePos);
             if (!chunksLoaded(nodeWorldPos, nodeWorldPos.relative(inserterCardCache.direction)))
@@ -295,13 +389,17 @@ public class LaserNodeBE extends BaseLaserBE {
             if (be == null) continue;
             IItemHandler possibleSource = be.getAttachedInventory(inserterCardCache.direction, inserterCardCache.sneaky).orElse(EMPTY);
             if (possibleSource.getSlots() == 0) continue;
-            ItemStack extractedItemStack = ItemHandlerUtil.extractItem(possibleSource, itemStack, false, stockerCardCache.isCompareNBT); //Try to pull out the items we need from this location
-            if (extractedItemStack.isEmpty())
+            ItemHandlerUtil.ExtractResult extractResult = ItemHandlerUtil.extractItem(possibleSource, itemStack, false, stockerCardCache.isCompareNBT); //Try to pull out the items we need from this location
+            if (extractResult.itemStack().isEmpty())
                 continue; //If we didn't find anything in this inventory, move onto the next
-            drawParticles(extractedItemStack, inserterCardCache.direction, be, this, stockerCardCache.direction, inserterCardCache.cardSlot, stockerCardCache.cardSlot);
-            ItemHandlerHelper.insertItem(stockerInventory, extractedItemStack, false); //Actually insert into the destination
-            itemsStillneeded = itemsStillneeded - extractedItemStack.getCount();
-            itemStack.setCount(itemsStillneeded); //Adjust the stack size to how many more items we need, maybe zero
+            drawParticles(extractResult.itemStack(), inserterCardCache.direction, be, this, stockerCardCache.direction, inserterCardCache.cardSlot, stockerCardCache.cardSlot);
+            ItemHandlerHelper.insertItem(stockerInventory, extractResult.itemStack(), false); //Actually insert into the destination
+            itemsStillNeeded = itemsStillNeeded - extractResult.itemStack().getCount();
+            itemStack.setCount(itemsStillNeeded); //Adjust the stack size to how many more items we need, maybe zero
+            if (extractResult.slot() != -1) {
+                //System.out.println("Adding to cache at: " + getWorldPos(inserterCardCache.relativePos) + " to slot " + extractResult.slot());
+                stockerDestinationCache.put(new StockerRequest(stockerCardCache, new ItemStackKey(extractResult.itemStack(), stockerCardCache.isCompareNBT)), new StockerSource(inserterCardCache, extractResult.slot()));
+            }
             if (itemStack.getCount() == 0) return true; //If zero, return true
         }
         if (origItemsWanted != itemStack.getCount())
