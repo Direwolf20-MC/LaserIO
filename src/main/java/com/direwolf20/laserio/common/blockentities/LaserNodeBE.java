@@ -362,13 +362,18 @@ public class LaserNodeBE extends BaseLaserBE {
                 extractedItemStack = possibleSource.extractItem(checkSource.slot, extractAmt, false); //Extract Items
                 drawParticles(extractedItemStack, checkSource.inserterCardCache.direction, be, this, stockerCardCache.direction, checkSource.inserterCardCache.cardSlot, stockerCardCache.cardSlot);
                 ItemHandlerHelper.insertItem(stockerInventory, extractedItemStack, false); //Actually insert into the destination
-                System.out.println("Got " + extractedItemStack.getCount() + " items from cache slot " + checkSource.slot);
+                System.out.println("Got " + extractedItemStack.getCount() + " items from cache slot " + checkSource.slot + " at " + getWorldPos(checkSource.inserterCardCache.relativePos));
                 itemsStillNeeded = itemsStillNeeded - extractedItemStack.getCount();
-                if (itemsStillNeeded == 0)
+                if (stackInSlot.isEmpty()) {
+                    System.out.println("Emptied existing cache slot  at " + checkSource.slot + " at " + getWorldPos(checkSource.inserterCardCache.relativePos));
+                    stockerDestinationCache.remove(stockerCardCache);
+                }
+                if (itemsStillNeeded == 0) {
                     return extractedItemStack; //If we got all that we need, return the amount we got
-                //If we got here, we have to find more of this item type, so start looking for it
+                }
             }
         }
+        //If we got here, we have to find more of this item type, so start looking for it
         System.out.println("Still need " + itemsStillNeeded + " items - checking chest at " + getWorldPos(checkSource.inserterCardCache.relativePos));
         ItemHandlerUtil.ExtractResult extractResult = ItemHandlerUtil.extractItem(possibleSource, extractedItemStack, itemsStillNeeded, false, stockerCardCache.isCompareNBT); //Try to pull out the items we need from this location
         if (extractResult.itemStack().isEmpty()) {
@@ -381,7 +386,7 @@ public class LaserNodeBE extends BaseLaserBE {
         drawParticles(extractResult.itemStack(), checkSource.inserterCardCache.direction, be, this, stockerCardCache.direction, checkSource.inserterCardCache.cardSlot, stockerCardCache.cardSlot);
         ItemHandlerHelper.insertItem(stockerInventory, extractResult.itemStack(), false); //Actually insert into the destination
 
-        if (extractResult.slot() != -1) {//If we got it from another slot in the chest, update the cache
+        if (extractResult.slot() != -1 && !possibleSource.getStackInSlot(extractResult.slot()).isEmpty()) {//If we got it from another slot in the chest, update the cache
             System.out.println("Updating cache at: " + getWorldPos(checkSource.inserterCardCache.relativePos) + " to slot " + extractResult.slot());
             stockerDestinationCache.put(stockerCardCache, new StockerSource(checkSource.inserterCardCache, extractResult.slot()));
         }
@@ -408,7 +413,7 @@ public class LaserNodeBE extends BaseLaserBE {
             if (possibleSource.getSlots() == 0) continue;
 
             if (firstStackFound.equals(ItemStack.EMPTY)) { //If we haven't found any items yet, start looking for anything that matches our filter
-                System.out.println("firstStackFound is empty == Looking for anything!");
+                System.out.println("firstStackFound is empty == Looking for anything at :" + be.getBlockPos());
                 ItemHandlerUtil.InventoryCounts inventoryCounts = new ItemHandlerUtil.InventoryCounts(possibleSource, stockerCardCache.isCompareNBT);
                 for (ItemStack itemStack : stockerCardCache.getFilteredItems()) {
                     if (inventoryCounts.getCount(itemStack) == 0)
@@ -416,38 +421,39 @@ public class LaserNodeBE extends BaseLaserBE {
                     itemStack.setCount(itemsStillNeeded);
                     int amountFit = testInsertToInventory(stockerInventory, itemStack);
                     if (amountFit == 0) continue; //If none of this item fit into the destination, go to the next item
-                    if (itemStack.getCount() > amountFit)
-                        itemStack.setCount(amountFit); //Adjust our stack size
-                    ItemHandlerUtil.ExtractResult extractResult = ItemHandlerUtil.extractItem(possibleSource, itemStack, false, stockerCardCache.isCompareNBT); //Try to pull out the items we need from this location
+                    //if (itemStack.getCount() > amountFit)
+                    //    itemStack.setCount(amountFit); //Adjust our stack size
+                    ItemHandlerUtil.ExtractResult extractResult = ItemHandlerUtil.extractItem(possibleSource, itemStack, amountFit, false, stockerCardCache.isCompareNBT); //Try to pull out the items we need from this location
                     if (extractResult.itemStack().isEmpty())
                         continue; //If we didn't find anything in this inventory, move onto the next -- Should never happen?
                     drawParticles(extractResult.itemStack(), inserterCardCache.direction, be, this, stockerCardCache.direction, inserterCardCache.cardSlot, stockerCardCache.cardSlot);
                     ItemHandlerHelper.insertItem(stockerInventory, extractResult.itemStack(), false); //Actually insert into the destination
                     itemsStillNeeded = itemsStillNeeded - extractResult.itemStack().getCount();
-                    itemStack.setCount(itemsStillNeeded); //Adjust the stack size to how many more items we need, maybe zero
+                    //itemStack.setCount(itemsStillNeeded); //Adjust the stack size to how many more items we need, maybe zero
                     System.out.println("Found " + extractResult.itemStack().getCount() + " " + extractResult.itemStack().getItem() + ". Need " + itemsStillNeeded + " more.");
                     if (extractResult.slot() != -1 && itemsStillNeeded == 0) {
-                        //System.out.println("Adding to cache at: " + getWorldPos(inserterCardCache.relativePos) + " to slot " + extractResult.slot());
+                        System.out.println("Adding to cache at: " + getWorldPos(inserterCardCache.relativePos) + " to slot " + extractResult.slot());
                         stockerDestinationCache.put(stockerCardCache, new StockerSource(inserterCardCache, extractResult.slot()));
                     }
-                    if (itemStack.getCount() == 0) return true; //If we got all we need, return true
-                    firstStackFound = itemStack.copy(); //If we found 3 cobble, but wanted 5, now we start looking for the rest of the cobble
+                    if (itemsStillNeeded == 0) return true; //If we got all we need, return true
+                    firstStackFound = extractResult.itemStack().copy(); //If we found 3 cobble, but wanted 5, now we start looking for the rest of the cobble
                     break;
                 }
             } else { //If we found a partial stack, start looking for the rest of it.
                 System.out.println("firstStackFound contains " + firstStackFound.getItem() + " looking for " + itemsStillNeeded + " more of them");
-                ItemHandlerUtil.ExtractResult extractResult = ItemHandlerUtil.extractItem(possibleSource, firstStackFound, false, stockerCardCache.isCompareNBT); //Try to pull out the items we need from this location
+                ItemHandlerUtil.ExtractResult extractResult = ItemHandlerUtil.extractItem(possibleSource, firstStackFound, itemsStillNeeded, false, stockerCardCache.isCompareNBT); //Try to pull out the items we need from this location
                 if (extractResult.itemStack().isEmpty())
                     continue; //If we didn't find anything in this inventory, move onto the next
                 drawParticles(extractResult.itemStack(), inserterCardCache.direction, be, this, stockerCardCache.direction, inserterCardCache.cardSlot, stockerCardCache.cardSlot);
                 ItemHandlerHelper.insertItem(stockerInventory, extractResult.itemStack(), false); //Actually insert into the destination
                 itemsStillNeeded = itemsStillNeeded - extractResult.itemStack().getCount();
-                firstStackFound.setCount(itemsStillNeeded); //Adjust the stack size to how many more items we need, maybe zero
-                if (extractResult.slot() != -1) {
-                    //System.out.println("Adding to cache at: " + getWorldPos(inserterCardCache.relativePos) + " to slot " + extractResult.slot());
+                firstStackFound.grow(extractResult.itemStack().getCount()); //Adjust the stack size to how many more items we need, maybe zero
+                System.out.println("Found " + extractResult.itemStack().getCount() + " " + extractResult.itemStack().getItem() + ". Need " + itemsStillNeeded + " more.");
+                if (extractResult.slot() != -1 && itemsStillNeeded == 0) {
+                    System.out.println("Adding to cache at: " + getWorldPos(inserterCardCache.relativePos) + " to slot " + extractResult.slot());
                     stockerDestinationCache.put(stockerCardCache, new StockerSource(inserterCardCache, extractResult.slot()));
                 }
-                if (firstStackFound.getCount() == 0) return true; //If zero, return true meaning we found it all
+                if (itemsStillNeeded == 0) return true; //If zero, return true meaning we found it all
             }
         }
         if (origItemsWanted != itemsStillNeeded)
