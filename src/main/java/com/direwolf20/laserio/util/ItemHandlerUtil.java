@@ -36,7 +36,7 @@ public class ItemHandlerUtil {
             ItemStack stackInSlot = source.getStackInSlot(i);
             if (key.equals(new ItemStackKey(stackInSlot, isCompareNBT))) {
                 int extractAmt = Math.min(amtRemaining, stackInSlot.getCount());
-                System.out.println("Extracting " + stackInSlot.getItem() + " x" + extractAmt);
+                System.out.println("Extracting " + stackInSlot.getItem() + " x" + extractAmt + " from slot " + i);
                 if (tempStack.isEmpty()) //If this is our first pass, make the temp stack == the extracted stack
                     tempStack = source.extractItem(i, extractAmt, simulate);
                 else if (ItemHandlerHelper.canItemStacksStack(tempStack, stackInSlot)) //If this is our 2nd pass, the 2 itemstacks should stack, so do a grow()

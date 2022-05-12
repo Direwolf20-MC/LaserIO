@@ -302,7 +302,7 @@ public class LaserNodeBE extends BaseLaserBE {
         if (filter.isEmpty() || !stockerCardCache.isAllowList) { //Needs a filter - at least for now? Also must be in whitelist mode
             return false;
         }
-        if (filter.getItem() instanceof FilterBasic) {
+        if (filter.getItem() instanceof FilterBasic || filter.getItem() instanceof FilterCount) {
             if (!canAnyFiltersFit(adjacentInventory, stockerCardCache.getFilteredItems())) {
                 return false; //If we can't fit any of our filtered items into this inventory, don't bother scanning for them
             }
@@ -313,9 +313,6 @@ public class LaserNodeBE extends BaseLaserBE {
             //If we get to this line of code, it means we found none of the filter
             System.out.println("Stock card at " + this.getBlockPos() + " in slot " + stockerCardCache.cardSlot + " has found nothing. Adding to sleeper list with 40 ticks at gametime: " + level.getGameTime());
             stockerSleepers.put(stockerCardCache, 40);
-        } else if (filter.getItem() instanceof FilterCount) {
-            ItemHandlerUtil.InventoryCounts invCache = new ItemHandlerUtil.InventoryCounts(adjacentInventory, BaseFilter.getCompareNBT(filter));
-
         } else if (filter.getItem() instanceof FilterTag) {
 
         }
@@ -395,12 +392,29 @@ public class LaserNodeBE extends BaseLaserBE {
     }
 
     public boolean findItemStackForStocker(StockerCardCache stockerCardCache, IItemHandler stockerInventory) {
-        if (!tryStockerCache(stockerCardCache, stockerInventory).equals(ItemStack.EMPTY))
-            return true;
+        //Todo sort out cache for Counting vs not
+        //if (!tryStockerCache(stockerCardCache, stockerInventory).equals(ItemStack.EMPTY))
+        //    return true;
         System.out.println("Scanning all inventories for items in cache");
         int origItemsWanted = stockerCardCache.extractAmt;
         int itemsStillNeeded = origItemsWanted;
         ItemStack firstStackFound = ItemStack.EMPTY;
+
+        List<ItemStack> filteredItemsList = stockerCardCache.getFilteredItems();
+        System.out.println("Filtered Items List: " + filteredItemsList);
+        if (stockerCardCache.filterCard.getItem() instanceof FilterCount) { //If this is a filter count, prune the list of items to search for to just what we need
+            ItemHandlerUtil.InventoryCounts stockerInventoryCount = new ItemHandlerUtil.InventoryCounts(stockerInventory, stockerCardCache.isCompareNBT);
+            List<ItemStack> tempList = new ArrayList<>(filteredItemsList);
+            for (ItemStack itemStack : filteredItemsList) { //Remove all the items from the list that we already have enough of
+                int amtHad = stockerInventoryCount.getCount(itemStack);
+                if (amtHad >= itemStack.getCount())
+                    tempList.remove(itemStack);
+                else
+                    itemStack.setCount(itemStack.getCount() - amtHad);
+            }
+            System.out.println("Narrowed Down List: " + tempList);
+            filteredItemsList = tempList;
+        }
 
         for (InserterCardCache inserterCardCache : getChannelMatchInserters(stockerCardCache)) { //Iterate through ALL inserter nodes on this channel only
             BlockPos nodeWorldPos = getWorldPos(inserterCardCache.relativePos);
@@ -414,15 +428,17 @@ public class LaserNodeBE extends BaseLaserBE {
 
             if (firstStackFound.equals(ItemStack.EMPTY)) { //If we haven't found any items yet, start looking for anything that matches our filter
                 System.out.println("firstStackFound is empty == Looking for anything at :" + be.getBlockPos());
-                ItemHandlerUtil.InventoryCounts inventoryCounts = new ItemHandlerUtil.InventoryCounts(possibleSource, stockerCardCache.isCompareNBT);
-                for (ItemStack itemStack : stockerCardCache.getFilteredItems()) {
-                    if (inventoryCounts.getCount(itemStack) == 0)
-                        continue; //Next item if the chest has none of this item
+                //ItemHandlerUtil.InventoryCounts inventoryCounts = new ItemHandlerUtil.InventoryCounts(possibleSource, stockerCardCache.isCompareNBT);
+                for (ItemStack itemStack : filteredItemsList) {
+                    //if (inventoryCounts.getCount(itemStack) == 0)
+                    //     continue; //Next item if the chest has none of this item
+                    if (stockerCardCache.filterCard.getItem() instanceof FilterCount)  //If this is a filter count, adjust the amount of this item we are looking for
+                        itemsStillNeeded = Math.min(itemStack.getCount(), itemsStillNeeded);
+
                     itemStack.setCount(itemsStillNeeded);
                     int amountFit = testInsertToInventory(stockerInventory, itemStack);
                     if (amountFit == 0) continue; //If none of this item fit into the destination, go to the next item
-                    //if (itemStack.getCount() > amountFit)
-                    //    itemStack.setCount(amountFit); //Adjust our stack size
+                    System.out.println("Extracting From: " + be.getBlockPos());
                     ItemHandlerUtil.ExtractResult extractResult = ItemHandlerUtil.extractItem(possibleSource, itemStack, amountFit, false, stockerCardCache.isCompareNBT); //Try to pull out the items we need from this location
                     if (extractResult.itemStack().isEmpty())
                         continue; //If we didn't find anything in this inventory, move onto the next -- Should never happen?
@@ -441,6 +457,7 @@ public class LaserNodeBE extends BaseLaserBE {
                 }
             } else { //If we found a partial stack, start looking for the rest of it.
                 System.out.println("firstStackFound contains " + firstStackFound.getItem() + " looking for " + itemsStillNeeded + " more of them");
+                System.out.println("Extracting From: " + be.getBlockPos());
                 ItemHandlerUtil.ExtractResult extractResult = ItemHandlerUtil.extractItem(possibleSource, firstStackFound, itemsStillNeeded, false, stockerCardCache.isCompareNBT); //Try to pull out the items we need from this location
                 if (extractResult.itemStack().isEmpty())
                     continue; //If we didn't find anything in this inventory, move onto the next
