@@ -45,7 +45,7 @@ public class LaserIOLanguageProvider extends LanguageProvider {
 
         add("screen.laserio.extract", "Extract");
         add("screen.laserio.insert", "Insert");
-        add("screen.laserio.stock", "Stock (Not Implemented)");
+        add("screen.laserio.stock", "Stock");
 
         add("screen.laserio.denylist", "Deny");
         add("screen.laserio.nbttrue", "Match NBT");
