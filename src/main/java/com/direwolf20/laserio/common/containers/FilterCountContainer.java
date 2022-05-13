@@ -3,7 +3,7 @@ package com.direwolf20.laserio.common.containers;
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import com.direwolf20.laserio.common.containers.customhandler.CardItemHandler;
 import com.direwolf20.laserio.common.containers.customhandler.FilterCountHandler;
-import com.direwolf20.laserio.common.containers.customslot.FilterCountSlot;
+import com.direwolf20.laserio.common.containers.customslot.FilterBasicSlot;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.setup.Registration;
 import net.minecraft.core.BlockPos;
@@ -98,7 +98,7 @@ public class FilterCountContainer extends AbstractContainerMenu {
     private int addSlotRange(IItemHandler handler, int index, int x, int y, int amount, int dx) {
         for (int i = 0; i < amount; i++) {
             if (handler instanceof FilterCountHandler)
-                addSlot(new FilterCountSlot(handler, index, x, y));
+                addSlot(new FilterBasicSlot(handler, index, x, y, true));
             else
                 addSlot(new SlotItemHandler(handler, index, x, y));
             x += dx;

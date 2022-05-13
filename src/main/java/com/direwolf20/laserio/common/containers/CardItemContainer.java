@@ -6,7 +6,9 @@ import com.direwolf20.laserio.common.containers.customhandler.FilterBasicHandler
 import com.direwolf20.laserio.common.containers.customslot.CardItemSlot;
 import com.direwolf20.laserio.common.containers.customslot.FilterBasicSlot;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
+import com.direwolf20.laserio.common.items.filters.BaseFilter;
 import com.direwolf20.laserio.common.items.filters.FilterBasic;
+import com.direwolf20.laserio.common.items.filters.FilterCount;
 import com.direwolf20.laserio.setup.Registration;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
@@ -26,7 +28,7 @@ public class CardItemContainer extends AbstractContainerMenu {
     public static final int SLOTS = 2;
     public static final int FILTERSLOTS = 15;
     public CardItemHandler handler;
-    public FilterBasicHandler filterBasicHandler;
+    public FilterBasicHandler filterHandler;
     public ItemStack cardItem;
     public Player playerEntity;
     private IItemHandler playerInventory;
@@ -46,8 +48,8 @@ public class CardItemContainer extends AbstractContainerMenu {
         if (handler != null) {
             addSlotRange(handler, 0, 80, 5, 1, 18);
             addSlotRange(handler, 1, 153, 5, 1, 18);
-            getFilterBasicHandler();
-            addSlotBox(filterBasicHandler, 0, 44, 25, 5, 18, 3, 18);
+            getFilterHandler();
+            addSlotBox(filterHandler, 0, 44, 25, 5, 18, 3, 18);
             toggleFilterSlots();
         }
 
@@ -68,17 +70,19 @@ public class CardItemContainer extends AbstractContainerMenu {
         this.sourceContainer = sourcePos;
     }
 
-    public void getFilterBasicHandler() {
+    public void getFilterHandler() {
         ItemStack filterStack = slots.get(0).getItem(); //BaseCard.getInventory(cardItem).getStackInSlot(0);
-        if (filterStack.isEmpty())
-            filterBasicHandler = new FilterBasicHandler(15, ItemStack.EMPTY);
+        if (filterStack.getItem() instanceof FilterBasic)
+            filterHandler = FilterBasic.getInventory(filterStack);
+        else if (filterStack.getItem() instanceof FilterCount)
+            filterHandler = FilterCount.getInventory(filterStack);
         else
-            filterBasicHandler = FilterBasic.getInventory(filterStack);
+            filterHandler = new FilterBasicHandler(15, ItemStack.EMPTY);
     }
 
     public void toggleFilterSlots() {
-        getFilterBasicHandler();
-        updateFilterSlots(filterBasicHandler, 0, 44, 25, 5, 18, 3, 18);
+        getFilterHandler();
+        updateFilterSlots(filterHandler, 0, 44, 25, 5, 18, 3, 18);
     }
 
     @Override
@@ -101,9 +105,24 @@ public class CardItemContainer extends AbstractContainerMenu {
                     return ItemStack.EMPTY;
                 }
                 slot.onQuickCraft(stack, itemstack);
-            } else {
-                if (!this.moveItemStackTo(stack, 0, SLOTS, false)) {
-                    return ItemStack.EMPTY;
+            } else if (index >= SLOTS && index < SLOTS + FILTERSLOTS) {
+                //No-Op
+            } else { //From player inventory TO something
+                ItemStack currentStack = slot.getItem().copy();
+                if (slots.get(0).mayPlace(currentStack) || slots.get(1).mayPlace(currentStack)) {
+                    if (!this.moveItemStackTo(stack, 0, SLOTS, false)) {
+                        return ItemStack.EMPTY;
+                    }
+                } else if (slots.get(0).getItem().getItem() instanceof BaseFilter) {
+                    if (!(slots.get(0).getItem().getItem() instanceof FilterCount))
+                        currentStack.setCount(1);
+                    for (int i = SLOTS; i < SLOTS + FILTERSLOTS; i++) { //Prevents the same item from going in there more than once.
+                        if (this.slots.get(i).getItem().equals(currentStack, false)) //Don't limit tags
+                            return ItemStack.EMPTY;
+                    }
+                    if (!this.moveItemStackTo(currentStack, SLOTS, SLOTS + FILTERSLOTS, false)) {
+                        return ItemStack.EMPTY;
+                    }
                 }
                 if (!playerIn.level.isClientSide())
                     BaseCard.setInventory(cardItem, handler);
@@ -131,7 +150,7 @@ public class CardItemContainer extends AbstractContainerMenu {
                 if (handler instanceof CardItemHandler && index == 0)
                     System.out.println("This shouldn't happen");
                 else if (handler instanceof FilterBasicHandler) {
-                    slots.set(index + SLOTS, new FilterBasicSlot(handler, index, x, y));
+                    slots.set(index + SLOTS, new FilterBasicSlot(handler, index, x, y, slots.get(0).getItem().getItem() instanceof FilterCount));
                     slots.get(index + SLOTS).index = index + SLOTS; //Look at container.addSlot() -- it does this
                 } else
                     System.out.println("This shouldn't happen");
@@ -148,7 +167,7 @@ public class CardItemContainer extends AbstractContainerMenu {
             if (handler instanceof CardItemHandler && index == 0)
                 addSlot(new CardItemSlot(handler, this, index, x, y));
             else if (handler instanceof FilterBasicHandler)
-                addSlot(new FilterBasicSlot(handler, index, x, y));
+                addSlot(new FilterBasicSlot(handler, index, x, y, slots.get(0).getItem().getItem() instanceof FilterCount));
             else
                 addSlot(new SlotItemHandler(handler, index, x, y));
             x += dx;

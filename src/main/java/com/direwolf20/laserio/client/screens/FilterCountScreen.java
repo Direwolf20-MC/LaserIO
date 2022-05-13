@@ -4,7 +4,7 @@ import com.direwolf20.laserio.client.renderer.LaserIOItemRenderer;
 import com.direwolf20.laserio.client.screens.widgets.ToggleButton;
 import com.direwolf20.laserio.common.LaserIO;
 import com.direwolf20.laserio.common.containers.FilterCountContainer;
-import com.direwolf20.laserio.common.containers.customslot.FilterCountSlot;
+import com.direwolf20.laserio.common.containers.customslot.FilterBasicSlot;
 import com.direwolf20.laserio.common.items.filters.FilterCount;
 import com.direwolf20.laserio.common.network.PacketHandler;
 import com.direwolf20.laserio.common.network.packets.PacketGhostSlot;
@@ -134,7 +134,7 @@ public class FilterCountScreen extends AbstractContainerScreen<FilterCountContai
 
     @Override
     public boolean mouseClicked(double x, double y, int btn) {
-        if (hoveredSlot == null || !(hoveredSlot instanceof FilterCountSlot))
+        if (hoveredSlot == null || !(hoveredSlot instanceof FilterBasicSlot))
             return super.mouseClicked(x, y, btn);
 
         // By splitting the stack we can get air easily :) perfect removal basically
@@ -170,7 +170,7 @@ public class FilterCountScreen extends AbstractContainerScreen<FilterCountContai
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
-        if (hoveredSlot == null || !(hoveredSlot instanceof FilterCountSlot))
+        if (hoveredSlot == null || !(hoveredSlot instanceof FilterBasicSlot))
             return super.mouseScrolled(mouseX, mouseY, delta);
 
         ItemStack slotStack = hoveredSlot.getItem();
