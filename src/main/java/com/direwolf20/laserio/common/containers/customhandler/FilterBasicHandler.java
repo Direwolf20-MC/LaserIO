@@ -16,7 +16,8 @@ public class FilterBasicHandler extends ItemStackHandler {
 
     @Override
     protected void onContentsChanged(int slot) {
-        FilterBasic.setInventory(stack, this);
+        if (!stack.equals(ItemStack.EMPTY))
+            FilterBasic.setInventory(stack, this);
     }
 
     @Override

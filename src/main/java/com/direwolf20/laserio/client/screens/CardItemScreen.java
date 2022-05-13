@@ -6,10 +6,11 @@ import com.direwolf20.laserio.client.screens.widgets.ToggleButton;
 import com.direwolf20.laserio.common.LaserIO;
 import com.direwolf20.laserio.common.containers.CardItemContainer;
 import com.direwolf20.laserio.common.containers.customslot.CardItemSlot;
+import com.direwolf20.laserio.common.containers.customslot.FilterBasicSlot;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.common.items.cards.CardItem;
-import com.direwolf20.laserio.common.items.filters.BaseFilter;
 import com.direwolf20.laserio.common.network.PacketHandler;
+import com.direwolf20.laserio.common.network.packets.PacketGhostSlot;
 import com.direwolf20.laserio.common.network.packets.PacketOpenFilter;
 import com.direwolf20.laserio.common.network.packets.PacketUpdateCard;
 import com.direwolf20.laserio.util.MiscTools;
@@ -26,6 +27,7 @@ import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
 import java.awt.*;
@@ -63,6 +65,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
     @Override
     public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         this.renderBackground(matrixStack);
+        System.out.println("Slots: " + this.menu.slots.size());
         super.render(matrixStack, mouseX, mouseY, partialTicks);
         this.renderTooltip(matrixStack, mouseX, mouseY);
         TranslatableComponent translatableComponents[] = new TranslatableComponent[3];
@@ -78,6 +81,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
         if (MiscTools.inBounds(getGuiLeft() + 5, getGuiTop() + 65, 16, 16, mouseX, mouseY)) {
             this.renderTooltip(matrixStack, new TranslatableComponent(String.valueOf(sneakyNames[currentSneaky + 1])), mouseX, mouseY);
         }
+        toggleFilterSlots();
     }
 
     @Override
@@ -155,6 +159,16 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
         // Ordered by where you add them.
         for (int i = 0; i < leftWidgets.size(); i++) {
             addRenderableWidget(leftWidgets.get(i));
+        }
+    }
+
+    public void toggleFilterSlots() {
+        ItemStack filterStack = container.slots.get(0).getItem();
+        for (int i = 2; i < 2 + 5; i++) {
+            if (i >= container.slots.size()) continue;
+            Slot slot = container.getSlot(i);
+            if (!(slot instanceof FilterBasicSlot)) continue;
+            ((FilterBasicSlot) slot).setEnabled(!filterStack.isEmpty());
         }
     }
 
@@ -238,9 +252,16 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
             channelButton.playDownSound(Minecraft.getInstance().getSoundManager());
             return true;
         }
-        if (hoveredSlot == null || hoveredSlot.getItem().isEmpty() || !(hoveredSlot.getItem().getItem() instanceof BaseFilter))
+        if (hoveredSlot == null || hoveredSlot.getItem().isEmpty())
             return super.mouseClicked(x, y, btn);
 
+        if (hoveredSlot instanceof FilterBasicSlot) {
+            // By splitting the stack we can get air easily :) perfect removal basically
+            ItemStack stack = this.menu.getCarried();// getMinecraft().player.inventoryMenu.getCarried();
+            stack = stack.copy().split(hoveredSlot.getMaxStackSize()); // Limit to slot limit
+            hoveredSlot.set(stack); // Temporarily update the client for continuity purposes
+            PacketHandler.sendToServer(new PacketGhostSlot(hoveredSlot.index, stack, stack.getCount()));
+        }
         if (btn == 1 && hoveredSlot instanceof CardItemSlot) { //Right click
             int slot = hoveredSlot.getSlotIndex();
             PacketHandler.sendToServer(new PacketUpdateCard(currentMode, currentChannel, currentItemExtractAmt, currentPriority, currentSneaky));
