@@ -1,14 +1,17 @@
 package com.direwolf20.laserio.client.screens.widgets;
 
+import com.direwolf20.laserio.common.LaserIO;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
 
 import java.awt.*;
 
 public class ChannelButton extends Button {
+    private final ResourceLocation resourceLocation = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/blankbutton.png");
     private int channel;
     private final Color colors[] = {
             new Color(0xf9ffff),
@@ -36,12 +39,12 @@ public class ChannelButton extends Button {
 
     @Override
     public void render(PoseStack stack, int mouseX, int mouseY, float partialTicks) {
-        fill(stack, this.x, this.y, this.x + this.width, this.y + this.height, 0xFFa8a8a8);
-        fill(stack, this.x + 2, this.y + 2, this.x + this.width - 2, this.y + this.height - 2, colors[channel].getRGB());
-        Font font = Minecraft.getInstance().font;
-        int j = this.channel == 0 ? colors[15].getRGB() : getFGColor();
-        //font.draw(stack, String.valueOf(channel), this.x + this.width / 4, this.y + (this.height - 8) / 2, j);
-        //drawCenteredString(stack, font, String.valueOf(channel), this.x + this.width / 2, this.y + (this.height - 8) / 2, j | Mth.ceil(this.alpha * 255.0F) << 24);
+        //fill(stack, this.x, this.y, this.x + this.width, this.y + this.height, 0xFFa8a8a8);
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
+        RenderSystem.setShaderTexture(0, resourceLocation);
+        blit(stack, this.x, this.y, 0, 0, width, height, width, height);
+        fill(stack, this.x + 4, this.y + 4, this.x + this.width - 4, this.y + this.height - 4, colors[channel].getRGB());
     }
 
     public void setChannel(int channel) {

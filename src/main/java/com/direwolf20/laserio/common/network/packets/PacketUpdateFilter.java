@@ -1,5 +1,6 @@
 package com.direwolf20.laserio.common.network.packets;
 
+import com.direwolf20.laserio.common.containers.CardItemContainer;
 import com.direwolf20.laserio.common.containers.FilterBasicContainer;
 import com.direwolf20.laserio.common.containers.FilterCountContainer;
 import com.direwolf20.laserio.common.items.filters.FilterBasic;
@@ -41,6 +42,12 @@ public class PacketUpdateFilter {
                 if (container == null)
                     return;
 
+                if (container instanceof CardItemContainer) {
+                    ItemStack stack = container.slots.get(0).getItem();
+                    if (stack.isEmpty()) return;
+                    FilterBasic.setAllowList(stack, msg.allowList);
+                    FilterBasic.setCompareNBT(stack, msg.compareNBT);
+                }
                 if (container instanceof FilterBasicContainer) {
                     ItemStack stack = ((FilterBasicContainer) container).filterItem;
                     FilterBasic.setAllowList(stack, msg.allowList);
