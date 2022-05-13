@@ -65,7 +65,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
     @Override
     public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         this.renderBackground(matrixStack);
-        System.out.println("Slots: " + this.menu.slots.size());
+        toggleFilterSlots();
         super.render(matrixStack, mouseX, mouseY, partialTicks);
         this.renderTooltip(matrixStack, mouseX, mouseY);
         TranslatableComponent translatableComponents[] = new TranslatableComponent[3];
@@ -81,7 +81,6 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
         if (MiscTools.inBounds(getGuiLeft() + 5, getGuiTop() + 65, 16, 16, mouseX, mouseY)) {
             this.renderTooltip(matrixStack, new TranslatableComponent(String.valueOf(sneakyNames[currentSneaky + 1])), mouseX, mouseY);
         }
-        toggleFilterSlots();
     }
 
     @Override
@@ -164,7 +163,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
 
     public void toggleFilterSlots() {
         ItemStack filterStack = container.slots.get(0).getItem();
-        for (int i = 2; i < 2 + 5; i++) {
+        for (int i = container.SLOTS; i < container.SLOTS + container.FILTERSLOTS; i++) {
             if (i >= container.slots.size()) continue;
             Slot slot = container.getSlot(i);
             if (!(slot instanceof FilterBasicSlot)) continue;
@@ -202,6 +201,14 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
         int relX = (this.width - this.imageWidth) / 2;
         int relY = (this.height - this.imageHeight) / 2;
         this.blit(matrixStack, relX, relY, 0, 0, this.imageWidth, this.imageHeight);
+        ItemStack filterStack = container.slots.get(0).getItem();
+        if (!filterStack.isEmpty()) {
+            int slotsWidth = 90;
+            int slotsHeight = 54;
+            relX = relX + 43;
+            relY = relY + 24;
+            blit(matrixStack, relX, relY, 0, 167, slotsWidth, slotsHeight);
+        }
     }
 
     @Override
@@ -252,7 +259,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
             channelButton.playDownSound(Minecraft.getInstance().getSoundManager());
             return true;
         }
-        if (hoveredSlot == null || hoveredSlot.getItem().isEmpty())
+        if (hoveredSlot == null)
             return super.mouseClicked(x, y, btn);
 
         if (hoveredSlot instanceof FilterBasicSlot) {
@@ -261,6 +268,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
             stack = stack.copy().split(hoveredSlot.getMaxStackSize()); // Limit to slot limit
             hoveredSlot.set(stack); // Temporarily update the client for continuity purposes
             PacketHandler.sendToServer(new PacketGhostSlot(hoveredSlot.index, stack, stack.getCount()));
+            return true;
         }
         if (btn == 1 && hoveredSlot instanceof CardItemSlot) { //Right click
             int slot = hoveredSlot.getSlotIndex();

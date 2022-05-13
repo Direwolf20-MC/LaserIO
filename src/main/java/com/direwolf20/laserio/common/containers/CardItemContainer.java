@@ -44,10 +44,10 @@ public class CardItemContainer extends AbstractContainerMenu {
         this.playerInventory = new InvWrapper(playerInventory);
         this.cardItem = cardItem;
         if (handler != null) {
-            addSlotRange(handler, 0, 80, 35, 1, 18);
+            addSlotRange(handler, 0, 80, 5, 1, 18);
             addSlotRange(handler, 1, 152, 63, 1, 18);
             getFilterBasicHandler();
-            addSlotRange(filterBasicHandler, 0, 50, 55, 5, 18);
+            addSlotBox(filterBasicHandler, 0, 44, 25, 5, 18, 3, 18);
             toggleFilterSlots();
         }
 
@@ -57,8 +57,7 @@ public class CardItemContainer extends AbstractContainerMenu {
 
     @Override
     public void clicked(int slotId, int dragType, ClickType clickTypeIn, Player player) {
-        if (slotId >= 2 && slotId < 2 + FILTERSLOTS) {
-            //System.out.println("Skipping!");
+        if (slotId >= SLOTS && slotId < SLOTS + FILTERSLOTS) {
             return;
         }
         super.clicked(slotId, dragType, clickTypeIn, player);
@@ -79,7 +78,7 @@ public class CardItemContainer extends AbstractContainerMenu {
 
     public void toggleFilterSlots() {
         getFilterBasicHandler();
-        updateSlotRange(filterBasicHandler, 0, 50, 55, 5, 18);
+        updateFilterSlots(filterBasicHandler, 0, 44, 25, 5, 18, 3, 18);
     }
 
     @Override
@@ -126,17 +125,21 @@ public class CardItemContainer extends AbstractContainerMenu {
         return itemstack;
     }
 
-    private void updateSlotRange(IItemHandler handler, int index, int x, int y, int amount, int dx) {
-        for (int i = 0; i < amount; i++) {
-            if (handler instanceof CardItemHandler && index == 0)
-                System.out.println("This shouldn't happen");
-            else if (handler instanceof FilterBasicHandler) {
-                slots.set(index + 2, new FilterBasicSlot(handler, index, x, y));
-                slots.get(index + 2).index = index + 2; //Look at container.addSlot() -- it does this
-            } else
-                System.out.println("This shouldn't happen");
-            x += dx;
-            index++;
+    private void updateFilterSlots(IItemHandler handler, int index, int x, int y, int horAmount, int dx, int verAmount, int dy) {
+        for (int j = 0; j < verAmount; j++) {
+            for (int i = 0; i < horAmount; i++) {
+                if (handler instanceof CardItemHandler && index == 0)
+                    System.out.println("This shouldn't happen");
+                else if (handler instanceof FilterBasicHandler) {
+                    slots.set(index + SLOTS, new FilterBasicSlot(handler, index, x, y));
+                    slots.get(index + SLOTS).index = index + SLOTS; //Look at container.addSlot() -- it does this
+                } else
+                    System.out.println("This shouldn't happen");
+                x += dx;
+                index++;
+            }
+            y += dy;
+            x = x - (dx * horAmount);
         }
     }
 
@@ -180,7 +183,6 @@ public class CardItemContainer extends AbstractContainerMenu {
                 BlockEntity blockEntity = world.getBlockEntity(sourceContainer);
                 if (blockEntity instanceof LaserNodeBE)
                     ((LaserNodeBE) blockEntity).updateThisNode();
-
             }
         }
         super.removed(playerIn);
