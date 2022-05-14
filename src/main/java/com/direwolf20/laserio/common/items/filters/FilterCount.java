@@ -4,7 +4,6 @@ import com.direwolf20.laserio.common.containers.FilterCountContainer;
 import com.direwolf20.laserio.common.containers.customhandler.FilterCountHandler;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -64,14 +63,14 @@ public class FilterCount extends BaseFilter {
         FilterCountHandler handler = new FilterCountHandler(FilterCountContainer.SLOTS, stack);
         handler.deserializeNBT(compound.getCompound("inv"));
         /**Special handling for slots with > 127 items in them**/
-        ListTag countList = compound.getList("counts", Tag.TAG_COMPOUND);
+        /*ListTag countList = compound.getList("counts", Tag.TAG_COMPOUND);
         for (int i = 0; i < countList.size(); i++) {
             CompoundTag countTag = countList.getCompound(i);
             int slot = countTag.getInt("Slot");
             ItemStack itemStack = handler.getStackInSlot(slot);
             itemStack.setCount(countTag.getInt("Count"));
             handler.setStackInSlot(slot, itemStack);
-        }
+        }*/
         return !compound.contains("inv") ? setInventory(stack, new FilterCountHandler(FilterCountContainer.SLOTS, stack)) : handler;
     }
 
@@ -82,11 +81,9 @@ public class FilterCount extends BaseFilter {
         for (int i = 0; i < handler.getSlots(); i++) {
             CompoundTag countTag = new CompoundTag();
             ItemStack itemStack = handler.getStackInSlot(i);
-            if (itemStack.getCount() > itemStack.getMaxStackSize()) {
-                countTag.putInt("Slot", i);
-                countTag.putInt("Count", itemStack.getCount());
-                countList.add(countTag);
-            }
+            countTag.putInt("Slot", i);
+            countTag.putInt("Count", itemStack.getCount());
+            countList.add(countTag);
         }
         stack.getOrCreateTag().put("counts", countList);
         return handler;

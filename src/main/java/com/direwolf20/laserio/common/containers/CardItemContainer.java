@@ -11,6 +11,9 @@ import com.direwolf20.laserio.common.items.filters.FilterBasic;
 import com.direwolf20.laserio.common.items.filters.FilterCount;
 import com.direwolf20.laserio.setup.Registration;
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -68,6 +71,21 @@ public class CardItemContainer extends AbstractContainerMenu {
     public CardItemContainer(int windowId, Inventory playerInventory, Player player, CardItemHandler handler, BlockPos sourcePos, ItemStack cardItem) {
         this(windowId, playerInventory, player, handler, cardItem);
         this.sourceContainer = sourcePos;
+    }
+
+    public int getStackSize(int slot) {
+        ItemStack filterStack = slots.get(0).getItem();
+        if (slot >= SLOTS && slot < SLOTS + FILTERSLOTS && (slots.get(slot) instanceof FilterBasicSlot) && filterStack.getItem() instanceof FilterCount) {
+            CompoundTag compound = filterStack.getOrCreateTag();
+            ListTag countList = compound.getList("counts", Tag.TAG_COMPOUND);
+            for (int i = 0; i < countList.size(); i++) {
+                CompoundTag countTag = countList.getCompound(i);
+                int tagslot = countTag.getInt("Slot");
+                if (tagslot == slot - SLOTS)
+                    return countTag.getInt("Count");
+            }
+        }
+        return 0;
     }
 
     public void getFilterHandler() {

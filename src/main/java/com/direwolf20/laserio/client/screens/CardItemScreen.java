@@ -6,6 +6,7 @@ import com.direwolf20.laserio.client.screens.widgets.NumberButton;
 import com.direwolf20.laserio.client.screens.widgets.ToggleButton;
 import com.direwolf20.laserio.common.LaserIO;
 import com.direwolf20.laserio.common.containers.CardItemContainer;
+import com.direwolf20.laserio.common.containers.customhandler.FilterCountHandler;
 import com.direwolf20.laserio.common.containers.customslot.CardItemSlot;
 import com.direwolf20.laserio.common.containers.customslot.FilterBasicSlot;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
@@ -121,6 +122,22 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
                     this.renderTooltip(matrixStack, new TranslatableComponent("screen.laserio.nbttrue"), mouseX, mouseY);
                 else
                     this.renderTooltip(matrixStack, new TranslatableComponent("screen.laserio.nbtfalse"), mouseX, mouseY);
+            }
+        }
+        /*if (showFilter)
+            updateItemCounts();*/
+    }
+
+    /**
+     * This method updates client side item counts from the IIntArray
+     */
+    public void updateItemCounts() {
+        if (filter != null && filter.getItem() instanceof FilterCount) {
+            container.getFilterHandler();
+            FilterCountHandler handler = (FilterCountHandler) container.filterHandler;
+            for (int i = 0; i < handler.getSlots(); i++) {
+                ItemStack stack = handler.getStackInSlot(i);
+                stack.setCount(container.getStackSize(i + container.SLOTS));
             }
         }
     }
