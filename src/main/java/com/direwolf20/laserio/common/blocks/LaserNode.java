@@ -133,6 +133,15 @@ public class LaserNode extends BaseLaserBlock implements EntityBlock {
         };
     }
 
+    public void neighborChanged(BlockState blockState, Level level, BlockPos pos, Block blockIn, BlockPos fromPos, boolean isMoving) {
+        //System.out.println(level.getBlockState(fromPos).getBlock() + " : " + fromPos + " : " + blockIn);
+        if (!level.getBlockState(fromPos).getBlock().equals(blockIn)) {
+            BlockEntity blockEntity = level.getBlockEntity(pos);
+            if (blockEntity instanceof LaserNodeBE)
+                ((LaserNodeBE) blockEntity).clearCachedInventories();
+        }
+    }
+
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
@@ -178,4 +187,6 @@ public class LaserNode extends BaseLaserBlock implements EntityBlock {
         }
         super.onRemove(state, worldIn, pos, newState, isMoving);
     }
+
+
 }

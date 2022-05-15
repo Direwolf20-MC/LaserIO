@@ -755,6 +755,25 @@ public class LaserNodeBE extends BaseLaserBE {
         return LazyOptional.empty();
     }
 
+    /** Somehow this makes it so if you break an adjacent chest it immediately invalidates the cache of it **/
+    public LazyOptional<IItemHandler> getAttachedInventoryNoCache(Direction direction, Byte sneakySide) {
+        Direction inventorySide = direction.getOpposite();
+        if (sneakySide != -1)
+            inventorySide = Direction.values()[sneakySide];
+
+        // if no inventory cached yet, find a new one
+        assert level != null;
+        BlockEntity be = level.getBlockEntity(getBlockPos().relative(direction));
+        // if we have a TE and its an item handler, try extracting from that
+        if (be != null) {
+            LazyOptional<IItemHandler> handler = be.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, inventorySide);
+            if (handler.isPresent()) {
+                return handler;
+            }
+        }
+        return LazyOptional.empty();
+    }
+
     private NonNullConsumer<LazyOptional<IItemHandler>> getInvalidator(SideConnection sideConnection) {
         return connectionInvalidator.computeIfAbsent(sideConnection, c -> new WeakConsumerWrapper<>(this, (te, handler) -> {
             if (te.facingHandler.get(sideConnection) == handler) {
@@ -770,6 +789,14 @@ public class LaserNodeBE extends BaseLaserBE {
         stockerCountDestinationCache.clear();
         //System.out.println("Clearing: " + sideConnection.nodeSide.getName() + " - " + sideConnection.sneakySide.getName());
         this.facingHandler.remove(sideConnection);
+    }
+
+    /** Called when a neighbor updates to invalidate the inventory cache */
+    public void clearCachedInventories() {
+        //System.out.println("Clearing ALL cached caps. Client? " + level.isClientSide);
+        stockerDestinationCache.clear();
+        stockerCountDestinationCache.clear();
+        this.facingHandler.clear();
     }
 
     @Nonnull

@@ -64,7 +64,7 @@ public class LaserNodeBERender extends BaseLaserBERender<LaserNodeBE> {
                     ItemStack card = h.getStackInSlot(slot);
                     if (card.getItem() instanceof BaseCard) {
                         if (((BaseCard) card.getItem()).getCardType() == BaseCard.CardType.ITEM) {
-                            if (blockentity.getAttachedInventory(direction, (byte) -1).equals(LazyOptional.empty()))
+                            if (blockentity.getAttachedInventoryNoCache(direction, (byte) -1).equals(LazyOptional.empty()))
                                 continue;
                             float[] floatcolors = colors[BaseCard.getChannel(card)].getColorComponents(new float[3]);
                             boolean reverse = direction.equals(Direction.DOWN) ? false : true;
