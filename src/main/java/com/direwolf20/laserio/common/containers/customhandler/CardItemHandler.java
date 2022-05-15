@@ -20,6 +20,7 @@ public class CardItemHandler extends ItemStackHandler {
     protected void onContentsChanged(int slot) {
         //if (!stack.isEmpty())
         //BaseCard.setInventory(stack, this);
+
     }
 
     @Override

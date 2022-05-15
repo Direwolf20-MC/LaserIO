@@ -120,6 +120,7 @@ public class BaseCard extends Item {
         NetworkHooks.openGui((ServerPlayer) player, new SimpleMenuProvider(
                 (windowId, playerInventory, playerEntity) -> new CardItemContainer(windowId, playerInventory, player, handler, itemstack), new TranslatableComponent("")), (buf -> {
             buf.writeItem(itemstack);
+            buf.writeItem(itemstack);
         }));
 
 

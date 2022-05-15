@@ -11,9 +11,6 @@ import com.direwolf20.laserio.common.items.filters.FilterBasic;
 import com.direwolf20.laserio.common.items.filters.FilterCount;
 import com.direwolf20.laserio.setup.Registration;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -38,8 +35,8 @@ public class CardItemContainer extends AbstractContainerMenu {
     public BlockPos sourceContainer = BlockPos.ZERO;
 
     public CardItemContainer(int windowId, Inventory playerInventory, Player player, FriendlyByteBuf extraData) {
-        this(windowId, playerInventory, player, new CardItemHandler(SLOTS, ItemStack.EMPTY), ItemStack.EMPTY);
-        cardItem = extraData.readItem();
+        this(windowId, playerInventory, player, BaseCard.getInventory(extraData.readItem()), extraData.readItem());
+        //cardItem = extraData.readItem();
     }
 
     public CardItemContainer(int windowId, Inventory playerInventory, Player player, CardItemHandler handler, ItemStack cardItem) {
@@ -51,8 +48,8 @@ public class CardItemContainer extends AbstractContainerMenu {
         if (handler != null) {
             addSlotRange(handler, 0, 80, 5, 1, 18);
             addSlotRange(handler, 1, 153, 5, 1, 18);
-            getFilterHandler();
             addSlotBox(filterHandler, 0, 44, 25, 5, 18, 3, 18);
+            //getFilterHandler();
             toggleFilterSlots();
         }
 
@@ -73,21 +70,6 @@ public class CardItemContainer extends AbstractContainerMenu {
         this.sourceContainer = sourcePos;
     }
 
-    public int getStackSize(int slot) {
-        ItemStack filterStack = slots.get(0).getItem();
-        if (slot >= SLOTS && slot < SLOTS + FILTERSLOTS && (slots.get(slot) instanceof FilterBasicSlot) && filterStack.getItem() instanceof FilterCount) {
-            CompoundTag compound = filterStack.getOrCreateTag();
-            ListTag countList = compound.getList("counts", Tag.TAG_COMPOUND);
-            for (int i = 0; i < countList.size(); i++) {
-                CompoundTag countTag = countList.getCompound(i);
-                int tagslot = countTag.getInt("Slot");
-                if (tagslot == slot - SLOTS)
-                    return countTag.getInt("Count");
-            }
-        }
-        return 0;
-    }
-
     public void getFilterHandler() {
         ItemStack filterStack = slots.get(0).getItem(); //BaseCard.getInventory(cardItem).getStackInSlot(0);
         if (filterStack.getItem() instanceof FilterBasic)
@@ -99,6 +81,7 @@ public class CardItemContainer extends AbstractContainerMenu {
     }
 
     public void toggleFilterSlots() {
+        //System.out.println("Toggling");
         getFilterHandler();
         updateFilterSlots(filterHandler, 0, 44, 25, 5, 18, 3, 18);
     }
@@ -108,6 +91,21 @@ public class CardItemContainer extends AbstractContainerMenu {
         if (sourceContainer.equals(BlockPos.ZERO))
             return playerIn.getMainHandItem().equals(cardItem) || playerIn.getOffhandItem().equals(cardItem);
         return true;
+    }
+
+    @Override
+    public void setItem(int slot, int stateID, ItemStack itemStack) {
+        //if (cardItem != null && filterHandler != null && slot >= SLOTS && slot < SLOTS+FILTERSLOTS)
+        //    itemStack = filterHandler.getStackInSlot(slot-2);
+        super.setItem(slot, stateID, itemStack);
+    }
+
+    public int getStackSize(int slot) {
+        ItemStack filterStack = filterHandler.stack;
+        if (slot >= SLOTS && slot < SLOTS + FILTERSLOTS && (slots.get(slot) instanceof FilterBasicSlot) && filterStack.getItem() instanceof FilterCount) {
+            return FilterCount.getSlotCount(filterStack, slot - SLOTS);
+        }
+        return 0;
     }
 
     @Override

@@ -23,7 +23,6 @@ import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.IItemHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,7 +43,6 @@ public class FilterCountScreen extends AbstractContainerScreen<FilterCountContai
 
     @Override
     public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-        updateItemCounts();
         this.renderBackground(matrixStack);
         super.render(matrixStack, mouseX, mouseY, partialTicks);
         this.renderTooltip(matrixStack, mouseX, mouseY);
@@ -121,17 +119,6 @@ public class FilterCountScreen extends AbstractContainerScreen<FilterCountContai
         return super.keyPressed(p_keyPressed_1_, p_keyPressed_2_, p_keyPressed_3_);
     }
 
-    /**
-     * This method updates client side item counts from the IIntArray
-     */
-    public void updateItemCounts() {
-        IItemHandler handler = container.handler;
-        for (int i = 0; i < handler.getSlots(); i++) {
-            ItemStack stack = handler.getStackInSlot(i);
-            stack.setCount(container.getStackSize(i));
-        }
-    }
-
     @Override
     public boolean mouseClicked(double x, double y, int btn) {
         if (hoveredSlot == null || !(hoveredSlot instanceof FilterBasicSlot))
@@ -140,8 +127,8 @@ public class FilterCountScreen extends AbstractContainerScreen<FilterCountContai
         // By splitting the stack we can get air easily :) perfect removal basically
         ItemStack stack = this.menu.getCarried();// getMinecraft().player.inventoryMenu.getCarried();
         if (!stack.isEmpty()) {
-            stack = stack.copy().split(hoveredSlot.getMaxStackSize()); // Limit to slot limit
-            hoveredSlot.set(stack); // Temporarily update the client for continuity purposes
+            //stack = stack.copy().split(hoveredSlot.getMaxStackSize()); // Limit to slot limit
+            //hoveredSlot.set(stack); // Temporarily update the client for continuity purposes
             PacketHandler.sendToServer(new PacketGhostSlot(hoveredSlot.index, stack, stack.getCount()));
         } else {
             ItemStack slotStack = hoveredSlot.getItem();

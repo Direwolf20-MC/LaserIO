@@ -7,7 +7,7 @@ import net.minecraftforge.items.ItemStackHandler;
 import javax.annotation.Nonnull;
 
 public class FilterBasicHandler extends ItemStackHandler {
-    ItemStack stack;
+    public ItemStack stack;
 
     public FilterBasicHandler(int size, ItemStack itemStack) {
         super(size);

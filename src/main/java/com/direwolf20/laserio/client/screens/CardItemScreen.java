@@ -6,7 +6,6 @@ import com.direwolf20.laserio.client.screens.widgets.NumberButton;
 import com.direwolf20.laserio.client.screens.widgets.ToggleButton;
 import com.direwolf20.laserio.common.LaserIO;
 import com.direwolf20.laserio.common.containers.CardItemContainer;
-import com.direwolf20.laserio.common.containers.customhandler.FilterCountHandler;
 import com.direwolf20.laserio.common.containers.customslot.CardItemSlot;
 import com.direwolf20.laserio.common.containers.customslot.FilterBasicSlot;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
@@ -36,6 +35,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.items.IItemHandler;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -79,6 +79,8 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
     public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         this.renderBackground(matrixStack);
         toggleFilterSlots();
+        if (showFilter)
+            updateItemCounts();
         super.render(matrixStack, mouseX, mouseY, partialTicks);
         this.renderTooltip(matrixStack, mouseX, mouseY);
         TranslatableComponent translatableComponents[] = new TranslatableComponent[3];
@@ -124,22 +126,28 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
                     this.renderTooltip(matrixStack, new TranslatableComponent("screen.laserio.nbtfalse"), mouseX, mouseY);
             }
         }
-        /*if (showFilter)
-            updateItemCounts();*/
     }
 
-    /**
-     * This method updates client side item counts from the IIntArray
-     */
     public void updateItemCounts() {
-        if (filter != null && filter.getItem() instanceof FilterCount) {
-            container.getFilterHandler();
+        IItemHandler handler = container.filterHandler;
+        for (int i = 0; i < handler.getSlots(); i++) {
+            ItemStack stack = handler.getStackInSlot(i);
+            stack.setCount(container.getStackSize(i + container.SLOTS));
+        }
+        //container.slots.get(0).setChanged();
+        //container.toggleFilterSlots();
+
+        /*if (filter != null && filter.getItem() instanceof FilterCount) {
+            ItemStack filterCount = BaseCard.getInventory(container.cardItem).getStackInSlot(0);
             FilterCountHandler handler = (FilterCountHandler) container.filterHandler;
+            container.filterHandler = handler;
+            /*FilterCountHandler cardHandler = FilterCount.getInventory(filterCount);
             for (int i = 0; i < handler.getSlots(); i++) {
                 ItemStack stack = handler.getStackInSlot(i);
-                stack.setCount(container.getStackSize(i + container.SLOTS));
-            }
-        }
+                stack.setCount(cardHandler.getStackInSlot(i).getCount());
+                handler.setStackInSlot(i, stack);
+            }*/
+        //}
     }
 
     @Override
@@ -398,7 +406,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
             } else if (filter.getItem() instanceof FilterCount) {
                 ItemStack stack = this.menu.getCarried();// getMinecraft().player.inventoryMenu.getCarried();
                 if (!stack.isEmpty()) {
-                    stack = stack.copy().split(hoveredSlot.getMaxStackSize()); // Limit to slot limit
+                    stack = stack.copy(); // Limit to slot limit
                     hoveredSlot.set(stack); // Temporarily update the client for continuity purposes
                     PacketHandler.sendToServer(new PacketGhostSlot(hoveredSlot.index, stack, stack.getCount()));
                 } else {
@@ -413,9 +421,9 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
                     if (Screen.hasShiftDown()) amt *= 10;
                     if (Screen.hasControlDown()) amt *= 64;
                     if (amt + slotStack.getCount() > 4096) amt = 4096 - slotStack.getCount();
-                    slotStack.grow(amt);
+                    //slotStack.grow(amt);
 
-                    PacketHandler.sendToServer(new PacketGhostSlot(hoveredSlot.index, slotStack, slotStack.getCount()));
+                    PacketHandler.sendToServer(new PacketGhostSlot(hoveredSlot.index, slotStack, slotStack.getCount() + amt));
                 }
             }
             return true;

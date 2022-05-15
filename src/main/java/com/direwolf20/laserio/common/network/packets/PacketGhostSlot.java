@@ -1,5 +1,7 @@
 package com.direwolf20.laserio.common.network.packets;
 
+import com.direwolf20.laserio.common.containers.CardItemContainer;
+import com.direwolf20.laserio.common.containers.customhandler.FilterCountHandler;
 import com.direwolf20.laserio.common.containers.customslot.FilterBasicSlot;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
@@ -42,11 +44,18 @@ public class PacketGhostSlot {
                 if (container == null)
                     return;
 
-                Slot slot = container.slots.get(msg.slotNumber);
-                ItemStack stack = msg.stack;
-                stack.setCount(msg.count);
-                if (slot instanceof FilterBasicSlot)
-                    slot.set(stack);
+                if (container instanceof CardItemContainer) {
+                    ItemStack stack = msg.stack;
+                    stack.setCount(msg.count);
+                    FilterCountHandler handler = (FilterCountHandler) ((CardItemContainer) container).filterHandler;
+                    handler.setStackInSlot(msg.slotNumber - CardItemContainer.SLOTS, stack, msg.count);
+                } else {
+                    Slot slot = container.slots.get(msg.slotNumber);
+                    ItemStack stack = msg.stack;
+                    stack.setCount(msg.count);
+                    if (slot instanceof FilterBasicSlot)
+                        slot.set(stack);
+                }
             });
 
             ctx.get().setPacketHandled(true);
