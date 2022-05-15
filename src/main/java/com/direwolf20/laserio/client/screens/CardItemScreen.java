@@ -201,7 +201,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
         ResourceLocation[] modeTextures = new ResourceLocation[3];
         modeTextures[0] = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/modeinserter.png");
         modeTextures[1] = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/modeextractor.png");
-        modeTextures[2] = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/modeprovider.png");
+        modeTextures[2] = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/modestocker.png");
 
         buttons.put("mode", new ToggleButton(getGuiLeft() + 5, getGuiTop() + 5, 16, 16, modeTextures, currentMode, (button) -> {
             currentMode = BaseCard.nextTransferMode(card);

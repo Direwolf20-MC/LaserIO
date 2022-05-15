@@ -11,6 +11,12 @@
         "laserio:mode": 1
       },
       "model": "laserio:item/card_item_extract"
+    },
+    {
+      "predicate": {
+        "laserio:mode": 2
+      },
+      "model": "laserio:item/card_item_stock"
     }
   ]
 }
