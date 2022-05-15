@@ -48,7 +48,7 @@ public class PacketGhostSlot {
                     ItemStack stack = msg.stack;
                     stack.setCount(msg.count);
                     FilterCountHandler handler = (FilterCountHandler) ((CardItemContainer) container).filterHandler;
-                    handler.setStackInSlot(msg.slotNumber - CardItemContainer.SLOTS, stack, msg.count);
+                    handler.setStackInSlotSave(msg.slotNumber - CardItemContainer.SLOTS, stack);
                 } else {
                     Slot slot = container.slots.get(msg.slotNumber);
                     ItemStack stack = msg.stack;

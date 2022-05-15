@@ -14,7 +14,6 @@ import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.network.NetworkHooks;
 
 public class FilterCount extends BaseFilter {
@@ -40,8 +39,6 @@ public class FilterCount extends BaseFilter {
 
     public static int getSlotCount(ItemStack stack, int getSlot) {
         CompoundTag compound = stack.getOrCreateTag();
-        //FilterCountHandler handler = new FilterCountHandler(FilterCountContainer.SLOTS, stack);
-        //handler.deserializeNBT(compound.getCompound("inv"));
         /**Special handling for slots with > 127 items in them**/
         ListTag countList = compound.getList("counts", Tag.TAG_COMPOUND);
         for (int i = 0; i < countList.size(); i++) {
@@ -55,8 +52,6 @@ public class FilterCount extends BaseFilter {
 
     public static void setSlotCount(ItemStack stack, int getSlot, int setCount) {
         CompoundTag compound = stack.getOrCreateTag();
-        //FilterCountHandler handler = new FilterCountHandler(FilterCountContainer.SLOTS, stack);
-        //handler.deserializeNBT(compound.getCompound("inv"));
         /**Special handling for slots with > 127 items in them**/
         ListTag countList = compound.getList("counts", Tag.TAG_COMPOUND);
         for (int i = 0; i < countList.size(); i++) {
@@ -65,41 +60,6 @@ public class FilterCount extends BaseFilter {
             if (slot == getSlot)
                 countTag.putInt("Count", setCount);
         }
-    }
-
-    public static ItemStack getStackInSlot(ItemStack stack, int getSlot) {
-        CompoundTag compound = stack.getOrCreateTag();
-        CompoundTag inv = compound.getCompound("inv");
-        ListTag countList = inv.getList("Items", Tag.TAG_COMPOUND);
-        System.out.println(countList);
-        /**Special handling for slots with > 127 items in them**/
-        /*ListTag countList = compound.getList("counts", Tag.TAG_COMPOUND);
-        for (int i = 0; i < countList.size(); i++) {
-            CompoundTag countTag = countList.getCompound(i);
-            int slot = countTag.getInt("Slot");
-            ItemStack itemStack = handler.getStackInSlot(slot);
-            itemStack.setCount(countTag.getInt("Count"));
-            handler.setStackInSlot(slot, itemStack);
-        }*/
-        return ItemStack.EMPTY;
-    }
-
-    public static void setStackInSlot(ItemStack filterStack, ItemStack itemStack, int setSlot) {
-        CompoundTag compound = filterStack.getOrCreateTag();
-        ItemStackHandler handler = new ItemStackHandler(FilterCountContainer.SLOTS);
-        handler.deserializeNBT(compound.getCompound("inv"));
-        handler.setStackInSlot(setSlot, itemStack);
-        /**Special handling for slots with > 127 items in them**/
-        ListTag countList = compound.getList("counts", Tag.TAG_COMPOUND);
-        for (int i = 0; i < countList.size(); i++) {
-            CompoundTag countTag = countList.getCompound(i);
-            int slot = countTag.getInt("Slot");
-            if (slot == setSlot) {
-                countTag.putInt("Count", itemStack.getCount());
-                break;
-            }
-        }
-        filterStack.getOrCreateTag().put("counts", countList);
     }
 
     public static FilterCountHandler getInventory(ItemStack stack) {
