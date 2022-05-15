@@ -194,6 +194,8 @@ dependencies {
 
     //Spark
     runtimeOnly fg.deobf("curse.maven:spark-361579:3767286")
+
+    runtimeOnly fg.deobf("curse.maven:refined-storage-243076:3712882")
     //runtimeOnly fg.deobf("curse.maven:shetiphiancore-71738:3765383")
     //runtimeOnly fg.deobf("curse.maven:enderchests-363535:3765400")
 
