@@ -145,6 +145,11 @@ repositories {
     // flatDir {
     //     dir 'libs'
     // }
+
+    flatDir {
+        dirs 'includedMods/'
+    }
+
     maven { // JEI
         url "https://dvs1.progwml6.com/files/maven"
     }
@@ -182,10 +187,16 @@ dependencies {
     //runtimeOnly fg.deobf("curse.maven:mouse-tweaks-60089:3578801")
 
     //Trash Cans
-    //runtimeOnly fg.deobf("curse.maven:supermartijn642s-core-lib-454372:3773952") // already on the forge maven
+    //runtimeOnly fg.deobf("ignored:supermartijn642corelib:1.0.18") // already on the forge maven
     //runtimeOnly fg.deobf("curse.maven:trash-cans-394535:3773710") // already on the forge maven
     //TOP
     //implementation fg.deobf("curse.maven:the-one-probe-245211:3550084")
+
+    //Spark
+    runtimeOnly fg.deobf("curse.maven:spark-361579:3767286")
+    //runtimeOnly fg.deobf("curse.maven:shetiphiancore-71738:3765383")
+    //runtimeOnly fg.deobf("curse.maven:enderchests-363535:3765400")
+
     // For more info...
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
