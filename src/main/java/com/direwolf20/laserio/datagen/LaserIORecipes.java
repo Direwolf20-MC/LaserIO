@@ -1,5 +1,6 @@
 package com.direwolf20.laserio.datagen;
 
+import com.direwolf20.laserio.datagen.customrecipes.CardClearRecipeBuilder;
 import com.direwolf20.laserio.setup.Registration;
 import net.minecraft.advancements.critereon.InventoryChangeTrigger;
 import net.minecraft.advancements.critereon.ItemPredicate;
@@ -134,7 +135,7 @@ public class LaserIORecipes extends RecipeProvider {
                 .save(consumer);
 
         //NBT Clearing Recipes
-        ShapelessRecipeBuilder.shapeless(Registration.Card_Item.get())
+        CardClearRecipeBuilder.shapeless(Registration.Card_Item.get())
                 .requires(Registration.Card_Item.get())
                 .group("laserio")
                 .unlockedBy("has_card_item", InventoryChangeTrigger.TriggerInstance.hasItems(Registration.Card_Item.get()))

@@ -8,6 +8,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.Direction;
+import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -124,19 +125,20 @@ public class BaseCard extends Item {
         return new InteractionResultHolder<>(InteractionResult.PASS, itemstack);
     }
 
-    @Override
     /**
      * ItemStack sensitive version of getContainerItem. Returns a full ItemStack
      * instance of the result.
+     * Custom Implementation by Dire: get multiples
      *
      * @param itemStack The current ItemStack
      * @return The resulting ItemStack
      */
-    public ItemStack getContainerItem(ItemStack itemStack) {
-        if (!hasContainerItem(itemStack)) {
-            return ItemStack.EMPTY;
-        }
-        return getInventory(itemStack).getStackInSlot(0);
+    public NonNullList<ItemStack> getContainerItems(ItemStack itemStack) {
+        NonNullList<ItemStack> nonnulllist = NonNullList.withSize(2, ItemStack.EMPTY);
+        nonnulllist.set(0, getInventory(itemStack).getStackInSlot(0));
+        nonnulllist.set(1, getInventory(itemStack).getStackInSlot(1));
+
+        return nonnulllist;
     }
 
     /**
@@ -147,7 +149,7 @@ public class BaseCard extends Item {
      */
     @Override
     public boolean hasContainerItem(ItemStack stack) {
-        return !getInventory(stack).getStackInSlot(0).equals(ItemStack.EMPTY);
+        return !(getInventory(stack).getStackInSlot(0).equals(ItemStack.EMPTY) && getInventory(stack).getStackInSlot(1).equals(ItemStack.EMPTY));
     }
 
     public static CardItemHandler getInventory(ItemStack stack) {
