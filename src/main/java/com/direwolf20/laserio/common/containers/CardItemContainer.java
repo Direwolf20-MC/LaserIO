@@ -35,14 +35,13 @@ public class CardItemContainer extends AbstractContainerMenu {
     public BlockPos sourceContainer = BlockPos.ZERO;
 
     public CardItemContainer(int windowId, Inventory playerInventory, Player player, FriendlyByteBuf extraData) {
-        this(windowId, playerInventory, player, BaseCard.getInventory(extraData.readItem()), extraData.readItem());
-        //cardItem = extraData.readItem();
+        this(windowId, playerInventory, player, extraData.readItem());
     }
 
-    public CardItemContainer(int windowId, Inventory playerInventory, Player player, CardItemHandler handler, ItemStack cardItem) {
+    public CardItemContainer(int windowId, Inventory playerInventory, Player player, ItemStack cardItem) {
         super(Registration.CardItem_Container.get(), windowId);
         playerEntity = player;
-        this.handler = handler;
+        this.handler = BaseCard.getInventory(cardItem);
         this.playerInventory = new InvWrapper(playerInventory);
         this.cardItem = cardItem;
         if (handler != null) {
@@ -65,8 +64,8 @@ public class CardItemContainer extends AbstractContainerMenu {
         super.clicked(slotId, dragType, clickTypeIn, player);
     }
 
-    public CardItemContainer(int windowId, Inventory playerInventory, Player player, CardItemHandler handler, BlockPos sourcePos, ItemStack cardItem) {
-        this(windowId, playerInventory, player, handler, cardItem);
+    public CardItemContainer(int windowId, Inventory playerInventory, Player player, BlockPos sourcePos, ItemStack cardItem) {
+        this(windowId, playerInventory, player, cardItem);
         this.sourceContainer = sourcePos;
     }
 

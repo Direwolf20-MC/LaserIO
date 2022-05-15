@@ -60,7 +60,7 @@ public class PacketOpenCard {
                 if (itemStack.getItem() instanceof CardItem) {
                     if (!msg.hasShiftDown) {
                         NetworkHooks.openGui(sender, new SimpleMenuProvider(
-                                (windowId, playerInventory, playerEntity) -> new CardItemContainer(windowId, playerInventory, sender, handler, msg.sourcePos, itemStack), new TranslatableComponent("")), (buf -> {
+                                (windowId, playerInventory, playerEntity) -> new CardItemContainer(windowId, playerInventory, sender, msg.sourcePos, itemStack), new TranslatableComponent("")), (buf -> {
                             buf.writeItem(itemStack);
                         }));
                     } else {
