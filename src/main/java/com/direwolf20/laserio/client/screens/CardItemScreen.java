@@ -250,8 +250,14 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
         showFilter = !filter.isEmpty() && !(filter.getItem() instanceof FilterTag);
         if (showFilter) { //If the filter isn't empty, and the allowList is set to -1, it means we don't have a real value for allow list yet so get it
             if (filter.getItem() instanceof FilterBasic) {
-                showAllow = true;
                 showNBT = true;
+                if (currentMode == 2) {
+                    showAllow = false;
+                    removeWidget(buttons.get("allowList"));
+                } else {
+                    showAllow = true;
+                    if (!renderables.contains(buttons.get("allowList"))) addRenderableWidget(buttons.get("allowList"));
+                }
             } else if (filter.getItem() instanceof FilterCount) {
                 showAllow = false;
                 showNBT = true;
