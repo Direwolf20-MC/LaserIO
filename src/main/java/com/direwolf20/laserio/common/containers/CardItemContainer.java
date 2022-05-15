@@ -96,7 +96,7 @@ public class CardItemContainer extends AbstractContainerMenu {
         if (slot >= SLOTS && slot < SLOTS + FILTERSLOTS && (slots.get(slot) instanceof FilterBasicSlot) && filterStack.getItem() instanceof FilterCount) {
             return FilterCount.getSlotCount(filterStack, slot - SLOTS);
         }
-        return 0;
+        return filterHandler.getStackInSlot(slot - SLOTS).getCount();
     }
 
     @Override

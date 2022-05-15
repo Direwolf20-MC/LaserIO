@@ -4,6 +4,7 @@ import com.direwolf20.laserio.common.containers.CardItemContainer;
 import com.direwolf20.laserio.common.containers.FilterCountContainer;
 import com.direwolf20.laserio.common.containers.customhandler.FilterCountHandler;
 import com.direwolf20.laserio.common.containers.customslot.FilterBasicSlot;
+import com.direwolf20.laserio.common.items.filters.FilterCount;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -45,7 +46,9 @@ public class PacketGhostSlot {
                 if (container == null)
                     return;
 
-                if (container instanceof CardItemContainer) {
+                ItemStack filterStack = container.slots.get(0).getItem();
+
+                if (container instanceof CardItemContainer && filterStack.getItem() instanceof FilterCount) {
                     ItemStack stack = msg.stack;
                     stack.setCount(msg.count);
                     FilterCountHandler handler = (FilterCountHandler) ((CardItemContainer) container).filterHandler;
