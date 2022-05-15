@@ -14,7 +14,6 @@ import com.direwolf20.laserio.common.items.upgrades.OverclockerNode;
 import com.direwolf20.laserio.setup.Registration;
 import com.direwolf20.laserio.util.*;
 import com.mojang.math.Vector3f;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -79,7 +78,6 @@ public class LaserNodeBE extends BaseLaserBE {
 
     private final Map<StockerCardCache, StockerSource> stockerDestinationCache = new HashMap<>();
     private final Map<StockerRequest, StockerSource> stockerCountDestinationCache = new HashMap<>();
-    private final Map<StockerCardCache, Integer> stockerSleepers = new Object2IntOpenHashMap<>();
 
     /** Misc Variables **/
     private boolean discoveredNodes = false; //The first time this block entity loads, it'll run discovery to refresh itself
@@ -155,24 +153,18 @@ public class LaserNodeBE extends BaseLaserBE {
             NodeSideCache nodeSideCache = nodeSideCaches[direction.ordinal()];
             int countCardsHandled = 0;
             for (ExtractorCardCache extractorCardCache : nodeSideCache.extractorCardCaches) {
-                if (countCardsHandled > nodeSideCache.overClocker) return;
-                if (sendItems(extractorCardCache))
-                    countCardsHandled++;
+                if (extractorCardCache.decrementSleep() == 0) {
+                    if (countCardsHandled > nodeSideCache.overClocker) return;
+                    if (sendItems(extractorCardCache))
+                        countCardsHandled++;
+                }
             }
             for (StockerCardCache stockerCardCache : nodeSideCache.stockerCardCaches) {
-                if (stockerSleepers.containsKey(stockerCardCache)) {
-                    int sleepRemaining = stockerSleepers.get(stockerCardCache);
-                    //System.out.println("Stock card at " + this.getBlockPos() + " in slot " + stockerCardCache.cardSlot + " has " + sleepRemaining + " sleep time remaining, decrementing by 1 - worldtime: " + level.getGameTime());
-                    sleepRemaining--;
-                    if (sleepRemaining == 1)
-                        stockerSleepers.remove(stockerCardCache);
-                    else
-                        stockerSleepers.put(stockerCardCache, sleepRemaining);
-                    continue;
+                if (stockerCardCache.decrementSleep() == 0) {
+                    if (countCardsHandled > nodeSideCache.overClocker) return;
+                    if (stockItems(stockerCardCache))
+                        countCardsHandled++;
                 }
-                if (countCardsHandled > nodeSideCache.overClocker) return;
-                if (stockItems(stockerCardCache))
-                    countCardsHandled++;
             }
         }
     }
@@ -318,7 +310,7 @@ public class LaserNodeBE extends BaseLaserBE {
 
             //If we get to this line of code, it means we found none of the filter
             //System.out.println("Stock card at " + this.getBlockPos() + " in slot " + stockerCardCache.cardSlot + " has found nothing. Adding to sleeper list with 40 ticks at gametime: " + level.getGameTime());
-            stockerSleepers.put(stockerCardCache, 40);
+            stockerCardCache.setRemainingSleep(stockerCardCache.tickSpeed * 10);
         } else if (filter.getItem() instanceof FilterTag) {
 
         }

@@ -16,13 +16,15 @@ public class PacketUpdateCard {
     byte extractAmt;
     short priority;
     byte sneaky;
+    short ticks;
 
-    public PacketUpdateCard(byte mode, byte channel, byte extractAmt, short priority, byte sneaky) {
+    public PacketUpdateCard(byte mode, byte channel, byte extractAmt, short priority, byte sneaky, short ticks) {
         this.mode = mode;
         this.channel = channel;
         this.extractAmt = extractAmt;
         this.priority = priority;
         this.sneaky = sneaky;
+        this.ticks = ticks;
     }
 
     public static void encode(PacketUpdateCard msg, FriendlyByteBuf buffer) {
@@ -31,10 +33,11 @@ public class PacketUpdateCard {
         buffer.writeByte(msg.extractAmt);
         buffer.writeShort(msg.priority);
         buffer.writeByte(msg.sneaky);
+        buffer.writeShort(msg.ticks);
     }
 
     public static PacketUpdateCard decode(FriendlyByteBuf buffer) {
-        return new PacketUpdateCard(buffer.readByte(), buffer.readByte(), buffer.readByte(), buffer.readShort(), buffer.readByte());
+        return new PacketUpdateCard(buffer.readByte(), buffer.readByte(), buffer.readByte(), buffer.readShort(), buffer.readByte(), buffer.readShort());
     }
 
     public static class Handler {
@@ -53,12 +56,17 @@ public class PacketUpdateCard {
                     BaseCard.setTransferMode(stack, msg.mode);
                     BaseCard.setChannel(stack, msg.channel);
                     byte extractAmt = msg.extractAmt;
-                    if (extractAmt > Math.max(container.getSlot(1).getItem().getCount() * 16, 1)) {
-                        extractAmt = (byte) Math.max(container.getSlot(1).getItem().getCount() * 16, 1);
+                    int overClockerCount = container.getSlot(1).getItem().getCount();
+                    if (extractAmt > Math.max(overClockerCount * 16, 8)) {
+                        extractAmt = (byte) Math.max(overClockerCount * 16, 8);
                     }
                     BaseCard.setItemExtractAmt(stack, extractAmt);
                     BaseCard.setPriority(stack, msg.priority);
                     BaseCard.setSneaky(stack, msg.sneaky);
+                    short ticks = msg.ticks;
+                    if (ticks < Math.max(20 - overClockerCount * 5, 1))
+                        ticks = (short) Math.max(20 - overClockerCount * 5, 1);
+                    BaseCard.setItemExtractSpeed(stack, ticks);
                 }
             });
 

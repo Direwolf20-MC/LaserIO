@@ -215,6 +215,16 @@ public class BaseCard extends Item {
         return !compound.contains("itemextractamt") ? setItemExtractAmt(card, (byte) 1) : compound.getByte("itemextractamt");
     }
 
+    public static int setItemExtractSpeed(ItemStack card, int itemextractspeed) {
+        card.getOrCreateTag().putInt("itemextractspeed", itemextractspeed);
+        return itemextractspeed;
+    }
+
+    public static int getItemExtractSpeed(ItemStack card) {
+        CompoundTag compound = card.getOrCreateTag();
+        return !compound.contains("itemextractspeed") ? setItemExtractSpeed(card, 20) : compound.getInt("itemextractspeed");
+    }
+
     public static short setPriority(ItemStack card, short priority) {
         card.getOrCreateTag().putShort("priority", priority);
         return priority;

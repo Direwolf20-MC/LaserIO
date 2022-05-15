@@ -49,6 +49,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
     private byte currentItemExtractAmt;
     private short currentPriority;
     private byte currentSneaky;
+    private int currentTicks;
     private int isAllowList = -1;
     private int isCompareNBT = -1;
     private boolean showFilter;
@@ -108,6 +109,12 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
                 this.renderTooltip(matrixStack, new TranslatableComponent("screen.laserio.priority"), mouseX, mouseY);
             }
         }
+        Button speedButton = buttons.get("speed");
+        if (MiscTools.inBounds(speedButton.x, speedButton.y, speedButton.getWidth(), speedButton.getHeight(), mouseX, mouseY)) {
+            if (showExtractAmt()) {
+                this.renderTooltip(matrixStack, new TranslatableComponent("screen.laserio.tickSpeed"), mouseX, mouseY);
+            }
+        }
         if (showAllow) {
             Button allowList = buttons.get("allowList");
             if (MiscTools.inBounds(allowList.x, allowList.y, allowList.getWidth(), allowList.getHeight(), mouseX, mouseY)) {
@@ -147,6 +154,8 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
         currentItemExtractAmt = BaseCard.getItemExtractAmt(card);
         currentPriority = BaseCard.getPriority(card);
         currentSneaky = BaseCard.getSneaky(card);
+        currentTicks = BaseCard.getItemExtractSpeed(card);
+
         showFilter = !(filter == null) && !filter.isEmpty() && !(filter.getItem() instanceof FilterTag);
         if (showFilter) {
             isAllowList = BaseFilter.getAllowList(filter) ? 1 : 0;
@@ -185,6 +194,10 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
             changeAmount(-1);
         }));
 
+        buttons.put("speed", new NumberButton(getGuiLeft() + 7, getGuiTop() + 51, 24, 12, currentTicks, (button) -> {
+            changeTick(-1);
+        }));
+
         ResourceLocation[] modeTextures = new ResourceLocation[3];
         modeTextures[0] = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/modeinserter.png");
         modeTextures[1] = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/modeextractor.png");
@@ -194,6 +207,13 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
             currentMode = BaseCard.nextTransferMode(card);
             ((ToggleButton) button).setTexturePosition(currentMode);
             ((NumberButton) buttons.get("amount")).setValue(currentMode == 0 ? currentPriority : currentItemExtractAmt);
+            Button speedButton = buttons.get("speed");
+            if (currentMode == 0) { //insert
+                renderables.remove(speedButton);
+            } else {
+                if (!renderables.contains(speedButton))
+                    addRenderableWidget(speedButton);
+            }
         }));
 
         buttons.put("channel", new ChannelButton(getGuiLeft() + 5, getGuiTop() + 25, 16, 16, currentChannel, (button) -> {
@@ -219,29 +239,34 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
         }
         if (!showNBT) removeWidget(buttons.get("nbt"));
         if (!showAllow) removeWidget(buttons.get("allowList"));
+        if (currentMode == 0) removeWidget(buttons.get("speed"));
     }
 
     public void changeAmount(int change) {
+        if (Screen.hasShiftDown()) change *= 10;
+        if (Screen.hasControlDown()) change *= 64;
         if (change < 0) {
             if (currentMode == 0) {
-                if (Screen.hasShiftDown()) change *= 10;
-                if (Screen.hasControlDown()) change *= 64;
                 currentPriority = (short) (Math.max(currentPriority + change, -4096));
             } else {
-                if (Screen.hasShiftDown()) change *= 10;
-                if (Screen.hasControlDown()) change *= 64;
                 currentItemExtractAmt = (byte) (Math.max(currentItemExtractAmt + change, 1));
             }
         } else {
             if (currentMode == 0) {
-                if (Screen.hasShiftDown()) change *= 10;
-                if (Screen.hasControlDown()) change *= 64;
                 currentPriority = (short) (Math.min(currentPriority + change, 4096));
             } else {
-                if (Screen.hasShiftDown()) change *= 10;
-                if (Screen.hasControlDown()) change *= 64;
-                currentItemExtractAmt = (byte) (Math.min(currentItemExtractAmt + change, Math.max(container.getSlot(1).getItem().getCount() * 16, 1)));
+                currentItemExtractAmt = (byte) (Math.min(currentItemExtractAmt + change, Math.max(container.getSlot(1).getItem().getCount() * 16, 8)));
             }
+        }
+    }
+
+    public void changeTick(int change) {
+        if (Screen.hasShiftDown()) change *= 10;
+        if (Screen.hasControlDown()) change *= 64;
+        if (change < 0) {
+            currentTicks = (Math.max(currentTicks + change, Math.max(20 - container.getSlot(1).getItem().getCount() * 5, 1)));
+        } else {
+            currentTicks = (Math.min(currentTicks + change, 1200));//Math.max(container.getSlot(1).getItem().getCount() * 16, 1)));
         }
     }
 
@@ -333,7 +358,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
     public void onClose() {
         if (showFilter)
             PacketHandler.sendToServer(new PacketUpdateFilter(isAllowList == 1, isCompareNBT == 1));
-        PacketHandler.sendToServer(new PacketUpdateCard(currentMode, currentChannel, currentItemExtractAmt, currentPriority, currentSneaky));
+        PacketHandler.sendToServer(new PacketUpdateCard(currentMode, currentChannel, currentItemExtractAmt, currentPriority, currentSneaky, (short) currentTicks));
         super.onClose();
     }
 
@@ -385,6 +410,17 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
             amountButton.playDownSound(Minecraft.getInstance().getSoundManager());
             return true;
         }
+
+        NumberButton speedButton = ((NumberButton) buttons.get("speed"));
+        if (MiscTools.inBounds(speedButton.x, speedButton.y, speedButton.getWidth(), speedButton.getHeight(), x, y)) {
+            if (btn == 0)
+                changeTick(1);
+            else if (btn == 1)
+                changeTick(-1);
+            speedButton.setValue(currentTicks);
+            speedButton.playDownSound(Minecraft.getInstance().getSoundManager());
+            return true;
+        }
         if (hoveredSlot == null)
             return super.mouseClicked(x, y, btn);
 
@@ -426,7 +462,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
                     PacketHandler.sendToServer(new PacketUpdateFilter(isAllowList == 1, isCompareNBT == 1));
             } else if (btn == 1) {
                 int slot = hoveredSlot.getSlotIndex();
-                PacketHandler.sendToServer(new PacketUpdateCard(currentMode, currentChannel, currentItemExtractAmt, currentPriority, currentSneaky));
+                PacketHandler.sendToServer(new PacketUpdateCard(currentMode, currentChannel, currentItemExtractAmt, currentPriority, currentSneaky, (short) currentTicks));
                 PacketHandler.sendToServer(new PacketOpenFilter(slot));
                 return true;
             }

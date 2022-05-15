@@ -40,7 +40,7 @@
   "screen.laserio.down": "Down",
   "screen.laserio.east": "East",
   "screen.laserio.extract": "Extract",
-  "screen.laserio.extractamt": "Transfer Speed",
+  "screen.laserio.extractamt": "Transfer Amount",
   "screen.laserio.insert": "Insert",
   "screen.laserio.lasernode": "Laser Node",
   "screen.laserio.nbtfalse": "Ignore NBT",
@@ -49,6 +49,7 @@
   "screen.laserio.priority": "Priority",
   "screen.laserio.south": "South",
   "screen.laserio.stock": "Stock",
+  "screen.laserio.tickSpeed": "Transfer Speed (Ticks)",
   "screen.laserio.up": "Up",
   "screen.laserio.west": "West"
 }
