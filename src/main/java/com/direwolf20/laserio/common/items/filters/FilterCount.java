@@ -12,7 +12,6 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.network.NetworkHooks;
@@ -27,36 +26,38 @@ public class FilterCount extends BaseFilter {
         ItemStack itemstack = player.getItemInHand(hand);
         if (level.isClientSide()) return new InteractionResultHolder<>(InteractionResult.PASS, itemstack);
 
-        FilterCountHandler handler = getInventory(itemstack);
-
-        ContainerData slotCounts = new ContainerData() {
-            @Override
-            public int get(int index) {
-                if (index < 15)
-                    return getInventory(itemstack).getStackInSlot(index).getCount();
-                else
-                    throw new IllegalArgumentException("Invalid index: " + index);
-            }
-
-            @Override
-            public void set(int index, int value) {
-                throw new IllegalStateException("Cannot set values through IIntArray");
-            }
-
-            @Override
-            public int getCount() {
-                return 15;
-            }
-        };
-
-
         NetworkHooks.openGui((ServerPlayer) player, new SimpleMenuProvider(
-                (windowId, playerInventory, playerEntity) -> new FilterCountContainer(windowId, playerInventory, player, handler, itemstack, slotCounts), new TranslatableComponent("")), (buf -> {
+                (windowId, playerInventory, playerEntity) -> new FilterCountContainer(windowId, playerInventory, player, itemstack), new TranslatableComponent("")), (buf -> {
             buf.writeItem(itemstack);
             buf.writeItem(ItemStack.EMPTY);
         }));
 
         return new InteractionResultHolder<>(InteractionResult.PASS, itemstack);
+    }
+
+    public static int getSlotCount(ItemStack stack, int getSlot) {
+        CompoundTag compound = stack.getOrCreateTag();
+        /**Special handling for slots with > 127 items in them**/
+        ListTag countList = compound.getList("counts", Tag.TAG_COMPOUND);
+        for (int i = 0; i < countList.size(); i++) {
+            CompoundTag countTag = countList.getCompound(i);
+            int slot = countTag.getInt("Slot");
+            if (slot == getSlot)
+                return countTag.getInt("Count");
+        }
+        return 0;
+    }
+
+    public static void setSlotCount(ItemStack stack, int getSlot, int setCount) {
+        CompoundTag compound = stack.getOrCreateTag();
+        /**Special handling for slots with > 127 items in them**/
+        ListTag countList = compound.getList("counts", Tag.TAG_COMPOUND);
+        for (int i = 0; i < countList.size(); i++) {
+            CompoundTag countTag = countList.getCompound(i);
+            int slot = countTag.getInt("Slot");
+            if (slot == getSlot)
+                countTag.putInt("Count", setCount);
+        }
     }
 
     public static FilterCountHandler getInventory(ItemStack stack) {
@@ -82,11 +83,9 @@ public class FilterCount extends BaseFilter {
         for (int i = 0; i < handler.getSlots(); i++) {
             CompoundTag countTag = new CompoundTag();
             ItemStack itemStack = handler.getStackInSlot(i);
-            if (itemStack.getCount() > itemStack.getMaxStackSize()) {
-                countTag.putInt("Slot", i);
-                countTag.putInt("Count", itemStack.getCount());
-                countList.add(countTag);
-            }
+            countTag.putInt("Slot", i);
+            countTag.putInt("Count", itemStack.getCount());
+            countList.add(countTag);
         }
         stack.getOrCreateTag().put("counts", countList);
         return handler;

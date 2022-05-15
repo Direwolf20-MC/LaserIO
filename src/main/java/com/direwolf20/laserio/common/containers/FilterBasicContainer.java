@@ -93,7 +93,7 @@ public class FilterBasicContainer extends AbstractContainerMenu {
     private int addSlotRange(IItemHandler handler, int index, int x, int y, int amount, int dx) {
         for (int i = 0; i < amount; i++) {
             if (handler instanceof FilterBasicHandler)
-                addSlot(new FilterBasicSlot(handler, index, x, y));
+                addSlot(new FilterBasicSlot(handler, index, x, y, false));
             else
                 addSlot(new SlotItemHandler(handler, index, x, y));
             x += dx;

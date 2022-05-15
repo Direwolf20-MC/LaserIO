@@ -7,7 +7,7 @@ import net.minecraftforge.items.ItemStackHandler;
 import javax.annotation.Nonnull;
 
 public class FilterBasicHandler extends ItemStackHandler {
-    ItemStack stack;
+    public ItemStack stack;
 
     public FilterBasicHandler(int size, ItemStack itemStack) {
         super(size);
@@ -16,7 +16,8 @@ public class FilterBasicHandler extends ItemStackHandler {
 
     @Override
     protected void onContentsChanged(int slot) {
-        FilterBasic.setInventory(stack, this);
+        if (!stack.equals(ItemStack.EMPTY))
+            FilterBasic.setInventory(stack, this);
     }
 
     @Override
