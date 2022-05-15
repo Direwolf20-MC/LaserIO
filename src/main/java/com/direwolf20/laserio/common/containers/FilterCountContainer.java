@@ -91,9 +91,7 @@ public class FilterCountContainer extends AbstractContainerMenu {
                 if (!this.moveItemStackTo(currentStack, 0, SLOTS, false)) {
                     return ItemStack.EMPTY;
                 }
-                System.out.println(itemstack);
                 handler.syncSlots();
-                System.out.println(itemstack);
             }
         }
 
