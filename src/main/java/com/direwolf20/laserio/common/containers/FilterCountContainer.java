@@ -5,6 +5,7 @@ import com.direwolf20.laserio.common.containers.customhandler.CardItemHandler;
 import com.direwolf20.laserio.common.containers.customhandler.FilterCountHandler;
 import com.direwolf20.laserio.common.containers.customslot.FilterBasicSlot;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
+import com.direwolf20.laserio.common.items.filters.FilterCount;
 import com.direwolf20.laserio.setup.Registration;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
@@ -30,15 +31,14 @@ public class FilterCountContainer extends AbstractContainerMenu {
     public BlockPos sourceContainer = BlockPos.ZERO;
 
     public FilterCountContainer(int windowId, Inventory playerInventory, Player player, FriendlyByteBuf extraData) {
-        this(windowId, playerInventory, player, new FilterCountHandler(SLOTS, ItemStack.EMPTY), ItemStack.EMPTY);
-        filterItem = extraData.readItem();
+        this(windowId, playerInventory, player, extraData.readItem());
         this.sourceCard = extraData.readItem();
     }
 
-    public FilterCountContainer(int windowId, Inventory playerInventory, Player player, FilterCountHandler handler, ItemStack filterItem) {
+    public FilterCountContainer(int windowId, Inventory playerInventory, Player player, ItemStack filterItem) {
         super(Registration.FilterCount_Container.get(), windowId);
         playerEntity = player;
-        this.handler = handler;
+        this.handler = FilterCount.getInventory(filterItem);
         this.playerInventory = new InvWrapper(playerInventory);
         this.filterItem = filterItem;
         if (handler != null)
@@ -47,8 +47,8 @@ public class FilterCountContainer extends AbstractContainerMenu {
         layoutPlayerInventorySlots(8, 84);
     }
 
-    public FilterCountContainer(int windowId, Inventory playerInventory, Player player, FilterCountHandler handler, BlockPos sourcePos, ItemStack filterItem, ItemStack sourceCard) {
-        this(windowId, playerInventory, player, handler, filterItem);
+    public FilterCountContainer(int windowId, Inventory playerInventory, Player player, BlockPos sourcePos, ItemStack filterItem, ItemStack sourceCard) {
+        this(windowId, playerInventory, player, filterItem);
         this.sourceContainer = sourcePos;
         this.sourceCard = sourceCard;
     }
@@ -62,11 +62,12 @@ public class FilterCountContainer extends AbstractContainerMenu {
         super.clicked(slotId, dragType, clickTypeIn, player);
     }
 
-    @Override
-    public void setItem(int slot, int stateID, ItemStack itemStack) {
-        if (slot >= 0 && slot < SLOTS)
-            itemStack = handler.getStackInSlot(slot);
-        super.setItem(slot, stateID, itemStack);
+    public int getStackSize(int slot) {
+        ItemStack filterStack = handler.stack;
+        if (slot >= 0 && slot < SLOTS && (slots.get(slot) instanceof FilterBasicSlot)) {
+            return FilterCount.getSlotCount(filterStack, slot);
+        }
+        return 0;
     }
 
     @Override

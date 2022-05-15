@@ -26,10 +26,8 @@ public class FilterCount extends BaseFilter {
         ItemStack itemstack = player.getItemInHand(hand);
         if (level.isClientSide()) return new InteractionResultHolder<>(InteractionResult.PASS, itemstack);
 
-        FilterCountHandler handler = getInventory(itemstack);
-
         NetworkHooks.openGui((ServerPlayer) player, new SimpleMenuProvider(
-                (windowId, playerInventory, playerEntity) -> new FilterCountContainer(windowId, playerInventory, player, handler, itemstack), new TranslatableComponent("")), (buf -> {
+                (windowId, playerInventory, playerEntity) -> new FilterCountContainer(windowId, playerInventory, player, itemstack), new TranslatableComponent("")), (buf -> {
             buf.writeItem(itemstack);
             buf.writeItem(ItemStack.EMPTY);
         }));

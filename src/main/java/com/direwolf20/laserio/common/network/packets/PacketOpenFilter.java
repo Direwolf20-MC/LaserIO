@@ -5,7 +5,6 @@ import com.direwolf20.laserio.common.containers.FilterBasicContainer;
 import com.direwolf20.laserio.common.containers.FilterCountContainer;
 import com.direwolf20.laserio.common.containers.FilterTagContainer;
 import com.direwolf20.laserio.common.containers.customhandler.FilterBasicHandler;
-import com.direwolf20.laserio.common.containers.customhandler.FilterCountHandler;
 import com.direwolf20.laserio.common.items.filters.FilterBasic;
 import com.direwolf20.laserio.common.items.filters.FilterCount;
 import com.direwolf20.laserio.common.items.filters.FilterTag;
@@ -49,10 +48,8 @@ public class PacketOpenFilter {
             }));
         }
         if (filterItem.getItem() instanceof FilterCount) {
-            FilterCountHandler handler = FilterCount.getInventory(filterItem);
-
             NetworkHooks.openGui(sender, new SimpleMenuProvider(
-                    (windowId, playerInventory, playerEntity) -> new FilterCountContainer(windowId, playerInventory, sender, handler, sourcePos, filterItem, cardItem), new TranslatableComponent("")), (buf -> {
+                    (windowId, playerInventory, playerEntity) -> new FilterCountContainer(windowId, playerInventory, sender, sourcePos, filterItem, cardItem), new TranslatableComponent("")), (buf -> {
                 buf.writeItem(filterItem);
                 buf.writeItem(cardItem);
             }));

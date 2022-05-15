@@ -23,6 +23,7 @@ import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.items.IItemHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,6 +45,7 @@ public class FilterCountScreen extends AbstractContainerScreen<FilterCountContai
     @Override
     public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         this.renderBackground(matrixStack);
+        updateItemCounts();
         super.render(matrixStack, mouseX, mouseY, partialTicks);
         this.renderTooltip(matrixStack, mouseX, mouseY);
         if (MiscTools.inBounds(getGuiLeft() + 5, getGuiTop() + 25, 16, 16, mouseX, mouseY)) {
@@ -51,6 +53,14 @@ public class FilterCountScreen extends AbstractContainerScreen<FilterCountContai
                 this.renderTooltip(matrixStack, new TranslatableComponent("screen.laserio.nbttrue"), mouseX, mouseY);
             else
                 this.renderTooltip(matrixStack, new TranslatableComponent("screen.laserio.nbtfalse"), mouseX, mouseY);
+        }
+    }
+
+    public void updateItemCounts() {
+        IItemHandler handler = container.handler;
+        for (int i = 0; i < handler.getSlots(); i++) {
+            ItemStack stack = handler.getStackInSlot(i);
+            stack.setCount(container.getStackSize(i));
         }
     }
 
@@ -127,9 +137,10 @@ public class FilterCountScreen extends AbstractContainerScreen<FilterCountContai
         // By splitting the stack we can get air easily :) perfect removal basically
         ItemStack stack = this.menu.getCarried();// getMinecraft().player.inventoryMenu.getCarried();
         if (!stack.isEmpty()) {
-            //stack = stack.copy().split(hoveredSlot.getMaxStackSize()); // Limit to slot limit
-            //hoveredSlot.set(stack); // Temporarily update the client for continuity purposes
+            stack = stack.copy();
+            hoveredSlot.set(stack); // Temporarily update the client for continuity purposes
             PacketHandler.sendToServer(new PacketGhostSlot(hoveredSlot.index, stack, stack.getCount()));
+            container.handler.setStackInSlotSave(hoveredSlot.index, stack); //We do this for continuity between client/server -- not needed in cardItemScreen
         } else {
             ItemStack slotStack = hoveredSlot.getItem();
             if (slotStack.isEmpty()) return true;
@@ -145,6 +156,7 @@ public class FilterCountScreen extends AbstractContainerScreen<FilterCountContai
             slotStack.grow(amt);
 
             PacketHandler.sendToServer(new PacketGhostSlot(hoveredSlot.index, slotStack, slotStack.getCount()));
+            container.handler.setStackInSlotSave(hoveredSlot.index, slotStack); //We do this for continuity between client/server -- not needed in cardItemScreen
         }
 
 
