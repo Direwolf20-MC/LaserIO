@@ -3,6 +3,7 @@ package com.direwolf20.laserio.common.containers;
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import com.direwolf20.laserio.common.containers.customhandler.CardItemHandler;
 import com.direwolf20.laserio.common.containers.customhandler.FilterBasicHandler;
+import com.direwolf20.laserio.common.containers.customhandler.FilterCountHandler;
 import com.direwolf20.laserio.common.containers.customslot.CardItemSlot;
 import com.direwolf20.laserio.common.containers.customslot.FilterBasicSlot;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
@@ -21,6 +22,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.SlotItemHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
 
@@ -122,7 +124,7 @@ public class CardItemContainer extends AbstractContainerMenu {
                     if (!(slots.get(0).getItem().getItem() instanceof FilterCount))
                         currentStack.setCount(1);
                     for (int i = SLOTS; i < SLOTS + FILTERSLOTS; i++) { //Prevents the same item from going in there more than once.
-                        if (this.slots.get(i).getItem().equals(currentStack, false)) //Don't limit tags
+                        if (ItemHandlerHelper.canItemStacksStack(this.slots.get(i).getItem(), currentStack)) //Don't limit tags
                             return ItemStack.EMPTY;
                     }
                     if (!this.moveItemStackTo(currentStack, SLOTS, SLOTS + FILTERSLOTS, false)) {
@@ -131,6 +133,9 @@ public class CardItemContainer extends AbstractContainerMenu {
                 }
                 if (!playerIn.level.isClientSide())
                     BaseCard.setInventory(cardItem, handler);
+                if (filterHandler instanceof FilterCountHandler) {
+                    ((FilterCountHandler) filterHandler).syncSlots();
+                }
             }
 
             if (stack.isEmpty()) {
