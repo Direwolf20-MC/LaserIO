@@ -27,13 +27,15 @@ public class FilterCountHandler extends FilterBasicHandler {
         return 1;
     }
 
-    public void setStackInSlotSave(int slot, @Nonnull ItemStack stack) { //TODO Remove empty slots?
+    public void setStackInSlotSave(int slot, @Nonnull ItemStack stack) {
         if (this.getStackInSlot(slot).isEmpty()) {
             this.setStackInSlot(slot, stack);
             FilterCount.setInventory(this.stack, this);
         } else {
             this.setStackInSlot(slot, stack);
             FilterCount.setSlotCount(this.stack, slot, stack.getCount());
+            if (stack.isEmpty())
+                FilterCount.setInventory(this.stack, this);
         }
     }
 
