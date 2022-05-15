@@ -70,8 +70,13 @@ public class FilterCountHandler extends FilterBasicHandler {
 
     public void setStackInSlot(int slot, @Nonnull ItemStack stack, int amt) {
         //stack.setCount(amt);
-        this.setStackInSlot(slot, stack);
-        FilterCount.setSlotCount(this.stack, slot, stack.getCount());
+        if (this.getStackInSlot(slot).isEmpty()) {
+            this.setStackInSlot(slot, stack);
+            FilterCount.setInventory(this.stack, this);
+        } else {
+            this.setStackInSlot(slot, stack);
+            FilterCount.setSlotCount(this.stack, slot, stack.getCount());
+        }
     }
 
     @Override
