@@ -134,20 +134,6 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
             ItemStack stack = handler.getStackInSlot(i);
             stack.setCount(container.getStackSize(i + container.SLOTS));
         }
-        //container.slots.get(0).setChanged();
-        //container.toggleFilterSlots();
-
-        /*if (filter != null && filter.getItem() instanceof FilterCount) {
-            ItemStack filterCount = BaseCard.getInventory(container.cardItem).getStackInSlot(0);
-            FilterCountHandler handler = (FilterCountHandler) container.filterHandler;
-            container.filterHandler = handler;
-            /*FilterCountHandler cardHandler = FilterCount.getInventory(filterCount);
-            for (int i = 0; i < handler.getSlots(); i++) {
-                ItemStack stack = handler.getStackInSlot(i);
-                stack.setCount(cardHandler.getStackInSlot(i).getCount());
-                handler.setStackInSlot(i, stack);
-            }*/
-        //}
     }
 
     @Override
@@ -406,7 +392,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
             } else if (filter.getItem() instanceof FilterCount) {
                 ItemStack stack = this.menu.getCarried();// getMinecraft().player.inventoryMenu.getCarried();
                 if (!stack.isEmpty()) {
-                    stack = stack.copy(); // Limit to slot limit
+                    stack = stack.copy();
                     hoveredSlot.set(stack); // Temporarily update the client for continuity purposes
                     PacketHandler.sendToServer(new PacketGhostSlot(hoveredSlot.index, stack, stack.getCount()));
                 } else {

@@ -48,12 +48,15 @@ public class CardItemContainer extends AbstractContainerMenu {
             addSlotRange(handler, 0, 80, 5, 1, 18);
             addSlotRange(handler, 1, 153, 5, 1, 18);
             addSlotBox(filterHandler, 0, 44, 25, 5, 18, 3, 18);
-            //getFilterHandler();
             toggleFilterSlots();
         }
 
         layoutPlayerInventorySlots(8, 84);
-        //toggleFilterSlots(true);
+    }
+
+    public CardItemContainer(int windowId, Inventory playerInventory, Player player, BlockPos sourcePos, ItemStack cardItem) {
+        this(windowId, playerInventory, player, cardItem);
+        this.sourceContainer = sourcePos;
     }
 
     @Override
@@ -62,11 +65,6 @@ public class CardItemContainer extends AbstractContainerMenu {
             return;
         }
         super.clicked(slotId, dragType, clickTypeIn, player);
-    }
-
-    public CardItemContainer(int windowId, Inventory playerInventory, Player player, BlockPos sourcePos, ItemStack cardItem) {
-        this(windowId, playerInventory, player, cardItem);
-        this.sourceContainer = sourcePos;
     }
 
     public void getFilterHandler() {
@@ -80,7 +78,6 @@ public class CardItemContainer extends AbstractContainerMenu {
     }
 
     public void toggleFilterSlots() {
-        //System.out.println("Toggling");
         getFilterHandler();
         updateFilterSlots(filterHandler, 0, 44, 25, 5, 18, 3, 18);
     }
@@ -90,13 +87,6 @@ public class CardItemContainer extends AbstractContainerMenu {
         if (sourceContainer.equals(BlockPos.ZERO))
             return playerIn.getMainHandItem().equals(cardItem) || playerIn.getOffhandItem().equals(cardItem);
         return true;
-    }
-
-    @Override
-    public void setItem(int slot, int stateID, ItemStack itemStack) {
-        //if (cardItem != null && filterHandler != null && slot >= SLOTS && slot < SLOTS+FILTERSLOTS)
-        //    itemStack = filterHandler.getStackInSlot(slot-2);
-        super.setItem(slot, stateID, itemStack);
     }
 
     public int getStackSize(int slot) {
@@ -209,7 +199,7 @@ public class CardItemContainer extends AbstractContainerMenu {
     }
 
     @Override
-    public void removed(Player playerIn) { //TODO This fires when we open the filter container from the item container
+    public void removed(Player playerIn) {
         Level world = playerIn.getLevel();
         if (!world.isClientSide) {
             BaseCard.setInventory(cardItem, handler);

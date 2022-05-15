@@ -115,8 +115,6 @@ public class BaseCard extends Item {
         ItemStack itemstack = player.getItemInHand(hand);
         if (level.isClientSide()) return new InteractionResultHolder<>(InteractionResult.PASS, itemstack);
 
-        //CardItemHandler handler = getInventory(itemstack);
-
         NetworkHooks.openGui((ServerPlayer) player, new SimpleMenuProvider(
                 (windowId, playerInventory, playerEntity) -> new CardItemContainer(windowId, playerInventory, player, itemstack), new TranslatableComponent("")), (buf -> {
             buf.writeItem(itemstack);
