@@ -253,8 +253,6 @@ public class LaserNodeBE extends BaseLaserBE {
         return true;
     }
 
-    //TODO Efficiency
-
     public boolean extractForExact(ExtractorCardCache extractorCardCache, IItemHandler fromInventory, ItemStack extractStack) {
         List<InserterCardCache> destinations = new ArrayList<>();
         int amtNeeded = extractStack.getCount();
@@ -283,7 +281,6 @@ public class LaserNodeBE extends BaseLaserBE {
             if (remainingStack.equals(extractResult.itemStack()))
                 continue;
             destinations.add(inserterCardCache);
-            //drawParticles(extractResult.itemStack(), extractorCardCache.direction, this, be, inserterCardCache.direction, extractorCardCache.cardSlot, inserterCardCache.cardSlot);
             if (remainingStack.equals(ItemStack.EMPTY))
                 break;
         }
@@ -307,8 +304,15 @@ public class LaserNodeBE extends BaseLaserBE {
     }
 
     public boolean extractItemStack(ExtractorCardCache extractorCardCache, IItemHandler fromInventory, ItemStack extractStack) {
-        int amtNeeded = Math.min(extractorCardCache.extractAmt, extractStack.getCount());
-        ItemStack remainingStack = ItemStack.EMPTY;
+        ItemHandlerUtil.ExtractResult extractResult;
+        if (extractorCardCache instanceof StockerCardCache)
+            extractResult = ItemHandlerUtil.extractItemBackwards(fromInventory, extractStack, extractStack.getCount(), true, extractorCardCache.isCompareNBT); //Fake Extract
+        else
+            extractResult = ItemHandlerUtil.extractItem(fromInventory, extractStack, extractStack.getCount(), true, extractorCardCache.isCompareNBT); //Fake Extract
+
+        if (extractResult.itemStack().equals(ItemStack.EMPTY))
+            return false;
+
         for (InserterCardCache inserterCardCache : getPossibleInserters(extractorCardCache, extractStack)) {
             BlockPos nodeWorldPos = getWorldPos(inserterCardCache.relativePos);
             if (!chunksLoaded(nodeWorldPos, nodeWorldPos.relative(inserterCardCache.direction)))
@@ -318,26 +322,22 @@ public class LaserNodeBE extends BaseLaserBE {
             if (be == null) continue;
             IItemHandler possibleDestination = be.getAttachedInventory(inserterCardCache.direction, inserterCardCache.sneaky).orElse(EMPTY);
             if (possibleDestination.getSlots() == 0) continue;
-            ItemHandlerUtil.ExtractResult extractResult;
-            if (remainingStack.equals(ItemStack.EMPTY)) {
-                if (extractorCardCache instanceof StockerCardCache)
-                    extractResult = ItemHandlerUtil.extractItemBackwards(fromInventory, extractStack, amtNeeded, false, extractorCardCache.isCompareNBT); //Actually Extract
-                else
-                    extractResult = ItemHandlerUtil.extractItem(fromInventory, extractStack, amtNeeded, false, extractorCardCache.isCompareNBT); //Actually Extract
-                if (extractResult.itemStack().equals(ItemStack.EMPTY))
-                    return false;
-            } else {
-                extractResult = new ItemHandlerUtil.ExtractResult(remainingStack, -1);
-            }
-            remainingStack = ItemHandlerHelper.insertItem(possibleDestination, extractResult.itemStack(), false);
+
+            ItemStack remainingStack = ItemHandlerHelper.insertItem(possibleDestination, extractResult.itemStack().copy(), false); //Real Insert
             if (remainingStack.equals(extractResult.itemStack()))
                 continue;
-            drawParticles(extractResult.itemStack(), extractorCardCache.direction, this, be, inserterCardCache.direction, extractorCardCache.cardSlot, inserterCardCache.cardSlot);
+            ItemHandlerUtil.ExtractResult realExtractResult;
+            if (extractorCardCache instanceof StockerCardCache)
+                realExtractResult = ItemHandlerUtil.extractItemBackwards(fromInventory, extractStack, extractResult.itemStack().getCount() - remainingStack.getCount(), false, extractorCardCache.isCompareNBT); //Real Extract
+            else
+                realExtractResult = ItemHandlerUtil.extractItem(fromInventory, extractStack, extractResult.itemStack().getCount() - remainingStack.getCount(), false, extractorCardCache.isCompareNBT); //Real Extract
+
+            drawParticles(realExtractResult.itemStack(), extractorCardCache.direction, this, be, inserterCardCache.direction, extractorCardCache.cardSlot, inserterCardCache.cardSlot);
+            extractResult.itemStack().setCount(remainingStack.getCount());
             if (remainingStack.equals(ItemStack.EMPTY))
                 return true;
         }
-        ItemHandlerHelper.insertItem(fromInventory, remainingStack, false); //Put any remaining items back into the extracted inventory
-        return remainingStack.getCount() == amtNeeded;
+        return extractResult.itemStack().getCount() != extractStack.getCount();
     }
 
     /** Extractor Cards call this, and try to find an inserter card to send their items to **/
@@ -359,11 +359,20 @@ public class LaserNodeBE extends BaseLaserBE {
         return false;
     }
 
-    public boolean canAnyFiltersFit(IItemHandler adjacentInventory, List<ItemStack> filteredItems) {
-        for (ItemStack stack : filteredItems) {
-            int amountFit = testInsertToInventory(adjacentInventory, stack); //How many will fit in our inventory
-            if (amountFit > 0) {
-                return true;
+    public boolean canAnyFiltersFit(IItemHandler adjacentInventory, List<ItemStack> filteredItems, boolean exact) {
+        if (exact) {
+            for (ItemStack stack : filteredItems) {
+                int amountFit = testInsertToInventory(adjacentInventory, stack); //How many will fit in our inventory
+                if (amountFit == stack.getCount()) {
+                    return true;
+                }
+            }
+        } else {
+            for (ItemStack stack : filteredItems) {
+                int amountFit = testInsertToInventory(adjacentInventory, stack); //How many will fit in our inventory
+                if (amountFit > 0) {
+                    return true;
+                }
             }
         }
         return false;
@@ -376,7 +385,7 @@ public class LaserNodeBE extends BaseLaserBE {
             int amtHad = stockerInventoryCount.getCount(itemStack);
             if (amtHad > itemStack.getCount()) { //if we have enough, move onto the next stack after removing this one from the list
                 ItemStack extractStack = itemStack.copy();
-                extractStack.setCount(amtHad - itemStack.getCount());
+                extractStack.setCount(Math.min(amtHad - itemStack.getCount(), stockerCardCache.extractAmt));
                 if (extractItemStack(stockerCardCache, stockerInventory, extractStack))
                     return true;
             }
@@ -396,7 +405,7 @@ public class LaserNodeBE extends BaseLaserBE {
                 if (regulateStocker(stockerCardCache, adjacentInventory))
                     return true;
             }
-            if (!canAnyFiltersFit(adjacentInventory, stockerCardCache.getFilteredItems())) {
+            if (!canAnyFiltersFit(adjacentInventory, stockerCardCache.getFilteredItems(), stockerCardCache.exact)) {
                 return false; //If we can't fit any of our filtered items into this inventory, don't bother scanning for them
             }
             boolean foundItems = findItemStackForStocker(stockerCardCache, adjacentInventory); //Start looking for this item
