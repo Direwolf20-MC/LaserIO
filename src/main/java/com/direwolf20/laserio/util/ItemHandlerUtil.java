@@ -25,7 +25,7 @@ public class ItemHandlerUtil {
         return extractItem(source, incstack, incstack.getCount(), simulate, isCompareNBT);
     }
 
-    /** Like ExtractItem but only iterates once **/
+    /*
     @Nonnull
     public static ExtractResult extractItemOnce(IItemHandler source, @Nonnull ItemStack incstack, int amount, boolean simulate, boolean isCompareNBT) {
         if (source == null || incstack.isEmpty())
@@ -39,6 +39,33 @@ public class ItemHandlerUtil {
                 int extractAmt = Math.min(amount, stackInSlot.getCount());
                 tempStack = source.extractItem(i, extractAmt, simulate);
                 return new ExtractResult(tempStack, i); // If we found all we need, return the stack and the last slot we got it from
+            }
+        }
+        return new ExtractResult(tempStack, -1); // If we didn't get all we need, return the stack we did get and no slot cache
+    }
+    */
+
+    /** Like ExtractItem but iterates Backwards **/
+    @Nonnull
+    public static ExtractResult extractItemBackwards(IItemHandler source, @Nonnull ItemStack incstack, int amount, boolean simulate, boolean isCompareNBT) {
+        if (source == null || incstack.isEmpty())
+            return new ExtractResult(incstack, -1);
+
+        ItemStackKey key = new ItemStackKey(incstack, isCompareNBT);
+        ItemStack tempStack = ItemStack.EMPTY;
+        for (int i = source.getSlots() - 1; i >= 0; i--) {
+            ItemStack stackInSlot = source.getStackInSlot(i);
+            if (key.equals(new ItemStackKey(stackInSlot, isCompareNBT))) {
+                int extractAmt = Math.min(amount, stackInSlot.getCount());
+                if (tempStack.isEmpty()) //If this is our first pass, make the temp stack == the extracted stack
+                    tempStack = source.extractItem(i, extractAmt, simulate);
+                else if (ItemHandlerHelper.canItemStacksStack(tempStack, stackInSlot)) //If this is our 2nd pass, the 2 itemstacks should stack, so do a grow()
+                    tempStack.grow(source.extractItem(i, extractAmt, simulate).getCount());
+                else //This in theory should never happen but who knows
+                    return new ExtractResult(tempStack, i);
+                amount -= extractAmt;
+                if (amount == 0)
+                    return new ExtractResult(tempStack, i); // If we found all we need, return the stack and the last slot we got it from
             }
         }
         return new ExtractResult(tempStack, -1); // If we didn't get all we need, return the stack we did get and no slot cache
