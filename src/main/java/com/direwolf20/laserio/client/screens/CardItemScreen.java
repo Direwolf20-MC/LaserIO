@@ -200,7 +200,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
         allowListTextures[0] = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/allowlistfalse.png");
         allowListTextures[1] = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/allowlisttrue.png");
 
-        buttons.put("allowList", new ToggleButton(getGuiLeft() + 133, getGuiTop() + 43, 16, 16, allowListTextures, isAllowList == 1 ? 1 : 0, (button) -> {
+        buttons.put("allowList", new ToggleButton(getGuiLeft() + 135, getGuiTop() + 61, 16, 16, allowListTextures, isAllowList == 1 ? 1 : 0, (button) -> {
             isAllowList = isAllowList == 1 ? 0 : 1;
             ((ToggleButton) button).setTexturePosition(isAllowList == 1 ? 1 : 0);
         }));
@@ -209,16 +209,16 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
         nbtTextures[0] = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/matchnbtfalse.png");
         nbtTextures[1] = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/matchnbttrue.png");
 
-        buttons.put("nbt", new ToggleButton(getGuiLeft() + 133, getGuiTop() + 61, 16, 16, nbtTextures, isCompareNBT == 1 ? 1 : 0, (button) -> {
+        buttons.put("nbt", new ToggleButton(getGuiLeft() + 153, getGuiTop() + 61, 16, 16, nbtTextures, isCompareNBT == 1 ? 1 : 0, (button) -> {
             isCompareNBT = isCompareNBT == 1 ? 0 : 1;
             ((ToggleButton) button).setTexturePosition(isCompareNBT == 1 ? 1 : 0);
         }));
 
-        buttons.put("amount", new NumberButton(getGuiLeft() + 7, getGuiTop() + 66, 24, 12, currentMode == 0 ? currentPriority : currentItemExtractAmt, (button) -> {
+        buttons.put("amount", new NumberButton(getGuiLeft() + 147, getGuiTop() + 25, 24, 12, currentMode == 0 ? currentPriority : currentItemExtractAmt, (button) -> {
             changeAmount(-1);
         }));
 
-        buttons.put("speed", new NumberButton(getGuiLeft() + 7, getGuiTop() + 51, 24, 12, currentTicks, (button) -> {
+        buttons.put("speed", new NumberButton(getGuiLeft() + 147, getGuiTop() + 39, 24, 12, currentTicks, (button) -> {
             changeTick(-1);
         }));
 
@@ -233,7 +233,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
         ResourceLocation[] roundRobinTextures = new ResourceLocation[2];
         roundRobinTextures[0] = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/roundrobinfalse.png");
         roundRobinTextures[1] = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/roundrobintrue.png");
-        buttons.put("roundrobin", new ToggleButton(getGuiLeft() + 45, getGuiTop() + 5, 16, 16, roundRobinTextures, currentRoundRobin ? 1 : 0, (button) -> {
+        buttons.put("roundrobin", new ToggleButton(getGuiLeft() + 5, getGuiTop() + 25, 16, 16, roundRobinTextures, currentRoundRobin ? 1 : 0, (button) -> {
             currentRoundRobin = !currentRoundRobin;
             ((ToggleButton) button).setTexturePosition(currentRoundRobin ? 1 : 0);
         }));
@@ -241,7 +241,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
         ResourceLocation[] regulateTextures = new ResourceLocation[2];
         regulateTextures[0] = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/regulatefalse.png");
         regulateTextures[1] = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/regulatetrue.png");
-        buttons.put("regulate", new ToggleButton(getGuiLeft() + 45, getGuiTop() + 5, 16, 16, regulateTextures, currentRegulate ? 1 : 0, (button) -> {
+        buttons.put("regulate", new ToggleButton(getGuiLeft() + 5, getGuiTop() + 25, 16, 16, regulateTextures, currentRegulate ? 1 : 0, (button) -> {
             currentRegulate = !currentRegulate;
             ((ToggleButton) button).setTexturePosition(currentRegulate ? 1 : 0);
         }));
@@ -259,7 +259,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
             modeChange();
         }));
 
-        buttons.put("channel", new ChannelButton(getGuiLeft() + 5, getGuiTop() + 25, 16, 16, currentChannel, (button) -> {
+        buttons.put("channel", new ChannelButton(getGuiLeft() + 5, getGuiTop() + 65, 16, 16, currentChannel, (button) -> {
             currentChannel = BaseCard.nextChannel(card);
             ((ChannelButton) button).setChannel(currentChannel);
         }));
@@ -362,6 +362,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
             } else if (filter.getItem() instanceof FilterCount) {
                 showAllow = false;
                 showNBT = true;
+                removeWidget(buttons.get("allowList"));
             }
             if (isAllowList == -1) {
                 isAllowList = BaseFilter.getAllowList(filter) ? 1 : 0;
