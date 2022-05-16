@@ -260,7 +260,33 @@ public class BaseCard extends Item {
         return setSneaky(card, (byte) (k == -1 ? 5 : k - 1));
     }
 
-    public static boolean tickable(ItemStack card) {
-        return !getNamedTransferMode(card).equals(TransferMode.INSERT);
+    public static boolean getRegulate(ItemStack stack) {
+        CompoundTag compound = stack.getOrCreateTag();
+        return !compound.contains("regulate") ? setRegulate(stack, false) : compound.getBoolean("regulate");
+    }
+
+    public static boolean setRegulate(ItemStack stack, boolean regulate) {
+        stack.getOrCreateTag().putBoolean("regulate", regulate);
+        return regulate;
+    }
+
+    public static boolean getRoundRobin(ItemStack stack) {
+        CompoundTag compound = stack.getOrCreateTag();
+        return !compound.contains("roundRobin") ? setRoundRobin(stack, false) : compound.getBoolean("roundRobin");
+    }
+
+    public static boolean setRoundRobin(ItemStack stack, boolean roundRobin) {
+        stack.getOrCreateTag().putBoolean("roundRobin", roundRobin);
+        return roundRobin;
+    }
+
+    public static boolean getExact(ItemStack stack) {
+        CompoundTag compound = stack.getOrCreateTag();
+        return !compound.contains("exact") ? setExact(stack, false) : compound.getBoolean("exact");
+    }
+
+    public static boolean setExact(ItemStack stack, boolean exact) {
+        stack.getOrCreateTag().putBoolean("exact", exact);
+        return exact;
     }
 }

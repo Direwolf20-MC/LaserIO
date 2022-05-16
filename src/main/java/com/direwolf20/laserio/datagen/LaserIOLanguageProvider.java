@@ -33,6 +33,9 @@ public class LaserIOLanguageProvider extends LanguageProvider {
         add("screen.laserio.tickSpeed", "Transfer Speed (Ticks)");
 
         add("screen.laserio.priority", "Priority");
+        add("screen.laserio.regulate", "Regulate");
+        add("screen.laserio.roundrobin", "Round Robin");
+        add("screen.laserio.exact", "Exact");
         add("screen.laserio.allowlist", "Allow");
         add("screen.laserio.comparenbt", "NBT");
         add("screen.laserio.lasernode", "Laser Node");

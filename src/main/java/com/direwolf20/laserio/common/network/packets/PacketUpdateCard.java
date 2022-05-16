@@ -17,14 +17,20 @@ public class PacketUpdateCard {
     short priority;
     byte sneaky;
     short ticks;
+    boolean exact;
+    boolean regulate;
+    boolean roundRobin;
 
-    public PacketUpdateCard(byte mode, byte channel, byte extractAmt, short priority, byte sneaky, short ticks) {
+    public PacketUpdateCard(byte mode, byte channel, byte extractAmt, short priority, byte sneaky, short ticks, boolean exact, boolean regulate, boolean roundRobin) {
         this.mode = mode;
         this.channel = channel;
         this.extractAmt = extractAmt;
         this.priority = priority;
         this.sneaky = sneaky;
         this.ticks = ticks;
+        this.exact = exact;
+        this.regulate = regulate;
+        this.roundRobin = roundRobin;
     }
 
     public static void encode(PacketUpdateCard msg, FriendlyByteBuf buffer) {
@@ -34,10 +40,13 @@ public class PacketUpdateCard {
         buffer.writeShort(msg.priority);
         buffer.writeByte(msg.sneaky);
         buffer.writeShort(msg.ticks);
+        buffer.writeBoolean(msg.exact);
+        buffer.writeBoolean(msg.regulate);
+        buffer.writeBoolean(msg.roundRobin);
     }
 
     public static PacketUpdateCard decode(FriendlyByteBuf buffer) {
-        return new PacketUpdateCard(buffer.readByte(), buffer.readByte(), buffer.readByte(), buffer.readShort(), buffer.readByte(), buffer.readShort());
+        return new PacketUpdateCard(buffer.readByte(), buffer.readByte(), buffer.readByte(), buffer.readShort(), buffer.readByte(), buffer.readShort(), buffer.readBoolean(), buffer.readBoolean(), buffer.readBoolean());
     }
 
     public static class Handler {
@@ -67,6 +76,9 @@ public class PacketUpdateCard {
                     if (ticks < Math.max(20 - overClockerCount * 5, 1))
                         ticks = (short) Math.max(20 - overClockerCount * 5, 1);
                     BaseCard.setItemExtractSpeed(stack, ticks);
+                    BaseCard.setExact(stack, msg.exact);
+                    BaseCard.setRoundRobin(stack, msg.roundRobin);
+                    BaseCard.setRegulate(stack, msg.regulate);
                 }
             });
 
