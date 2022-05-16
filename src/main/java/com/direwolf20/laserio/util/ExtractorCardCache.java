@@ -8,11 +8,15 @@ public class ExtractorCardCache extends BaseCardCache {
     public final byte extractAmt;
     public final int tickSpeed;
     public int remainingSleep;
+    public boolean exact;
+    public boolean roundRobin;
 
     public ExtractorCardCache(Direction direction, ItemStack cardItem, int cardSlot) {
         super(direction, cardItem, cardSlot);
         this.extractAmt = BaseCard.getItemExtractAmt(cardItem);
         this.tickSpeed = BaseCard.getItemExtractSpeed(cardItem);
+        this.exact = BaseCard.getExact(cardItem);
+        this.roundRobin = BaseCard.getRoundRobin(cardItem);
     }
 
     public int getRemainingSleep() {

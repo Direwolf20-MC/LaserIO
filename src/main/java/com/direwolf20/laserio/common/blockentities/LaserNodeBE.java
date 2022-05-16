@@ -255,6 +255,28 @@ public class LaserNodeBE extends BaseLaserBE {
 
     //TODO Efficiency
 
+    public boolean extractItemStack(ExtractorCardCache extractorCardCache, IItemHandler fromInventory, ItemStack extractStack) {
+        for (InserterCardCache inserterCardCache : getPossibleInserters(extractorCardCache, extractStack)) {
+            BlockPos nodeWorldPos = getWorldPos(inserterCardCache.relativePos);
+            if (!chunksLoaded(nodeWorldPos, nodeWorldPos.relative(inserterCardCache.direction)))
+                continue; //Skip this if the node is unloaded
+
+            LaserNodeBE be = getNodeAt(getWorldPos(inserterCardCache.relativePos));
+            if (be == null) continue;
+            IItemHandler possibleDestination = be.getAttachedInventory(inserterCardCache.direction, inserterCardCache.sneaky).orElse(EMPTY);
+            if (possibleDestination.getSlots() == 0) continue;
+            ItemHandlerUtil.ExtractResult extractResult = ItemHandlerUtil.extractItemOnce(fromInventory, extractStack, extractorCardCache.extractAmt, true, extractorCardCache.isCompareNBT);
+            if (extractResult.itemStack().equals(ItemStack.EMPTY)) continue; //This should never happen but who knows!!
+            int transferAmt = getTransferAmt(extractResult.itemStack(), possibleDestination, inserterCardCache);
+            if (transferAmt == 0) continue;  //If nothing fits in this destination, move onto the next
+            fromInventory.extractItem(extractResult.slot(), transferAmt, false); //Actually extract the number of items that fit
+            drawParticles(extractResult.itemStack(), extractorCardCache.direction, this, be, inserterCardCache.direction, extractorCardCache.cardSlot, inserterCardCache.cardSlot);
+            ItemHandlerHelper.insertItem(possibleDestination, extractResult.itemStack(), false); //Actually insert into the destination
+            return true;
+        }
+        return false;
+    }
+
     /** Extractor Cards call this, and try to find an inserter card to send their items to **/
     public boolean sendItems(ExtractorCardCache extractorCardCache) {
         IItemHandler adjacentInventory = getAttachedInventory(extractorCardCache.direction, extractorCardCache.sneaky).orElse(EMPTY);
@@ -293,6 +315,21 @@ public class LaserNodeBE extends BaseLaserBE {
         return false;
     }
 
+    public boolean regulateStocker(StockerCardCache stockerCardCache, IItemHandler stockerInventory) {
+        ItemHandlerUtil.InventoryCounts stockerInventoryCount = new ItemHandlerUtil.InventoryCounts(stockerInventory, stockerCardCache.isCompareNBT);
+        List<ItemStack> filteredItemsList = stockerCardCache.getFilteredItems();
+        for (ItemStack itemStack : filteredItemsList) { //Remove all the items from the list that we already have enough of
+            int amtHad = stockerInventoryCount.getCount(itemStack);
+            if (amtHad > itemStack.getCount()) { //if we have enough, move onto the next stack after removing this one from the list
+                ItemStack extractStack = itemStack.copy();
+                extractStack.setCount(amtHad - itemStack.getCount());
+                if (extractItemStack(stockerCardCache, stockerInventory, extractStack))
+                    return true;
+            }
+        }
+        return false;
+    }
+
     /** Stocker Cards call this, and try to find an inserter card to pull their items from **/
     public boolean stockItems(StockerCardCache stockerCardCache) {
         IItemHandler adjacentInventory = getAttachedInventory(stockerCardCache.direction, stockerCardCache.sneaky).orElse(EMPTY);
@@ -301,6 +338,10 @@ public class LaserNodeBE extends BaseLaserBE {
             return false;
         }
         if (filter.getItem() instanceof FilterBasic || filter.getItem() instanceof FilterCount) {
+            if (stockerCardCache.regulate) {
+                if (regulateStocker(stockerCardCache, adjacentInventory))
+                    return true;
+            }
             if (!canAnyFiltersFit(adjacentInventory, stockerCardCache.getFilteredItems())) {
                 return false; //If we can't fit any of our filtered items into this inventory, don't bother scanning for them
             }
@@ -310,7 +351,7 @@ public class LaserNodeBE extends BaseLaserBE {
 
             //If we get to this line of code, it means we found none of the filter
             //System.out.println("Stock card at " + this.getBlockPos() + " in slot " + stockerCardCache.cardSlot + " has found nothing. Adding to sleeper list with 40 ticks at gametime: " + level.getGameTime());
-            stockerCardCache.setRemainingSleep(stockerCardCache.tickSpeed * 10);
+            stockerCardCache.setRemainingSleep(stockerCardCache.tickSpeed * 5);
         } else if (filter.getItem() instanceof FilterTag) {
 
         }
