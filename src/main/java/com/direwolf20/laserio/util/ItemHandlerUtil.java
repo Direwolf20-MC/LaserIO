@@ -13,6 +13,8 @@ import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class ItemHandlerUtil {
@@ -25,7 +27,7 @@ public class ItemHandlerUtil {
         return extractItem(source, incstack, incstack.getCount(), simulate, isCompareNBT);
     }
 
-    /*
+
     @Nonnull
     public static ExtractResult extractItemOnce(IItemHandler source, @Nonnull ItemStack incstack, int amount, boolean simulate, boolean isCompareNBT) {
         if (source == null || incstack.isEmpty())
@@ -43,7 +45,7 @@ public class ItemHandlerUtil {
         }
         return new ExtractResult(tempStack, -1); // If we didn't get all we need, return the stack we did get and no slot cache
     }
-    */
+
 
     /** Like ExtractItem but iterates Backwards **/
     @Nonnull
@@ -69,6 +71,29 @@ public class ItemHandlerUtil {
             }
         }
         return new ExtractResult(tempStack, -1); // If we didn't get all we need, return the stack we did get and no slot cache
+    }
+
+    @Nonnull
+    public static List<ExtractResult> extractItemWithSlots(IItemHandler source, @Nonnull ItemStack incstack, int amount, boolean simulate, boolean isCompareNBT) {
+        List<ExtractResult> extractResults = new ArrayList<>();
+        if (source == null || incstack.isEmpty()) {
+            return extractResults;
+        }
+        int amtRemaining = amount;
+        ItemStackKey key = new ItemStackKey(incstack, isCompareNBT);
+        //ItemStack tempStack = ItemStack.EMPTY;
+        for (int i = 0; i < source.getSlots(); i++) {
+            ItemStack stackInSlot = source.getStackInSlot(i);
+            if (key.equals(new ItemStackKey(stackInSlot, isCompareNBT))) {
+                int extractAmt = Math.min(amtRemaining, stackInSlot.getCount());
+                ItemStack tempStack = source.extractItem(i, extractAmt, simulate);
+                amtRemaining -= extractAmt;
+                extractResults.add(new ExtractResult(tempStack, i));
+                if (amtRemaining == 0)
+                    return extractResults; // If we found all we need, return the stack and the last slot we got it from
+            }
+        }
+        return extractResults; // If we didn't get all we need, return the stack we did get and no slot cache
     }
 
     @Nonnull
