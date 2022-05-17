@@ -254,9 +254,15 @@ public class LaserNodeBE extends BaseLaserBE {
     }
 
     public boolean extractForExact(ExtractorCardCache extractorCardCache, IItemHandler fromInventory, ItemStack extractStack) {
-        List<InserterCardCache> destinations = new ArrayList<>();
+        TransferResult extractResults = (ItemHandlerUtil.extractItemWithSlots(fromInventory, extractStack, extractStack.getCount(), true, extractorCardCache.isCompareNBT)); //Fake Extract
         int amtNeeded = extractStack.getCount();
-        ItemStack remainingStack = ItemStack.EMPTY;
+        if (extractResults.getTotalItemCounts() != amtNeeded) //Return if we didn't get what we needed
+            return false;
+
+        TransferResult insertResults = new TransferResult();
+
+        //Begin test inserting into inserters
+        int amtStillNeeded = amtNeeded;
         for (InserterCardCache inserterCardCache : getPossibleInserters(extractorCardCache, extractStack)) {
             BlockPos nodeWorldPos = getWorldPos(inserterCardCache.relativePos);
             if (!chunksLoaded(nodeWorldPos, nodeWorldPos.relative(inserterCardCache.direction)))
@@ -266,78 +272,81 @@ public class LaserNodeBE extends BaseLaserBE {
             if (be == null) continue;
             IItemHandler possibleDestination = be.getAttachedInventory(inserterCardCache.direction, inserterCardCache.sneaky).orElse(EMPTY);
             if (possibleDestination.getSlots() == 0) continue;
-            ItemHandlerUtil.ExtractResult extractResult;
-            if (remainingStack.equals(ItemStack.EMPTY)) { //First time attempting insert
-                extractResult = ItemHandlerUtil.extractItem(fromInventory, extractStack, amtNeeded, true, extractorCardCache.isCompareNBT); //Fake Extract
-                if (extractResult.itemStack().equals(ItemStack.EMPTY))
-                    return false;
-                if (extractResult.itemStack().getCount() != amtNeeded && extractorCardCache.exact) {
-                    return false;
-                }
-            } else { //Subsequent inserts in a different inventory
-                extractResult = new ItemHandlerUtil.ExtractResult(remainingStack, -1);
-            }
-            remainingStack = ItemHandlerHelper.insertItem(possibleDestination, extractResult.itemStack(), true);
-            if (remainingStack.equals(extractResult.itemStack()))
-                continue;
-            destinations.add(inserterCardCache);
-            if (remainingStack.equals(ItemStack.EMPTY))
+
+            TransferResult thisResult = ItemHandlerUtil.insertItemWithSlots(possibleDestination, extractStack, 0, true, extractorCardCache.isCompareNBT, true, inserterCardCache); //Test!!
+            insertResults.addResult(thisResult);
+
+            insertResults.remainingStack = ItemStack.EMPTY; //We don't really care about this
+            int amtFit = thisResult.getTotalItemCounts(); //How many items fit (Above)
+            amtStillNeeded -= amtFit;
+            if (amtStillNeeded == 0)
                 break;
+            extractStack.setCount(amtStillNeeded); //Modify the stack size rather than .copy
         }
-        if (remainingStack.getCount() == amtNeeded) //We didn't insert ANYTHING
-            return false;
-        if (!remainingStack.equals(ItemStack.EMPTY) && extractorCardCache.exact) //We inserted some but not all, and exact mode is on
-            return false;
-        //If we got here, we inserted some or all and exact mode is happy!
-        ItemHandlerUtil.ExtractResult realExtractResult = ItemHandlerUtil.extractItem(fromInventory, extractStack, amtNeeded, false, extractorCardCache.isCompareNBT); //Actually Extract
-        remainingStack = realExtractResult.itemStack();
-        for (InserterCardCache inserterCardCache : destinations) {
-            LaserNodeBE be = getNodeAt(getWorldPos(inserterCardCache.relativePos));
-            IItemHandler destination = be.getAttachedInventory(inserterCardCache.direction, inserterCardCache.sneaky).orElse(EMPTY);
-            int origSize = remainingStack.getCount(); //Used to draw particles
-            remainingStack = ItemHandlerHelper.insertItem(destination, remainingStack, false);
-            ItemStack extractedStack = new ItemStack(realExtractResult.itemStack().getItem(), origSize - remainingStack.getCount());
-            drawParticles(extractedStack, extractorCardCache.direction, this, be, inserterCardCache.direction, extractorCardCache.cardSlot, inserterCardCache.cardSlot);
+
+        if (amtStillNeeded != 0) return false;
+        //If we get to this point, it means we can insert all the itemstacks we wanted to, so lets do it for realsies
+        extractStack.setCount(amtNeeded); //Set back to how many we actually need
+        for (TransferResult.Result result : insertResults.results) {
+            ItemStack tempStack = extractStack.split(result.count());
+            result.handler().insertItem(result.slot(), tempStack, false);
+            if (result.inserterCardCache() != null)
+                drawParticles(tempStack, extractorCardCache.direction, this, getNodeAt(getWorldPos(result.inserterCardCache().relativePos)), result.inserterCardCache().direction, extractorCardCache.cardSlot, result.inserterCardCache().cardSlot);
         }
-        //ItemHandlerHelper.insertItem(fromInventory, remainingStack, false); //Put any remaining items back into the extracted inventory
+
+        for (TransferResult.Result result : extractResults.results) {
+            result.handler().extractItem(result.slot(), result.count(), false);
+        }
+
         return true;
     }
 
     public boolean extractItemStack(ExtractorCardCache extractorCardCache, IItemHandler fromInventory, ItemStack extractStack) {
-        ItemHandlerUtil.ExtractResult extractResult;
+        TransferResult transferResults = new TransferResult();
         if (extractorCardCache instanceof StockerCardCache)
-            extractResult = ItemHandlerUtil.extractItemBackwards(fromInventory, extractStack, extractStack.getCount(), true, extractorCardCache.isCompareNBT); //Fake Extract
+            transferResults = (ItemHandlerUtil.extractItemWithSlotsBackwards(fromInventory, extractStack, extractStack.getCount(), true, extractorCardCache.isCompareNBT)); //Fake Extract
         else
-            extractResult = ItemHandlerUtil.extractItem(fromInventory, extractStack, extractStack.getCount(), true, extractorCardCache.isCompareNBT); //Fake Extract
+            transferResults = (ItemHandlerUtil.extractItemWithSlots(fromInventory, extractStack, extractStack.getCount(), true, extractorCardCache.isCompareNBT)); //Fake Extract
 
-        if (extractResult.itemStack().equals(ItemStack.EMPTY))
+        if (transferResults.results.isEmpty()) //If we didn't get any items out.
             return false;
+
+        int amtExtractedRemaining = transferResults.getTotalItemCounts();
+
+        extractStack.setCount(amtExtractedRemaining); //Set the extract stack - used to insert with - to how many we got
 
         for (InserterCardCache inserterCardCache : getPossibleInserters(extractorCardCache, extractStack)) {
             BlockPos nodeWorldPos = getWorldPos(inserterCardCache.relativePos);
             if (!chunksLoaded(nodeWorldPos, nodeWorldPos.relative(inserterCardCache.direction)))
                 continue; //Skip this if the node is unloaded
-
             LaserNodeBE be = getNodeAt(getWorldPos(inserterCardCache.relativePos));
             if (be == null) continue;
             IItemHandler possibleDestination = be.getAttachedInventory(inserterCardCache.direction, inserterCardCache.sneaky).orElse(EMPTY);
             if (possibleDestination.getSlots() == 0) continue;
 
-            ItemStack remainingStack = ItemHandlerHelper.insertItem(possibleDestination, extractResult.itemStack().copy(), false); //Real Insert
-            if (remainingStack.equals(extractResult.itemStack()))
-                continue;
-            ItemHandlerUtil.ExtractResult realExtractResult;
-            if (extractorCardCache instanceof StockerCardCache)
-                realExtractResult = ItemHandlerUtil.extractItemBackwards(fromInventory, extractStack, extractResult.itemStack().getCount() - remainingStack.getCount(), false, extractorCardCache.isCompareNBT); //Real Extract
-            else
-                realExtractResult = ItemHandlerUtil.extractItem(fromInventory, extractStack, extractResult.itemStack().getCount() - remainingStack.getCount(), false, extractorCardCache.isCompareNBT); //Real Extract
-
-            drawParticles(realExtractResult.itemStack(), extractorCardCache.direction, this, be, inserterCardCache.direction, extractorCardCache.cardSlot, inserterCardCache.cardSlot);
-            extractResult.itemStack().setCount(remainingStack.getCount());
-            if (remainingStack.equals(ItemStack.EMPTY))
-                return true;
+            TransferResult insertResults = ItemHandlerUtil.insertItemWithSlots(possibleDestination, extractStack, 0, false, extractorCardCache.isCompareNBT, true, inserterCardCache);
+            int amtFit = insertResults.getTotalItemCounts(); //How many items fit (Above)
+            int amtNoFit = amtExtractedRemaining - amtFit; //How many items didn't fit in the inv (above)
+            extractStack.setCount(amtNoFit);
+            for (TransferResult.Result result : transferResults.results) {
+                if (insertResults.results.isEmpty()) { //if we inserted nothing, this inv is full
+                    break;
+                }
+                transferResults.results.remove(result); //If we inserted something, Remove this (extract) result from the list
+                int amtToRemove = Math.min(result.count(), amtFit); //Extract either the amount we removed or the size of this slot, whichever is smaller
+                amtFit -= amtToRemove;
+                if (amtToRemove != result.count())
+                    transferResults.results.add(new TransferResult.Result(result.handler(), result.count() - amtToRemove, result.slot(), null)); //Re Add to the list if this is a partial insert of the extracted items
+                fromInventory.extractItem(result.slot(), amtToRemove, false); //remove the items we got
+                drawParticles(extractStack, amtToRemove, extractorCardCache.direction, this, be, inserterCardCache.direction, extractorCardCache.cardSlot, inserterCardCache.cardSlot);
+                amtExtractedRemaining -= amtToRemove; //Decrement the amount we have remaining by the amt that was extracted from this pass
+                if (amtExtractedRemaining == 0) //If we fit everything into the inventory and extracted everything, return true.
+                    return true;
+                if (amtNoFit == amtExtractedRemaining) //If we reached the total amount that fit in this inventory, stop extracting
+                    break;
+            }
         }
-        return extractResult.itemStack().getCount() != extractStack.getCount();
+        return transferResults.getTotalItemCounts() != amtExtractedRemaining; //If the amount of items remaining is different from our cached amount, we moved SOMETHING
     }
 
     /** Extractor Cards call this, and try to find an inserter card to send their items to **/
@@ -726,7 +735,12 @@ public class LaserNodeBE extends BaseLaserBE {
 
     /** Draw the particles between node and inventory **/
     public void drawParticles(ItemStack itemStack, Direction fromDirection, LaserNodeBE sourceBE, LaserNodeBE destinationBE, Direction destinationDirection, int extractPosition, int insertPosition) {
-        ServerTickHandler.addToList(new ParticleData(Item.getId(itemStack.getItem()), (byte) itemStack.getCount(), sourceBE.getBlockPos(), (byte) fromDirection.ordinal(), destinationBE.getBlockPos(), (byte) destinationDirection.ordinal(), (byte) extractPosition, (byte) insertPosition), level);
+        drawParticles(itemStack, itemStack.getCount(), fromDirection, sourceBE, destinationBE, destinationDirection, extractPosition, insertPosition);
+    }
+
+    /** Draw the particles between node and inventory **/
+    public void drawParticles(ItemStack itemStack, int amount, Direction fromDirection, LaserNodeBE sourceBE, LaserNodeBE destinationBE, Direction destinationDirection, int extractPosition, int insertPosition) {
+        ServerTickHandler.addToList(new ParticleData(Item.getId(itemStack.getItem()), (byte) amount, sourceBE.getBlockPos(), (byte) fromDirection.ordinal(), destinationBE.getBlockPos(), (byte) destinationDirection.ordinal(), (byte) extractPosition, (byte) insertPosition), level);
 
         /*ServerLevel serverWorld = (ServerLevel) level;
         //Extract
