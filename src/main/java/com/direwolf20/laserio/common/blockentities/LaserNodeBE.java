@@ -721,6 +721,22 @@ public class LaserNodeBE extends BaseLaserBE {
     /** Draw the particles between node and inventory **/
     public void drawParticles(ItemStack itemStack, int amount, Direction fromDirection, LaserNodeBE sourceBE, LaserNodeBE destinationBE, Direction destinationDirection, int extractPosition, int insertPosition) {
         ServerTickHandler.addToList(new ParticleData(Item.getId(itemStack.getItem()), (byte) amount, sourceBE.getBlockPos(), (byte) fromDirection.ordinal(), destinationBE.getBlockPos(), (byte) destinationDirection.ordinal(), (byte) extractPosition, (byte) insertPosition), level);
+
+        /*ServerLevel serverWorld = (ServerLevel) level;
+        //Extract
+        BlockPos fromPos = getBlockPos().relative(fromDirection);
+        BlockPos toPos = getBlockPos();
+        Vector3f extractOffset = findOffset(fromDirection, extractPosition, offsets);
+        ItemFlowParticleData data = new ItemFlowParticleData(itemStack, toPos.getX() + extractOffset.x(), toPos.getY() + extractOffset.y(), toPos.getZ() + extractOffset.z(), 10);
+        float randomSpread = 0.01f;
+        serverWorld.sendParticles(data, fromPos.getX() + extractOffset.x(), fromPos.getY() + extractOffset.y(), fromPos.getZ() + extractOffset.z(), 8 * itemStack.getCount(), randomSpread, randomSpread, randomSpread, 0);
+        //Insert
+        fromPos = destinationBE.getBlockPos();
+        toPos = destinationBE.getBlockPos().relative(destinationDirection);
+        Vector3f insertOffset = findOffset(destinationDirection, insertPosition, offsets);
+        data = new ItemFlowParticleData(itemStack, toPos.getX() + insertOffset.x(), toPos.getY() + insertOffset.y(), toPos.getZ() + insertOffset.z(), 10);
+        serverWorld.sendParticles(data, fromPos.getX() + insertOffset.x(), fromPos.getY() + insertOffset.y(), fromPos.getZ() + insertOffset.z(), 8 * itemStack.getCount(), randomSpread, randomSpread, randomSpread, 0);
+        */
     }
 
     /** Called when changes happen - such as a card going into a side, or a card being modified via container **/
