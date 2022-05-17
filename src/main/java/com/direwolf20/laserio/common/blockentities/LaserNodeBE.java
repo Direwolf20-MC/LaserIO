@@ -337,8 +337,8 @@ public class LaserNodeBE extends BaseLaserBE {
                 amtFit -= amtToRemove;
                 if (amtToRemove != result.count())
                     transferResults.results.add(new TransferResult.Result(result.handler(), result.count() - amtToRemove, result.slot(), null)); //Re Add to the list if this is a partial insert of the extracted items
-                fromInventory.extractItem(result.slot(), amtToRemove, false); //remove the items we got
-                drawParticles(extractStack, amtToRemove, extractorCardCache.direction, this, be, inserterCardCache.direction, extractorCardCache.cardSlot, inserterCardCache.cardSlot);
+                ItemStack extractedStack = fromInventory.extractItem(result.slot(), amtToRemove, false); //remove the items we got
+                drawParticles(extractedStack, extractorCardCache.direction, this, be, inserterCardCache.direction, extractorCardCache.cardSlot, inserterCardCache.cardSlot);
                 amtExtractedRemaining -= amtToRemove; //Decrement the amount we have remaining by the amt that was extracted from this pass
                 if (amtExtractedRemaining == 0) //If we fit everything into the inventory and extracted everything, return true.
                     return true;
