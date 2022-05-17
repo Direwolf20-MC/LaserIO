@@ -1,5 +1,6 @@
 package com.direwolf20.laserio.common.containers.customhandler;
 
+import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.common.items.filters.BaseFilter;
 import com.direwolf20.laserio.common.items.upgrades.OverclockerCard;
 import net.minecraft.core.NonNullList;
@@ -18,8 +19,8 @@ public class CardItemHandler extends ItemStackHandler {
 
     @Override
     protected void onContentsChanged(int slot) {
-        //if (!stack.isEmpty())
-        //BaseCard.setInventory(stack, this);
+        if (!stack.isEmpty())
+            BaseCard.setInventory(stack, this);
 
     }
 

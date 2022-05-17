@@ -106,6 +106,7 @@ public class CardItemContainer extends AbstractContainerMenu {
         if (slot != null && slot.hasItem()) {
             ItemStack stack = slot.getItem();
             itemstack = stack.copy();
+            if (ItemHandlerHelper.canItemStacksStack(itemstack, cardItem)) return ItemStack.EMPTY;
             //If its one of the 3 slots at the top try to move it into your inventory
             if (index < SLOTS) {
                 if (!this.moveItemStackTo(stack, SLOTS, 36 + SLOTS, true)) {

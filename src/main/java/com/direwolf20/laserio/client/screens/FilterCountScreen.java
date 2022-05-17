@@ -24,6 +24,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemHandlerHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -139,6 +140,7 @@ public class FilterCountScreen extends AbstractContainerScreen<FilterCountContai
         if (!stack.isEmpty()) {
             stack = stack.copy();
             hoveredSlot.set(stack); // Temporarily update the client for continuity purposes
+            if (ItemHandlerHelper.canItemStacksStack(stack, container.filterItem)) return true;
             PacketHandler.sendToServer(new PacketGhostSlot(hoveredSlot.index, stack, stack.getCount()));
             container.handler.setStackInSlotSave(hoveredSlot.index, stack); //We do this for continuity between client/server -- not needed in cardItemScreen
         } else {

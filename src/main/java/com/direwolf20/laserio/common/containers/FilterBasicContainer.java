@@ -17,6 +17,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.SlotItemHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
 
@@ -74,6 +75,7 @@ public class FilterBasicContainer extends AbstractContainerMenu {
         Slot slot = this.slots.get(index);
         if (slot != null && slot.hasItem()) {
             ItemStack currentStack = slot.getItem().copy();
+            if (ItemHandlerHelper.canItemStacksStack(currentStack, filterItem)) return ItemStack.EMPTY;
             currentStack.setCount(1);
             //Only do this if we click from the players inventory
             if (index >= SLOTS) {

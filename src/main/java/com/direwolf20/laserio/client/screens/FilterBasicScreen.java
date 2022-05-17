@@ -19,6 +19,7 @@ import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.items.ItemHandlerHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -135,6 +136,7 @@ public class FilterBasicScreen extends AbstractContainerScreen<FilterBasicContai
         // By splitting the stack we can get air easily :) perfect removal basically
         ItemStack stack = this.menu.getCarried();// getMinecraft().player.inventoryMenu.getCarried();
         stack = stack.copy().split(hoveredSlot.getMaxStackSize()); // Limit to slot limit
+        if (ItemHandlerHelper.canItemStacksStack(stack, container.filterItem)) return true;
         hoveredSlot.set(stack); // Temporarily update the client for continuity purposes
         PacketHandler.sendToServer(new PacketGhostSlot(hoveredSlot.index, stack, stack.getCount()));
 
