@@ -611,7 +611,7 @@ public class LaserNodeBE extends BaseLaserBE {
                     if (isCount)  //If this is a filter count, adjust the amount of this item we are looking for
                         itemsStillNeeded = Math.min(itemStack.getCount(), itemsStillNeeded);
 
-                    //itemStack.setCount(itemsStillNeeded);
+                    itemStack.setCount(itemsStillNeeded);
                     int amountFit = testInsertToInventory(stockerInventory, itemStack);
                     if (amountFit == 0) continue; //If none of this item fit into the destination, go to the next item
                     //System.out.println("Extracting From: " + be.getBlockPos());
