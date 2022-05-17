@@ -49,7 +49,7 @@
   "screen.laserio.north": "North",
   "screen.laserio.priority": "Priority",
   "screen.laserio.regulate": "Regulate",
-  "screen.laserio.roundrobin": "Round Robin",
+  "screen.laserio.roundrobin": "Round Robin (Not Implemented)",
   "screen.laserio.south": "South",
   "screen.laserio.stock": "Stock",
   "screen.laserio.tickSpeed": "Transfer Speed (Ticks)",

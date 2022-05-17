@@ -34,7 +34,7 @@ public class LaserIOLanguageProvider extends LanguageProvider {
 
         add("screen.laserio.priority", "Priority");
         add("screen.laserio.regulate", "Regulate");
-        add("screen.laserio.roundrobin", "Round Robin");
+        add("screen.laserio.roundrobin", "Round Robin (Not Implemented)");
         add("screen.laserio.exact", "Exact");
         add("screen.laserio.allowlist", "Allow");
         add("screen.laserio.comparenbt", "NBT");
