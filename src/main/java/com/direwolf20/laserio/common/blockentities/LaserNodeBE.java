@@ -57,6 +57,11 @@ public class LaserNodeBE extends BaseLaserBE {
     private record SideConnection(Direction nodeSide, Direction sneakySide) {
     }
 
+    /** BE and ItemHandler used for checking if a note/container is valid **/
+    private record LaserNodeHandler(LaserNodeBE be, IItemHandler handler) {
+
+    }
+
     private Map<SideConnection, LazyOptional<IItemHandler>> facingHandler = new HashMap<>();
     private final Map<SideConnection, NonNullConsumer<LazyOptional<IItemHandler>>> connectionInvalidator = new HashMap<>();
 
@@ -147,7 +152,7 @@ public class LaserNodeBE extends BaseLaserBE {
         }
     }
 
-    /** Loop through all the extractorCards and run the extractions **/
+    /** Loop through all the extractorCards/stockerCards and run the extractions **/
     public void extractItems() {
         for (Direction direction : Direction.values()) {
             NodeSideCache nodeSideCache = nodeSideCaches[direction.ordinal()];
@@ -175,11 +180,6 @@ public class LaserNodeBE extends BaseLaserBE {
     }
 
     public void tickServer() {
-        /*if (level.getGameTime() % 40 == 0) {
-            System.out.println("My chunk is loaded == " + level.isLoaded(getBlockPos()));
-            System.out.println("I am alive at: " + getBlockPos());
-            System.out.println("Inserter cache: " + inserterNodes.size());
-        }*/
         if (!discoveredNodes) { //On world / chunk reload, lets rediscover the network, including this block's extractor cards.
             discoverAllNodes();
             findMyExtractors();
@@ -188,13 +188,6 @@ public class LaserNodeBE extends BaseLaserBE {
             discoveredNodes = true;
         }
         extractItems(); //If this node has any extractors, do stuff with them
-        /*if (!extractorCardCaches.isEmpty()) {
-            drawParticles(new ItemStack(Blocks.GOLD_BLOCK), extractorCardCaches.get(0).direction, this, Direction.UP, 0, 0);
-            drawParticles(new ItemStack(Blocks.DIAMOND_BLOCK), extractorCardCaches.get(0).direction, this, Direction.UP, 1, 1);
-            drawParticles(new ItemStack(Blocks.REDSTONE_BLOCK), extractorCardCaches.get(0).direction, this, Direction.UP, 2, 2);
-            drawParticles(new ItemStack(Blocks.IRON_BLOCK), extractorCardCaches.get(0).direction, this, Direction.UP, 4, 4);
-            drawParticles(new ItemStack(Blocks.LAPIS_BLOCK), extractorCardCaches.get(0).direction, this, Direction.UP, 8, 8);
-        }*/
     }
 
     public void sortInserters() {
@@ -205,10 +198,10 @@ public class LaserNodeBE extends BaseLaserBE {
     /** Finds all inserters that can be extracted to **/
     public List<InserterCardCache> getPossibleInserters(ExtractorCardCache extractorCardCache, ItemStack stack) {
         ItemStackKey key = new ItemStackKey(stack, true);
-        if (inserterCache.containsKey(extractorCardCache)) {
-            if (inserterCache.get(extractorCardCache).containsKey(key))
-                return inserterCache.get(extractorCardCache).get(key);
-            else {
+        if (inserterCache.containsKey(extractorCardCache)) { //If this extractor card is already in the cache
+            if (inserterCache.get(extractorCardCache).containsKey(key)) //If this extractor card AND itemKey are already in the cache
+                return inserterCache.get(extractorCardCache).get(key); //Return the cached results
+            else { //Find the list of items that can be extracted by this extractor and cache them
                 List<InserterCardCache> nodes = inserterNodes.stream().filter(p -> (p.channel == extractorCardCache.channel)
                                 && (p.isStackValidForCard(stack))
                                 && (!(p.relativePos.equals(BlockPos.ZERO) && p.direction.equals(extractorCardCache.direction))))
@@ -216,7 +209,7 @@ public class LaserNodeBE extends BaseLaserBE {
                 inserterCache.get(extractorCardCache).put(key, nodes);
                 return nodes;
             }
-        } else {
+        } else { //Find the list of items that can be extracted by this extractor and cache them along with the extractor card
             List<InserterCardCache> nodes = inserterNodes.stream().filter(p -> (p.channel == extractorCardCache.channel)
                             && (p.isStackValidForCard(stack))
                             && (!(p.relativePos.equals(BlockPos.ZERO) && p.direction.equals(extractorCardCache.direction))))
@@ -242,15 +235,24 @@ public class LaserNodeBE extends BaseLaserBE {
     }
 
     public boolean chunksLoaded(BlockPos nodePos, BlockPos destinationPos) {
+        assert level != null;
         if (!level.isLoaded(nodePos)) {
-            //System.out.println(nodePos + " node is unloaded, returning false");
             return false;
         }
         if (!level.isLoaded(destinationPos)) {
-            //System.out.println(destinationPos + " chest is unloaded, returning false");
             return false;
         }
         return true;
+    }
+
+    public LaserNodeHandler getLaserNodeHandler(InserterCardCache inserterCardCache) {
+        BlockPos nodeWorldPos = getWorldPos(inserterCardCache.relativePos);
+        if (!chunksLoaded(nodeWorldPos, nodeWorldPos.relative(inserterCardCache.direction))) return null;
+        LaserNodeBE be = getNodeAt(getWorldPos(inserterCardCache.relativePos));
+        if (be == null) return null;
+        IItemHandler handler = be.getAttachedInventory(inserterCardCache.direction, inserterCardCache.sneaky).orElse(EMPTY);
+        if (handler.getSlots() == 0) return null;
+        return new LaserNodeHandler(be, handler);
     }
 
     public boolean extractForExact(ExtractorCardCache extractorCardCache, IItemHandler fromInventory, ItemStack extractStack) {
@@ -264,16 +266,10 @@ public class LaserNodeBE extends BaseLaserBE {
         //Begin test inserting into inserters
         int amtStillNeeded = amtNeeded;
         for (InserterCardCache inserterCardCache : getPossibleInserters(extractorCardCache, extractStack)) {
-            BlockPos nodeWorldPos = getWorldPos(inserterCardCache.relativePos);
-            if (!chunksLoaded(nodeWorldPos, nodeWorldPos.relative(inserterCardCache.direction)))
-                continue; //Skip this if the node is unloaded
+            LaserNodeHandler laserNodeHandler = getLaserNodeHandler(inserterCardCache);
+            if (laserNodeHandler == null) continue;
 
-            LaserNodeBE be = getNodeAt(getWorldPos(inserterCardCache.relativePos));
-            if (be == null) continue;
-            IItemHandler possibleDestination = be.getAttachedInventory(inserterCardCache.direction, inserterCardCache.sneaky).orElse(EMPTY);
-            if (possibleDestination.getSlots() == 0) continue;
-
-            TransferResult thisResult = ItemHandlerUtil.insertItemWithSlots(possibleDestination, extractStack, 0, true, extractorCardCache.isCompareNBT, true, inserterCardCache); //Test!!
+            TransferResult thisResult = ItemHandlerUtil.insertItemWithSlots(laserNodeHandler.handler, extractStack, 0, true, extractorCardCache.isCompareNBT, true, inserterCardCache); //Test!!
             insertResults.addResult(thisResult);
 
             insertResults.remainingStack = ItemStack.EMPTY; //We don't really care about this
@@ -316,15 +312,10 @@ public class LaserNodeBE extends BaseLaserBE {
         extractStack.setCount(amtExtractedRemaining); //Set the extract stack - used to insert with - to how many we got
 
         for (InserterCardCache inserterCardCache : getPossibleInserters(extractorCardCache, extractStack)) {
-            BlockPos nodeWorldPos = getWorldPos(inserterCardCache.relativePos);
-            if (!chunksLoaded(nodeWorldPos, nodeWorldPos.relative(inserterCardCache.direction)))
-                continue; //Skip this if the node is unloaded
-            LaserNodeBE be = getNodeAt(getWorldPos(inserterCardCache.relativePos));
-            if (be == null) continue;
-            IItemHandler possibleDestination = be.getAttachedInventory(inserterCardCache.direction, inserterCardCache.sneaky).orElse(EMPTY);
-            if (possibleDestination.getSlots() == 0) continue;
+            LaserNodeHandler laserNodeHandler = getLaserNodeHandler(inserterCardCache);
+            if (laserNodeHandler == null) continue;
 
-            TransferResult insertResults = ItemHandlerUtil.insertItemWithSlots(possibleDestination, extractStack, 0, false, extractorCardCache.isCompareNBT, true, inserterCardCache);
+            TransferResult insertResults = ItemHandlerUtil.insertItemWithSlots(laserNodeHandler.handler, extractStack, 0, false, extractorCardCache.isCompareNBT, true, inserterCardCache);
             int amtFit = insertResults.getTotalItemCounts(); //How many items fit (Above)
             int amtNoFit = amtExtractedRemaining - amtFit; //How many items didn't fit in the inv (above)
             extractStack.setCount(amtNoFit);
@@ -338,7 +329,7 @@ public class LaserNodeBE extends BaseLaserBE {
                 if (amtToRemove != result.count())
                     transferResults.results.add(new TransferResult.Result(result.handler(), result.count() - amtToRemove, result.slot(), null)); //Re Add to the list if this is a partial insert of the extracted items
                 ItemStack extractedStack = fromInventory.extractItem(result.slot(), amtToRemove, false); //remove the items we got
-                drawParticles(extractedStack, extractorCardCache.direction, this, be, inserterCardCache.direction, extractorCardCache.cardSlot, inserterCardCache.cardSlot);
+                drawParticles(extractedStack, extractorCardCache.direction, this, laserNodeHandler.be, inserterCardCache.direction, extractorCardCache.cardSlot, inserterCardCache.cardSlot);
                 amtExtractedRemaining -= amtToRemove; //Decrement the amount we have remaining by the amt that was extracted from this pass
                 if (amtExtractedRemaining == 0) //If we fit everything into the inventory and extracted everything, return true.
                     return true;
@@ -351,6 +342,9 @@ public class LaserNodeBE extends BaseLaserBE {
 
     /** Extractor Cards call this, and try to find an inserter card to send their items to **/
     public boolean sendItems(ExtractorCardCache extractorCardCache) {
+        BlockPos adjacentPos = getBlockPos().relative(extractorCardCache.direction);
+        assert level != null;
+        if (!level.isLoaded(adjacentPos)) return false;
         IItemHandler adjacentInventory = getAttachedInventory(extractorCardCache.direction, extractorCardCache.sneaky).orElse(EMPTY);
         for (int slot = 0; slot < adjacentInventory.getSlots(); slot++) {
             ItemStack stackInSlot = adjacentInventory.getStackInSlot(slot);
@@ -404,6 +398,9 @@ public class LaserNodeBE extends BaseLaserBE {
 
     /** Stocker Cards call this, and try to find an inserter card to pull their items from **/
     public boolean stockItems(StockerCardCache stockerCardCache) {
+        BlockPos adjacentPos = getBlockPos().relative(stockerCardCache.direction);
+        assert level != null;
+        if (!level.isLoaded(adjacentPos)) return false;
         IItemHandler adjacentInventory = getAttachedInventory(stockerCardCache.direction, stockerCardCache.sneaky).orElse(EMPTY);
         ItemStack filter = stockerCardCache.filterCard;
         if (filter.isEmpty() || !stockerCardCache.isAllowList) { //Needs a filter - at least for now? Also must be in whitelist mode
@@ -422,7 +419,6 @@ public class LaserNodeBE extends BaseLaserBE {
                 return true;
 
             //If we get to this line of code, it means we found none of the filter
-            //System.out.println("Stock card at " + this.getBlockPos() + " in slot " + stockerCardCache.cardSlot + " has found nothing. Adding to sleeper list with 40 ticks at gametime: " + level.getGameTime());
             stockerCardCache.setRemainingSleep(stockerCardCache.tickSpeed * 5);
         } else if (filter.getItem() instanceof FilterTag) {
 
@@ -432,19 +428,9 @@ public class LaserNodeBE extends BaseLaserBE {
 
     public ItemStack getStackAtStockerCachePosition(StockerSource checkSource) {
         //System.out.println("Cache found, checking for item at: " + getWorldPos(checkSource.inserterCardCache.relativePos) + " slot " + checkSource.slot);
-        BlockPos nodeWorldPos = getWorldPos(checkSource.inserterCardCache.relativePos);
-        if (!chunksLoaded(nodeWorldPos, nodeWorldPos.relative(checkSource.inserterCardCache.direction)))
-            return null; //Skip this if the node is unloaded
-
-        LaserNodeBE be = getNodeAt(getWorldPos(checkSource.inserterCardCache.relativePos));
-        if (be == null)
-            return null; //If for some reason this Block Entity no longer exists - shouldn't ever happen
-
-        IItemHandler possibleSource = be.getAttachedInventory(checkSource.inserterCardCache.direction, checkSource.inserterCardCache.sneaky).orElse(EMPTY);
-        if (possibleSource.getSlots() == 0)
-            return null; //If the attached inventory no longer exists - shouldn't ever happen
-
-        return possibleSource.getStackInSlot(checkSource.slot);
+        LaserNodeHandler laserNodeHandler = getLaserNodeHandler(checkSource.inserterCardCache);
+        if (laserNodeHandler == null) return ItemStack.EMPTY;
+        return laserNodeHandler.handler.getStackInSlot(checkSource.slot);
     }
 
     /**
@@ -462,13 +448,13 @@ public class LaserNodeBE extends BaseLaserBE {
             return ItemStack.EMPTY;
 
         ItemStack extractedItemStack = ItemStack.EMPTY;
-        LaserNodeBE be = getNodeAt(getWorldPos(checkSource.inserterCardCache.relativePos)); //If we got here, we can assume this exists
-        IItemHandler possibleSource = be.getAttachedInventory(checkSource.inserterCardCache.direction, checkSource.inserterCardCache.sneaky).orElse(EMPTY);
+        LaserNodeHandler laserNodeHandler = getLaserNodeHandler(checkSource.inserterCardCache);
+        if (laserNodeHandler == null) return ItemStack.EMPTY;
         if (!stackInSlot.isEmpty()) {
             if (stockerCardCache.isStackValidForCard(stackInSlot)) {  //If the itemstack in that spot meets ANY filter for this card (Even if its different from the last pull)
                 int extractAmt = Math.min(itemsStillNeeded, stackInSlot.getCount()); //Find out how many to extract
-                extractedItemStack = possibleSource.extractItem(checkSource.slot, extractAmt, false); //Extract Items
-                drawParticles(extractedItemStack, checkSource.inserterCardCache.direction, be, this, stockerCardCache.direction, checkSource.inserterCardCache.cardSlot, stockerCardCache.cardSlot);
+                extractedItemStack = laserNodeHandler.handler.extractItem(checkSource.slot, extractAmt, false); //Extract Items
+                drawParticles(extractedItemStack, checkSource.inserterCardCache.direction, laserNodeHandler.be, this, stockerCardCache.direction, checkSource.inserterCardCache.cardSlot, stockerCardCache.cardSlot);
                 ItemHandlerHelper.insertItem(stockerInventory, extractedItemStack, false); //Actually insert into the destination
                 //System.out.println("Got " + extractedItemStack.getCount() + " items from cache slot " + checkSource.slot + " at " + getWorldPos(checkSource.inserterCardCache.relativePos));
                 itemsStillNeeded = itemsStillNeeded - extractedItemStack.getCount();
@@ -483,7 +469,7 @@ public class LaserNodeBE extends BaseLaserBE {
         }
         //If we got here, we have to find more of this item type, so start looking for it
         //System.out.println("Still need " + itemsStillNeeded + " items - checking chest at " + getWorldPos(checkSource.inserterCardCache.relativePos));
-        ItemHandlerUtil.ExtractResult extractResult = ItemHandlerUtil.extractItem(possibleSource, extractedItemStack, itemsStillNeeded, false, stockerCardCache.isCompareNBT); //Try to pull out the items we need from this location
+        ItemHandlerUtil.ExtractResult extractResult = ItemHandlerUtil.extractItem(laserNodeHandler.handler, extractedItemStack, itemsStillNeeded, false, stockerCardCache.isCompareNBT); //Try to pull out the items we need from this location
         if (extractResult.itemStack().isEmpty()) {
             //System.out.println("This chest no longer has any of the item, removing from cache");
             stockerDestinationCache.remove(stockerCardCache);
@@ -491,10 +477,10 @@ public class LaserNodeBE extends BaseLaserBE {
         }
 
         //System.out.println("Got " + extractResult.itemStack().getCount() + " items from slot " + extractResult.slot() + " in the chest");
-        drawParticles(extractResult.itemStack(), checkSource.inserterCardCache.direction, be, this, stockerCardCache.direction, checkSource.inserterCardCache.cardSlot, stockerCardCache.cardSlot);
+        drawParticles(extractResult.itemStack(), checkSource.inserterCardCache.direction, laserNodeHandler.be, this, stockerCardCache.direction, checkSource.inserterCardCache.cardSlot, stockerCardCache.cardSlot);
         ItemHandlerHelper.insertItem(stockerInventory, extractResult.itemStack(), false); //Actually insert into the destination
 
-        if (extractResult.slot() != -1 && !possibleSource.getStackInSlot(extractResult.slot()).isEmpty()) {//If we got it from another slot in the chest, update the cache
+        if (extractResult.slot() != -1 && !laserNodeHandler.handler.getStackInSlot(extractResult.slot()).isEmpty()) {//If we got it from another slot in the chest, update the cache
             //System.out.println("Updating cache at: " + getWorldPos(checkSource.inserterCardCache.relativePos) + " to slot " + extractResult.slot());
             stockerDestinationCache.put(stockerCardCache, new StockerSource(checkSource.inserterCardCache, extractResult.slot()));
         }
@@ -518,13 +504,13 @@ public class LaserNodeBE extends BaseLaserBE {
             return ItemStack.EMPTY;
 
         ItemStack extractedItemStack = ItemStack.EMPTY;
-        LaserNodeBE be = getNodeAt(getWorldPos(checkSource.inserterCardCache.relativePos)); //If we got here, we can assume this exists
-        IItemHandler possibleSource = be.getAttachedInventory(checkSource.inserterCardCache.direction, checkSource.inserterCardCache.sneaky).orElse(EMPTY);
+        LaserNodeHandler laserNodeHandler = getLaserNodeHandler(checkSource.inserterCardCache);
+        if (laserNodeHandler == null) return ItemStack.EMPTY;
         if (!stackInSlot.isEmpty()) {
             if (stockerCardCache.isStackValidForCard(stackInSlot)) {  //If the itemstack in that spot meets ANY filter for this card (Even if its different from the last pull)
                 int extractAmt = Math.min(itemsStillNeeded, stackInSlot.getCount()); //Find out how many to extract
-                extractedItemStack = possibleSource.extractItem(checkSource.slot, extractAmt, false); //Extract Items
-                drawParticles(extractedItemStack, checkSource.inserterCardCache.direction, be, this, stockerCardCache.direction, checkSource.inserterCardCache.cardSlot, stockerCardCache.cardSlot);
+                extractedItemStack = laserNodeHandler.handler.extractItem(checkSource.slot, extractAmt, false); //Extract Items
+                drawParticles(extractedItemStack, checkSource.inserterCardCache.direction, laserNodeHandler.be, this, stockerCardCache.direction, checkSource.inserterCardCache.cardSlot, stockerCardCache.cardSlot);
                 ItemHandlerHelper.insertItem(stockerInventory, extractedItemStack, false); //Actually insert into the destination
                 //System.out.println("Got " + extractedItemStack.getCount() + " items from cache slot " + checkSource.slot + " at " + getWorldPos(checkSource.inserterCardCache.relativePos));
                 itemsStillNeeded = itemsStillNeeded - extractedItemStack.getCount();
@@ -539,7 +525,7 @@ public class LaserNodeBE extends BaseLaserBE {
         }
         //If we got here, we have to find more of this item type, so start looking for it
         //System.out.println("Still need " + itemsStillNeeded + " items - checking chest at " + getWorldPos(checkSource.inserterCardCache.relativePos));
-        ItemHandlerUtil.ExtractResult extractResult = ItemHandlerUtil.extractItem(possibleSource, extractedItemStack, itemsStillNeeded, false, stockerCardCache.isCompareNBT); //Try to pull out the items we need from this location
+        ItemHandlerUtil.ExtractResult extractResult = ItemHandlerUtil.extractItem(laserNodeHandler.handler, extractedItemStack, itemsStillNeeded, false, stockerCardCache.isCompareNBT); //Try to pull out the items we need from this location
         if (extractResult.itemStack().isEmpty()) {
             //System.out.println("This chest no longer has any of the item, removing from cache");
             stockerCountDestinationCache.remove(stockerRequest);
@@ -547,10 +533,10 @@ public class LaserNodeBE extends BaseLaserBE {
         }
 
         //System.out.println("Got " + extractResult.itemStack().getCount() + " items from slot " + extractResult.slot() + " in the chest");
-        drawParticles(extractResult.itemStack(), checkSource.inserterCardCache.direction, be, this, stockerCardCache.direction, checkSource.inserterCardCache.cardSlot, stockerCardCache.cardSlot);
+        drawParticles(extractResult.itemStack(), checkSource.inserterCardCache.direction, laserNodeHandler.be, this, stockerCardCache.direction, checkSource.inserterCardCache.cardSlot, stockerCardCache.cardSlot);
         ItemHandlerHelper.insertItem(stockerInventory, extractResult.itemStack(), false); //Actually insert into the destination
 
-        if (extractResult.slot() != -1 && !possibleSource.getStackInSlot(extractResult.slot()).isEmpty()) {//If we got it from another slot in the chest, update the cache
+        if (extractResult.slot() != -1 && !laserNodeHandler.handler.getStackInSlot(extractResult.slot()).isEmpty()) {//If we got it from another slot in the chest, update the cache
             //System.out.println("Updating cache at: " + getWorldPos(checkSource.inserterCardCache.relativePos) + " to slot " + extractResult.slot());
             stockerCountDestinationCache.put(stockerRequest, new StockerSource(checkSource.inserterCardCache, extractResult.slot()));
         }
@@ -590,18 +576,12 @@ public class LaserNodeBE extends BaseLaserBE {
 
 
         for (InserterCardCache inserterCardCache : getChannelMatchInserters(stockerCardCache)) { //Iterate through ALL inserter nodes on this channel only
-            BlockPos nodeWorldPos = getWorldPos(inserterCardCache.relativePos);
-            if (!chunksLoaded(nodeWorldPos, nodeWorldPos.relative(inserterCardCache.direction)))
-                continue; //Skip this if the node is unloaded
-
-            LaserNodeBE be = getNodeAt(getWorldPos(inserterCardCache.relativePos));
-            if (be == null) continue;
-            IItemHandler possibleSource = be.getAttachedInventory(inserterCardCache.direction, inserterCardCache.sneaky).orElse(EMPTY);
-            if (possibleSource.getSlots() == 0) continue;
+            LaserNodeHandler laserNodeHandler = getLaserNodeHandler(inserterCardCache);
+            if (laserNodeHandler == null) continue;
 
             if (firstStackFound.equals(ItemStack.EMPTY)) { //If we haven't found any items yet, start looking for anything that matches our filter
                 //System.out.println("firstStackFound is empty == Looking for anything at :" + be.getBlockPos());
-                ItemHandlerUtil.InventoryCounts inventoryCounts = new ItemHandlerUtil.InventoryCounts(possibleSource, stockerCardCache.isCompareNBT);
+                ItemHandlerUtil.InventoryCounts inventoryCounts = new ItemHandlerUtil.InventoryCounts(laserNodeHandler.handler, stockerCardCache.isCompareNBT);
                 for (ItemStack itemStack : filteredItemsList) {
                     if (!inserterCardCache.isStackValidForCard(itemStack)) //If this item stack can't come from this inserter, check next stack
                         continue;
@@ -615,10 +595,10 @@ public class LaserNodeBE extends BaseLaserBE {
                     int amountFit = testInsertToInventory(stockerInventory, itemStack);
                     if (amountFit == 0) continue; //If none of this item fit into the destination, go to the next item
                     //System.out.println("Extracting From: " + be.getBlockPos());
-                    ItemHandlerUtil.ExtractResult extractResult = ItemHandlerUtil.extractItem(possibleSource, itemStack, amountFit, false, stockerCardCache.isCompareNBT); //Try to pull out the items we need from this location
+                    ItemHandlerUtil.ExtractResult extractResult = ItemHandlerUtil.extractItem(laserNodeHandler.handler, itemStack, amountFit, false, stockerCardCache.isCompareNBT); //Try to pull out the items we need from this location
                     if (extractResult.itemStack().isEmpty())
                         continue; //If we didn't find anything in this inventory, move onto the next -- Should never happen?
-                    drawParticles(extractResult.itemStack(), inserterCardCache.direction, be, this, stockerCardCache.direction, inserterCardCache.cardSlot, stockerCardCache.cardSlot);
+                    drawParticles(extractResult.itemStack(), inserterCardCache.direction, laserNodeHandler.be, this, stockerCardCache.direction, inserterCardCache.cardSlot, stockerCardCache.cardSlot);
                     ItemHandlerHelper.insertItem(stockerInventory, extractResult.itemStack(), false); //Actually insert into the destination
                     itemsStillNeeded = itemsStillNeeded - extractResult.itemStack().getCount();
                     //itemStack.setCount(itemsStillNeeded); //Adjust the stack size to how many more items we need, maybe zero
@@ -639,10 +619,10 @@ public class LaserNodeBE extends BaseLaserBE {
                     continue;
                 //System.out.println("firstStackFound contains " + firstStackFound.getItem() + " looking for " + itemsStillNeeded + " more of them");
                 //System.out.println("Extracting From: " + be.getBlockPos());
-                ItemHandlerUtil.ExtractResult extractResult = ItemHandlerUtil.extractItem(possibleSource, firstStackFound, itemsStillNeeded, false, stockerCardCache.isCompareNBT); //Try to pull out the items we need from this location
+                ItemHandlerUtil.ExtractResult extractResult = ItemHandlerUtil.extractItem(laserNodeHandler.handler, firstStackFound, itemsStillNeeded, false, stockerCardCache.isCompareNBT); //Try to pull out the items we need from this location
                 if (extractResult.itemStack().isEmpty())
                     continue; //If we didn't find anything in this inventory, move onto the next
-                drawParticles(extractResult.itemStack(), inserterCardCache.direction, be, this, stockerCardCache.direction, inserterCardCache.cardSlot, stockerCardCache.cardSlot);
+                drawParticles(extractResult.itemStack(), inserterCardCache.direction, laserNodeHandler.be, this, stockerCardCache.direction, inserterCardCache.cardSlot, stockerCardCache.cardSlot);
                 ItemHandlerHelper.insertItem(stockerInventory, extractResult.itemStack(), false); //Actually insert into the destination
                 itemsStillNeeded = itemsStillNeeded - extractResult.itemStack().getCount();
                 firstStackFound.grow(extractResult.itemStack().getCount()); //Adjust the stack size to how many more items we need, maybe zero
@@ -741,36 +721,10 @@ public class LaserNodeBE extends BaseLaserBE {
     /** Draw the particles between node and inventory **/
     public void drawParticles(ItemStack itemStack, int amount, Direction fromDirection, LaserNodeBE sourceBE, LaserNodeBE destinationBE, Direction destinationDirection, int extractPosition, int insertPosition) {
         ServerTickHandler.addToList(new ParticleData(Item.getId(itemStack.getItem()), (byte) amount, sourceBE.getBlockPos(), (byte) fromDirection.ordinal(), destinationBE.getBlockPos(), (byte) destinationDirection.ordinal(), (byte) extractPosition, (byte) insertPosition), level);
-
-        /*ServerLevel serverWorld = (ServerLevel) level;
-        //Extract
-        BlockPos fromPos = getBlockPos().relative(fromDirection);
-        BlockPos toPos = getBlockPos();
-        Vector3f extractOffset = findOffset(fromDirection, extractPosition, offsets);
-        ItemFlowParticleData data = new ItemFlowParticleData(itemStack, toPos.getX() + extractOffset.x(), toPos.getY() + extractOffset.y(), toPos.getZ() + extractOffset.z(), 10);
-        float randomSpread = 0.01f;
-        serverWorld.sendParticles(data, fromPos.getX() + extractOffset.x(), fromPos.getY() + extractOffset.y(), fromPos.getZ() + extractOffset.z(), 8 * itemStack.getCount(), randomSpread, randomSpread, randomSpread, 0);
-
-        //Insert
-        fromPos = destinationBE.getBlockPos();
-        toPos = destinationBE.getBlockPos().relative(destinationDirection);
-        Vector3f insertOffset = findOffset(destinationDirection, insertPosition, offsets);
-        data = new ItemFlowParticleData(itemStack, toPos.getX() + insertOffset.x(), toPos.getY() + insertOffset.y(), toPos.getZ() + insertOffset.z(), 10);
-        serverWorld.sendParticles(data, fromPos.getX() + insertOffset.x(), fromPos.getY() + insertOffset.y(), fromPos.getZ() + insertOffset.z(), 8 * itemStack.getCount(), randomSpread, randomSpread, randomSpread, 0);
-        */
-    }
-
-    /** TODO For the stocker mode **/
-    public void getItems(ItemStack card, Direction direction) {
-        /*IItemHandler adjacentInventory = getAttachedInventory(direction).orElse(EMPTY);
-        if (adjacentInventory.getSlots() != 0) {
-            //System.out.println("Getting for: " + getBlockPos().relative(direction));
-        }*/
     }
 
     /** Called when changes happen - such as a card going into a side, or a card being modified via container **/
     public void updateThisNode() {
-        //System.out.println("Updating node at: " + getBlockPos());
         setChanged();
         notifyOtherNodesOfChange();
         markDirtyClient();
@@ -897,13 +851,11 @@ public class LaserNodeBE extends BaseLaserBE {
     public void clearCachedInventories(SideConnection sideConnection) {
         stockerDestinationCache.clear();
         stockerCountDestinationCache.clear();
-        //System.out.println("Clearing: " + sideConnection.nodeSide.getName() + " - " + sideConnection.sneakySide.getName());
         this.facingHandler.remove(sideConnection);
     }
 
     /** Called when a neighbor updates to invalidate the inventory cache */
     public void clearCachedInventories() {
-        //System.out.println("Clearing ALL cached caps. Client? " + level.isClientSide);
         stockerDestinationCache.clear();
         stockerCountDestinationCache.clear();
         this.facingHandler.clear();
