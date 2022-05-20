@@ -19,9 +19,9 @@ public class PacketUpdateCard {
     short ticks;
     boolean exact;
     boolean regulate;
-    boolean roundRobin;
+    byte roundRobin;
 
-    public PacketUpdateCard(byte mode, byte channel, byte extractAmt, short priority, byte sneaky, short ticks, boolean exact, boolean regulate, boolean roundRobin) {
+    public PacketUpdateCard(byte mode, byte channel, byte extractAmt, short priority, byte sneaky, short ticks, boolean exact, boolean regulate, byte roundRobin) {
         this.mode = mode;
         this.channel = channel;
         this.extractAmt = extractAmt;
@@ -42,11 +42,11 @@ public class PacketUpdateCard {
         buffer.writeShort(msg.ticks);
         buffer.writeBoolean(msg.exact);
         buffer.writeBoolean(msg.regulate);
-        buffer.writeBoolean(msg.roundRobin);
+        buffer.writeByte(msg.roundRobin);
     }
 
     public static PacketUpdateCard decode(FriendlyByteBuf buffer) {
-        return new PacketUpdateCard(buffer.readByte(), buffer.readByte(), buffer.readByte(), buffer.readShort(), buffer.readByte(), buffer.readShort(), buffer.readBoolean(), buffer.readBoolean(), buffer.readBoolean());
+        return new PacketUpdateCard(buffer.readByte(), buffer.readByte(), buffer.readByte(), buffer.readShort(), buffer.readByte(), buffer.readShort(), buffer.readBoolean(), buffer.readBoolean(), buffer.readByte());
     }
 
     public static class Handler {

@@ -13,6 +13,7 @@ import com.direwolf20.laserio.common.items.upgrades.OverclockerNode;
 import com.direwolf20.laserio.setup.Registration;
 import com.direwolf20.laserio.util.*;
 import com.mojang.math.Vector3f;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -60,6 +61,8 @@ public class LaserNodeBE extends BaseLaserBE {
     private record LaserNodeHandler(LaserNodeBE be, IItemHandler handler) {
 
     }
+
+    public Map<ExtractorCardCache, Integer> roundRobinMap = new Object2IntOpenHashMap<>();
 
     private Map<SideConnection, LazyOptional<IItemHandler>> facingHandler = new HashMap<>();
     private final Map<SideConnection, NonNullConsumer<LazyOptional<IItemHandler>>> connectionInvalidator = new HashMap<>();
@@ -180,6 +183,7 @@ public class LaserNodeBE extends BaseLaserBE {
             findMyExtractors();
             findMyStockers();
             updateOverclockers();
+            loadRoundRobin();
             discoveredNodes = true;
         }
         extractItems(); //If this node has any extractors, do stuff with them
@@ -250,6 +254,17 @@ public class LaserNodeBE extends BaseLaserBE {
         return new LaserNodeHandler(be, handler);
     }
 
+    public int getNextRR(ExtractorCardCache extractorCardCache, List<InserterCardCache> inserterCardCaches) {
+        if (roundRobinMap.containsKey(extractorCardCache)) {
+            int currentRR = roundRobinMap.get(extractorCardCache);
+            int nextRR = currentRR + 1 >= inserterCardCaches.size() ? 0 : currentRR + 1;
+            return currentRR;
+        } else {
+            roundRobinMap.put(extractorCardCache, 0);
+            return 0;
+        }
+    }
+
     public boolean extractForExact(ExtractorCardCache extractorCardCache, IItemHandler fromInventory, ItemStack extractStack) {
         TransferResult extractResults = (ItemHandlerUtil.extractItemWithSlots(this, fromInventory, extractStack, extractStack.getCount(), true, extractorCardCache.isCompareNBT, extractorCardCache)); //Fake Extract
         int amtNeeded = extractStack.getCount();
@@ -294,46 +309,37 @@ public class LaserNodeBE extends BaseLaserBE {
 
     public boolean extractItemStack(ExtractorCardCache extractorCardCache, IItemHandler fromInventory, ItemStack extractStack) {
         TransferResult transferResults = new TransferResult();
-        if (extractorCardCache instanceof StockerCardCache)
-            transferResults = (ItemHandlerUtil.extractItemWithSlotsBackwards(this, fromInventory, extractStack, extractStack.getCount(), true, extractorCardCache.isCompareNBT, extractorCardCache)); //Fake Extract
-        else
-            transferResults = (ItemHandlerUtil.extractItemWithSlots(this, fromInventory, extractStack, extractStack.getCount(), true, extractorCardCache.isCompareNBT, extractorCardCache)); //Fake Extract
+        int amtToExtract = extractStack.getCount();
+        List<InserterCardCache> inserterCardCaches = getPossibleInserters(extractorCardCache, extractStack);
+        int nextRR = -1;
+        boolean foundAnything = false;
 
-        if (transferResults.results.isEmpty()) //If we didn't get any items out.
-            return false;
-
-        int amtExtractedRemaining = transferResults.getTotalItemCounts();
-
-        extractStack.setCount(amtExtractedRemaining); //Set the extract stack - used to insert with - to how many we got
-
-        for (InserterCardCache inserterCardCache : getPossibleInserters(extractorCardCache, extractStack)) {
+        for (InserterCardCache inserterCardCache : inserterCardCaches) {
             LaserNodeHandler laserNodeHandler = getLaserNodeHandler(inserterCardCache);
             if (laserNodeHandler == null) continue;
 
-            TransferResult insertResults = ItemHandlerUtil.insertItemWithSlots(laserNodeHandler.be, laserNodeHandler.handler, extractStack, 0, false, extractorCardCache.isCompareNBT, true, inserterCardCache);
+            TransferResult insertResults = ItemHandlerUtil.insertItemWithSlots(laserNodeHandler.be, laserNodeHandler.handler, extractStack, 0, true, extractorCardCache.isCompareNBT, true, inserterCardCache);
+            if (insertResults.results.isEmpty()) continue; //Next inserter if nothing went in
+            foundAnything = true; //We know that we have SOME of this item, and SOME will fit in another chest, so SOMETHING will move!
             int amtFit = insertResults.getTotalItemCounts(); //How many items fit (Above)
-            int amtNoFit = amtExtractedRemaining - amtFit; //How many items didn't fit in the inv (above)
-            extractStack.setCount(amtNoFit);
-            for (TransferResult.Result result : transferResults.results) {
-                if (insertResults.results.isEmpty()) { //if we inserted nothing, this inv is full
-                    break;
-                }
-                transferResults.results.remove(result); //If we inserted something, Remove this (extract) result from the list
-                int amtToRemove = Math.min(result.itemStack.getCount(), amtFit); //Extract either the amount we removed or the size of this slot, whichever is smaller
-                amtFit -= amtToRemove;
-                if (amtToRemove != result.itemStack.getCount())
-                    result.itemStack.setCount(result.count() - amtToRemove);
-
-                ItemStack extractedStack = fromInventory.extractItem(result.extractSlot, amtToRemove, false); //remove the items we got
-                drawParticles(extractedStack, extractorCardCache.direction, this, laserNodeHandler.be, inserterCardCache.direction, extractorCardCache.cardSlot, inserterCardCache.cardSlot);
-                amtExtractedRemaining -= amtToRemove; //Decrement the amount we have remaining by the amt that was extracted from this pass
-                if (amtExtractedRemaining == 0) //If we fit everything into the inventory and extracted everything, return true.
-                    return true;
-                if (amtNoFit == amtExtractedRemaining) //If we reached the total amount that fit in this inventory, stop extracting
-                    break;
+            //int amtNoFit = amtToExtract - amtFit;
+            extractStack.setCount(amtFit); //Make a stack of how many can fit in here without doing an itemstack.copy()
+            ItemStack extractedStack = ItemHandlerUtil.extractItem(fromInventory, extractStack, false, extractorCardCache.isCompareNBT).itemStack();
+            boolean chestEmpty = extractedStack.getCount() < extractStack.getCount(); //If we didn't find enough, the extract chest is empty, so don't try again later
+            amtToExtract -= extractedStack.getCount(); //Reduce how many we have left to extract by the amount we got here
+            extractStack.setCount(amtToExtract); //For use in the next loop -- How many items are still needed
+            for (TransferResult.Result result : insertResults.results) {
+                int insertAmt = Math.min(result.itemStack.getCount(), extractedStack.getCount());
+                ItemStack insertStack = extractedStack.split(insertAmt);
+                laserNodeHandler.handler.insertItem(result.insertSlot, insertStack, false);
+                drawParticles(insertStack, extractorCardCache.direction, extractorCardCache.be, inserterCardCache.be, inserterCardCache.direction, extractorCardCache.cardSlot, inserterCardCache.cardSlot);
             }
+            //extractStack.setCount(amtNoFit);
+            if (chestEmpty || extractStack.isEmpty()) //If the chest is empty, or we have no more items to find, we're done here
+                break;
         }
-        return transferResults.getTotalItemCounts() != amtExtractedRemaining; //If the amount of items remaining is different from our cached amount, we moved SOMETHING
+
+        return foundAnything;
     }
 
     /** Extractor Cards call this, and try to find an inserter card to send their items to **/
@@ -779,6 +785,28 @@ public class LaserNodeBE extends BaseLaserBE {
         return super.getCapability(cap, side);
     }
 
+    public void saveRoundRobin() {
+        for (Map.Entry<ExtractorCardCache, Integer> entry : roundRobinMap.entrySet()) {
+            BaseCard.setRoundRobinPosition(entry.getKey().cardItem, entry.getValue());
+        }
+    }
+
+    public void loadRoundRobin() {
+        for (Direction direction : Direction.values()) {
+            NodeSideCache nodeSideCache = nodeSideCaches[direction.ordinal()];
+            for (ExtractorCardCache extractorCardCache : nodeSideCache.extractorCardCaches) {
+                int lastRR = BaseCard.getRoundRobinPosition(extractorCardCache.cardItem);
+                if (lastRR != -1)
+                    roundRobinMap.put(extractorCardCache, lastRR);
+            }
+            for (StockerCardCache stockerCardCache : nodeSideCache.stockerCardCaches) {
+                int lastRR = BaseCard.getRoundRobinPosition(stockerCardCache.cardItem);
+                if (lastRR != -1)
+                    roundRobinMap.put(stockerCardCache, lastRR);
+            }
+        }
+    }
+
     @Override
     public void load(CompoundTag tag) {
         for (int i = 0; i < Direction.values().length; i++) {
@@ -801,6 +829,7 @@ public class LaserNodeBE extends BaseLaserBE {
             NodeSideCache nodeSideCache = nodeSideCaches[i];
             tag.put("Inventory" + i, nodeSideCache.itemHandler.serializeNBT());
         }
+        saveRoundRobin();
     }
 
     @Override

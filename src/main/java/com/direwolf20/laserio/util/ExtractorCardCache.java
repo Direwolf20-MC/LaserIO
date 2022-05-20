@@ -10,7 +10,7 @@ public class ExtractorCardCache extends BaseCardCache {
     public final int tickSpeed;
     public int remainingSleep;
     public boolean exact;
-    public boolean roundRobin;
+    public int roundRobin;
 
     public ExtractorCardCache(Direction direction, ItemStack cardItem, int cardSlot, LaserNodeBE be) {
         super(direction, cardItem, cardSlot, be);

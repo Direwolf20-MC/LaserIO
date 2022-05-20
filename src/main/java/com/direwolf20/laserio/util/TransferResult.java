@@ -54,6 +54,17 @@ public class TransferResult {
         }
     }
 
+    public Result splitResult(Result result, int count) {
+        if (!results.contains(result))
+            return null;
+        int position = results.indexOf(result);
+        Result newResult = new Result(result.insertHandler, result.extractHandler, result.insertSlot, result.extractSlot, result.inserterCardCache, result.extractorCardCache, result.fromBE, result.toBE, result.itemStack);
+        results.get(position).itemStack.shrink(count);
+        newResult.itemStack.shrink(result.itemStack.getCount());
+        results.add(newResult);
+        return result;
+    }
+
 
     public void doIt() {
         for (Result result : results) {
@@ -73,6 +84,18 @@ public class TransferResult {
         public LaserNodeBE fromBE;
         public LaserNodeBE toBE;
 
+
+        public Result(IItemHandler insertHandler, IItemHandler extractHandler, int insertSlot, int extractSlot, BaseCardCache inserterCardCache, BaseCardCache extractorCardCache, LaserNodeBE fromBE, LaserNodeBE toBE, ItemStack itemStack) {
+            this.insertHandler = insertHandler;
+            this.extractHandler = extractHandler;
+            this.insertSlot = insertSlot;
+            this.extractSlot = extractSlot;
+            this.inserterCardCache = inserterCardCache;
+            this.extractorCardCache = extractorCardCache;
+            this.fromBE = fromBE;
+            this.toBE = toBE;
+            this.itemStack = itemStack;
+        }
 
         public Result(IItemHandler handler, int slot, BaseCardCache cardCache, ItemStack itemStack, LaserNodeBE be, boolean extractor) {
             if (extractor) {
