@@ -89,13 +89,6 @@ public class TransferResult {
                 this.toBE = be;
             }
         }
-        /*public Result(IItemHandler handler, int slot, BaseCardCache extractorCardCache, ItemStack itemStack, LaserNodeBE be) {
-            this.extractHandler = handler;
-            this.extractSlot = slot;
-            this.extractorCardCache = extractorCardCache;
-            this.itemStack = itemStack;
-            this.fromBE = be;
-        }*/
 
         public void addInserter(IItemHandler handler, int slot, BaseCardCache inserterCardCache, LaserNodeBE be) {
             this.insertHandler = handler;
@@ -114,18 +107,7 @@ public class TransferResult {
         public void doIt() {
             if (fromBE == null || toBE == null || extractorCardCache == null || inserterCardCache == null) //Happens if we forgot to set this!
                 return;
-            /*if (extractorCardCache instanceof StockerCardCache) { //Stocker modes reverse the insert/extract logic
-                ItemStack extractedStack;
-                if (insertSlot == -1) //We don't know which slot to pull from
-                    extractedStack = ItemHandlerUtil.extractItem(insertHandler, itemStack, false, inserterCardCache.isCompareNBT).itemStack();
-                else
-                    extractedStack = insertHandler.extractItem(insertSlot, itemStack.getCount(), false);
-                if (extractSlot == -1) //We don't know which slot to insert to
-                    ItemHandlerHelper.insertItem(extractHandler, itemStack, false);
-                else
-                    extractHandler.insertItem(extractSlot, itemStack, false);
-                toBE.drawParticles(itemStack, inserterCardCache.direction, toBE, fromBE, extractorCardCache.direction, inserterCardCache.cardSlot, extractorCardCache.cardSlot);
-            } else {*/
+
             //Extract
             if (extractSlot == -1) //We don't know which slot to pull from
                 ItemHandlerUtil.extractItem(extractHandler, itemStack, false, extractorCardCache.isCompareNBT).itemStack();
@@ -140,8 +122,6 @@ public class TransferResult {
                 fromBE.drawParticles(itemStack, inserterCardCache.direction, toBE, fromBE, extractorCardCache.direction, inserterCardCache.cardSlot, extractorCardCache.cardSlot);
             else
                 fromBE.drawParticles(itemStack, extractorCardCache.direction, fromBE, toBE, inserterCardCache.direction, extractorCardCache.cardSlot, inserterCardCache.cardSlot);
-            //drawParticles(extractResult.itemStack(), inserterCardCache.direction, laserNodeHandler.be, this, stockerCardCache.direction, inserterCardCache.cardSlot, stockerCardCache.cardSlot);
-            //}
         }
 
         public int count() {

@@ -57,7 +57,6 @@ public class ItemHandlerUtil {
             ItemStack stackInSlot = source.getStackInSlot(i);
             if (key.equals(new ItemStackKey(stackInSlot, isCompareNBT))) {
                 int extractAmt = Math.min(amount, stackInSlot.getCount());
-                //System.out.println("Extracting " + stackInSlot.getItem() + " x" + extractAmt + " from slot " + i);
                 if (tempStack.isEmpty()) //If this is our first pass, make the temp stack == the extracted stack
                     tempStack = source.extractItem(i, extractAmt, simulate);
                 else if (ItemHandlerHelper.canItemStacksStack(tempStack, stackInSlot)) //If this is our 2nd pass, the 2 itemstacks should stack, so do a grow()
@@ -184,6 +183,8 @@ public class ItemHandlerUtil {
             }
             for (Integer i : emptySlots) { //Loop through the empty slots we found (above) or skip if empty
                 remainingStack = source.insertItem(i, remainingStack, simulate); //Insert as many as we can
+                if (remainingStack.getCount() == amtRemaining)
+                    continue; //If we couldn't insert anything into this slot (as in the slot doesn't accept this item!)
                 insertResults.addResult(new TransferResult.Result(source, i, inserterCardCache, incstack.split(amtRemaining - remainingStack.getCount()), be, false)); //Add the amount that fit to the list //Add the amount that fit to the list
                 amtRemaining = remainingStack.getCount(); //Update amtRemaining
 

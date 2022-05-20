@@ -11,15 +11,6 @@ public class ParticleData {
     public PositionData fromData;
     public PositionData toData;
 
-    public ParticleData(int item, byte itemCount, BlockPos node, byte direction, byte slotPosition, boolean extract) {
-        this.item = item;
-        this.itemCount = itemCount;
-        if (extract)
-            this.fromData = new PositionData(node, direction, slotPosition);
-        else
-            this.toData = new PositionData(node, direction, slotPosition);
-    }
-
     public ParticleData(int item, byte itemCount, BlockPos fromNode, byte fromDirection, BlockPos toNode, byte toDirection, byte extractPosition, byte insertPosition) {
         this.item = item;
         this.itemCount = itemCount;

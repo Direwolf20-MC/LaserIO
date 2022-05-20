@@ -354,8 +354,8 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
             if (filter.getItem() instanceof FilterBasic) {
                 showNBT = true;
                 if (currentMode == 2) {
-                    showAllow = false;
-                    removeWidget(buttons.get("allowList"));
+                    showAllow = true;
+                    //removeWidget(buttons.get("allowList"));
                 } else {
                     showAllow = true;
                     if (!renderables.contains(buttons.get("allowList"))) addRenderableWidget(buttons.get("allowList"));
