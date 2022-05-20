@@ -285,13 +285,30 @@ public class LaserNodeBE extends BaseLaserBE {
 
         TransferResult insertResults = new TransferResult();
 
+        List<InserterCardCache> inserterCardCaches = getPossibleInserters(extractorCardCache, extractStack);
+        int nextRR = -1;
+
+        if (extractorCardCache.roundRobin != 0) {
+            nextRR = getNextRR(extractorCardCache, inserterCardCaches);
+            inserterCardCaches = applyRR(extractorCardCache, inserterCardCaches, nextRR);
+        }
+
         //Begin test inserting into inserters
         int amtStillNeeded = amtNeeded;
-        for (InserterCardCache inserterCardCache : getPossibleInserters(extractorCardCache, extractStack)) {
+        for (InserterCardCache inserterCardCache : inserterCardCaches) {
             LaserNodeHandler laserNodeHandler = getLaserNodeHandler(inserterCardCache);
             if (laserNodeHandler == null) continue;
 
             TransferResult thisResult = ItemHandlerUtil.insertItemWithSlots(laserNodeHandler.be, laserNodeHandler.handler, extractStack, 0, true, extractorCardCache.isCompareNBT, true, inserterCardCache); //Test!!
+            if (extractorCardCache.roundRobin == 2 && thisResult.getTotalItemCounts() < amtStillNeeded) {
+                int rollBack = roundRobinMap.get(extractorCardCache) - 1 < 0 ? inserterCardCaches.size() - 1 : roundRobinMap.get(extractorCardCache) - 1;
+                roundRobinMap.replace(extractorCardCache, rollBack);
+                return false;
+            }
+            if (thisResult.results.isEmpty()) { //Next inserter if nothing went in -- return false if enforcing round robin
+                getNextRR(extractorCardCache, inserterCardCaches);
+                continue;
+            }
             insertResults.addResult(thisResult);
 
             insertResults.remainingStack = ItemStack.EMPTY; //We don't really care about this
@@ -300,6 +317,7 @@ public class LaserNodeBE extends BaseLaserBE {
             if (amtStillNeeded == 0)
                 break;
             extractStack.setCount(amtStillNeeded); //Modify the stack size rather than .copy
+            getNextRR(extractorCardCache, inserterCardCaches);
         }
 
         if (amtStillNeeded != 0) return false;
