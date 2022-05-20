@@ -1,5 +1,6 @@
 package com.direwolf20.laserio.util;
 
+import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import com.google.common.collect.ArrayListMultimap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -99,7 +100,7 @@ public class ItemHandlerUtil {
 
 
     @Nonnull
-    public static TransferResult extractItemWithSlots(IItemHandler source, @Nonnull ItemStack incstack, int amount, boolean simulate, boolean isCompareNBT) {
+    public static TransferResult extractItemWithSlots(LaserNodeBE be, IItemHandler source, @Nonnull ItemStack incstack, int amount, boolean simulate, boolean isCompareNBT, BaseCardCache cardCache) {
         TransferResult extractResults = new TransferResult();
         if (source == null || incstack.isEmpty()) {
             return extractResults;
@@ -113,7 +114,7 @@ public class ItemHandlerUtil {
                 int extractAmt = Math.min(amtRemaining, stackInSlot.getCount());
                 ItemStack extractStack = source.extractItem(i, extractAmt, simulate);
                 amtRemaining -= extractAmt;
-                extractResults.addResult(new TransferResult.Result(source, extractStack.getCount(), i, null));
+                extractResults.addResult(new TransferResult.Result(source, i, cardCache, extractStack, be, true));
                 remainingStack.setCount(amtRemaining);
                 if (amtRemaining == 0)
                     return extractResults; // If we found all we need, return the stack and the last slot we got it from
@@ -125,7 +126,7 @@ public class ItemHandlerUtil {
     }
 
     @Nonnull
-    public static TransferResult extractItemWithSlotsBackwards(IItemHandler source, @Nonnull ItemStack incstack, int amount, boolean simulate, boolean isCompareNBT) {
+    public static TransferResult extractItemWithSlotsBackwards(LaserNodeBE be, IItemHandler source, @Nonnull ItemStack incstack, int amount, boolean simulate, boolean isCompareNBT, ExtractorCardCache extractorCardCache) {
         TransferResult extractResults = new TransferResult();
         if (source == null || incstack.isEmpty()) {
             return extractResults;
@@ -139,7 +140,7 @@ public class ItemHandlerUtil {
                 int extractAmt = Math.min(amtRemaining, stackInSlot.getCount());
                 ItemStack extractStack = source.extractItem(i, extractAmt, simulate);
                 amtRemaining -= extractAmt;
-                extractResults.addResult(new TransferResult.Result(source, extractStack.getCount(), i, null));
+                extractResults.addResult(new TransferResult.Result(source, i, extractorCardCache, extractStack, be, true));
                 remainingStack.setCount(amtRemaining);
                 if (amtRemaining == 0)
                     return extractResults; // If we found all we need, return the stack and the last slot we got it from
@@ -151,13 +152,13 @@ public class ItemHandlerUtil {
     }
 
     @Nonnull
-    public static TransferResult insertItemWithSlots(IItemHandler source, @Nonnull ItemStack incstack, int startAt, boolean simulate, boolean isCompareNBT, boolean stacksFirst, InserterCardCache inserterCardCache) {
-        return insertItemWithSlots(source, incstack, incstack.getCount(), startAt, simulate, isCompareNBT, stacksFirst, inserterCardCache);
+    public static TransferResult insertItemWithSlots(LaserNodeBE be, IItemHandler source, @Nonnull ItemStack incstack, int startAt, boolean simulate, boolean isCompareNBT, boolean stacksFirst, InserterCardCache inserterCardCache) {
+        return insertItemWithSlots(be, source, incstack, incstack.getCount(), startAt, simulate, isCompareNBT, stacksFirst, inserterCardCache);
     }
 
 
     @Nonnull
-    public static TransferResult insertItemWithSlots(IItemHandler source, @Nonnull ItemStack incstack, int amount, int startAt, boolean simulate, boolean isCompareNBT, boolean stacksFirst, InserterCardCache inserterCardCache) {
+    public static TransferResult insertItemWithSlots(LaserNodeBE be, IItemHandler source, @Nonnull ItemStack incstack, int amount, int startAt, boolean simulate, boolean isCompareNBT, boolean stacksFirst, InserterCardCache inserterCardCache) {
         TransferResult insertResults = new TransferResult();
         List<Integer> emptySlots = new ArrayList<>();
         if (source == null || incstack.isEmpty()) {
@@ -174,7 +175,7 @@ public class ItemHandlerUtil {
                     emptySlots.add(i); //If this slot is empty, add to the list of empty slots first
                 if (key.equals(new ItemStackKey(stackInSlot, isCompareNBT)) && !(stackInSlot.getCount() == stackInSlot.getMaxStackSize())) { //Look for like itemstacks to add to first.
                     remainingStack = source.insertItem(i, remainingStack, simulate); //Insert as many as we can
-                    insertResults.addResult(new TransferResult.Result(source, amtRemaining - remainingStack.getCount(), i, inserterCardCache)); //Add the amount that fit to the list
+                    insertResults.addResult(new TransferResult.Result(source, i, inserterCardCache, incstack.split(amtRemaining - remainingStack.getCount()), be, false)); //TODO Check this split thing
                     amtRemaining = remainingStack.getCount(); //Update amtRemaining
 
                     if (amtRemaining == 0)
@@ -183,7 +184,7 @@ public class ItemHandlerUtil {
             }
             for (Integer i : emptySlots) { //Loop through the empty slots we found (above) or skip if empty
                 remainingStack = source.insertItem(i, remainingStack, simulate); //Insert as many as we can
-                insertResults.addResult(new TransferResult.Result(source, amtRemaining - remainingStack.getCount(), i, inserterCardCache)); //Add the amount that fit to the list
+                insertResults.addResult(new TransferResult.Result(source, i, inserterCardCache, incstack.split(amtRemaining - remainingStack.getCount()), be, false)); //Add the amount that fit to the list //Add the amount that fit to the list
                 amtRemaining = remainingStack.getCount(); //Update amtRemaining
 
                 if (amtRemaining == 0)
@@ -192,7 +193,7 @@ public class ItemHandlerUtil {
         } else {
             for (int i = 0; i < source.getSlots(); i++) { //Loop through all slots, who cares about matching item stacks anyway!
                 remainingStack = source.insertItem(i, remainingStack, simulate); //Insert as many as we can
-                insertResults.addResult(new TransferResult.Result(source, amtRemaining - remainingStack.getCount(), i, inserterCardCache)); //Add the amount that fit to the list
+                insertResults.addResult(new TransferResult.Result(source, i, inserterCardCache, incstack.split(amtRemaining - remainingStack.getCount()), be, false)); //Add the amount that fit to the list //Add the amount that fit to the list
                 amtRemaining = remainingStack.getCount(); //Update amtRemaining
 
                 if (amtRemaining == 0)

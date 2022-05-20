@@ -1,5 +1,6 @@
 package com.direwolf20.laserio.util;
 
+import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
@@ -8,10 +9,6 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class TransferResult {
-    public record Result(IItemHandler handler, int count, int slot, InserterCardCache inserterCardCache) {
-
-    }
-
     public List<Result> results = new CopyOnWriteArrayList<>();
     public ItemStack remainingStack = ItemStack.EMPTY;
 
@@ -37,7 +34,7 @@ public class TransferResult {
     }
 
     public int getTotalItemCounts() {
-        return results.stream().mapToInt(i -> i.count).sum();
+        return results.stream().mapToInt(i -> i.itemStack.getCount()).sum();
     }
 
     public void addResult(TransferResult newResult) {
@@ -46,5 +43,110 @@ public class TransferResult {
             remainingStack = newResult.remainingStack;
         else if (ItemHandlerHelper.canItemStacksStack(remainingStack, newResult.remainingStack))
             remainingStack.grow(newResult.remainingStack.getCount());
+    }
+
+    public void addOtherCard(IItemHandler handler, int slot, BaseCardCache card, LaserNodeBE be) {
+        for (Result result : results) {
+            if (result.inserterCardCache == null)
+                result.addInserter(handler, slot, card, be);
+            else if (result.extractorCardCache == null)
+                result.addExtractor(handler, slot, card, be);
+        }
+    }
+
+
+    public void doIt() {
+        for (Result result : results) {
+            result.doIt();
+        }
+
+    }
+
+    public static class Result {
+        public IItemHandler extractHandler; //The inventory being extracted from
+        public IItemHandler insertHandler; //The inventory being inserted to
+        public int insertSlot; //The slot we inserted to
+        public int extractSlot; //The slot we extract from
+        public BaseCardCache inserterCardCache;
+        public BaseCardCache extractorCardCache;
+        public ItemStack itemStack;
+        public LaserNodeBE fromBE;
+        public LaserNodeBE toBE;
+
+
+        public Result(IItemHandler handler, int slot, BaseCardCache cardCache, ItemStack itemStack, LaserNodeBE be, boolean extractor) {
+            if (extractor) {
+                this.extractHandler = handler;
+                this.extractSlot = slot;
+                this.extractorCardCache = cardCache;
+                this.itemStack = itemStack;
+                this.fromBE = be;
+            } else {
+                this.insertHandler = handler;
+                this.insertSlot = slot;
+                this.inserterCardCache = cardCache;
+                this.itemStack = itemStack;
+                this.toBE = be;
+            }
+        }
+        /*public Result(IItemHandler handler, int slot, BaseCardCache extractorCardCache, ItemStack itemStack, LaserNodeBE be) {
+            this.extractHandler = handler;
+            this.extractSlot = slot;
+            this.extractorCardCache = extractorCardCache;
+            this.itemStack = itemStack;
+            this.fromBE = be;
+        }*/
+
+        public void addInserter(IItemHandler handler, int slot, BaseCardCache inserterCardCache, LaserNodeBE be) {
+            this.insertHandler = handler;
+            this.insertSlot = slot;
+            this.inserterCardCache = inserterCardCache;
+            this.toBE = be;
+        }
+
+        public void addExtractor(IItemHandler handler, int slot, BaseCardCache extractorCardCache, LaserNodeBE be) {
+            this.extractHandler = handler;
+            this.extractSlot = slot;
+            this.extractorCardCache = extractorCardCache;
+            this.fromBE = be;
+        }
+
+        public void doIt() {
+            if (fromBE == null || toBE == null || extractorCardCache == null || inserterCardCache == null) //Happens if we forgot to set this!
+                return;
+            /*if (extractorCardCache instanceof StockerCardCache) { //Stocker modes reverse the insert/extract logic
+                ItemStack extractedStack;
+                if (insertSlot == -1) //We don't know which slot to pull from
+                    extractedStack = ItemHandlerUtil.extractItem(insertHandler, itemStack, false, inserterCardCache.isCompareNBT).itemStack();
+                else
+                    extractedStack = insertHandler.extractItem(insertSlot, itemStack.getCount(), false);
+                if (extractSlot == -1) //We don't know which slot to insert to
+                    ItemHandlerHelper.insertItem(extractHandler, itemStack, false);
+                else
+                    extractHandler.insertItem(extractSlot, itemStack, false);
+                toBE.drawParticles(itemStack, inserterCardCache.direction, toBE, fromBE, extractorCardCache.direction, inserterCardCache.cardSlot, extractorCardCache.cardSlot);
+            } else {*/
+            //Extract
+            if (extractSlot == -1) //We don't know which slot to pull from
+                ItemHandlerUtil.extractItem(extractHandler, itemStack, false, extractorCardCache.isCompareNBT).itemStack();
+            else
+                extractHandler.extractItem(extractSlot, itemStack.getCount(), false);
+            //Insert
+            if (insertSlot == -1) //We don't know which slot to insert to
+                ItemHandlerHelper.insertItem(insertHandler, itemStack, false);
+            else
+                insertHandler.insertItem(insertSlot, itemStack, false);
+            if (extractorCardCache instanceof StockerCardCache)
+                fromBE.drawParticles(itemStack, inserterCardCache.direction, toBE, fromBE, extractorCardCache.direction, inserterCardCache.cardSlot, extractorCardCache.cardSlot);
+            else
+                fromBE.drawParticles(itemStack, extractorCardCache.direction, fromBE, toBE, inserterCardCache.direction, extractorCardCache.cardSlot, inserterCardCache.cardSlot);
+            //drawParticles(extractResult.itemStack(), inserterCardCache.direction, laserNodeHandler.be, this, stockerCardCache.direction, inserterCardCache.cardSlot, stockerCardCache.cardSlot);
+            //}
+        }
+
+        public int count() {
+            return itemStack.getCount();
+        }
+
     }
 }

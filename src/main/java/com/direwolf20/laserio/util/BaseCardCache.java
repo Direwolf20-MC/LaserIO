@@ -1,5 +1,6 @@
 package com.direwolf20.laserio.util;
 
+import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.common.items.filters.BaseFilter;
 import com.direwolf20.laserio.common.items.filters.FilterBasic;
@@ -26,19 +27,21 @@ public class BaseCardCache {
     public final List<ItemStack> filteredItems;
     public final List<String> filterTags;
     public final byte sneaky;
+    public final LaserNodeBE be;
 
     public final boolean isAllowList;
     public final boolean isCompareNBT;
     public final Map<ItemStackKey, Boolean> filterCache = new Object2BooleanOpenHashMap<>();
     public final Map<ItemStackKey, Integer> filterCounts = new Object2IntOpenHashMap<>();
 
-    public BaseCardCache(Direction direction, ItemStack cardItem, int cardSlot) {
+    public BaseCardCache(Direction direction, ItemStack cardItem, int cardSlot, LaserNodeBE be) {
         this.cardItem = cardItem;
         this.direction = direction;
         this.sneaky = BaseCard.getSneaky(cardItem);
         this.channel = BaseCard.getChannel(cardItem);
         this.filterCard = BaseCard.getFilter(cardItem);
         this.cardSlot = cardSlot;
+        this.be = be;
         if (filterCard.equals(ItemStack.EMPTY)) {
             filteredItems = new ArrayList<>();
             filterTags = new ArrayList<>();
@@ -116,5 +119,13 @@ public class BaseCardCache {
         }
         filterCache.put(key, !isAllowList);
         return !isAllowList;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof BaseCardCache) {
+            return ((BaseCardCache) obj).be.equals(this.be) && ((BaseCardCache) obj).direction.equals(this.direction) && ((BaseCardCache) obj).cardSlot == this.cardSlot;
+        }
+        return false;
     }
 }

@@ -1,5 +1,6 @@
 package com.direwolf20.laserio.util;
 
+import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -9,8 +10,8 @@ public class InserterCardCache extends BaseCardCache {
     public final BlockPos relativePos;
     public final short priority;
 
-    public InserterCardCache(BlockPos relativePos, Direction direction, ItemStack cardItem, int cardSlot) {
-        super(direction, cardItem, cardSlot);
+    public InserterCardCache(BlockPos relativePos, Direction direction, ItemStack cardItem, LaserNodeBE be, int cardSlot) {
+        super(direction, cardItem, cardSlot, be);
         this.relativePos = relativePos;
         this.priority = BaseCard.getPriority(cardItem);
     }

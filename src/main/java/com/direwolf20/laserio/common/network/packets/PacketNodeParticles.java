@@ -30,12 +30,16 @@ public class PacketNodeParticles {
         for (ParticleData data : tempList) {
             buffer.writeInt(data.item);
             buffer.writeByte(data.itemCount);
-            buffer.writeBlockPos(data.fromNode);
-            buffer.writeByte(data.fromDirection);
-            buffer.writeBlockPos(data.toNode);
-            buffer.writeByte(data.toDirection);
-            buffer.writeByte(data.extractPosition);
-            buffer.writeByte(data.insertPosition);
+            if (data.fromData != null) {
+                buffer.writeBlockPos(data.fromData.node());
+                buffer.writeByte(data.fromData.direction());
+                buffer.writeByte(data.fromData.position());
+            }
+            if (data.toData != null) {
+                buffer.writeBlockPos(data.toData.node());
+                buffer.writeByte(data.toData.direction());
+                buffer.writeByte(data.toData.position());
+            }
         }
     }
 
@@ -47,9 +51,9 @@ public class PacketNodeParticles {
             byte itemCount = buffer.readByte();
             BlockPos fromNode = buffer.readBlockPos();
             byte fromDirection = buffer.readByte();
+            byte extractPosition = buffer.readByte();
             BlockPos toNode = buffer.readBlockPos();
             byte toDirection = buffer.readByte();
-            byte extractPosition = buffer.readByte();
             byte insertPosition = buffer.readByte();
             ParticleData data = new ParticleData(item, itemCount, fromNode, fromDirection, toNode, toDirection, extractPosition, insertPosition);
             thisList.add(data);
@@ -69,22 +73,22 @@ public class PacketNodeParticles {
 
         for (ParticleData data : tempList) {
             //Extract
-            BlockPos fromPos = data.fromNode;
-            BlockEntity fromTE = Minecraft.getInstance().level.getBlockEntity(fromPos);
-            if (!(fromTE instanceof LaserNodeBE)) {
-                //System.out.println("Skipping: " + fromPos);
-            } else {
-                //System.out.println("Processing: " + fromPos);
-                ((LaserNodeBE) fromTE).addParticleData(new ParticleRenderData(data.item, data.itemCount, fromPos.relative(Direction.values()[data.fromDirection]), data.fromDirection, data.fromNode, data.extractPosition));
+            if (data.fromData != null) {
+                BlockPos fromPos = data.fromData.node();
+                BlockEntity fromTE = Minecraft.getInstance().level.getBlockEntity(fromPos);
+                if (!(fromTE instanceof LaserNodeBE)) {
+                } else {
+                    ((LaserNodeBE) fromTE).addParticleData(new ParticleRenderData(data.item, data.itemCount, fromPos.relative(Direction.values()[data.fromData.direction()]), data.fromData.direction(), data.fromData.node(), data.fromData.position()));
+                }
             }
-            //Insert
-            BlockPos toPos = data.toNode;
-            BlockEntity toTE = Minecraft.getInstance().level.getBlockEntity(toPos);
-            if (!(toTE instanceof LaserNodeBE)) {
-                //System.out.println("Skipping: " + toPos);
-            } else {
-                //System.out.println("Processing: " + toPos);
-                ((LaserNodeBE) toTE).addParticleData(new ParticleRenderData(data.item, data.itemCount, data.toNode, data.toDirection, toPos.relative(Direction.values()[data.toDirection]), data.insertPosition));
+            if (data.toData != null) {
+                //Insert
+                BlockPos toPos = data.toData.node();
+                BlockEntity toTE = Minecraft.getInstance().level.getBlockEntity(toPos);
+                if (!(toTE instanceof LaserNodeBE)) {
+                } else {
+                    ((LaserNodeBE) toTE).addParticleData(new ParticleRenderData(data.item, data.itemCount, data.toData.node(), data.toData.direction(), toPos.relative(Direction.values()[data.toData.direction()]), data.toData.position()));
+                }
             }
         }
     }
