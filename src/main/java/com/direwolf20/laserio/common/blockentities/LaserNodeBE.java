@@ -381,6 +381,10 @@ public class LaserNodeBE extends BaseLaserBE {
                 break;
             getNextRR(extractorCardCache, inserterCardCaches);
         }
+        if (!foundAnything && roundRobinMap.containsKey(extractorCardCache)) { //RollBack the extractor card cache thing in case we didn't fit any items of this type
+            int rollBack = roundRobinMap.get(extractorCardCache) - 1 < 0 ? inserterCardCaches.size() - 1 : roundRobinMap.get(extractorCardCache) - 1;
+            roundRobinMap.replace(extractorCardCache, rollBack);
+        }
 
         return foundAnything;
     }
