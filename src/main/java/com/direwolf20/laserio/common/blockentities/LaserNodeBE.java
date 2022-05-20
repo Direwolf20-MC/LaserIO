@@ -34,6 +34,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.Collectors;
 
 import static com.direwolf20.laserio.util.MiscTools.findOffset;
 
@@ -255,14 +256,25 @@ public class LaserNodeBE extends BaseLaserBE {
     }
 
     public int getNextRR(ExtractorCardCache extractorCardCache, List<InserterCardCache> inserterCardCaches) {
+        int nextRR;
         if (roundRobinMap.containsKey(extractorCardCache)) {
             int currentRR = roundRobinMap.get(extractorCardCache);
-            int nextRR = currentRR + 1 >= inserterCardCaches.size() ? 0 : currentRR + 1;
-            return currentRR;
+            nextRR = currentRR + 1 >= inserterCardCaches.size() ? 0 : currentRR + 1;
         } else {
-            roundRobinMap.put(extractorCardCache, 0);
-            return 0;
+            nextRR = 0;
         }
+        roundRobinMap.put(extractorCardCache, nextRR);
+        return nextRR;
+    }
+
+    public List<InserterCardCache> applyRR(ExtractorCardCache extractorCardCache, List<InserterCardCache> inserterCardCaches, int nextRR) {
+        List<List<InserterCardCache>> lists = new ArrayList<>(
+                inserterCardCaches.stream()
+                        .collect(Collectors.partitioningBy(
+                                s -> inserterCardCaches.indexOf(s) >= nextRR))
+                        .values());
+        lists.get(1).addAll(lists.get(0));
+        return lists.get(1);
     }
 
     public boolean extractForExact(ExtractorCardCache extractorCardCache, IItemHandler fromInventory, ItemStack extractStack) {
@@ -308,18 +320,30 @@ public class LaserNodeBE extends BaseLaserBE {
     }
 
     public boolean extractItemStack(ExtractorCardCache extractorCardCache, IItemHandler fromInventory, ItemStack extractStack) {
-        TransferResult transferResults = new TransferResult();
         int amtToExtract = extractStack.getCount();
         List<InserterCardCache> inserterCardCaches = getPossibleInserters(extractorCardCache, extractStack);
         int nextRR = -1;
         boolean foundAnything = false;
 
+        if (extractorCardCache.roundRobin != 0) {
+            nextRR = getNextRR(extractorCardCache, inserterCardCaches);
+            inserterCardCaches = applyRR(extractorCardCache, inserterCardCaches, nextRR);
+        }
+
         for (InserterCardCache inserterCardCache : inserterCardCaches) {
             LaserNodeHandler laserNodeHandler = getLaserNodeHandler(inserterCardCache);
             if (laserNodeHandler == null) continue;
-
             TransferResult insertResults = ItemHandlerUtil.insertItemWithSlots(laserNodeHandler.be, laserNodeHandler.handler, extractStack, 0, true, extractorCardCache.isCompareNBT, true, inserterCardCache);
-            if (insertResults.results.isEmpty()) continue; //Next inserter if nothing went in
+            if (insertResults.results.isEmpty()) { //Next inserter if nothing went in -- return false if enforcing round robin
+                if (extractorCardCache.roundRobin == 2) {
+                    int rollBack = roundRobinMap.get(extractorCardCache) - 1 < 0 ? inserterCardCaches.size() - 1 : roundRobinMap.get(extractorCardCache) - 1;
+                    roundRobinMap.replace(extractorCardCache, rollBack);
+                    return false;
+                }
+                getNextRR(extractorCardCache, inserterCardCaches);
+                continue;
+            }
+            //If we got here, we can update this
             foundAnything = true; //We know that we have SOME of this item, and SOME will fit in another chest, so SOMETHING will move!
             int amtFit = insertResults.getTotalItemCounts(); //How many items fit (Above)
             //int amtNoFit = amtToExtract - amtFit;
@@ -337,6 +361,7 @@ public class LaserNodeBE extends BaseLaserBE {
             //extractStack.setCount(amtNoFit);
             if (chestEmpty || extractStack.isEmpty()) //If the chest is empty, or we have no more items to find, we're done here
                 break;
+            getNextRR(extractorCardCache, inserterCardCaches);
         }
 
         return foundAnything;
