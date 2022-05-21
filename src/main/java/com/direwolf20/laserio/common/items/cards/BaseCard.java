@@ -280,7 +280,7 @@ public class BaseCard extends Item {
         return roundRobin;
     }
 
-    public static int getRoundRobinPosition(ItemStack stack) {
+    /*public static int getRoundRobinPosition(ItemStack stack) {
         CompoundTag compound = stack.getOrCreateTag();
         return !compound.contains("roundRobinPosition") ? setRoundRobinPosition(stack, -1) : compound.getInt("roundRobinPosition");
     }
@@ -288,7 +288,7 @@ public class BaseCard extends Item {
     public static int setRoundRobinPosition(ItemStack stack, int roundRobinPosition) {
         stack.getOrCreateTag().putInt("roundRobinPosition", roundRobinPosition);
         return roundRobinPosition;
-    }
+    }*/
 
     public static boolean getExact(ItemStack stack) {
         CompoundTag compound = stack.getOrCreateTag();

@@ -184,7 +184,7 @@ public class LaserNodeBE extends BaseLaserBE {
             findMyExtractors();
             findMyStockers();
             updateOverclockers();
-            loadRoundRobin();
+            //loadRoundRobin();
             discoveredNodes = true;
         }
         extractItems(); //If this node has any extractors, do stuff with them
@@ -832,7 +832,7 @@ public class LaserNodeBE extends BaseLaserBE {
         return super.getCapability(cap, side);
     }
 
-    public void saveRoundRobin() {
+    /*public void saveRoundRobin() {
         for (Map.Entry<ExtractorCardCache, Integer> entry : roundRobinMap.entrySet()) {
             BaseCard.setRoundRobinPosition(entry.getKey().cardItem, entry.getValue());
         }
@@ -852,7 +852,7 @@ public class LaserNodeBE extends BaseLaserBE {
                     roundRobinMap.put(stockerCardCache, lastRR);
             }
         }
-    }
+    }*/
 
     @Override
     public void load(CompoundTag tag) {
@@ -866,7 +866,6 @@ public class LaserNodeBE extends BaseLaserBE {
             }
         }
         super.load(tag);
-
     }
 
     @Override
@@ -876,7 +875,6 @@ public class LaserNodeBE extends BaseLaserBE {
             NodeSideCache nodeSideCache = nodeSideCaches[i];
             tag.put("Inventory" + i, nodeSideCache.itemHandler.serializeNBT());
         }
-        saveRoundRobin();
     }
 
     @Override
