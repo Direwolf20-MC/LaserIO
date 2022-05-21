@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "Right clicking a Card in your hand will open up it's UI. You can also right click a card inside a $(l:laserio:laser_node)Node$(/l) UI.$(br2)Insert Mode:$(br)1. Mode$(br)2. Sneaky$(br)3. Filter$(br)4. Overclocker$(br)5. Priority$(br)6. Channel"
+      "text": "Right clicking a Card in your hand will open up it's UI. You can also right click a card inside a $(l:laserio:laser_node)Node$(/l) UI.$(br2)Insert Mode:$(br)1. $(l:laserio:modes)Mode$(/l)$(br)2. Sneaky$(br)3. Filter$(br)4. Overclocker$(br)5. Priority$(br)6. Channel"
     },
     {
       "type": "patchouli:image",
@@ -19,7 +19,7 @@
     },
     {
       "type": "patchouli:text",
-      "text": "Extract Mode:$(br2)1. Mode$(br)2. Sneaky$(br)3. Round Robin$(br)4. Exact$(br)5. Filter$(br)6. Overclocker$(br)7. Extract Amount$(br)8. Tick Speed$(br)9. Channel"
+      "text": "Extract Mode:$(br2)1. $(l:laserio:modes)Mode$(/l)$(br)2. Sneaky$(br)3. Round Robin$(br)4. Exact$(br)5. Filter$(br)6. Overclocker$(br)7. Extract Amount$(br)8. Tick Speed$(br)9. Channel"
     },
     {
       "type": "patchouli:image",
@@ -32,7 +32,7 @@
     },
     {
       "type": "patchouli:text",
-      "text": "Stock Mode:$(br2)1. Mode$(br)2. Sneaky$(br)3. Regulate$(br)4. Exact$(br)5. Filter$(br)6. Overclocker$(br)7. Extract Amount$(br)8. Tick Speed$(br)9. Channel"
+      "text": "Stock Mode:$(br2)1. $(l:laserio:modes)Mode$(/l)$(br)2. Sneaky$(br)3. Regulate$(br)4. Exact$(br)5. Filter$(br)6. Overclocker$(br)7. Extract Amount$(br)8. Tick Speed$(br)9. Channel"
     },
     {
       "type": "patchouli:image",

@@ -121,7 +121,7 @@ public class BaseCard extends Item {
             buf.writeItem(itemstack);
         }));
 
-
+        //System.out.println(itemstack.getItem().getRegistryName()+""+itemstack.getTag());
         return new InteractionResultHolder<>(InteractionResult.PASS, itemstack);
     }
 
