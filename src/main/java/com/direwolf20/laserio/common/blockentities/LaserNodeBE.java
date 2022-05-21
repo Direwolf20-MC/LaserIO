@@ -367,7 +367,7 @@ public class LaserNodeBE extends BaseLaserBE {
                 if (extractorCardCache.roundRobin != 0) getNextRR(extractorCardCache, inserterCardCaches);
                 continue;
             }
-            System.out.println(roundRobin);
+            //System.out.println(roundRobin);
             //If we got here, we can update this
             foundAnything = true; //We know that we have SOME of this item, and SOME will fit in another chest, so SOMETHING will move!
             int amtFit = insertResults.getTotalItemCounts(); //How many items fit (Above)
@@ -382,6 +382,7 @@ public class LaserNodeBE extends BaseLaserBE {
                 ItemStack insertStack = extractedStack.split(insertAmt);
                 laserNodeHandler.handler.insertItem(result.insertSlot, insertStack, false);
                 drawParticles(insertStack, extractorCardCache.direction, extractorCardCache.be, inserterCardCache.be, inserterCardCache.direction, extractorCardCache.cardSlot, inserterCardCache.cardSlot);
+                if (extractedStack.isEmpty()) break;
             }
             if (extractorCardCache.roundRobin != 0) getNextRR(extractorCardCache, inserterCardCaches);
             //extractStack.setCount(amtNoFit);
