@@ -63,6 +63,9 @@ minecraft {
             // Comma-separated list of namespaces to load gametests from. Empty = all namespaces.
             property 'forge.enabledGameTestNamespaces', 'laserio'
 
+            //Patchouli
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
             mods {
                 laserio {
                     source sourceSets.main
@@ -157,6 +160,10 @@ repositories {
         url "https://cursemaven.com"
     }
 
+    maven { //Patchouli
+        url 'https://maven.blamejared.com'
+    }
+
     maven { url = 'https://modmaven.dev/' } // mek
     maven { url = "https://www.cursemaven.com" } // curse mods
 }
@@ -178,6 +185,10 @@ dependencies {
     //JEI
     compileOnly fg.deobf("mezz.jei:jei-${jei_version}:api")
     implementation fg.deobf("mezz.jei:jei-${jei_version}")
+
+    //Patchouli
+    compileOnly fg.deobf("vazkii.patchouli:Patchouli:${patchouli_version}:api")
+    runtimeOnly fg.deobf("vazkii.patchouli:Patchouli:${patchouli_version}")
 
     //Other mods for dev environment
     runtimeOnly fg.deobf("mekanism:Mekanism:${mekanism_version}")
