@@ -267,6 +267,15 @@ public class LaserNodeBE extends BaseLaserBE {
         return nextRR;
     }
 
+    public int getRR(ExtractorCardCache extractorCardCache) {
+        if (roundRobinMap.containsKey(extractorCardCache)) {
+            return roundRobinMap.get(extractorCardCache);
+        } else {
+            roundRobinMap.put(extractorCardCache, 0);
+            return 0;
+        }
+    }
+
     public List<InserterCardCache> applyRR(ExtractorCardCache extractorCardCache, List<InserterCardCache> inserterCardCaches, int nextRR) {
         List<List<InserterCardCache>> lists = new ArrayList<>(
                 inserterCardCaches.stream()
@@ -286,11 +295,11 @@ public class LaserNodeBE extends BaseLaserBE {
         TransferResult insertResults = new TransferResult();
 
         List<InserterCardCache> inserterCardCaches = getPossibleInserters(extractorCardCache, extractStack);
-        int nextRR = -1;
+        int roundRobin = -1;
 
         if (extractorCardCache.roundRobin != 0) {
-            nextRR = getNextRR(extractorCardCache, inserterCardCaches);
-            inserterCardCaches = applyRR(extractorCardCache, inserterCardCaches, nextRR);
+            roundRobin = getRR(extractorCardCache);
+            inserterCardCaches = applyRR(extractorCardCache, inserterCardCaches, roundRobin);
         }
 
         //Begin test inserting into inserters
@@ -301,8 +310,6 @@ public class LaserNodeBE extends BaseLaserBE {
 
             TransferResult thisResult = ItemHandlerUtil.insertItemWithSlots(laserNodeHandler.be, laserNodeHandler.handler, extractStack, 0, true, extractorCardCache.isCompareNBT, true, inserterCardCache); //Test!!
             if (extractorCardCache.roundRobin == 2 && thisResult.getTotalItemCounts() < amtStillNeeded) {
-                int rollBack = roundRobinMap.get(extractorCardCache) - 1 < 0 ? inserterCardCaches.size() - 1 : roundRobinMap.get(extractorCardCache) - 1;
-                roundRobinMap.replace(extractorCardCache, rollBack);
                 return false;
             }
             if (thisResult.results.isEmpty()) { //Next inserter if nothing went in -- return false if enforcing round robin
@@ -317,7 +324,7 @@ public class LaserNodeBE extends BaseLaserBE {
             if (amtStillNeeded == 0)
                 break;
             extractStack.setCount(amtStillNeeded); //Modify the stack size rather than .copy
-            getNextRR(extractorCardCache, inserterCardCaches);
+            //getNextRR(extractorCardCache, inserterCardCaches);
         }
 
         if (amtStillNeeded != 0) return false;
@@ -333,6 +340,7 @@ public class LaserNodeBE extends BaseLaserBE {
         for (TransferResult.Result result : extractResults.results) {
             result.extractHandler.extractItem(result.extractSlot, result.itemStack.getCount(), false);
         }
+        if (extractorCardCache.roundRobin != 0) getNextRR(extractorCardCache, inserterCardCaches);
 
         return true;
     }
@@ -340,12 +348,12 @@ public class LaserNodeBE extends BaseLaserBE {
     public boolean extractItemStack(ExtractorCardCache extractorCardCache, IItemHandler fromInventory, ItemStack extractStack) {
         int amtToExtract = extractStack.getCount();
         List<InserterCardCache> inserterCardCaches = getPossibleInserters(extractorCardCache, extractStack);
-        int nextRR = -1;
+        int roundRobin = -1;
         boolean foundAnything = false;
 
         if (extractorCardCache.roundRobin != 0) {
-            nextRR = getNextRR(extractorCardCache, inserterCardCaches);
-            inserterCardCaches = applyRR(extractorCardCache, inserterCardCaches, nextRR);
+            roundRobin = getRR(extractorCardCache);
+            inserterCardCaches = applyRR(extractorCardCache, inserterCardCaches, roundRobin);
         }
 
         for (InserterCardCache inserterCardCache : inserterCardCaches) {
@@ -354,13 +362,12 @@ public class LaserNodeBE extends BaseLaserBE {
             TransferResult insertResults = ItemHandlerUtil.insertItemWithSlots(laserNodeHandler.be, laserNodeHandler.handler, extractStack, 0, true, extractorCardCache.isCompareNBT, true, inserterCardCache);
             if (insertResults.results.isEmpty()) { //Next inserter if nothing went in -- return false if enforcing round robin
                 if (extractorCardCache.roundRobin == 2) {
-                    int rollBack = roundRobinMap.get(extractorCardCache) - 1 < 0 ? inserterCardCaches.size() - 1 : roundRobinMap.get(extractorCardCache) - 1;
-                    roundRobinMap.replace(extractorCardCache, rollBack);
                     return false;
                 }
-                getNextRR(extractorCardCache, inserterCardCaches);
+                if (extractorCardCache.roundRobin != 0) getNextRR(extractorCardCache, inserterCardCaches);
                 continue;
             }
+            System.out.println(roundRobin);
             //If we got here, we can update this
             foundAnything = true; //We know that we have SOME of this item, and SOME will fit in another chest, so SOMETHING will move!
             int amtFit = insertResults.getTotalItemCounts(); //How many items fit (Above)
@@ -376,14 +383,10 @@ public class LaserNodeBE extends BaseLaserBE {
                 laserNodeHandler.handler.insertItem(result.insertSlot, insertStack, false);
                 drawParticles(insertStack, extractorCardCache.direction, extractorCardCache.be, inserterCardCache.be, inserterCardCache.direction, extractorCardCache.cardSlot, inserterCardCache.cardSlot);
             }
+            if (extractorCardCache.roundRobin != 0) getNextRR(extractorCardCache, inserterCardCaches);
             //extractStack.setCount(amtNoFit);
             if (chestEmpty || extractStack.isEmpty()) //If the chest is empty, or we have no more items to find, we're done here
                 break;
-            getNextRR(extractorCardCache, inserterCardCaches);
-        }
-        if (!foundAnything && roundRobinMap.containsKey(extractorCardCache)) { //RollBack the extractor card cache thing in case we didn't fit any items of this type
-            int rollBack = roundRobinMap.get(extractorCardCache) - 1 < 0 ? inserterCardCaches.size() - 1 : roundRobinMap.get(extractorCardCache) - 1;
-            roundRobinMap.replace(extractorCardCache, rollBack);
         }
 
         return foundAnything;
