@@ -56,16 +56,15 @@ public class LaserWrench extends Item {
             return InteractionResultHolder.pass(wrench);
 
         if (player.isShiftKeyDown()) {
-            //If the wrench doesn't already have a connection, store this position
-            if (getConnectionPos(wrench).equals(BlockPos.ZERO)) {
-                storeConnectionPos(wrench, targetPos);
-                return InteractionResultHolder.pass(wrench);
-            }
             //If the wrench's position equals this one, erase it
             if (targetPos.equals(getConnectionPos(wrench))) {
                 storeConnectionPos(wrench, BlockPos.ZERO);
                 return InteractionResultHolder.pass(wrench);
             }
+            //Store this position
+            storeConnectionPos(wrench, targetPos);
+            return InteractionResultHolder.pass(wrench);
+        } else {
             BlockPos sourcePos = getConnectionPos(wrench);
             BlockEntity sourceBE = level.getBlockEntity(sourcePos);
             //If the Source TE is not one of ours, erase it

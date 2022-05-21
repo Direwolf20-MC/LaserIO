@@ -4,6 +4,7 @@ import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import com.direwolf20.laserio.common.blocks.baseblocks.BaseLaserBlock;
 import com.direwolf20.laserio.common.containers.LaserNodeContainer;
 import com.direwolf20.laserio.common.containers.customhandler.LaserNodeItemHandler;
+import com.direwolf20.laserio.common.items.LaserWrench;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -79,10 +80,13 @@ public class LaserNode extends BaseLaserBlock implements EntityBlock {
     @SuppressWarnings("deprecation")
     @Override
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult result) {
+        ItemStack heldItem = player.getMainHandItem();
+        if (heldItem.getItem() instanceof LaserWrench)
+            return InteractionResult.PASS;
         if (!level.isClientSide) {
             BlockEntity be = level.getBlockEntity(pos);
             if (be instanceof LaserNodeBE) {
-                ItemStack heldItem = player.getMainHandItem();
+
                 if (heldItem.getItem() instanceof BaseCard) {
                     LazyOptional<IItemHandler> itemHandler = be.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, result.getDirection());
                     itemHandler.ifPresent(h -> {
