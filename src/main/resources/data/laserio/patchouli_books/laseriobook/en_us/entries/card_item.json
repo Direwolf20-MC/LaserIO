@@ -1,0 +1,17 @@
+{
+  "name": "Item Cards",
+  "sortnum": 1,
+  "category": "laserio:cards",
+  "icon": "laserio:card_item",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Item Cards are used to send items between inventories, such as chests and furnaces."
+    },
+    {
+      "type": "patchouli:crafting",
+      "title": "Item Card",
+      "recipe": "laserio:card_item"
+    }
+  ]
+}

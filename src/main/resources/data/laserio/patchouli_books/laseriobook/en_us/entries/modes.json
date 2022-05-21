@@ -1,0 +1,24 @@
+{
+  "name": "Modes",
+  "sortnum": 1,
+  "category": "laserio:mechanics",
+  "icon": "laserio:textures/gui/buttons/modeextractor.png",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Modes determine what a card fundamentally does. The following pages define each mode type currently available.$(br2)Each type of card (Item/Fluid/Energy) supports the the following three modes. Redstone cards will support a different set of modes."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Insert Mode cards are a validate destination for objects being extracted by Extract Mode cards.$(br2)Stock mode cards will attempt to pull from Insert Mode cards."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Modes determine what a card fundamentally does. The following pages define each mode type currently available."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Modes determine what a card fundamentally does. The following pages define each mode type currently available."
+    }
+  ]
+}

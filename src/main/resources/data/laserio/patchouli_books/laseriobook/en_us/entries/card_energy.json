@@ -1,0 +1,12 @@
+{
+  "name": "Energy Cards (Not Implemented)",
+  "sortnum": 3,
+  "category": "laserio:cards",
+  "icon": "laserio:card_energy",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Energy Cards are used to send Energy between inventories, such as machines and batteries."
+    }
+  ]
+}
