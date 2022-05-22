@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "The Laser Node is the most important block in LaserIO as it allows interaction with adjacent blocks. $(br2)By using Cards, you can interact with the adjacent block to transfer Items, Fluids, Energy, or Redstone."
+      "text": "The Laser Node is the most important block in LaserIO as it allows interaction with adjacent blocks. $(br2)By using Cards such as the $(l:laserio:card_item)Item Card$(/l), you can interact with the adjacent block to transfer Items, Fluids, Energy, or Redstone."
     },
     {
       "type": "patchouli:image",
@@ -45,7 +45,7 @@
     },
     {
       "type": "patchouli:text",
-      "text": "Nodes can be connected together using the $(l:laserio:laser_wrench)Laser Wrench$(/l), allowing connections between distance inventories.  The maximum range between connections is 8 blocks.$(br2)If your nodes are father apart, it is recommended to use Laser Connectors."
+      "text": "Nodes can be connected together using the $(l:laserio:laser_wrench)Laser Wrench$(/l), allowing connections between distant inventories.  The maximum range between connections is 8 blocks.$(br2)If your nodes are father apart, it is recommended to use $(l:laserio:laser_connector)Laser Connectors$()."
     },
     {
       "type": "patchouli:image",

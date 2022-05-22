@@ -10,7 +10,7 @@
     },
     {
       "type": "patchouli:text",
-      "text": "For example, set an Extract Card to the 'Orange Channel' with a filter for cobblestone, and another extract card to the 'Black Channel' with a filter for coal. Then place them in the same node. $(br2)An Orange channel inserter can sit above a furnace, which a black channel inserter below. This will ensure that only cobblestone goes into the top of the furnace, while coal goes below."
+      "text": "For example, set an Extract Card to the 'Orange Channel' with a filter for cobblestone, and another extract card to the 'Black Channel' with a filter for coal. Then place them in the same node. $(br2)An Orange channel inserter can sit above a furnace, with a black channel inserter below. This will ensure that only cobblestone goes into the top of the furnace, while coal goes below."
     }
   ]
 }
