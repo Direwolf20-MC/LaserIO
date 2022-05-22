@@ -10,7 +10,11 @@
     },
     {
       "type": "patchouli:text",
-      "text": "If a counting filter is used in a stocker mode card, it will try to keep the specified amount of resources in stock. For example, keeping 64 cobblestone in a chest is done by using a Counting Filter with 64 cobblestone.$(br2)Counting filters do not have an Allow vs Deny button - as Deny mode would not make any sense for a counting filter. All counting filters are 'Allow mode'.  JEI Interaction works the same as it does in a $(l:laserio:filter_basic)Basic Filter$(/l)."
+      "text": "If a counting filter is used in a stocker mode card, it will try to keep the specified amount of resources in stock. For example, keeping 64 cobblestone in a chest is done by using a Counting Filter with 64 cobblestone.$(br2)If a counting filter is used in an Inserter card, it will limit how many items are allowed to be sent to that inventory by extractor cards."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Counting filters do not have an Allow vs Deny button - as Deny mode would not make any sense for a counting filter. All counting filters are 'Allow mode'.  JEI Interaction works the same as it does in a $(l:laserio:filter_basic)Basic Filter$(/l)."
     }
   ]
 }
