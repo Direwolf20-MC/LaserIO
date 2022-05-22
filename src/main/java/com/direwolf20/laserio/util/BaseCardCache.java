@@ -58,7 +58,7 @@ public class BaseCardCache {
     public int getFilterAmt(ItemStack testStack) {
         if (filterCard.equals(ItemStack.EMPTY))
             return 0; //If theres no filter in the card (This should never happen in theory)
-        if (filterCard.getItem() instanceof FilterBasic) { //If this is a basicCard return -1 which will mean infinite amount
+        if (!(filterCard.getItem() instanceof FilterCount)) { //If this is a basic or tag Card return -1 which will mean infinite amount
             return -1;
         }
         ItemStackKey key = new ItemStackKey(testStack, isCompareNBT);

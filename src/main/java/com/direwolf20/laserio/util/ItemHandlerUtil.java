@@ -1,6 +1,7 @@
 package com.direwolf20.laserio.util;
 
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
+import com.direwolf20.laserio.common.items.filters.FilterCount;
 import com.google.common.collect.ArrayListMultimap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -166,6 +167,17 @@ public class ItemHandlerUtil {
         int amtRemaining = amount;
         ItemStack remainingStack = incstack.copy();
         remainingStack.setCount(amtRemaining);
+        if (inserterCardCache.filterCard.getItem() instanceof FilterCount) { //If this is a count filter, only try to insert how many more items we need
+            int filterCount = inserterCardCache.getFilterAmt(incstack);
+            if (filterCount <= 0) return insertResults; //This should never happen in theory...
+            ItemHandlerUtil.InventoryCounts inventoryCounts = new InventoryCounts(source, isCompareNBT);
+            int amtInInv = inventoryCounts.getCount(remainingStack);
+            int amtNeeded = filterCount - amtInInv;
+            if (amtNeeded <= 0) return insertResults;
+            amtRemaining = Math.min(remainingStack.getCount(), amtNeeded);
+            remainingStack.setCount(amtRemaining);
+        }
+
         ItemStackKey key = new ItemStackKey(incstack, isCompareNBT);
         if (stacksFirst) { //Loop through the slots looking for like item stacks first
             for (int i = startAt; i < source.getSlots(); i++) {
