@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "The Count Filter can designate a specified number of items, and really only makes sense in Stocker or Inserter modes.$(br2)Stack sizes of items can go from 1 to 4096. Left click will increase the stack size, while right click will decrease it. Holding shift or control will modify this amount by 10 or 64 respectively."
+      "text": "The Count Filter can designate a specified number of items, and plays a different role based on the card's mode.$(br2)Stack sizes of items can go from 1 to 4096. Left click will increase the stack size, while right click will decrease it. Holding shift or control will modify this amount by 10 or 64 respectively."
     },
     {
       "type": "patchouli:text",
@@ -14,7 +14,7 @@
     },
     {
       "type": "patchouli:text",
-      "text": "Counting filters do not have an Allow vs Deny button - as Deny mode would not make any sense for a counting filter. All counting filters are 'Allow mode'.  JEI Interaction works the same as it does in a $(l:laserio:filter_basic)Basic Filter$(/l)."
+      "text": "If a counting filter is used in a extractor mode card, it will leave the designated number of items behind. For example, if you set an extract card with a filter of 8 cobblestone, it will pull out all but the last 8 cobblestone from a chest.$(br2)Counting filters do not have an Allow vs Deny button - as Deny mode would not make any sense for a counting filter. All counting filters are 'Allow mode'.  JEI Interaction works the same as it does in a $(l:laserio:filter_basic)Basic Filter$(/l)."
     }
   ]
 }

@@ -288,7 +288,7 @@ public class LaserNodeBE extends BaseLaserBE {
 
     public boolean extractForExact(ExtractorCardCache extractorCardCache, IItemHandler fromInventory, ItemStack extractStack) {
         TransferResult extractResults = (ItemHandlerUtil.extractItemWithSlots(this, fromInventory, extractStack, extractStack.getCount(), true, extractorCardCache.isCompareNBT, extractorCardCache)); //Fake Extract
-        int amtNeeded = extractStack.getCount();
+        int amtNeeded = extractorCardCache.extractAmt;
         if (extractResults.getTotalItemCounts() != amtNeeded) //Return if we didn't get what we needed
             return false;
 
@@ -403,11 +403,26 @@ public class LaserNodeBE extends BaseLaserBE {
         assert level != null;
         if (!level.isLoaded(adjacentPos)) return false;
         IItemHandler adjacentInventory = getAttachedInventory(extractorCardCache.direction, extractorCardCache.sneaky).orElse(EMPTY);
+        ItemHandlerUtil.InventoryCounts inventoryCounts = new ItemHandlerUtil.InventoryCounts();
+        if (extractorCardCache.filterCard.getItem() instanceof FilterCount) {
+            inventoryCounts = new ItemHandlerUtil.InventoryCounts(adjacentInventory, extractorCardCache.isCompareNBT);
+        }
         for (int slot = 0; slot < adjacentInventory.getSlots(); slot++) {
             ItemStack stackInSlot = adjacentInventory.getStackInSlot(slot);
             if (stackInSlot.isEmpty() || !(extractorCardCache.isStackValidForCard(stackInSlot))) continue;
             ItemStack extractStack = stackInSlot.copy();
             extractStack.setCount(extractorCardCache.extractAmt);
+
+            if (extractorCardCache.filterCard.getItem() instanceof FilterCount) { //If this is a count filter, only try to extract up to the amount in the filter
+                int filterCount = extractorCardCache.getFilterAmt(extractStack);
+                if (filterCount <= 0) continue; //This should never happen in theory...
+                int amtInInv = inventoryCounts.getCount(extractStack);
+                int amtAllowedToRemove = amtInInv - filterCount;
+                if (amtAllowedToRemove <= 0) continue;
+                int amtRemaining = Math.min(extractStack.getCount(), amtAllowedToRemove);
+                extractStack.setCount(amtRemaining);
+            }
+
             if (extractorCardCache.exact) {
                 if (extractForExact(extractorCardCache, adjacentInventory, extractStack))
                     return true;
