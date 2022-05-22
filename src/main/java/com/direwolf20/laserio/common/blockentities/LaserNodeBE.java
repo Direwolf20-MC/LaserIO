@@ -373,7 +373,11 @@ public class LaserNodeBE extends BaseLaserBE {
             int amtFit = insertResults.getTotalItemCounts(); //How many items fit (Above)
             //int amtNoFit = amtToExtract - amtFit;
             extractStack.setCount(amtFit); //Make a stack of how many can fit in here without doing an itemstack.copy()
-            ItemStack extractedStack = ItemHandlerUtil.extractItem(fromInventory, extractStack, false, extractorCardCache.isCompareNBT).itemStack();
+            ItemStack extractedStack = ItemStack.EMPTY;
+            if (extractorCardCache instanceof StockerCardCache)
+                extractedStack = ItemHandlerUtil.extractItemBackwards(fromInventory, extractStack, extractStack.getCount(), false, extractorCardCache.isCompareNBT).itemStack();
+            else
+                extractedStack = ItemHandlerUtil.extractItem(fromInventory, extractStack, false, extractorCardCache.isCompareNBT).itemStack();
             boolean chestEmpty = extractedStack.getCount() < extractStack.getCount(); //If we didn't find enough, the extract chest is empty, so don't try again later
             amtToExtract -= extractedStack.getCount(); //Reduce how many we have left to extract by the amount we got here
             extractStack.setCount(amtToExtract); //For use in the next loop -- How many items are still needed
