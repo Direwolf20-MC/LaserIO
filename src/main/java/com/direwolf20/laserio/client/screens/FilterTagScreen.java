@@ -131,11 +131,14 @@ public class FilterTagScreen extends AbstractContainerScreen<FilterTagContainer>
 
         for (String tag : displayTags) {
             List<Item> tagItems = ForgeRegistries.ITEMS.tags().getTag(ItemTags.create(new ResourceLocation(tag))).stream().toList();
-            ItemStack drawStack = new ItemStack(tagItems.get((cycleRenders / 120) % tagItems.size()));
-            matrixStack.pushPose();
-            tagItemRenderer.renderGuiItem(8f, drawStack, (availableItemsstartX) - 4, (tagStartY) - 5, itemRenderer.getModel(drawStack, null, null, 0));
-            matrixStack.popPose();
-
+            ItemStack drawStack = ItemStack.EMPTY;
+            if (tagItems.size() > 0) {
+                drawStack = new ItemStack(tagItems.get((cycleRenders / 120) % tagItems.size()));
+                matrixStack.pushPose();
+                if (!drawStack.isEmpty())
+                    tagItemRenderer.renderGuiItem(8f, drawStack, (availableItemsstartX) - 4, (tagStartY) - 5, itemRenderer.getModel(drawStack, null, null, 0));
+                matrixStack.popPose();
+            }
             matrixStack.pushPose();
             matrixStack.scale(0.75f, 0.75f, 0.75f);
             int fontColor = stackInSlotTags.contains(tag) ? Color.BLUE.getRGB() : Color.DARK_GRAY.getRGB();
