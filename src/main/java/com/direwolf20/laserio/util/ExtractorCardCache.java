@@ -31,7 +31,7 @@ public class ExtractorCardCache extends BaseCardCache {
     public int decrementSleep() {
         remainingSleep--;
         if (remainingSleep <= 0) {
-            remainingSleep = tickSpeed;
+            remainingSleep = 0;
             return 0;
         }
         return remainingSleep;

@@ -118,24 +118,7 @@ public class LaserNodeBE extends BaseLaserBE {
         }
     }
 
-    /** Build a list of stocker cards this node has in it, for looping through **/
-    public void findMyStockers() {
-        for (Direction direction : Direction.values()) {
-            NodeSideCache nodeSideCache = nodeSideCaches[direction.ordinal()];
-            nodeSideCache.stockerCardCaches.clear();
-            this.stockerDestinationCache.clear();
-            for (int slot = 0; slot < LaserNodeContainer.CARDSLOTS; slot++) {
-                ItemStack card = nodeSideCache.itemHandler.getStackInSlot(slot);
-                if (card.getItem() instanceof BaseCard) {
-                    if (BaseCard.getNamedTransferMode(card).equals(BaseCard.TransferMode.STOCK)) {
-                        nodeSideCache.stockerCardCaches.add(new StockerCardCache(direction, card, slot, this));
-                    }
-                }
-            }
-        }
-    }
-
-    /** Build a list of extractor cards this node has in it, for looping through **/
+    /** Build a list of extractor cards AND Stocker cards this node has in it, for looping through **/
     public void findMyExtractors() {
         for (Direction direction : Direction.values()) {
             NodeSideCache nodeSideCache = nodeSideCaches[direction.ordinal()];
@@ -145,6 +128,9 @@ public class LaserNodeBE extends BaseLaserBE {
                 if (card.getItem() instanceof BaseCard) {
                     if (BaseCard.getNamedTransferMode(card).equals(BaseCard.TransferMode.EXTRACT)) {
                         nodeSideCache.extractorCardCaches.add(new ExtractorCardCache(direction, card, slot, this));
+                    }
+                    if (BaseCard.getNamedTransferMode(card).equals(BaseCard.TransferMode.STOCK)) {
+                        nodeSideCache.extractorCardCaches.add(new StockerCardCache(direction, card, slot, this));
                     }
                 }
             }
@@ -158,16 +144,17 @@ public class LaserNodeBE extends BaseLaserBE {
             int countCardsHandled = 0;
             for (ExtractorCardCache extractorCardCache : nodeSideCache.extractorCardCaches) {
                 if (extractorCardCache.decrementSleep() == 0) {
-                    if (countCardsHandled > nodeSideCache.overClocker) return;
-                    if (sendItems(extractorCardCache))
-                        countCardsHandled++;
-                }
-            }
-            for (StockerCardCache stockerCardCache : nodeSideCache.stockerCardCaches) {
-                if (stockerCardCache.decrementSleep() == 0) {
-                    if (countCardsHandled > nodeSideCache.overClocker) return;
-                    if (stockItems(stockerCardCache))
-                        countCardsHandled++;
+                    if (countCardsHandled > nodeSideCache.overClocker) continue;
+                    if (extractorCardCache instanceof StockerCardCache stockerCardCache) {
+                        if (stockItems(stockerCardCache))
+                            countCardsHandled++;
+                    } else {
+                        if (sendItems(extractorCardCache))
+                            countCardsHandled++;
+                    }
+                    if (extractorCardCache.remainingSleep <= 0) {
+                        extractorCardCache.remainingSleep = extractorCardCache.tickSpeed;
+                    }
                 }
             }
         }
@@ -182,7 +169,6 @@ public class LaserNodeBE extends BaseLaserBE {
         if (!discoveredNodes) { //On world / chunk reload, lets rediscover the network, including this block's extractor cards.
             discoverAllNodes();
             findMyExtractors();
-            findMyStockers();
             updateOverclockers();
             //loadRoundRobin();
             discoveredNodes = true;
@@ -718,7 +704,6 @@ public class LaserNodeBE extends BaseLaserBE {
         notifyOtherNodesOfChange();
         markDirtyClient();
         findMyExtractors();
-        findMyStockers();
         updateOverclockers();
     }
 
