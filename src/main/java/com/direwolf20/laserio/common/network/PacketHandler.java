@@ -2,8 +2,10 @@ package com.direwolf20.laserio.common.network;
 
 import com.direwolf20.laserio.common.LaserIO;
 import com.direwolf20.laserio.common.network.packets.*;
+import net.minecraft.network.protocol.Packet;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.util.FakePlayer;
@@ -50,6 +52,19 @@ public class PacketHandler {
         for (Player player : level.players()) {
             if (!(player instanceof FakePlayer))
                 HANDLER.sendTo(msg, ((ServerPlayer) player).connection.connection, NetworkDirection.PLAY_TO_CLIENT);
+        }
+    }
+
+    /**
+     * Sends a vanilla packet to the given player
+     *
+     * @param player Player
+     * @param packet Packet
+     *               Stolen from Tinkers Construct :)
+     */
+    public static void sendVanillaPacket(Entity player, Packet<?> packet) {
+        if (player instanceof ServerPlayer serverPlayer) {
+            serverPlayer.connection.send(packet);
         }
     }
 
