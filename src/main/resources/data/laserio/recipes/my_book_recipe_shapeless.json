@@ -1,0 +1,12 @@
+{
+  "type": "patchouli:shapeless_book_recipe",
+  "ingredients": [
+    {
+      "item": "laserio:logic_chip"
+    },
+    {
+      "item": "minecraft:book"
+    }
+  ],
+  "book": "laserio:laseriobook"
+}
