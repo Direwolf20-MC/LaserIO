@@ -158,13 +158,14 @@ public class CardItemContainer extends AbstractContainerMenu {
     private void updateFilterSlots(IItemHandler handler, int index, int x, int y, int horAmount, int dx, int verAmount, int dy) {
         for (int j = 0; j < verAmount; j++) {
             for (int i = 0; i < horAmount; i++) {
-                if (handler instanceof CardItemHandler && index == 0)
-                    System.out.println("This shouldn't happen");
-                else if (handler instanceof FilterBasicHandler) {
+                if (handler instanceof CardItemHandler && index == 0) {
+                    //System.out.println("This shouldn't happen");
+                } else if (handler instanceof FilterBasicHandler) {
                     slots.set(index + SLOTS, new FilterBasicSlot(handler, index, x, y, slots.get(0).getItem().getItem() instanceof FilterCount));
                     slots.get(index + SLOTS).index = index + SLOTS; //Look at container.addSlot() -- it does this
-                } else
-                    System.out.println("This shouldn't happen");
+                } else {
+                    //System.out.println("This shouldn't happen");
+                }
                 x += dx;
                 index++;
             }

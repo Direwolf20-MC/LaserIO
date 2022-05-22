@@ -75,33 +75,28 @@ public class BaseCard extends Item {
             tooltip.add(new TranslatableComponent("laserio.tooltip.item.show_settings")
                     .withStyle(ChatFormatting.GRAY));
         } else {
-            try {
-                String currentMode = getNamedTransferMode(stack).toString();
-                MutableComponent toWrite = tooltipMaker("laserio.tooltip.item.card.mode", ChatFormatting.GRAY.getColor());
-                int modeColor = ChatFormatting.GRAY.getColor();
-                if (currentMode.equals("EXTRACT"))
-                    modeColor = ChatFormatting.RED.getColor();
-                else if (currentMode.equals("INSERT"))
-                    modeColor = ChatFormatting.GREEN.getColor();
-                else if (currentMode.equals("STOCK"))
-                    modeColor = ChatFormatting.BLUE.getColor();
-                toWrite.append(tooltipMaker("laserio.tooltip.item.card.mode." + currentMode, modeColor));
+            String currentMode = getNamedTransferMode(stack).toString();
+            MutableComponent toWrite = tooltipMaker("laserio.tooltip.item.card.mode", ChatFormatting.GRAY.getColor());
+            int modeColor = ChatFormatting.GRAY.getColor();
+            if (currentMode.equals("EXTRACT"))
+                modeColor = ChatFormatting.RED.getColor();
+            else if (currentMode.equals("INSERT"))
+                modeColor = ChatFormatting.GREEN.getColor();
+            else if (currentMode.equals("STOCK"))
+                modeColor = ChatFormatting.BLUE.getColor();
+            toWrite.append(tooltipMaker("laserio.tooltip.item.card.mode." + currentMode, modeColor));
+            tooltip.add(toWrite);
+
+            toWrite = tooltipMaker("laserio.tooltip.item.card.channel", ChatFormatting.GRAY.getColor());
+            int channel = getChannel(stack);
+            toWrite.append(tooltipMaker(String.valueOf(channel), LaserNodeBERender.colors[channel].getRGB()));
+            tooltip.add(toWrite);
+
+            int sneakyMode = getSneaky(stack);
+            if (sneakyMode != -1) {
+                toWrite = tooltipMaker("laserio.tooltip.item.card.sneaky", ChatFormatting.GRAY.getColor());
+                toWrite.append(tooltipMaker("laserio.tooltip.item.card.sneaky." + Direction.values()[sneakyMode].toString().toUpperCase(Locale.ROOT), ChatFormatting.DARK_GREEN.getColor()));
                 tooltip.add(toWrite);
-
-                toWrite = tooltipMaker("laserio.tooltip.item.card.channel", ChatFormatting.GRAY.getColor());
-                int channel = getChannel(stack);
-                toWrite.append(tooltipMaker(String.valueOf(channel), LaserNodeBERender.colors[channel].getRGB()));
-                tooltip.add(toWrite);
-
-                int sneakyMode = getSneaky(stack);
-                if (sneakyMode != -1) {
-                    toWrite = tooltipMaker("laserio.tooltip.item.card.sneaky", ChatFormatting.GRAY.getColor());
-                    toWrite.append(tooltipMaker("laserio.tooltip.item.card.sneaky." + Direction.values()[sneakyMode].toString().toUpperCase(Locale.ROOT), ChatFormatting.DARK_GREEN.getColor()));
-                    tooltip.add(toWrite);
-                }
-
-            } catch (Exception e) {
-                System.out.println(e);
             }
         }
     }
