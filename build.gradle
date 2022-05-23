@@ -194,6 +194,8 @@ dependencies {
 
     //Other mods for dev environment
     runtimeOnly fg.deobf("mekanism:Mekanism:${mekanism_version}")
+    runtimeOnly fg.deobf("curse.maven:functional-storage-556861:3794763")
+    runtimeOnly fg.deobf("curse.maven:titanium-287342:3801672")
     //runtimeOnly fg.deobf("curse.maven:inventory-sorter-240633:3543137") // already on the forge maven
 
     //MouseTweaks

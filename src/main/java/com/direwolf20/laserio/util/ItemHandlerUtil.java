@@ -132,7 +132,7 @@ public class ItemHandlerUtil {
             return extractResults;
         }
         int amtRemaining = amount;
-        ItemStack remainingStack = incstack; //TODO ItemStack.Copy?
+        ItemStack remainingStack = incstack.copy();
         ItemStackKey key = new ItemStackKey(incstack, isCompareNBT);
         for (int i = source.getSlots() - 1; i >= 0; i--) {
             ItemStack stackInSlot = source.getStackInSlot(i);
@@ -184,9 +184,11 @@ public class ItemHandlerUtil {
                 ItemStack stackInSlot = source.getStackInSlot(i);
                 if (stackInSlot.isEmpty())
                     emptySlots.add(i); //If this slot is empty, add to the list of empty slots first
-                if (key.equals(new ItemStackKey(stackInSlot, isCompareNBT)) && !(stackInSlot.getCount() == stackInSlot.getMaxStackSize())) { //Look for like itemstacks to add to first.
+                if (key.equals(new ItemStackKey(stackInSlot, isCompareNBT))) { //Look for like itemstacks to add to first.
                     remainingStack = source.insertItem(i, remainingStack, simulate); //Insert as many as we can
-                    insertResults.addResult(new TransferResult.Result(source, i, inserterCardCache, incstack.split(amtRemaining - remainingStack.getCount()), be, false)); //TODO Check this split thing
+                    int amtInserted = amtRemaining - remainingStack.getCount();
+                    if (amtInserted <= 0) continue;
+                    insertResults.addResult(new TransferResult.Result(source, i, inserterCardCache, incstack.split(amtInserted), be, false));
                     amtRemaining = remainingStack.getCount(); //Update amtRemaining
 
                     if (amtRemaining == 0)
