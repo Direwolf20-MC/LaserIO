@@ -2,6 +2,7 @@ package com.direwolf20.laserio.client.renderer;
 
 import com.direwolf20.laserio.client.blockentityrenders.LaserNodeBERender;
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
+import com.direwolf20.laserio.common.blockentities.basebe.BaseLaserBE;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -23,6 +24,7 @@ import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 
 import java.awt.*;
+import java.util.Queue;
 
 import static com.direwolf20.laserio.util.MiscTools.findOffset;
 
@@ -118,6 +120,37 @@ public class RenderUtils {
         drawLaser(builder, positionMatrix, endLaser, startLaser, 1, 0, 0, 0.33f, 0.025f, v, v + diffY * 1.5, be);
 
         matrixStackIn.popPose();
+        buffer.endBatch(MyRenderType.CONNECTING_LASER); //This apparently is needed in RenderWorldLast
+    }
+
+    public static void drawLasersLast2(Queue<BaseLaserBE> beRenders, PoseStack matrixStackIn) {
+        MultiBufferSource.BufferSource buffer = Minecraft.getInstance().renderBuffers().bufferSource();
+        VertexConsumer builder;
+        Vec3 projectedView = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
+
+        builder = buffer.getBuffer(MyRenderType.CONNECTING_LASER);
+        while (beRenders.size() > 0) {
+            BaseLaserBE be = beRenders.remove();
+            Level level = be.getLevel();
+            long gameTime = level.getGameTime();
+            double v = gameTime * 0.04;
+            BlockPos startBlock = be.getBlockPos();
+            matrixStackIn.pushPose();
+            Matrix4f positionMatrix = matrixStackIn.last().pose();
+
+            matrixStackIn.translate(startBlock.getX() - projectedView.x, startBlock.getY() - projectedView.y, startBlock.getZ() - projectedView.z);
+
+            Vector3f startLaser = new Vector3f(0.5f, .5f, 0.5f);
+            for (BlockPos target : be.getRenderedConnections()) {
+                BlockPos endBlock = be.getWorldPos(target);
+                float diffX = endBlock.getX() + .5f - startBlock.getX();
+                float diffY = endBlock.getY() + .5f - startBlock.getY();
+                float diffZ = endBlock.getZ() + .5f - startBlock.getZ();
+                Vector3f endLaser = new Vector3f(diffX, diffY, diffZ);
+                drawLaser(builder, positionMatrix, endLaser, startLaser, 1, 0, 0, 0.33f, 0.025f, v, v + diffY * 1.5, be);
+            }
+            matrixStackIn.popPose();
+        }
         buffer.endBatch(MyRenderType.CONNECTING_LASER); //This apparently is needed in RenderWorldLast
     }
 
