@@ -51,7 +51,7 @@ public class LaserNodeBE extends BaseLaserBE {
             new Vector3f(0.35f, 0.35f, 0.5f)
     };
     /** A cache of this blocks sides - data we need to reference frequently **/
-    private final NodeSideCache[] nodeSideCaches = new NodeSideCache[6];
+    public final NodeSideCache[] nodeSideCaches = new NodeSideCache[6];
     private final IItemHandler EMPTY = new ItemStackHandler(0);
 
     /** Adjacent Inventory Handlers **/
@@ -839,28 +839,6 @@ public class LaserNodeBE extends BaseLaserBE {
         }
         return super.getCapability(cap, side);
     }
-
-    /*public void saveRoundRobin() {
-        for (Map.Entry<ExtractorCardCache, Integer> entry : roundRobinMap.entrySet()) {
-            BaseCard.setRoundRobinPosition(entry.getKey().cardItem, entry.getValue());
-        }
-    }
-
-    public void loadRoundRobin() {
-        for (Direction direction : Direction.values()) {
-            NodeSideCache nodeSideCache = nodeSideCaches[direction.ordinal()];
-            for (ExtractorCardCache extractorCardCache : nodeSideCache.extractorCardCaches) {
-                int lastRR = BaseCard.getRoundRobinPosition(extractorCardCache.cardItem);
-                if (lastRR != -1)
-                    roundRobinMap.put(extractorCardCache, lastRR);
-            }
-            for (StockerCardCache stockerCardCache : nodeSideCache.stockerCardCaches) {
-                int lastRR = BaseCard.getRoundRobinPosition(stockerCardCache.cardItem);
-                if (lastRR != -1)
-                    roundRobinMap.put(stockerCardCache, lastRR);
-            }
-        }
-    }*/
 
     @Override
     public void load(CompoundTag tag) {

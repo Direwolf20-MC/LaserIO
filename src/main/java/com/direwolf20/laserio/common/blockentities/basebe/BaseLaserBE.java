@@ -75,6 +75,8 @@ public class BaseLaserBE extends BlockEntity {
         boolean success = renderedConnections.add(getRelativePos(pos));
         if (success) {
             markDirtyClient();
+        } else {
+            setChanged();
         }
         return success;
     }
@@ -86,6 +88,8 @@ public class BaseLaserBE extends BlockEntity {
         boolean success = renderedConnections.remove(relativePos); //Remove it from the rendered list as well, whether its there or not
         if (success) {
             markDirtyClient();
+        } else {
+            setChanged();
         }
         return success;
     }

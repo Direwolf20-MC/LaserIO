@@ -27,6 +27,7 @@ public class ClientEvents {
 
         //DelayedRenderer Renders
         DelayedRenderer.render(evt.getPoseStack());
+        DelayedRenderer.renderConnections(evt.getPoseStack());
     }
 
     public static ItemStack getWrench(Player player) {

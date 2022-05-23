@@ -1,25 +1,17 @@
 package com.direwolf20.laserio.client.blockentityrenders;
 
 import com.direwolf20.laserio.client.blockentityrenders.baseberender.BaseLaserBERender;
-import com.direwolf20.laserio.client.renderer.RenderUtils;
+import com.direwolf20.laserio.client.renderer.DelayedRenderer;
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
-import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Vector3f;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.CapabilityItemHandler;
 
 import java.awt.*;
 
-import static com.direwolf20.laserio.util.MiscTools.findOffset;
-
 public class LaserNodeBERender extends BaseLaserBERender<LaserNodeBE> {
-    private static final Vector3f[] offsets = {
+    public static final Vector3f[] offsets = {
             new Vector3f(0.65f, 0.65f, 0.5f),
             new Vector3f(0.5f, 0.65f, 0.5f),
             new Vector3f(0.35f, 0.65f, 0.5f),
@@ -58,23 +50,6 @@ public class LaserNodeBERender extends BaseLaserBERender<LaserNodeBE> {
     @Override
     public void render(LaserNodeBE blockentity, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightsIn, int combinedOverlayIn) {
         super.render(blockentity, partialTicks, matrixStackIn, bufferIn, combinedLightsIn, combinedOverlayIn);
-        for (Direction direction : Direction.values()) {
-            blockentity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction).ifPresent(h -> {
-                for (int slot = 0; slot < h.getSlots(); slot++) {
-                    ItemStack card = h.getStackInSlot(slot);
-                    if (card.getItem() instanceof BaseCard) {
-                        if (((BaseCard) card.getItem()).getCardType() == BaseCard.CardType.ITEM) {
-                            if (blockentity.getAttachedInventoryNoCache(direction, (byte) -1).equals(LazyOptional.empty()))
-                                continue;
-                            float[] floatcolors = colors[BaseCard.getChannel(card)].getColorComponents(new float[3]);
-                            boolean reverse = direction.equals(Direction.DOWN) ? false : true;
-                            if (BaseCard.getNamedTransferMode(card) != BaseCard.TransferMode.EXTRACT)
-                                reverse = !reverse;
-                            RenderUtils.drawConnectingLasers(blockentity, BlockPos.ZERO, BlockPos.ZERO.relative(direction), matrixStackIn, bufferIn, findOffset(direction, slot, offsets), 0f, 1f, 0f, 1f, 0.0175f, floatcolors[0], floatcolors[1], floatcolors[2], 1f, 0.0125f, reverse);
-                        }
-                    }
-                }
-            });
-        }
+        DelayedRenderer.addConnecting(blockentity);
     }
 }
