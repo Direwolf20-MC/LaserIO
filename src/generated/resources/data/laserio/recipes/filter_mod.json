@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "group": "laserio",
+  "ingredients": [
+    {
+      "item": "laserio:filter_basic"
+    },
+    {
+      "item": "minecraft:book"
+    }
+  ],
+  "result": {
+    "item": "laserio:filter_mod"
+  }
+}

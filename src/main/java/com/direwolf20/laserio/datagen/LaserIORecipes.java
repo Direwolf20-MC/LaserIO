@@ -111,6 +111,12 @@ public class LaserIORecipes extends RecipeProvider {
                 .group("laserio")
                 .unlockedBy("has_filter_basic", InventoryChangeTrigger.TriggerInstance.hasItems(Registration.Filter_Basic.get()))
                 .save(consumer);
+        ShapelessRecipeBuilder.shapeless(Registration.Filter_Mod.get(), 1)
+                .requires(Registration.Filter_Basic.get(), 1)
+                .requires(Items.BOOK, 1)
+                .group("laserio")
+                .unlockedBy("has_filter_basic", InventoryChangeTrigger.TriggerInstance.hasItems(Registration.Filter_Basic.get()))
+                .save(consumer);
 
         //Upgrades
         ShapedRecipeBuilder.shaped(Registration.Overclocker_Card.get(), 1)
@@ -155,6 +161,11 @@ public class LaserIORecipes extends RecipeProvider {
                 .group("laserio")
                 .unlockedBy("has_filter_tag", InventoryChangeTrigger.TriggerInstance.hasItems(Registration.Filter_Tag.get()))
                 .save(consumer, Registration.Filter_Tag.getId() + "_nbtclear");
+        ShapelessRecipeBuilder.shapeless(Registration.Filter_Mod.get())
+                .requires(Registration.Filter_Mod.get())
+                .group("laserio")
+                .unlockedBy("has_filter_mod", InventoryChangeTrigger.TriggerInstance.hasItems(Registration.Filter_Mod.get()))
+                .save(consumer, Registration.Filter_Mod.getId() + "_nbtclear");
 
     }
 }

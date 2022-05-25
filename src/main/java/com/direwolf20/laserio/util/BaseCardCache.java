@@ -2,10 +2,7 @@ package com.direwolf20.laserio.util;
 
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
-import com.direwolf20.laserio.common.items.filters.BaseFilter;
-import com.direwolf20.laserio.common.items.filters.FilterBasic;
-import com.direwolf20.laserio.common.items.filters.FilterCount;
-import com.direwolf20.laserio.common.items.filters.FilterTag;
+import com.direwolf20.laserio.common.items.filters.*;
 import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.core.Direction;
@@ -101,7 +98,14 @@ public class BaseCardCache {
         if (filterCard.equals(ItemStack.EMPTY)) return true; //If theres no filter in the card
         ItemStackKey key = new ItemStackKey(testStack, isCompareNBT);
         if (filterCache.containsKey(key)) return filterCache.get(key);
-        if (filterCard.getItem() instanceof FilterTag) {
+        if (filterCard.getItem() instanceof FilterMod) {
+            for (ItemStack stack : filteredItems) {
+                if (stack.getItem().getCreatorModId(stack).equals(testStack.getItem().getCreatorModId(testStack))) {
+                    filterCache.put(key, isAllowList);
+                    return isAllowList;
+                }
+            }
+        } else if (filterCard.getItem() instanceof FilterTag) {
             for (TagKey tagKey : testStack.getItem().builtInRegistryHolder().tags().toList()) {
                 String tag = tagKey.location().toString().toLowerCase(Locale.ROOT);
                 if (filterTags.contains(tag)) {

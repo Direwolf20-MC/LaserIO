@@ -10,10 +10,7 @@ import com.direwolf20.laserio.common.containers.customslot.CardItemSlot;
 import com.direwolf20.laserio.common.containers.customslot.FilterBasicSlot;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.common.items.cards.CardItem;
-import com.direwolf20.laserio.common.items.filters.BaseFilter;
-import com.direwolf20.laserio.common.items.filters.FilterBasic;
-import com.direwolf20.laserio.common.items.filters.FilterCount;
-import com.direwolf20.laserio.common.items.filters.FilterTag;
+import com.direwolf20.laserio.common.items.filters.*;
 import com.direwolf20.laserio.common.network.PacketHandler;
 import com.direwolf20.laserio.common.network.packets.PacketGhostSlot;
 import com.direwolf20.laserio.common.network.packets.PacketOpenFilter;
@@ -189,7 +186,10 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
         if (showFilter) {
             isAllowList = BaseFilter.getAllowList(filter) ? 1 : 0;
             isCompareNBT = BaseFilter.getCompareNBT(filter) ? 1 : 0;
-            if (filter.getItem() instanceof FilterBasic) {
+            if (filter.getItem() instanceof FilterMod) {
+                showAllow = true;
+                showNBT = false;
+            } else if (filter.getItem() instanceof FilterBasic) {
                 showAllow = true;
                 showNBT = true;
             } else if (filter.getItem() instanceof FilterCount) {
@@ -356,7 +356,16 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
         filter = container.slots.get(0).getItem();
         showFilter = !filter.isEmpty() && !(filter.getItem() instanceof FilterTag);
         if (showFilter) { //If the filter isn't empty, and the allowList is set to -1, it means we don't have a real value for allow list yet so get it
-            if (filter.getItem() instanceof FilterBasic) {
+            if (filter.getItem() instanceof FilterMod) {
+                showNBT = false;
+                if (currentMode == 2) {
+                    showAllow = true;
+                    //removeWidget(buttons.get("allowList"));
+                } else {
+                    showAllow = true;
+                    if (!renderables.contains(buttons.get("allowList"))) addRenderableWidget(buttons.get("allowList"));
+                }
+            } else if (filter.getItem() instanceof FilterBasic) {
                 showNBT = true;
                 if (currentMode == 2) {
                     showAllow = true;
