@@ -129,7 +129,9 @@ minecraft {
 
             // Specify the modid for data generation, where to output the resulting resource, and where to look for existing resources.
             args '--mod', 'laserio', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
-
+            //Patchouli
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
             mods {
                 laserio {
                     source sourceSets.main
