@@ -84,6 +84,9 @@ public class LaserNodeBE extends BaseLaserBE {
 
     private final Map<StockerRequest, StockerSource> stockerDestinationCache = new HashMap<>();
 
+    public boolean rendersChecked = false;
+    public List<CardRender> cardRenders = new ArrayList<>();
+
     /** Misc Variables **/
     private boolean discoveredNodes = false; //The first time this block entity loads, it'll run discovery to refresh itself
 
@@ -163,6 +166,8 @@ public class LaserNodeBE extends BaseLaserBE {
     public void tickClient() {
         drawParticlesClient();
         particleRenderData.clear();
+        if (!rendersChecked)
+            populateRenderList();
     }
 
     public void tickServer() {
@@ -636,7 +641,6 @@ public class LaserNodeBE extends BaseLaserBE {
         }
         return 0;
     }*/
-
     public void drawParticlesClient() {
         if (particleRenderData.isEmpty()) return;
         ClientLevel clientLevel = (ClientLevel) level;
@@ -829,6 +833,23 @@ public class LaserNodeBE extends BaseLaserBE {
     public void clearCachedInventories() {
         stockerDestinationCache.clear();
         this.facingHandler.clear();
+        markDirtyClient();
+    }
+
+    public void populateRenderList() {
+        this.cardRenders.clear();
+        for (Direction direction : Direction.values()) {
+            IItemHandler h = getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction).orElse(new ItemStackHandler(0));
+            for (int slot = 0; slot < h.getSlots(); slot++) {
+                ItemStack card = h.getStackInSlot(slot);
+                if (!(card.getItem() instanceof BaseCard)) continue;
+                if (getAttachedInventoryNoCache(direction, (byte) -1).equals(LazyOptional.empty()))
+                    continue;
+
+                cardRenders.add(new CardRender(direction, slot, card, getBlockPos()));
+            }
+        }
+        rendersChecked = true;
     }
 
     @Nonnull
@@ -852,6 +873,7 @@ public class LaserNodeBE extends BaseLaserBE {
             }
         }
         super.load(tag);
+        populateRenderList();
     }
 
     @Override

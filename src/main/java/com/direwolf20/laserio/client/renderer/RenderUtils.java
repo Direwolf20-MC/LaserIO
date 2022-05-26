@@ -4,6 +4,7 @@ import com.direwolf20.laserio.client.blockentityrenders.LaserNodeBERender;
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import com.direwolf20.laserio.common.blockentities.basebe.BaseLaserBE;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
+import com.direwolf20.laserio.util.CardRender;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Matrix4f;
@@ -153,6 +154,53 @@ public class RenderUtils {
             matrixStackIn.popPose();
         }
         buffer.endBatch(MyRenderType.CONNECTING_LASER); //This apparently is needed in RenderWorldLast
+    }
+
+    public static void drawConnectingLasersLast4(Set<LaserNodeBE> beConnectingRenders, PoseStack matrixStackIn) {
+        MultiBufferSource.BufferSource buffer = Minecraft.getInstance().renderBuffers().bufferSource();
+        Vec3 projectedView = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
+        VertexConsumer builder;
+
+        float alpha = 1f;
+        float thickness = 0.0175f;
+
+        builder = buffer.getBuffer(MyRenderType.LASER_MAIN_BEAM);
+        for (LaserNodeBE be : beConnectingRenders) {
+            Level level = be.getLevel();
+            long gameTime = level.getGameTime();
+            double v = gameTime * 0.04;
+
+            BlockPos startBlock = be.getBlockPos();
+
+            matrixStackIn.pushPose();
+            Matrix4f positionMatrix = matrixStackIn.last().pose();
+            matrixStackIn.translate(startBlock.getX() - projectedView.x, startBlock.getY() - projectedView.y, startBlock.getZ() - projectedView.z);
+
+            for (CardRender cardRender : be.cardRenders) {
+                drawLaser(builder, positionMatrix, cardRender.endLaser, cardRender.startLaser, cardRender.r, cardRender.g, cardRender.b, alpha, thickness, v, v + cardRender.diffY * 4.5, be);
+            }
+            matrixStackIn.popPose();
+        }
+        buffer.endBatch(MyRenderType.LASER_MAIN_BEAM); //This apparently is needed in RenderWorldLast
+
+        builder = buffer.getBuffer(MyRenderType.LASER_MAIN_CORE);
+        for (LaserNodeBE be : beConnectingRenders) {
+            Level level = be.getLevel();
+            long gameTime = level.getGameTime();
+            double v = gameTime * 0.04;
+
+            BlockPos startBlock = be.getBlockPos();
+
+            matrixStackIn.pushPose();
+            Matrix4f positionMatrix = matrixStackIn.last().pose();
+            matrixStackIn.translate(startBlock.getX() - projectedView.x, startBlock.getY() - projectedView.y, startBlock.getZ() - projectedView.z);
+
+            for (CardRender cardRender : be.cardRenders) {
+                drawLaser(builder, positionMatrix, cardRender.endLaser, cardRender.startLaser, cardRender.floatcolors[0], cardRender.floatcolors[1], cardRender.floatcolors[2], 1f, 0.0125f, v, v + cardRender.diffY * 1.5, be);
+            }
+            matrixStackIn.popPose();
+        }
+        buffer.endBatch(MyRenderType.LASER_MAIN_CORE); //This apparently is needed in RenderWorldLast
     }
 
     public static void drawConnectingLasersLast3(Set<LaserNodeBE> beConnectingRenders, PoseStack matrixStackIn) {
