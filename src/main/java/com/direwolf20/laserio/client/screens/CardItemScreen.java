@@ -560,7 +560,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
         }
         if (hoveredSlot instanceof CardItemSlot) { //Right click
             if (btn == 0) {
-                if (filter.getItem() instanceof BaseFilter) //Save the filter before removing it from the slot
+                if (filter.getItem() instanceof BaseFilter && !(filter.getItem() instanceof FilterTag)) //Save the filter before removing it from the slot
                     PacketHandler.sendToServer(new PacketUpdateFilter(isAllowList == 1, isCompareNBT == 1));
             } else if (btn == 1) {
                 int slot = hoveredSlot.getSlotIndex();
