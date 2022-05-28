@@ -367,6 +367,7 @@ public class LaserNodeBE extends BaseLaserBE {
                 extractedStack = ItemHandlerUtil.extractItemBackwards(fromInventory, extractStack, extractStack.getCount(), false, extractorCardCache.isCompareNBT).itemStack();
             else
                 extractedStack = ItemHandlerUtil.extractItem(fromInventory, extractStack, false, extractorCardCache.isCompareNBT).itemStack();
+            if (extractedStack.isEmpty()) return false;
             boolean chestEmpty = extractedStack.getCount() < extractStack.getCount(); //If we didn't find enough, the extract chest is empty, so don't try again later
             amtToExtract -= extractedStack.getCount(); //Reduce how many we have left to extract by the amount we got here
             extractStack.setCount(amtToExtract); //For use in the next loop -- How many items are still needed

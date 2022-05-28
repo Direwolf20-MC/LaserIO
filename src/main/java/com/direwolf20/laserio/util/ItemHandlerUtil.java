@@ -64,6 +64,7 @@ public class ItemHandlerUtil {
                     tempStack.grow(source.extractItem(i, extractAmt, simulate).getCount());
                 else //This in theory should never happen but who knows
                     return new ExtractResult(tempStack, i);
+                if (tempStack.isEmpty()) continue; //This happens with some 'fake item' inventories like RFTools crafter
                 amount -= extractAmt;
                 if (amount == 0)
                     return new ExtractResult(tempStack, i); // If we found all we need, return the stack and the last slot we got it from
