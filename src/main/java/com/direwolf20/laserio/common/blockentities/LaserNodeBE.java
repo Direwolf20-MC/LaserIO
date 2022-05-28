@@ -461,7 +461,7 @@ public class LaserNodeBE extends BaseLaserBE {
             return false;
         }
         if (filter.getItem() instanceof FilterBasic || filter.getItem() instanceof FilterCount) {
-            if (stockerCardCache.regulate) {
+            if (stockerCardCache.regulate && filter.getItem() instanceof FilterCount) {
                 if (regulateStocker(stockerCardCache, adjacentInventory))
                     return true;
             }
