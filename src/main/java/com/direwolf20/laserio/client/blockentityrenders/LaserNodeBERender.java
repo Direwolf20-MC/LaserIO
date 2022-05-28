@@ -50,6 +50,8 @@ public class LaserNodeBERender extends BaseLaserBERender<LaserNodeBE> {
     @Override
     public void render(LaserNodeBE blockentity, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightsIn, int combinedOverlayIn) {
         super.render(blockentity, partialTicks, matrixStackIn, bufferIn, combinedLightsIn, combinedOverlayIn);
+        if (!blockentity.rendersChecked)
+            blockentity.populateRenderList();
         DelayedRenderer.addConnecting(blockentity);
     }
 }

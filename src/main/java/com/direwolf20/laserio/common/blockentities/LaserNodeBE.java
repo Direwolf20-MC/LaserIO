@@ -166,8 +166,6 @@ public class LaserNodeBE extends BaseLaserBE {
     public void tickClient() {
         drawParticlesClient();
         particleRenderData.clear();
-        if (!rendersChecked)
-            populateRenderList();
     }
 
     public void tickServer() {
@@ -837,12 +835,14 @@ public class LaserNodeBE extends BaseLaserBE {
     }
 
     public void populateRenderList() {
+        if (level == null || !level.isClientSide) return;
         this.cardRenders.clear();
         for (Direction direction : Direction.values()) {
             IItemHandler h = getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction).orElse(new ItemStackHandler(0));
             for (int slot = 0; slot < h.getSlots(); slot++) {
                 ItemStack card = h.getStackInSlot(slot);
                 if (!(card.getItem() instanceof BaseCard)) continue;
+                //if (level.getBlockState(getBlockPos().relative(direction)).getBlock().equals(Blocks.VOID_AIR)) return; //This happens if the level isn't loaded all the way yet
                 if (getAttachedInventoryNoCache(direction, (byte) -1).equals(LazyOptional.empty()))
                     continue;
 
@@ -873,7 +873,7 @@ public class LaserNodeBE extends BaseLaserBE {
             }
         }
         super.load(tag);
-        populateRenderList();
+        rendersChecked = false;
     }
 
     @Override
