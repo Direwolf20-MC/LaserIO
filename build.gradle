@@ -202,6 +202,10 @@ dependencies {
     runtimeOnly fg.deobf("curse.maven:mcjtylib-233105:3757792")
     runtimeOnly fg.deobf("curse.maven:rftools-utility-342466:3805799")
     runtimeOnly fg.deobf("curse.maven:rftools-base-326041:3711541")
+
+    //runtimeOnly fg.deobf("curse.maven:carry-on-274259:3674344")
+    runtimeOnly fg.deobf("curse.maven:create-328085:3737418")
+    runtimeOnly fg.deobf("curse.maven:flywheel-486392:3737402")
     //runtimeOnly fg.deobf("curse.maven:inventory-sorter-240633:3543137") // already on the forge maven
 
     //MouseTweaks
