@@ -3,6 +3,7 @@
   "block.laserio.laser_node": "Laser Node",
   "item.laserio.card_energy": "Energy Card",
   "item.laserio.card_fluid": "Fluid Card",
+  "item.laserio.card_holder": "Card Holder",
   "item.laserio.card_item": "Item Card",
   "item.laserio.filter_basic": "Basic Filter",
   "item.laserio.filter_count": "Counting Filter",
