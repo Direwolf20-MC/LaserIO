@@ -26,6 +26,7 @@ public class CardHolderContainer extends AbstractContainerMenu {
     public Player playerEntity;
     private IItemHandler playerInventory;
     public BlockPos sourceContainer = BlockPos.ZERO;
+    public ItemStack cardHoldCopy;
 
     public CardHolderContainer(int windowId, Inventory playerInventory, Player player, FriendlyByteBuf extraData) {
         this(windowId, playerInventory, player, extraData.readItem());
