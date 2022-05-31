@@ -54,7 +54,19 @@ public class LaserNodeScreen extends AbstractContainerScreen<LaserNodeContainer>
         this.container = container;
         this.imageHeight = 181;
         showCardHolderUI = container.cardHolder.isEmpty();
-        //this.imageWidth = 250;
+        //this.imageWidth = 202;
+    }
+
+    @Override
+    public void init() {
+        super.init();
+    }
+
+    @Override
+    protected boolean hasClickedOutside(double mouseX, double mouseY, int guiLeftIn, int guiTopIn, int mouseButton) {
+        if (showCardHolderUI)
+            return mouseX < (double) guiLeftIn - 50 || mouseY < (double) guiTopIn || mouseX >= (double) (guiLeftIn + this.imageWidth) || mouseY >= (double) (guiTopIn + this.imageHeight);
+        return super.hasClickedOutside(mouseX, mouseY, guiLeftIn, guiTopIn, mouseButton);
     }
 
     @Override
