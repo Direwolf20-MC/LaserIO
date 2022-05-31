@@ -1,8 +1,11 @@
 package com.direwolf20.laserio.common.containers;
 
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
+import com.direwolf20.laserio.common.containers.customhandler.CardHolderHandler;
 import com.direwolf20.laserio.common.containers.customhandler.LaserNodeItemHandler;
+import com.direwolf20.laserio.common.containers.customslot.CardHolderSlot;
 import com.direwolf20.laserio.common.containers.customslot.LaserNodeSlot;
+import com.direwolf20.laserio.common.items.CardHolder;
 import com.direwolf20.laserio.setup.Registration;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
@@ -16,23 +19,28 @@ import net.minecraftforge.items.SlotItemHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
 
 import javax.annotation.Nullable;
+import java.util.UUID;
 
 public class LaserNodeContainer extends AbstractContainerMenu {
-    public static final int SLOTS = 10;
+    public static final int SLOTS = 30;
+    public static final int CARDHOLDERSLOTS = 20;
     public static final int CARDSLOTS = 9;
-    private Player playerEntity;
+    public Player playerEntity;
     private IItemHandler playerInventory;
     ContainerLevelAccess containerLevelAccess;
+    public ItemStack cardHolder;
+    public CardHolderHandler cardHolderHandler;
+    public UUID cardHolderUUID;
 
     // Tile can be null and shouldn't be used for accessing any data that needs to be up to date on both sides
     public LaserNodeBE tile;
     public byte side;
 
     public LaserNodeContainer(int windowId, Inventory playerInventory, Player player, FriendlyByteBuf extraData) {
-        this((LaserNodeBE) playerInventory.player.level.getBlockEntity(extraData.readBlockPos()), windowId, extraData.readByte(), playerInventory, player, new LaserNodeItemHandler(SLOTS), ContainerLevelAccess.NULL);
+        this((LaserNodeBE) playerInventory.player.level.getBlockEntity(extraData.readBlockPos()), windowId, extraData.readByte(), playerInventory, player, new LaserNodeItemHandler(SLOTS), ContainerLevelAccess.NULL, extraData.readItem());
     }
 
-    public LaserNodeContainer(@Nullable LaserNodeBE tile, int windowId, byte side, Inventory playerInventory, Player player, LaserNodeItemHandler handler, ContainerLevelAccess containerLevelAccess) {
+    public LaserNodeContainer(@Nullable LaserNodeBE tile, int windowId, byte side, Inventory playerInventory, Player player, LaserNodeItemHandler handler, ContainerLevelAccess containerLevelAccess, ItemStack cardHolder) {
         super(Registration.LaserNode_Container.get(), windowId);
         this.playerEntity = player;
         this.tile = tile;
@@ -43,12 +51,30 @@ public class LaserNodeContainer extends AbstractContainerMenu {
             addSlotBox(handler, 0, 62, 32, 3, 18, 3, 18);
             addSlotRange(handler, 9, 152, 78, 1, 18);
         }
-
+        this.cardHolder = cardHolder;
+        if (!cardHolder.equals(ItemStack.EMPTY)) {
+            this.cardHolderHandler = CardHolder.getInventory(cardHolder);
+            addSlotBox(cardHolderHandler, 0, -42, 32, 5, 18, 4, 18);
+            cardHolderUUID = CardHolder.getUUID(cardHolder);
+        }
         layoutPlayerInventorySlots(8, 99);
     }
 
     @Override
     public boolean stillValid(Player playerIn) {
+        if (cardHolder.isEmpty() && cardHolderUUID != null) {
+            Inventory playerInventory = playerEntity.getInventory();
+            for (int i = 0; i < playerInventory.items.size(); i++) {
+                ItemStack itemStack = playerInventory.items.get(i);
+                if (itemStack.getItem() instanceof CardHolder) {
+                    if (CardHolder.getUUID(itemStack).equals(cardHolderUUID)) {
+                        cardHolder = itemStack;
+                        cardHolderHandler.stack = itemStack;
+                        break;
+                    }
+                }
+            }
+        }
         return stillValid(containerLevelAccess, playerEntity, Registration.LaserNode.get());
     }
 
@@ -95,6 +121,8 @@ public class LaserNodeContainer extends AbstractContainerMenu {
         for (int i = 0; i < amount; i++) {
             if (handler instanceof LaserNodeItemHandler && index < 9)
                 addSlot(new LaserNodeSlot(handler, index, x, y));
+            else if (handler instanceof CardHolderHandler)
+                addSlot(new CardHolderSlot(handler, index, x, y));
             else
                 addSlot(new SlotItemHandler(handler, index, x, y));
             x += dx;

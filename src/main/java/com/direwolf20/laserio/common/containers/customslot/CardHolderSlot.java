@@ -8,6 +8,7 @@ import net.minecraftforge.items.SlotItemHandler;
 import javax.annotation.Nonnull;
 
 public class CardHolderSlot extends SlotItemHandler {
+    protected boolean enabled = true;
     public CardHolderSlot(IItemHandler itemHandler, int index, int xPosition, int yPosition) {
         super(itemHandler, index, xPosition, yPosition);
     }
@@ -27,5 +28,15 @@ public class CardHolderSlot extends SlotItemHandler {
     public int getMaxStackSize(@Nonnull ItemStack stack) {
         return 64;
         //return super.getMaxStackSize(stack);
+    }
+
+    @Override
+    public boolean isActive() {
+        return enabled;
+    }
+
+    public CardHolderSlot setEnabled(boolean enabled) {
+        this.enabled = enabled;
+        return this;
     }
 }

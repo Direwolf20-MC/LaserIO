@@ -1,8 +1,11 @@
 package com.direwolf20.laserio.client.screens;
 
 import com.direwolf20.laserio.common.LaserIO;
+import com.direwolf20.laserio.common.containers.CardHolderContainer;
 import com.direwolf20.laserio.common.containers.LaserNodeContainer;
+import com.direwolf20.laserio.common.containers.customslot.CardHolderSlot;
 import com.direwolf20.laserio.common.containers.customslot.LaserNodeSlot;
+import com.direwolf20.laserio.common.items.CardHolder;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.common.network.PacketHandler;
 import com.direwolf20.laserio.common.network.packets.PacketOpenCard;
@@ -19,12 +22,15 @@ import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
 
 import java.awt.*;
 
 public class LaserNodeScreen extends AbstractContainerScreen<LaserNodeContainer> {
     private final ResourceLocation GUI = new ResourceLocation(LaserIO.MODID, "textures/gui/laser_node.png");
     protected final LaserNodeContainer container;
+    private boolean showCardHolderUI;
     private final TranslatableComponent[] sides = {
             new TranslatableComponent("screen.laserio.down"),
             new TranslatableComponent("screen.laserio.up"),
@@ -47,10 +53,13 @@ public class LaserNodeScreen extends AbstractContainerScreen<LaserNodeContainer>
         super(container, inv, name);
         this.container = container;
         this.imageHeight = 181;
+        showCardHolderUI = container.cardHolder.isEmpty();
+        //this.imageWidth = 250;
     }
 
     @Override
     public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+        validateHolder();
         this.renderBackground(matrixStack);
         super.render(matrixStack, mouseX, mouseY, partialTicks);
         this.renderTooltip(matrixStack, mouseX, mouseY);
@@ -78,6 +87,37 @@ public class LaserNodeScreen extends AbstractContainerScreen<LaserNodeContainer>
         int relX = (this.width - this.imageWidth) / 2;
         int relY = (this.height - this.imageHeight) / 2;
         this.blit(matrixStack, relX, relY, 0, 0, this.imageWidth, this.imageHeight);
+        if (showCardHolderUI) {
+            ResourceLocation CardHolderGUI = new ResourceLocation(LaserIO.MODID, "textures/gui/cardholder_node.png");
+            RenderSystem.setShaderTexture(0, CardHolderGUI);
+            this.blit(matrixStack, getGuiLeft() - 50, getGuiTop() + 24, 0, 0, this.imageWidth, this.imageHeight);
+        }
+    }
+
+    public boolean validateHolder() {
+        Inventory playerInventory = container.playerEntity.getInventory();
+        for (int i = 0; i < playerInventory.items.size(); i++) {
+            ItemStack itemStack = playerInventory.items.get(i);
+            if (itemStack.getItem() instanceof CardHolder) {
+                if (CardHolder.getUUID(itemStack).equals(container.cardHolderUUID)) {
+                    showCardHolderUI = true;
+                    toggleHolderSlots();
+                    return true;
+                }
+            }
+        }
+        showCardHolderUI = false;
+        toggleHolderSlots();
+        return false;
+    }
+
+    public void toggleHolderSlots() {
+        for (int i = 10; i < 10 + CardHolderContainer.SLOTS; i++) {
+            if (i >= container.slots.size()) continue;
+            Slot slot = container.getSlot(i);
+            if (!(slot instanceof CardHolderSlot)) continue;
+            ((CardHolderSlot) slot).setEnabled(showCardHolderUI);
+        }
     }
 
     @Override

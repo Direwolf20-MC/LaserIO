@@ -4,6 +4,7 @@ import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import com.direwolf20.laserio.common.blocks.baseblocks.BaseLaserBlock;
 import com.direwolf20.laserio.common.containers.LaserNodeContainer;
 import com.direwolf20.laserio.common.containers.customhandler.LaserNodeItemHandler;
+import com.direwolf20.laserio.common.items.CardHolder;
 import com.direwolf20.laserio.common.items.LaserWrench;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
 import net.minecraft.core.BlockPos;
@@ -95,6 +96,7 @@ public class LaserNode extends BaseLaserBlock implements EntityBlock {
                     });
                 } else {
                     be.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, result.getDirection()).ifPresent(h -> {
+                        ItemStack cardHolder = findCardHolders(player);
                         MenuProvider containerProvider = new MenuProvider() {
                             @Override
                             public Component getDisplayName() {
@@ -103,12 +105,14 @@ public class LaserNode extends BaseLaserBlock implements EntityBlock {
 
                             @Override
                             public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player playerEntity) {
-                                return new LaserNodeContainer((LaserNodeBE) be, windowId, (byte) result.getDirection().ordinal(), playerInventory, playerEntity, (LaserNodeItemHandler) h, ContainerLevelAccess.create(be.getLevel(), be.getBlockPos()));
+                                return new LaserNodeContainer((LaserNodeBE) be, windowId, (byte) result.getDirection().ordinal(), playerInventory, playerEntity, (LaserNodeItemHandler) h, ContainerLevelAccess.create(be.getLevel(), be.getBlockPos()), cardHolder);
                             }
                         };
+
                         NetworkHooks.openGui((ServerPlayer) player, containerProvider, (buf -> {
                             buf.writeBlockPos(pos);
                             buf.writeByte((byte) result.getDirection().ordinal());
+                            buf.writeItemStack(cardHolder, false);
                         }));
                     });
                 }
@@ -118,6 +122,16 @@ public class LaserNode extends BaseLaserBlock implements EntityBlock {
 
         }
         return InteractionResult.SUCCESS;
+    }
+
+    public static ItemStack findCardHolders(Player player) {
+        ItemStack cardHolder = ItemStack.EMPTY;
+        Inventory playerInventory = player.getInventory();
+        for (int i = 0; i < playerInventory.items.size(); i++) {
+            ItemStack itemStack = playerInventory.items.get(i);
+            if (itemStack.getItem() instanceof CardHolder) return itemStack;
+        }
+        return cardHolder;
     }
 
     @Nullable

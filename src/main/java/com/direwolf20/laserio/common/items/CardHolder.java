@@ -16,6 +16,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.network.NetworkHooks;
 
+import java.util.UUID;
+
 public class CardHolder extends Item {
     public CardHolder() {
         super(new Item.Properties().tab(ModSetup.ITEM_GROUP)
@@ -48,5 +50,15 @@ public class CardHolder extends Item {
     public static CardHolderHandler setInventory(ItemStack stack, CardHolderHandler handler) {
         stack.getOrCreateTag().put("inv", handler.serializeNBT());
         return handler;
+    }
+
+    public static UUID getUUID(ItemStack stack) {
+        CompoundTag nbt = stack.getOrCreateTag();
+        if (!nbt.hasUUID("UUID")) {
+            UUID newId = UUID.randomUUID();
+            nbt.putUUID("UUID", newId);
+            return newId;
+        }
+        return nbt.getUUID("UUID");
     }
 }

@@ -26,6 +26,7 @@ import net.minecraftforge.network.NetworkHooks;
 import java.util.function.Supplier;
 
 import static com.direwolf20.laserio.common.blocks.LaserNode.SCREEN_LASERNODE;
+import static com.direwolf20.laserio.common.blocks.LaserNode.findCardHolders;
 
 
 public class PacketOpenNode {
@@ -68,6 +69,7 @@ public class PacketOpenNode {
                     sender.containerMenu.setCarried(ItemStack.EMPTY);
                 }
                 be.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, Direction.values()[msg.side]).ifPresent(h -> {
+                    ItemStack cardHolder = findCardHolders(sender);
                     MenuProvider containerProvider = new MenuProvider() {
                         @Override
                         public Component getDisplayName() {
@@ -76,12 +78,13 @@ public class PacketOpenNode {
 
                         @Override
                         public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player playerEntity) {
-                            return new LaserNodeContainer((LaserNodeBE) be, windowId, msg.side, playerInventory, playerEntity, (LaserNodeItemHandler) h, ContainerLevelAccess.create(be.getLevel(), be.getBlockPos()));
+                            return new LaserNodeContainer((LaserNodeBE) be, windowId, msg.side, playerInventory, playerEntity, (LaserNodeItemHandler) h, ContainerLevelAccess.create(be.getLevel(), be.getBlockPos()), cardHolder);
                         }
                     };
                     NetworkHooks.openGui(sender, containerProvider, (buf -> {
                         buf.writeBlockPos(msg.sourcePos);
                         buf.writeByte(msg.side);
+                        buf.writeItemStack(cardHolder, false);
                     }));
                     if (!heldStack.isEmpty()) {
                         sender.containerMenu.setCarried(heldStack);
