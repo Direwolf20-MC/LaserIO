@@ -54,7 +54,7 @@ public class LaserNodeContainer extends AbstractContainerMenu {
         this.cardHolder = cardHolder;
         if (!cardHolder.equals(ItemStack.EMPTY)) {
             this.cardHolderHandler = CardHolder.getInventory(cardHolder);
-            addSlotBox(cardHolderHandler, 0, -42, 32, 5, 18, 4, 18);
+            addSlotBox(cardHolderHandler, 0, -42, 32, 5, 18, 3, 18);
             cardHolderUUID = CardHolder.getUUID(cardHolder);
         }
         layoutPlayerInventorySlots(8, 99);
