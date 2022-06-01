@@ -14,6 +14,6 @@ body:
     id: additional
     attributes:
       label: Additional information
-      description: Add any other context about the problem here
+      description: Add any other context about the feature here
     validations:
       required: false
