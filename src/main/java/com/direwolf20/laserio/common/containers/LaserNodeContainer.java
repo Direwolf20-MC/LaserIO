@@ -26,7 +26,7 @@ import javax.annotation.Nullable;
 import java.util.UUID;
 
 public class LaserNodeContainer extends AbstractContainerMenu {
-    public static final int SLOTS = 25;
+    public static int SLOTS = 25;
     public static final int CARDHOLDERSLOTS = 15;
     public static final int CARDSLOTS = 9;
     public Player playerEntity;
@@ -56,21 +56,27 @@ public class LaserNodeContainer extends AbstractContainerMenu {
             addSlotRange(handler, 9, 152, 78, 1, 18);
         }
         this.cardHolder = cardHolder;
-        if (!cardHolder.equals(ItemStack.EMPTY)) {
+        //if (!cardHolder.equals(ItemStack.EMPTY)) {
             this.cardHolderHandler = cardHolder.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null).orElse(new ItemStackHandler(CardHolderContainer.SLOTS));
             addSlotBox(cardHolderHandler, 0, -42, 32, 5, 18, 3, 18);
             cardHolderUUID = CardHolder.getUUID(cardHolder);
-        }
+        //}
         layoutPlayerInventorySlots(8, 99);
     }
 
     @Override
     public void clicked(int slotId, int dragType, ClickType clickTypeIn, Player player) {
-        if (slotId >= 0 && slotId < SLOTS && slots.get(slotId) instanceof CardHolderSlot) {
-            ItemStack carriedItem = getCarried();
-            ItemStack stackInSlot = slots.get(slotId).getItem();
-            if (!carriedItem.isEmpty() && !stackInSlot.isEmpty() && !ItemStack.isSameItemSameTags(carriedItem, stackInSlot))
-                return;
+        if (slotId >= 0) {
+            if (slotId < SLOTS && slots.get(slotId) instanceof CardHolderSlot) {
+                ItemStack carriedItem = getCarried();
+                ItemStack stackInSlot = slots.get(slotId).getItem();
+                if (!carriedItem.isEmpty() && !stackInSlot.isEmpty() && !ItemStack.isSameItemSameTags(carriedItem, stackInSlot))
+                    return;
+            } else {
+                ItemStack slotItem = slots.get(slotId).getItem();
+                if (slotItem.getItem() instanceof CardHolder)
+                    return;
+            }
         }
         super.clicked(slotId, dragType, clickTypeIn, player);
     }
@@ -78,6 +84,7 @@ public class LaserNodeContainer extends AbstractContainerMenu {
     @Override
     public boolean stillValid(Player playerIn) {
         if (cardHolder.isEmpty() && cardHolderUUID != null) {
+            //System.out.println("Lost card holder!");
             Inventory playerInventory = playerEntity.getInventory();
             for (int i = 0; i < playerInventory.items.size(); i++) {
                 ItemStack itemStack = playerInventory.items.get(i);
@@ -181,7 +188,7 @@ public class LaserNodeContainer extends AbstractContainerMenu {
 
     @Override
     public boolean canTakeItemForPickAll(ItemStack itemStack, Slot slot) {
-        if (slot instanceof CardHolderSlot)
+        if (slot instanceof CardHolderSlot || slot instanceof LaserNodeSlot)
             return false;
         return true;
     }
@@ -203,32 +210,57 @@ public class LaserNodeContainer extends AbstractContainerMenu {
                 return ItemStack.EMPTY;
             }
         } else if (index < CARDSLOTS) { //If its a node CARD slot
-            if (this.moveItemStackTo(stack, CARDSLOTS + 1, SLOTS, false)) {
-                if (!playerIn.level.isClientSide() && !(tile == null)) {
-                    tile.updateThisNode();
+            if (!cardHolder.isEmpty()) { //Do the below set of logic if we have a card holder, otherwise just try to move to inventory
+                if (this.moveItemStackTo(stack, CARDSLOTS + 1, SLOTS, false)) { //Move to card holder
+                    if (!playerIn.level.isClientSide() && !(tile == null)) {
+                        tile.updateThisNode();
+                    }
+                    return ItemStack.EMPTY;
+                } else if (super.moveItemStackTo(stack, SLOTS, 36 + SLOTS, true)) { //Move to inventory
+                    if (!playerIn.level.isClientSide() && !(tile == null)) {
+                        tile.updateThisNode();
+                    }
+                    return ItemStack.EMPTY;
                 }
-                return ItemStack.EMPTY;
-            } else if (super.moveItemStackTo(stack, SLOTS, 36 + SLOTS, true)) {
-                if (!playerIn.level.isClientSide() && !(tile == null)) {
-                    tile.updateThisNode();
+            } else {
+                if (super.moveItemStackTo(stack, SLOTS, 36 + SLOTS, true)) { //Move to inventory
+                    if (!playerIn.level.isClientSide() && !(tile == null)) {
+                        tile.updateThisNode();
+                    }
+                    return ItemStack.EMPTY;
                 }
-                return ItemStack.EMPTY;
             }
         } else { //If its not a cardHolder slot nor a Card slot in the node - it must be the overclocker slot or the inventory....
             if (stack.getItem() instanceof OverclockerNode) {
                 itemstack = stack.copy();
                 //If its one of the 9 slots at the top try to move it into your inventory
-                if (index < SLOTS) {
-                    if (!super.moveItemStackTo(stack, SLOTS, 36 + SLOTS, true)) {
-                        return ItemStack.EMPTY;
+                if (!cardHolder.isEmpty()) { //Do the below set of logic if we have a card holder, otherwise just try to move to inventory
+                    if (index < SLOTS) {
+                        if (!super.moveItemStackTo(stack, SLOTS, 36 + SLOTS, true)) {
+                            return ItemStack.EMPTY;
+                        }
+                        slot.onQuickCraft(stack, itemstack);
+                    } else {
+                        if (!super.moveItemStackTo(stack, 0, SLOTS - CARDHOLDERSLOTS, false)) {
+                            return ItemStack.EMPTY;
+                        }
+                        if (!playerIn.level.isClientSide() && !(tile == null)) {
+                            tile.updateThisNode();
+                        }
                     }
-                    slot.onQuickCraft(stack, itemstack);
                 } else {
-                    if (!super.moveItemStackTo(stack, 0, SLOTS, false)) {
-                        return ItemStack.EMPTY;
-                    }
-                    if (!playerIn.level.isClientSide() && !(tile == null)) {
-                        tile.updateThisNode();
+                    if (index < SLOTS) {
+                        if (!super.moveItemStackTo(stack, SLOTS, 36 + SLOTS, true)) {
+                            return ItemStack.EMPTY;
+                        }
+                        slot.onQuickCraft(stack, itemstack);
+                    } else {
+                        if (!super.moveItemStackTo(stack, 0, SLOTS - CARDHOLDERSLOTS, false)) {
+                            return ItemStack.EMPTY;
+                        }
+                        if (!playerIn.level.isClientSide() && !(tile == null)) {
+                            tile.updateThisNode();
+                        }
                     }
                 }
 
@@ -245,10 +277,15 @@ public class LaserNodeContainer extends AbstractContainerMenu {
                 slot.onTake(playerIn, stack);
                 return itemstack;
             } else if (stack.getItem() instanceof BaseCard) { //If its a baseCard - it must be in the inventory, since these don't fit in the other slot....
-                if (super.moveItemStackTo(stack, 0, CARDSLOTS, false))
-                    return ItemStack.EMPTY;
-                else if (this.moveItemStackTo(stack, CARDSLOTS + 1, SLOTS, false))
-                    return ItemStack.EMPTY;
+                if (!cardHolder.isEmpty()) { //Do the below set of logic if we have a card holder, otherwise just try to move to inventory
+                    if (super.moveItemStackTo(stack, 0, CARDSLOTS, false))
+                        return ItemStack.EMPTY;
+                    else if (this.moveItemStackTo(stack, CARDSLOTS + 1, SLOTS, false)) //Move to Card Holder
+                        return ItemStack.EMPTY;
+                } else {
+                    if (super.moveItemStackTo(stack, 0, CARDSLOTS, false)) //Move to node
+                        return ItemStack.EMPTY;
+                }
             } else {
                 return ItemStack.EMPTY;
             }
