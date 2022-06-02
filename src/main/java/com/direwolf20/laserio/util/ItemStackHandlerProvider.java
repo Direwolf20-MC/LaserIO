@@ -23,6 +23,16 @@ public class ItemStackHandlerProvider implements ICapabilitySerializable<Compoun
             public boolean isItemValid(int slot, @NotNull ItemStack stack) {
                 return (stack.getItem() instanceof BaseCard);
             }
+
+            @Override
+            public int getSlotLimit(int slot) {
+                return 64;
+            }
+
+            @Override
+            protected int getStackLimit(int slot, @Nonnull ItemStack stack) {
+                return 64;
+            }
         });
     }
 

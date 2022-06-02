@@ -703,6 +703,8 @@ public class LaserNodeBE extends BaseLaserBE {
 
     /** Called when changes happen - such as a card going into a side, or a card being modified via container **/
     public void updateThisNode() {
+        if (!level.isClientSide)
+            System.out.println("Updating the node at: " + getBlockPos());
         setChanged();
         notifyOtherNodesOfChange();
         markDirtyClient();

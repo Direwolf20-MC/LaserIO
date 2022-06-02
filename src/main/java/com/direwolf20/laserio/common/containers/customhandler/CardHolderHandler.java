@@ -1,14 +1,6 @@
 package com.direwolf20.laserio.common.containers.customhandler;
 
-import com.direwolf20.laserio.common.items.CardHolder;
-import com.direwolf20.laserio.common.items.cards.BaseCard;
-import net.minecraft.core.NonNullList;
-import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.ItemStackHandler;
-
-import javax.annotation.Nonnull;
-
-public class CardHolderHandler extends ItemStackHandler {
+/*public class CardHolderHandler extends ItemStackHandler {
     public ItemStack stack;
 
     public CardHolderHandler(int size, ItemStack itemStack) {
@@ -44,4 +36,4 @@ public class CardHolderHandler extends ItemStackHandler {
             newStacks.set(i, stacks.get(i));
         stacks = newStacks;
     }
-}
+}*/

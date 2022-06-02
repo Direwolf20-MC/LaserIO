@@ -1,7 +1,7 @@
 package com.direwolf20.laserio.common.items;
 
 import com.direwolf20.laserio.common.containers.CardHolderContainer;
-import com.direwolf20.laserio.common.containers.customhandler.CardHolderHandler;
+import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.setup.ModSetup;
 import com.direwolf20.laserio.util.ItemStackHandlerProvider;
 import net.minecraft.nbt.CompoundTag;
@@ -17,6 +17,9 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.NotNull;
 
@@ -41,19 +44,31 @@ public class CardHolder extends Item {
             return new InteractionResultHolder<>(InteractionResult.PASS, itemstack);
         }
 
-        NetworkHooks.openGui((ServerPlayer) player, new SimpleMenuProvider(
+        itemstack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null).ifPresent(h -> {
+            NetworkHooks.openGui((ServerPlayer) player, new SimpleMenuProvider(
+                    (windowId, playerInventory, playerEntity) -> new CardHolderContainer(windowId, playerInventory, player, itemstack, h), new TranslatableComponent("")), (buf -> {
+                buf.writeItem(itemstack);
+            }));
+        });
+
+        /*NetworkHooks.openGui((ServerPlayer) player, new SimpleMenuProvider(
                 (windowId, playerInventory, playerEntity) -> new CardHolderContainer(windowId, playerInventory, player, itemstack), new TranslatableComponent("")), (buf -> {
             buf.writeItem(itemstack);
-        }));
+        ;}))*/
 
         //System.out.println(itemstack.getItem().getRegistryName()+""+itemstack.getTag());
         return new InteractionResultHolder<>(InteractionResult.PASS, itemstack);
     }
 
+    @Override
+    public boolean isFoil(ItemStack itemStack) {
+        return getActive(itemStack);
+    }
+
     @Nullable
     @Override
     public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
-        return new ItemStackHandlerProvider(9);
+        return new ItemStackHandlerProvider(CardHolderContainer.SLOTS);
     }
 
     @Override
@@ -62,16 +77,17 @@ public class CardHolder extends Item {
         if (entity instanceof Player player && getActive(stack)) {
             for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
                 ItemStack cardStack = player.getInventory().getItem(i);
-                addCardToInventory(stack, cardStack);
+                if (cardStack.getItem() instanceof BaseCard)
+                    addCardToInventory(stack, cardStack);
             }
         }
     }
 
     public static ItemStack addCardToInventory(ItemStack cardHolder, ItemStack card) {
-        CardHolderHandler handler = getInventory(cardHolder);
+        IItemHandler handler = cardHolder.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null).orElse(new ItemStackHandler(CardHolderContainer.SLOTS));
         List<Integer> emptySlots = new ArrayList<>();
         for (int i = 0; i < handler.getSlots(); i++) {
-            ItemStack stackInSlot = handler.getStackInSlot(0);
+            ItemStack stackInSlot = handler.getStackInSlot(i);
             if (stackInSlot.isEmpty()) emptySlots.add(i);
             if (!stackInSlot.isEmpty() && ItemStack.isSameItemSameTags(stackInSlot, card)) {
                 int j = stackInSlot.getCount() + card.getCount();
@@ -84,17 +100,17 @@ public class CardHolder extends Item {
                     stackInSlot.setCount(maxSize);
                 }
                 if (card.isEmpty()) {
-                    setInventory(cardHolder, handler);
+                    //setInventory(cardHolder, handler);
                     return card;
                 }
             }
         }
         if (emptySlots.isEmpty()) return card;
-        handler.setStackInSlot(emptySlots.get(0), card.split(card.getCount()));
+        handler.insertItem(emptySlots.get(0), card.split(card.getCount()), false);
         return card;
     }
 
-    public static CardHolderHandler getInventory(ItemStack stack) {
+    /*public static CardHolderHandler getInventory(ItemStack stack) {
         CompoundTag compound = stack.getOrCreateTag();
         CardHolderHandler handler = new CardHolderHandler(CardHolderContainer.SLOTS, stack);
         handler.deserializeNBT(compound.getCompound("inv"));
@@ -106,7 +122,7 @@ public class CardHolder extends Item {
     public static CardHolderHandler setInventory(ItemStack stack, CardHolderHandler handler) {
         stack.getOrCreateTag().put("inv", handler.serializeNBT());
         return handler;
-    }
+    }*/
 
     public static UUID getUUID(ItemStack stack) {
         CompoundTag nbt = stack.getOrCreateTag();
