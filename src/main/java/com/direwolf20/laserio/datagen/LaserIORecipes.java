@@ -73,7 +73,16 @@ public class LaserIORecipes extends RecipeProvider {
                 .group("laserio")
                 .unlockedBy("has_logic_chip", InventoryChangeTrigger.TriggerInstance.hasItems(Registration.Logic_Chip.get()))
                 .save(consumer);
-
+        ShapedRecipeBuilder.shaped(Registration.Card_Holder.get(), 1)
+                .pattern("i i")
+                .pattern("cbc")
+                .pattern("i i")
+                .define('b', Registration.Logic_Chip.get())
+                .define('i', Tags.Items.INGOTS_IRON)
+                .define('c', Tags.Items.CHESTS)
+                .group("laserio")
+                .unlockedBy("has_logic_chip", InventoryChangeTrigger.TriggerInstance.hasItems(Registration.Logic_Chip.get()))
+                .save(consumer);
         //Cards
         ShapedRecipeBuilder.shaped(Registration.Card_Item.get(), 1)
                 .pattern("rlr")
