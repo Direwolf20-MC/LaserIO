@@ -51,12 +51,6 @@ public class CardHolder extends Item {
             }));
         });
 
-        /*NetworkHooks.openGui((ServerPlayer) player, new SimpleMenuProvider(
-                (windowId, playerInventory, playerEntity) -> new CardHolderContainer(windowId, playerInventory, player, itemstack), new TranslatableComponent("")), (buf -> {
-            buf.writeItem(itemstack);
-        ;}))*/
-
-        //System.out.println(itemstack.getItem().getRegistryName()+""+itemstack.getTag());
         return new InteractionResultHolder<>(InteractionResult.PASS, itemstack);
     }
 
@@ -73,7 +67,7 @@ public class CardHolder extends Item {
 
     @Override
     public void inventoryTick(@NotNull ItemStack stack, @NotNull Level world, @NotNull Entity entity, int itemSlot, boolean isSelected) {
-        if (world.getDayTime() % 20 != 0) return;
+        //if (world.getDayTime() % 20 == 0) return;
         if (entity instanceof Player player && getActive(stack)) {
             for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
                 ItemStack cardStack = player.getInventory().getItem(i);
@@ -100,7 +94,6 @@ public class CardHolder extends Item {
                     stackInSlot.setCount(maxSize);
                 }
                 if (card.isEmpty()) {
-                    //setInventory(cardHolder, handler);
                     return card;
                 }
             }
@@ -109,20 +102,6 @@ public class CardHolder extends Item {
         handler.insertItem(emptySlots.get(0), card.split(card.getCount()), false);
         return card;
     }
-
-    /*public static CardHolderHandler getInventory(ItemStack stack) {
-        CompoundTag compound = stack.getOrCreateTag();
-        CardHolderHandler handler = new CardHolderHandler(CardHolderContainer.SLOTS, stack);
-        handler.deserializeNBT(compound.getCompound("inv"));
-        if (handler.getSlots() < CardHolderContainer.SLOTS)
-            handler.reSize(CardHolderContainer.SLOTS);
-        return !compound.contains("inv") ? setInventory(stack, new CardHolderHandler(CardHolderContainer.SLOTS, stack)) : handler;
-    }
-
-    public static CardHolderHandler setInventory(ItemStack stack, CardHolderHandler handler) {
-        stack.getOrCreateTag().put("inv", handler.serializeNBT());
-        return handler;
-    }*/
 
     public static UUID getUUID(ItemStack stack) {
         CompoundTag nbt = stack.getOrCreateTag();
