@@ -151,10 +151,12 @@ public class EventTooltip {
         LaserIOItemRenderer tooltipItemRenderer = new LaserIOItemRenderer(mc.getTextureManager(), mc.getModelManager(), mc.getItemColors(), blockentitywithoutlevelrenderer);
 
         List<Item> tagItems = ForgeRegistries.ITEMS.tags().getTag(ItemTags.create(new ResourceLocation(tag))).stream().toList();
-        ItemStack drawStack = new ItemStack(tagItems.get((int) (mc.level.getGameTime() / 20) % tagItems.size()));
-        matrices.pushPose();
-        tooltipItemRenderer.renderGuiItem(8f, drawStack, x, y, itemRenderer.getModel(drawStack, null, null, 0));
-        matrices.popPose();
+        if (tagItems.size() > 0) {
+            ItemStack drawStack = new ItemStack(tagItems.get((int) (mc.level.getGameTime() / 20) % tagItems.size()));
+            matrices.pushPose();
+            tooltipItemRenderer.renderGuiItem(8f, drawStack, x, y, itemRenderer.getModel(drawStack, null, null, 0));
+            matrices.popPose();
+        }
     }
 }
 
