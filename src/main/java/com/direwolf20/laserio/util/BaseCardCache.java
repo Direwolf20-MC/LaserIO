@@ -2,6 +2,9 @@ package com.direwolf20.laserio.util;
 
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
+import com.direwolf20.laserio.common.items.cards.CardEnergy;
+import com.direwolf20.laserio.common.items.cards.CardFluid;
+import com.direwolf20.laserio.common.items.cards.CardItem;
 import com.direwolf20.laserio.common.items.filters.*;
 import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
@@ -25,6 +28,7 @@ public class BaseCardCache {
     public final List<String> filterTags;
     public final byte sneaky;
     public final LaserNodeBE be;
+    public final BaseCard.CardType cardType;
 
     public final boolean isAllowList;
     public final boolean isCompareNBT;
@@ -38,6 +42,13 @@ public class BaseCardCache {
         this.channel = BaseCard.getChannel(cardItem);
         this.filterCard = BaseCard.getFilter(cardItem);
         this.cardSlot = cardSlot;
+        if (cardItem.getItem() instanceof CardItem)
+            cardType = BaseCard.CardType.ITEM;
+        else if (cardItem.getItem() instanceof CardFluid)
+            cardType = BaseCard.CardType.FLUID;
+        else if (cardItem.getItem() instanceof CardEnergy)
+            cardType = BaseCard.CardType.ENERGY;
+        else cardType = null;
         this.be = be;
         if (filterCard.equals(ItemStack.EMPTY)) {
             filteredItems = new ArrayList<>();

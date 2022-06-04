@@ -141,7 +141,7 @@ public class LaserNodeBE extends BaseLaserBE {
     }
 
     /** Loop through all the extractorCards/stockerCards and run the extractions **/
-    public void extractItems() {
+    public void extract() {
         for (Direction direction : Direction.values()) {
             NodeSideCache nodeSideCache = nodeSideCaches[direction.ordinal()];
             int countCardsHandled = 0;
@@ -149,11 +149,15 @@ public class LaserNodeBE extends BaseLaserBE {
                 if (extractorCardCache.decrementSleep() == 0) {
                     if (countCardsHandled > nodeSideCache.overClocker) continue;
                     if (extractorCardCache instanceof StockerCardCache stockerCardCache) {
-                        if (stockItems(stockerCardCache))
-                            countCardsHandled++;
+                        if (extractorCardCache.cardType.equals(BaseCard.CardType.ITEM)) {
+                            if (stockItems(stockerCardCache))
+                                countCardsHandled++;
+                        }
                     } else {
-                        if (sendItems(extractorCardCache))
-                            countCardsHandled++;
+                        if (extractorCardCache.cardType.equals(BaseCard.CardType.ITEM)) {
+                            if (sendItems(extractorCardCache))
+                                countCardsHandled++;
+                        }
                     }
                     if (extractorCardCache.remainingSleep <= 0) {
                         extractorCardCache.remainingSleep = extractorCardCache.tickSpeed;
@@ -175,7 +179,7 @@ public class LaserNodeBE extends BaseLaserBE {
             updateOverclockers();
             discoveredNodes = true;
         }
-        extractItems(); //If this node has any extractors, do stuff with them
+        extract(); //If this node has any extractors, do stuff with them
     }
 
     public void sortInserters() {
@@ -192,6 +196,7 @@ public class LaserNodeBE extends BaseLaserBE {
             else { //Find the list of items that can be extracted by this extractor and cache them
                 List<InserterCardCache> nodes = inserterNodes.stream().filter(p -> (p.channel == extractorCardCache.channel)
                                 && (p.isStackValidForCard(stack))
+                                && (p.cardType.equals(extractorCardCache.cardType))
                                 && (!(p.relativePos.equals(BlockPos.ZERO) && p.direction.equals(extractorCardCache.direction))))
                         .toList();
                 inserterCache.get(extractorCardCache).put(key, nodes);
@@ -200,6 +205,7 @@ public class LaserNodeBE extends BaseLaserBE {
         } else { //Find the list of items that can be extracted by this extractor and cache them along with the extractor card
             List<InserterCardCache> nodes = inserterNodes.stream().filter(p -> (p.channel == extractorCardCache.channel)
                             && (p.isStackValidForCard(stack))
+                            && (p.cardType.equals(extractorCardCache.cardType))
                             && (!(p.relativePos.equals(BlockPos.ZERO) && p.direction.equals(extractorCardCache.direction))))
                     .toList();
             HashMap<ItemStackKey, List<InserterCardCache>> tempMap = new HashMap<>();
@@ -215,7 +221,7 @@ public class LaserNodeBE extends BaseLaserBE {
             return channelOnlyCache.get(extractorCardCache);
         } else {
             List<InserterCardCache> nodes = inserterNodes.stream().filter(p -> (p.channel == extractorCardCache.channel)
-                            && (!(p.relativePos.equals(BlockPos.ZERO) && p.direction.equals(extractorCardCache.direction))))
+                            && (!(p.relativePos.equals(BlockPos.ZERO) && p.direction.equals(extractorCardCache.direction) && (p.cardType.equals(extractorCardCache.cardType)))))
                     .toList();
             channelOnlyCache.put(extractorCardCache, nodes);
             return nodes;
@@ -233,7 +239,7 @@ public class LaserNodeBE extends BaseLaserBE {
         return true;
     }
 
-    public LaserNodeHandler getLaserNodeHandler(InserterCardCache inserterCardCache) {
+    public LaserNodeHandler getLaserNodeHandlerItem(InserterCardCache inserterCardCache) {
         BlockPos nodeWorldPos = getWorldPos(inserterCardCache.relativePos);
         if (!chunksLoaded(nodeWorldPos, nodeWorldPos.relative(inserterCardCache.direction))) return null;
         LaserNodeBE be = getNodeAt(getWorldPos(inserterCardCache.relativePos));
@@ -274,7 +280,7 @@ public class LaserNodeBE extends BaseLaserBE {
         return lists.get(1);
     }
 
-    public boolean extractForExact(ExtractorCardCache extractorCardCache, IItemHandler fromInventory, ItemStack extractStack) {
+    public boolean extractForExactItem(ExtractorCardCache extractorCardCache, IItemHandler fromInventory, ItemStack extractStack) {
         TransferResult extractResults = (ItemHandlerUtil.extractItemWithSlots(this, fromInventory, extractStack, extractStack.getCount(), true, extractorCardCache.isCompareNBT, extractorCardCache)); //Fake Extract
         int amtNeeded = extractorCardCache.extractAmt;
         if (extractResults.getTotalItemCounts() != amtNeeded) //Return if we didn't get what we needed
@@ -293,7 +299,7 @@ public class LaserNodeBE extends BaseLaserBE {
         //Begin test inserting into inserters
         int amtStillNeeded = amtNeeded;
         for (InserterCardCache inserterCardCache : inserterCardCaches) {
-            LaserNodeHandler laserNodeHandler = getLaserNodeHandler(inserterCardCache);
+            LaserNodeHandler laserNodeHandler = getLaserNodeHandlerItem(inserterCardCache);
             if (laserNodeHandler == null) continue;
 
             TransferResult thisResult = ItemHandlerUtil.insertItemWithSlots(laserNodeHandler.be, laserNodeHandler.handler, extractStack, 0, true, extractorCardCache.isCompareNBT, true, inserterCardCache); //Test!!
@@ -344,7 +350,7 @@ public class LaserNodeBE extends BaseLaserBE {
         }
 
         for (InserterCardCache inserterCardCache : inserterCardCaches) {
-            LaserNodeHandler laserNodeHandler = getLaserNodeHandler(inserterCardCache);
+            LaserNodeHandler laserNodeHandler = getLaserNodeHandlerItem(inserterCardCache);
             if (laserNodeHandler == null) continue;
             TransferResult insertResults = ItemHandlerUtil.insertItemWithSlots(laserNodeHandler.be, laserNodeHandler.handler, extractStack, 0, true, extractorCardCache.isCompareNBT, true, inserterCardCache);
             if (insertResults.results.isEmpty()) { //Next inserter if nothing went in -- return false if enforcing round robin
@@ -409,7 +415,7 @@ public class LaserNodeBE extends BaseLaserBE {
             }
 
             if (extractorCardCache.exact) {
-                if (extractForExact(extractorCardCache, adjacentInventory, extractStack))
+                if (extractForExactItem(extractorCardCache, adjacentInventory, extractStack))
                     return true;
             } else {
                 if (extractItemStack(extractorCardCache, adjacentInventory, extractStack))
@@ -419,7 +425,7 @@ public class LaserNodeBE extends BaseLaserBE {
         return false;
     }
 
-    public boolean canAnyFiltersFit(IItemHandler adjacentInventory, StockerCardCache stockerCardCache) {
+    public boolean canAnyItemFiltersFit(IItemHandler adjacentInventory, StockerCardCache stockerCardCache) {
         for (ItemStack stack : stockerCardCache.getFilteredItems()) {
             int amountFit = testInsertToInventory(adjacentInventory, stack.split(1)); //Try to put one in - if it fits we have room
             if (amountFit > 0) {
@@ -429,7 +435,7 @@ public class LaserNodeBE extends BaseLaserBE {
         return false;
     }
 
-    public boolean regulateStocker(StockerCardCache stockerCardCache, IItemHandler stockerInventory) {
+    public boolean regulateItemStocker(StockerCardCache stockerCardCache, IItemHandler stockerInventory) {
         ItemHandlerUtil.InventoryCounts stockerInventoryCount = new ItemHandlerUtil.InventoryCounts(stockerInventory, stockerCardCache.isCompareNBT);
         List<ItemStack> filteredItemsList = stockerCardCache.getFilteredItems();
         for (ItemStack itemStack : filteredItemsList) { //Remove all the items from the list that we already have enough of
@@ -457,10 +463,10 @@ public class LaserNodeBE extends BaseLaserBE {
         }
         if (filter.getItem() instanceof FilterBasic || filter.getItem() instanceof FilterCount) {
             if (stockerCardCache.regulate && filter.getItem() instanceof FilterCount) {
-                if (regulateStocker(stockerCardCache, adjacentInventory))
+                if (regulateItemStocker(stockerCardCache, adjacentInventory))
                     return true;
             }
-            if (!canAnyFiltersFit(adjacentInventory, stockerCardCache)) {
+            if (!canAnyItemFiltersFit(adjacentInventory, stockerCardCache)) {
                 return false; //If we can't fit any of our filtered items into this inventory, don't bother scanning for them
             }
             boolean foundItems = findItemStackForStocker(stockerCardCache, adjacentInventory); //Start looking for this item
@@ -476,7 +482,7 @@ public class LaserNodeBE extends BaseLaserBE {
     }
 
     public ItemStack getStackAtStockerCachePosition(StockerSource checkSource) {
-        LaserNodeHandler laserNodeHandler = getLaserNodeHandler(checkSource.inserterCardCache);
+        LaserNodeHandler laserNodeHandler = getLaserNodeHandlerItem(checkSource.inserterCardCache);
         if (laserNodeHandler == null) return ItemStack.EMPTY;
         return laserNodeHandler.handler.getStackInSlot(checkSource.slot);
     }
@@ -499,7 +505,7 @@ public class LaserNodeBE extends BaseLaserBE {
             return extractResult;
 
         ItemStack extractedItemStack;
-        LaserNodeHandler laserNodeHandler = getLaserNodeHandler(checkSource.inserterCardCache);
+        LaserNodeHandler laserNodeHandler = getLaserNodeHandlerItem(checkSource.inserterCardCache);
         if (laserNodeHandler == null) return extractResult;
         ItemStackKey stackInSlotKey = new ItemStackKey(stackInSlot, stockerCardCache.isCompareNBT);
         if (stackInSlot.isEmpty()) //Null means the inventory no longer exists or is unloaded
@@ -567,7 +573,7 @@ public class LaserNodeBE extends BaseLaserBE {
                 if (transferResult.getTotalItemCounts() != 0 && inserterCardCache.equals(transferResult.results.get(0).extractorCardCache))  //If we found something in the cache chest, we have to skip that chest, because of the fake pullout
                     continue;
 
-                LaserNodeHandler laserNodeHandler = getLaserNodeHandler(inserterCardCache);
+                LaserNodeHandler laserNodeHandler = getLaserNodeHandlerItem(inserterCardCache);
                 if (laserNodeHandler == null) continue;
                 ItemHandlerUtil.InventoryCounts inventoryCounts;
                 if (stockerInvCaches.containsKey(inserterCardCache)) { //Count the items in the inventory once -then re-use this for future iterations
@@ -722,11 +728,12 @@ public class LaserNodeBE extends BaseLaserBE {
             for (int slot = 0; slot < LaserNodeContainer.CARDSLOTS; slot++) {
                 ItemStack card = nodeSideCache.itemHandler.getStackInSlot(slot);
                 if (card.getItem() instanceof BaseCard) {
-                    if (BaseCard.getNamedTransferMode(card).equals(BaseCard.TransferMode.EXTRACT)) {
+                    /*if (BaseCard.getNamedTransferMode(card).equals(BaseCard.TransferMode.EXTRACT)) {
                         //sendItems(card, direction);
                     } else if (BaseCard.getNamedTransferMode(card).equals(BaseCard.TransferMode.STOCK)) {
                         //getItems(card, direction);
-                    } else if (BaseCard.getNamedTransferMode(card).equals(BaseCard.TransferMode.INSERT)) {
+                    } else*/
+                    if (BaseCard.getNamedTransferMode(card).equals(BaseCard.TransferMode.INSERT)) {
                         inserterNodes.add(new InserterCardCache(relativePos, direction, card, be, slot));
                     }
                 }

@@ -13,19 +13,12 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TranslatableComponent;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.SimpleMenuProvider;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.network.NetworkHooks;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -104,20 +97,6 @@ public class BaseCard extends Item {
     @Override
     public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged) {
         return false;
-    }
-
-    @Override
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
-        ItemStack itemstack = player.getItemInHand(hand);
-        if (level.isClientSide()) return new InteractionResultHolder<>(InteractionResult.PASS, itemstack);
-
-        NetworkHooks.openGui((ServerPlayer) player, new SimpleMenuProvider(
-                (windowId, playerInventory, playerEntity) -> new CardItemContainer(windowId, playerInventory, player, itemstack), new TranslatableComponent("")), (buf -> {
-            buf.writeItem(itemstack);
-        }));
-
-        //System.out.println(itemstack.getItem().getRegistryName()+""+itemstack.getTag());
-        return new InteractionResultHolder<>(InteractionResult.PASS, itemstack);
     }
 
     /**
@@ -215,21 +194,7 @@ public class BaseCard extends Item {
         return setChannel(card, (byte) (k == 0 ? 15 : k - 1));
     }
 
-    public static byte setItemExtractAmt(ItemStack card, byte itemextractamt) {
-        if (itemextractamt == 1)
-            card.removeTagKey("itemextractamt");
-        else
-            card.getOrCreateTag().putByte("itemextractamt", itemextractamt);
-        return itemextractamt;
-    }
-
-    public static byte getItemExtractAmt(ItemStack card) {
-        CompoundTag compound = card.getTag();
-        if (compound == null || !compound.contains("itemextractamt")) return (byte) 1;
-        return compound.getByte("itemextractamt");
-    }
-
-    public static int setItemExtractSpeed(ItemStack card, int itemextractspeed) {
+    public static int setExtractSpeed(ItemStack card, int itemextractspeed) {
         if (itemextractspeed == 20)
             card.removeTagKey("itemextractspeed");
         else
@@ -237,7 +202,7 @@ public class BaseCard extends Item {
         return itemextractspeed;
     }
 
-    public static int getItemExtractSpeed(ItemStack card) {
+    public static int getExtractSpeed(ItemStack card) {
         CompoundTag compound = card.getTag();
         if (compound == null || !compound.contains("itemextractspeed")) return 20;
         return compound.getInt("itemextractspeed");

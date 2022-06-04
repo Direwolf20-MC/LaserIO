@@ -2,6 +2,7 @@ package com.direwolf20.laserio.util;
 
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
+import com.direwolf20.laserio.common.items.cards.CardItem;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
 
@@ -14,8 +15,8 @@ public class ExtractorCardCache extends BaseCardCache {
 
     public ExtractorCardCache(Direction direction, ItemStack cardItem, int cardSlot, LaserNodeBE be) {
         super(direction, cardItem, cardSlot, be);
-        this.extractAmt = BaseCard.getItemExtractAmt(cardItem);
-        this.tickSpeed = BaseCard.getItemExtractSpeed(cardItem);
+        this.extractAmt = CardItem.getItemExtractAmt(cardItem);
+        this.tickSpeed = BaseCard.getExtractSpeed(cardItem);
         this.exact = BaseCard.getExact(cardItem);
         this.roundRobin = BaseCard.getRoundRobin(cardItem);
     }

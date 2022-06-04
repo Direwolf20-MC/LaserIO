@@ -2,6 +2,7 @@ package com.direwolf20.laserio.common.network.packets;
 
 import com.direwolf20.laserio.common.containers.CardItemContainer;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
+import com.direwolf20.laserio.common.items.cards.CardItem;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -69,13 +70,13 @@ public class PacketUpdateCard {
                     if (extractAmt > Math.max(overClockerCount * 16, 8)) {
                         extractAmt = (byte) Math.max(overClockerCount * 16, 8);
                     }
-                    BaseCard.setItemExtractAmt(stack, extractAmt);
+                    CardItem.setItemExtractAmt(stack, extractAmt);
                     BaseCard.setPriority(stack, msg.priority);
                     BaseCard.setSneaky(stack, msg.sneaky);
                     short ticks = msg.ticks;
                     if (ticks < Math.max(20 - overClockerCount * 5, 1))
                         ticks = (short) Math.max(20 - overClockerCount * 5, 1);
-                    BaseCard.setItemExtractSpeed(stack, ticks);
+                    BaseCard.setExtractSpeed(stack, ticks);
                     BaseCard.setExact(stack, msg.exact);
                     BaseCard.setRoundRobin(stack, msg.roundRobin);
                     BaseCard.setRegulate(stack, msg.regulate);

@@ -174,10 +174,10 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
         this.itemRenderer = new LaserIOItemRenderer(minecraft.getTextureManager(), minecraft.getModelManager(), minecraft.getItemColors(), blockentitywithoutlevelrenderer);
         currentMode = BaseCard.getTransferMode(card);
         currentChannel = BaseCard.getChannel(card);
-        currentItemExtractAmt = BaseCard.getItemExtractAmt(card);
+        currentItemExtractAmt = CardItem.getItemExtractAmt(card);
         currentPriority = BaseCard.getPriority(card);
         currentSneaky = BaseCard.getSneaky(card);
-        currentTicks = BaseCard.getItemExtractSpeed(card);
+        currentTicks = BaseCard.getExtractSpeed(card);
         currentExact = BaseCard.getExact(card);
         currentRoundRobin = BaseCard.getRoundRobin(card);
         currentRegulate = BaseCard.getRegulate(card);
