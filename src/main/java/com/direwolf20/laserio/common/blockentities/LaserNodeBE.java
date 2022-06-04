@@ -768,6 +768,78 @@ public class LaserNodeBE extends BaseLaserBE {
     }
 
     public void drawParticlesClient() {
+
+        /*if (true) {
+            ClientLevel clientLevel = (ClientLevel) level;
+            FluidStack fluidStack = new FluidStack(Fluids.LAVA, 1);
+            BlockPos toPos = getBlockPos().relative(Direction.UP);
+            BlockPos fromPos = getBlockPos();
+            Direction direction = Direction.values()[1];
+
+            Vector3f extractOffset = findOffset(direction, 0, offsets);
+            FluidFlowParticleData data = new FluidFlowParticleData(fluidStack, toPos.getX() + extractOffset.x(), toPos.getY() + extractOffset.y(), toPos.getZ() + extractOffset.z(), 10);
+            float randomSpread = 0.01f;
+            int min = 1;
+            int max = 64;
+            int minPart = 32;
+            int maxPart = 64;
+            int count = ((maxPart - minPart) * (fluidStack.getAmount() - min)) / (max - min) + minPart;
+            for (int i = 0; i < count; ++i) {
+                //particlesDrawnThisTick++;
+                double d1 = this.random.nextGaussian() * (double) randomSpread;
+                double d3 = this.random.nextGaussian() * (double) randomSpread;
+                double d5 = this.random.nextGaussian() * (double) randomSpread;
+                clientLevel.addParticle(data, fromPos.getX() + extractOffset.x() + d1, fromPos.getY() + extractOffset.y() + d3, fromPos.getZ() + extractOffset.z() + d5, 0, 0, 0);
+            }
+        }
+
+        if (true) {
+            ClientLevel clientLevel = (ClientLevel) level;
+            FluidStack fluidStack = new FluidStack(Fluids.WATER, 1);
+            BlockPos toPos = getBlockPos().relative(Direction.UP);
+            BlockPos fromPos = getBlockPos();
+            Direction direction = Direction.values()[1];
+
+            Vector3f extractOffset = findOffset(direction, 1, offsets);
+            FluidFlowParticleData data = new FluidFlowParticleData(fluidStack, toPos.getX() + extractOffset.x(), toPos.getY() + extractOffset.y(), toPos.getZ() + extractOffset.z(), 10);
+            float randomSpread = 0.01f;
+            int min = 1;
+            int max = 64;
+            int minPart = 32;
+            int maxPart = 64;
+            int count = ((maxPart - minPart) * (fluidStack.getAmount() - min)) / (max - min) + minPart;
+            for (int i = 0; i < count; ++i) {
+                //particlesDrawnThisTick++;
+                double d1 = this.random.nextGaussian() * (double) randomSpread;
+                double d3 = this.random.nextGaussian() * (double) randomSpread;
+                double d5 = this.random.nextGaussian() * (double) randomSpread;
+                clientLevel.addParticle(data, fromPos.getX() + extractOffset.x() + d1, fromPos.getY() + extractOffset.y() + d3, fromPos.getZ() + extractOffset.z() + d5, 0, 0, 0);
+            }
+        }
+
+        if (true) {
+            ClientLevel clientLevel = (ClientLevel) level;
+            FluidStack fluidStack = new FluidStack(Fluids.WATER, 1);
+            BlockPos toPos = getBlockPos().relative(Direction.UP);
+            BlockPos fromPos = getBlockPos();
+            Direction direction = Direction.values()[1];
+
+            Vector3f extractOffset = findOffset(direction, 1, offsets);
+            FluidFlowParticleData data = new FluidFlowParticleData(fluidStack, toPos.getX() + extractOffset.x(), toPos.getY() + extractOffset.y(), toPos.getZ() + extractOffset.z(), 10);
+            float randomSpread = 0.01f;
+            int min = 1;
+            int max = 64;
+            int minPart = 32;
+            int maxPart = 64;
+            int count = ((maxPart - minPart) * (fluidStack.getAmount() - min)) / (max - min) + minPart;
+            for (int i = 0; i < count; ++i) {
+                //particlesDrawnThisTick++;
+                double d1 = this.random.nextGaussian() * (double) randomSpread;
+                double d3 = this.random.nextGaussian() * (double) randomSpread;
+                double d5 = this.random.nextGaussian() * (double) randomSpread;
+                clientLevel.addParticle(data, fromPos.getX() + extractOffset.x() + d1, fromPos.getY() + extractOffset.y() + d3, fromPos.getZ() + extractOffset.z() + d5, 0, 0, 0);
+            }
+        }*/
         if (particleRenderData.isEmpty()) return;
         ClientLevel clientLevel = (ClientLevel) level;
         //int particlesDrawnThisTick = 0;

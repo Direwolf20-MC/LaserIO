@@ -1,5 +1,6 @@
 package com.direwolf20.laserio.client.particles;
 
+import com.direwolf20.laserio.client.particles.fluidparticle.FluidFlowParticle;
 import com.direwolf20.laserio.client.particles.itemparticle.ItemFlowParticle;
 import com.direwolf20.laserio.common.LaserIO;
 import net.minecraft.client.Minecraft;
@@ -15,5 +16,6 @@ public class ParticleRenderDispatcher {
     @SubscribeEvent
     public static void registerFactories(ParticleFactoryRegisterEvent evt) {
         Minecraft.getInstance().particleEngine.register(ModParticles.ITEMFLOWPARTICLE, ItemFlowParticle.FACTORY);
+        Minecraft.getInstance().particleEngine.register(ModParticles.FLUIDFLOWPARTICLE, FluidFlowParticle.FACTORY);
     }
 }
