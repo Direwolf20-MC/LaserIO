@@ -1,7 +1,9 @@
 package com.direwolf20.laserio.common.network.packets;
 
+import com.direwolf20.laserio.common.containers.CardFluidContainer;
 import com.direwolf20.laserio.common.containers.CardItemContainer;
 import com.direwolf20.laserio.common.containers.customhandler.CardItemHandler;
+import com.direwolf20.laserio.common.items.cards.CardFluid;
 import com.direwolf20.laserio.common.items.cards.CardItem;
 import com.direwolf20.laserio.common.items.filters.BaseFilter;
 import net.minecraft.core.BlockPos;
@@ -61,6 +63,17 @@ public class PacketOpenCard {
                     if (!msg.hasShiftDown) {
                         NetworkHooks.openGui(sender, new SimpleMenuProvider(
                                 (windowId, playerInventory, playerEntity) -> new CardItemContainer(windowId, playerInventory, sender, msg.sourcePos, itemStack), new TranslatableComponent("")), (buf -> {
+                            buf.writeItem(itemStack);
+                        }));
+                    } else {
+                        ItemStack filterItem = handler.getStackInSlot(0);
+                        if (filterItem.getItem() instanceof BaseFilter)
+                            PacketOpenFilter.doOpenFilter(filterItem, itemStack, sender, msg.sourcePos);
+                    }
+                } else if (itemStack.getItem() instanceof CardFluid) {
+                    if (!msg.hasShiftDown) {
+                        NetworkHooks.openGui(sender, new SimpleMenuProvider(
+                                (windowId, playerInventory, playerEntity) -> new CardFluidContainer(windowId, playerInventory, sender, msg.sourcePos, itemStack), new TranslatableComponent("")), (buf -> {
                             buf.writeItem(itemStack);
                         }));
                     } else {

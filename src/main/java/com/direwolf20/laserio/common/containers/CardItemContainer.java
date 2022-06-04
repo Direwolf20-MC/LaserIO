@@ -33,7 +33,7 @@ public class CardItemContainer extends AbstractContainerMenu {
     public FilterBasicHandler filterHandler;
     public ItemStack cardItem;
     public Player playerEntity;
-    private IItemHandler playerInventory;
+    protected IItemHandler playerInventory;
     public BlockPos sourceContainer = BlockPos.ZERO;
 
     public CardItemContainer(int windowId, Inventory playerInventory, Player player, FriendlyByteBuf extraData) {
@@ -155,7 +155,7 @@ public class CardItemContainer extends AbstractContainerMenu {
         return itemstack;
     }
 
-    private void updateFilterSlots(IItemHandler handler, int index, int x, int y, int horAmount, int dx, int verAmount, int dy) {
+    protected void updateFilterSlots(IItemHandler handler, int index, int x, int y, int horAmount, int dx, int verAmount, int dy) {
         for (int j = 0; j < verAmount; j++) {
             for (int i = 0; i < horAmount; i++) {
                 if (handler instanceof CardItemHandler && index == 0) {
@@ -174,7 +174,7 @@ public class CardItemContainer extends AbstractContainerMenu {
         }
     }
 
-    private int addSlotRange(IItemHandler handler, int index, int x, int y, int amount, int dx) {
+    protected int addSlotRange(IItemHandler handler, int index, int x, int y, int amount, int dx) {
         for (int i = 0; i < amount; i++) {
             if (handler instanceof CardItemHandler && index == 0)
                 addSlot(new CardItemSlot(handler, this, index, x, y));
@@ -188,7 +188,7 @@ public class CardItemContainer extends AbstractContainerMenu {
         return index;
     }
 
-    private int addSlotBox(IItemHandler handler, int index, int x, int y, int horAmount, int dx, int verAmount, int dy) {
+    protected int addSlotBox(IItemHandler handler, int index, int x, int y, int horAmount, int dx, int verAmount, int dy) {
         for (int j = 0; j < verAmount; j++) {
             index = addSlotRange(handler, index, x, y, horAmount, dx);
             y += dy;
@@ -196,7 +196,7 @@ public class CardItemContainer extends AbstractContainerMenu {
         return index;
     }
 
-    private void layoutPlayerInventorySlots(int leftCol, int topRow) {
+    protected void layoutPlayerInventorySlots(int leftCol, int topRow) {
         // Player inventory
         addSlotBox(playerInventory, 9, leftCol, topRow, 9, 18, 3, 18);
 
