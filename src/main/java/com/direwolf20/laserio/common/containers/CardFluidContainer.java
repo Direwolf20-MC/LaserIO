@@ -13,7 +13,7 @@ import net.minecraftforge.items.wrapper.InvWrapper;
 public class CardFluidContainer extends CardItemContainer {
 
     public CardFluidContainer(int windowId, Inventory playerInventory, Player player, FriendlyByteBuf extraData) {
-        super(windowId, playerInventory, player, extraData.readItem());
+        this(windowId, playerInventory, player, extraData.readItem());
     }
 
     public CardFluidContainer(int windowId, Inventory playerInventory, Player player, ItemStack cardItem) {
@@ -33,6 +33,7 @@ public class CardFluidContainer extends CardItemContainer {
     }
 
     public CardFluidContainer(int windowId, Inventory playerInventory, Player player, BlockPos sourcePos, ItemStack cardItem) {
-        super(windowId, playerInventory, player, sourcePos, cardItem);
+        this(windowId, playerInventory, player, cardItem);
+        this.sourceContainer = sourcePos;
     }
 }

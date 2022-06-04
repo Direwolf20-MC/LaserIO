@@ -26,6 +26,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.common.util.NonNullConsumer;
+import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -82,6 +83,7 @@ public class LaserNodeBE extends BaseLaserBE {
     private Set<BlockPos> otherNodesInNetwork = new HashSet<>();
     private final List<InserterCardCache> inserterNodes = new CopyOnWriteArrayList<>(); //All Inventory nodes that contain an inserter card
     private final HashMap<ExtractorCardCache, HashMap<ItemStackKey, List<InserterCardCache>>> inserterCache = new HashMap<>();
+    private final HashMap<ExtractorCardCache, HashMap<FluidStackKey, List<InserterCardCache>>> inserterCacheFluid = new HashMap<>();
     private final HashMap<ExtractorCardCache, List<InserterCardCache>> channelOnlyCache = new HashMap<>();
     private List<ParticleRenderData> particleRenderData = new ArrayList<>();
     private Random random = new Random();
@@ -167,6 +169,9 @@ public class LaserNodeBE extends BaseLaserBE {
                         if (extractorCardCache.cardType.equals(BaseCard.CardType.ITEM)) {
                             if (sendItems(extractorCardCache))
                                 countCardsHandled++;
+                        } else if (extractorCardCache.cardType.equals(BaseCard.CardType.FLUID)) {
+                            if (sendFluids(extractorCardCache))
+                                countCardsHandled++;
                         }
                     }
                     if (extractorCardCache.remainingSleep <= 0) {
@@ -221,6 +226,34 @@ public class LaserNodeBE extends BaseLaserBE {
             HashMap<ItemStackKey, List<InserterCardCache>> tempMap = new HashMap<>();
             tempMap.put(key, nodes);
             inserterCache.put(extractorCardCache, tempMap);
+            return nodes;
+        }
+    }
+
+    /** Finds all inserters that can be extracted to **/
+    public List<InserterCardCache> getPossibleInserters(ExtractorCardCache extractorCardCache, FluidStack stack) {
+        FluidStackKey key = new FluidStackKey(stack, true);
+        if (inserterCacheFluid.containsKey(extractorCardCache)) { //If this extractor card is already in the cache
+            if (inserterCacheFluid.get(extractorCardCache).containsKey(key)) //If this extractor card AND itemKey are already in the cache
+                return inserterCacheFluid.get(extractorCardCache).get(key); //Return the cached results
+            else { //Find the list of items that can be extracted by this extractor and cache them
+                List<InserterCardCache> nodes = inserterNodes.stream().filter(p -> (p.channel == extractorCardCache.channel)
+                                && (p.isStackValidForCard(stack))
+                                && (p.cardType.equals(extractorCardCache.cardType))
+                                && (!(p.relativePos.equals(BlockPos.ZERO) && p.direction.equals(extractorCardCache.direction))))
+                        .toList();
+                inserterCacheFluid.get(extractorCardCache).put(key, nodes);
+                return nodes;
+            }
+        } else { //Find the list of items that can be extracted by this extractor and cache them along with the extractor card
+            List<InserterCardCache> nodes = inserterNodes.stream().filter(p -> (p.channel == extractorCardCache.channel)
+                            && (p.isStackValidForCard(stack))
+                            && (p.cardType.equals(extractorCardCache.cardType))
+                            && (!(p.relativePos.equals(BlockPos.ZERO) && p.direction.equals(extractorCardCache.direction))))
+                    .toList();
+            HashMap<FluidStackKey, List<InserterCardCache>> tempMap = new HashMap<>();
+            tempMap.put(key, nodes);
+            inserterCacheFluid.put(extractorCardCache, tempMap);
             return nodes;
         }
     }
@@ -422,6 +455,123 @@ public class LaserNodeBE extends BaseLaserBE {
                     return true;
             }
         }
+        return false;
+    }
+
+    public boolean extractFluidStack(ExtractorCardCache extractorCardCache, IFluidHandler fromInventory, FluidStack extractStack) {
+        int amtToExtract = extractStack.getAmount();
+        List<InserterCardCache> inserterCardCaches = getPossibleInserters(extractorCardCache, extractStack);
+        int roundRobin = -1;
+        boolean foundAnything = false;
+        if (extractorCardCache.roundRobin != 0) {
+            roundRobin = getRR(extractorCardCache);
+            inserterCardCaches = applyRR(extractorCardCache, inserterCardCaches, roundRobin);
+        }
+
+        for (InserterCardCache inserterCardCache : inserterCardCaches) {
+            LaserNodeFluidHandler laserNodeFluidHandler = getLaserNodeHandlerFluid(inserterCardCache);
+            if (laserNodeFluidHandler == null) continue;
+            IFluidHandler handler = laserNodeFluidHandler.handler;
+            //for (int tank = 0; tank < handler.getTanks(); tank++) {
+            extractStack.setAmount(amtToExtract);
+            int amtFit = handler.fill(extractStack, IFluidHandler.FluidAction.SIMULATE);
+            if (amtFit == 0) { //Next inserter if nothing went in -- return false if enforcing round robin
+                if (extractorCardCache.roundRobin == 2) {
+                    return false;
+                }
+                if (extractorCardCache.roundRobin != 0) getNextRR(extractorCardCache, inserterCardCaches);
+                continue;
+            }
+            extractStack.setAmount(amtFit);
+            FluidStack drainedStack = fromInventory.drain(extractStack, IFluidHandler.FluidAction.EXECUTE);
+            if (drainedStack.isEmpty()) continue; //If we didn't get anything for whatever reason
+            foundAnything = true;
+            handler.fill(drainedStack, IFluidHandler.FluidAction.EXECUTE);
+            amtToExtract -= drainedStack.getAmount();
+            if (extractorCardCache.roundRobin != 0) getNextRR(extractorCardCache, inserterCardCaches);
+            if (amtToExtract == 0) return true;
+            //}
+
+            /*TransferResult insertResults = ItemHandlerUtil.insertItemWithSlots(laserNodeItemHandler.be, laserNodeItemHandler.handler, extractStack, 0, true, extractorCardCache.isCompareNBT, true, inserterCardCache);
+            if (insertResults.results.isEmpty()) { //Next inserter if nothing went in -- return false if enforcing round robin
+                if (extractorCardCache.roundRobin == 2) {
+                    return false;
+                }
+                if (extractorCardCache.roundRobin != 0) getNextRR(extractorCardCache, inserterCardCaches);
+                continue;
+            }
+            //If we got here, we can update this
+            foundAnything = true; //We know that we have SOME of this item, and SOME will fit in another chest, so SOMETHING will move!
+            int amtFit = insertResults.getTotalItemCounts(); //How many items fit (Above)
+            extractStack.setCount(amtFit); //Make a stack of how many can fit in here without doing an itemstack.copy()
+            ItemStack extractedStack = ItemStack.EMPTY;
+            if (extractorCardCache instanceof StockerCardCache)
+                extractedStack = ItemHandlerUtil.extractItemBackwards(fromInventory, extractStack, extractStack.getCount(), false, extractorCardCache.isCompareNBT).itemStack();
+            else
+                extractedStack = ItemHandlerUtil.extractItem(fromInventory, extractStack, false, extractorCardCache.isCompareNBT).itemStack();
+            if (extractedStack.isEmpty()) return false;
+            boolean chestEmpty = extractedStack.getCount() < extractStack.getCount(); //If we didn't find enough, the extract chest is empty, so don't try again later
+            amtToExtract -= extractedStack.getCount(); //Reduce how many we have left to extract by the amount we got here
+            extractStack.setCount(amtToExtract); //For use in the next loop -- How many items are still needed
+            for (TransferResult.Result result : insertResults.results) {
+                int insertAmt = Math.min(result.itemStack.getCount(), extractedStack.getCount());
+                ItemStack insertStack = extractedStack.split(insertAmt);
+                laserNodeItemHandler.handler.insertItem(result.insertSlot, insertStack, false);
+                drawParticles(insertStack, extractorCardCache.direction, extractorCardCache.be, inserterCardCache.be, inserterCardCache.direction, extractorCardCache.cardSlot, inserterCardCache.cardSlot);
+                if (extractedStack.isEmpty()) break;
+            }
+            if (extractorCardCache.roundRobin != 0) getNextRR(extractorCardCache, inserterCardCaches);
+            if (chestEmpty || extractStack.isEmpty()) //If the chest is empty, or we have no more items to find, we're done here
+                break;*/
+        }
+
+        return foundAnything;
+    }
+
+    /** Extractor Cards call this, and try to find an inserter card to send their items to **/
+    public boolean sendFluids(ExtractorCardCache extractorCardCache) {
+        BlockPos adjacentPos = getBlockPos().relative(extractorCardCache.direction);
+        assert level != null;
+        if (!level.isLoaded(adjacentPos)) return false;
+        LazyOptional<IFluidHandler> adjacentTankOptional = getAttachedFluidTank(extractorCardCache.direction, extractorCardCache.sneaky);
+        if (!adjacentTankOptional.isPresent()) return false;
+        IFluidHandler adjacentTank = adjacentTankOptional.resolve().get();
+        for (int tank = 0; tank < adjacentTank.getTanks(); tank++) {
+            FluidStack fluidStack = adjacentTank.getFluidInTank(tank);
+            if (fluidStack.isEmpty() || !extractorCardCache.isStackValidForCard(fluidStack)) continue;
+            FluidStack extractStack = fluidStack.copy();
+            extractStack.setAmount(extractorCardCache.extractAmt);
+            if (extractFluidStack(extractorCardCache, adjacentTank, extractStack))
+                return true;
+        }
+        //ItemHandlerUtil.InventoryCounts inventoryCounts = new ItemHandlerUtil.InventoryCounts();
+        /*if (extractorCardCache.filterCard.getItem() instanceof FilterCount) {
+            inventoryCounts = new ItemHandlerUtil.InventoryCounts(adjacentInventory, extractorCardCache.isCompareNBT);
+        }*/
+        /*for (int slot = 0; slot < adjacentInventory.getSlots(); slot++) {
+            ItemStack stackInSlot = adjacentInventory.getStackInSlot(slot);
+            if (stackInSlot.isEmpty() || !(extractorCardCache.isStackValidForCard(stackInSlot))) continue;
+            ItemStack extractStack = stackInSlot.copy();
+            extractStack.setCount(extractorCardCache.extractAmt);
+
+            if (extractorCardCache.filterCard.getItem() instanceof FilterCount) { //If this is a count filter, only try to extract up to the amount in the filter
+                int filterCount = extractorCardCache.getFilterAmt(extractStack);
+                if (filterCount <= 0) continue; //This should never happen in theory...
+                int amtInInv = inventoryCounts.getCount(extractStack);
+                int amtAllowedToRemove = amtInInv - filterCount;
+                if (amtAllowedToRemove <= 0) continue;
+                int amtRemaining = Math.min(extractStack.getCount(), amtAllowedToRemove);
+                extractStack.setCount(amtRemaining);
+            }
+
+            if (extractorCardCache.exact) {
+                if (extractForExactItem(extractorCardCache, adjacentInventory, extractStack))
+                    return true;
+            } else {
+                if (extractItemStack(extractorCardCache, adjacentInventory, extractStack))
+                    return true;
+            }
+        }*/
         return false;
     }
 
@@ -700,6 +850,7 @@ public class LaserNodeBE extends BaseLaserBE {
     public void refreshAllInvNodes() {
         inserterNodes.clear();
         inserterCache.clear();
+        inserterCacheFluid.clear();
         channelOnlyCache.clear();
         this.stockerDestinationCache.clear();
         for (BlockPos pos : otherNodesInNetwork) {
@@ -720,6 +871,7 @@ public class LaserNodeBE extends BaseLaserBE {
         //Remove this position from all caches, so we can repopulate below
         inserterNodes.removeIf(p -> p.relativePos.equals(relativePos));
         inserterCache.clear(); //TODO maybe just remove destinations that match this blockPos
+        inserterCacheFluid.clear();
         channelOnlyCache.clear();
         this.stockerDestinationCache.clear();
         if (be == null) return; //If the block position given doesn't contain a LaserNodeBE stop
