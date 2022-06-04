@@ -173,7 +173,6 @@ public class LaserNodeBE extends BaseLaserBE {
             discoverAllNodes();
             findMyExtractors();
             updateOverclockers();
-            //loadRoundRobin();
             discoveredNodes = true;
         }
         extractItems(); //If this node has any extractors, do stuff with them
@@ -313,7 +312,6 @@ public class LaserNodeBE extends BaseLaserBE {
             if (amtStillNeeded == 0)
                 break;
             extractStack.setCount(amtStillNeeded); //Modify the stack size rather than .copy
-            //getNextRR(extractorCardCache, inserterCardCaches);
         }
 
         if (amtStillNeeded != 0) return false;
@@ -356,11 +354,9 @@ public class LaserNodeBE extends BaseLaserBE {
                 if (extractorCardCache.roundRobin != 0) getNextRR(extractorCardCache, inserterCardCaches);
                 continue;
             }
-            //System.out.println(roundRobin);
             //If we got here, we can update this
             foundAnything = true; //We know that we have SOME of this item, and SOME will fit in another chest, so SOMETHING will move!
             int amtFit = insertResults.getTotalItemCounts(); //How many items fit (Above)
-            //int amtNoFit = amtToExtract - amtFit;
             extractStack.setCount(amtFit); //Make a stack of how many can fit in here without doing an itemstack.copy()
             ItemStack extractedStack = ItemStack.EMPTY;
             if (extractorCardCache instanceof StockerCardCache)
@@ -379,7 +375,6 @@ public class LaserNodeBE extends BaseLaserBE {
                 if (extractedStack.isEmpty()) break;
             }
             if (extractorCardCache.roundRobin != 0) getNextRR(extractorCardCache, inserterCardCaches);
-            //extractStack.setCount(amtNoFit);
             if (chestEmpty || extractStack.isEmpty()) //If the chest is empty, or we have no more items to find, we're done here
                 break;
         }
@@ -616,30 +611,6 @@ public class LaserNodeBE extends BaseLaserBE {
         return stack.getCount() - remainder;
     }
 
-    /** Determine how many items from @param itemStack can fit into @param destinationInventory based on the filter in @param inserterCardCache **/
-    /*public int getTransferAmt(ItemStack itemStack, IItemHandler destinationInventory, InserterCardCache inserterCardCache) {
-        ItemStack insertFilter = inserterCardCache.filterCard;
-        if (insertFilter.getItem() instanceof FilterBasic || insertFilter.isEmpty() || insertFilter.getItem() instanceof FilterTag) { // Basic cards send as many items as can fit into an inventory
-            return testInsertToInventory(destinationInventory, itemStack);
-        } else if (insertFilter.getItem() instanceof FilterCount) { //Count cards send up to <X> amount determined by the filter
-            ItemHandlerUtil.InventoryCounts invCache = new ItemHandlerUtil.InventoryCounts(destinationInventory, BaseFilter.getCompareNBT(insertFilter)); //Cache the items in the destination
-            int countOfItem = invCache.getCount(itemStack); //Find out how many of this itemStack we have in the target inventory
-            int desiredAmt = inserterCardCache.getFilterAmt(itemStack); //Find out how many we want from the InserterCardCache
-
-            if (countOfItem >= desiredAmt) { //Compare what we want to the target inventory, if we have enough return
-                return 0;
-            }
-
-            //Doing this rather than copying.
-            int neededAmt = desiredAmt - countOfItem; //How many items we need to fulfill this inventory
-            if (itemStack.getCount() > neededAmt) //If we're trying to send more items than needed
-                itemStack.setCount(neededAmt); //Set the size of the stack, rather than copying it
-
-            //Test how many of what we weed can actually fit into the destination and return that amount
-            return testInsertToInventory(destinationInventory, itemStack);
-        }
-        return 0;
-    }*/
     public void drawParticlesClient() {
         if (particleRenderData.isEmpty()) return;
         ClientLevel clientLevel = (ClientLevel) level;
@@ -703,8 +674,6 @@ public class LaserNodeBE extends BaseLaserBE {
 
     /** Called when changes happen - such as a card going into a side, or a card being modified via container **/
     public void updateThisNode() {
-        /*if (!level.isClientSide)
-            System.out.println("Updating the node at: " + getBlockPos());*/
         setChanged();
         notifyOtherNodesOfChange();
         markDirtyClient();
@@ -796,7 +765,6 @@ public class LaserNodeBE extends BaseLaserBE {
         return LazyOptional.empty();
     }
 
-    /** Somehow this makes it so if you break an adjacent chest it immediately invalidates the cache of it **/
     public LazyOptional<IItemHandler> getAttachedInventoryNoCache(Direction direction, Byte sneakySide) {
         Direction inventorySide = direction.getOpposite();
         if (sneakySide != -1)
@@ -845,7 +813,6 @@ public class LaserNodeBE extends BaseLaserBE {
             for (int slot = 0; slot < h.getSlots(); slot++) {
                 ItemStack card = h.getStackInSlot(slot);
                 if (!(card.getItem() instanceof BaseCard)) continue;
-                //if (level.getBlockState(getBlockPos().relative(direction)).getBlock().equals(Blocks.VOID_AIR)) return; //This happens if the level isn't loaded all the way yet
                 if (getAttachedInventoryNoCache(direction, (byte) -1).equals(LazyOptional.empty()))
                     continue;
 
