@@ -1,5 +1,6 @@
 package com.direwolf20.laserio.common.blockentities;
 
+import com.direwolf20.laserio.client.particles.fluidparticle.FluidFlowParticleData;
 import com.direwolf20.laserio.client.particles.itemparticle.ItemFlowParticleData;
 import com.direwolf20.laserio.common.blockentities.basebe.BaseLaserBE;
 import com.direwolf20.laserio.common.containers.LaserNodeContainer;
@@ -86,6 +87,7 @@ public class LaserNodeBE extends BaseLaserBE {
     private final HashMap<ExtractorCardCache, HashMap<FluidStackKey, List<InserterCardCache>>> inserterCacheFluid = new HashMap<>();
     private final HashMap<ExtractorCardCache, List<InserterCardCache>> channelOnlyCache = new HashMap<>();
     private List<ParticleRenderData> particleRenderData = new ArrayList<>();
+    private List<ParticleRenderDataFluid> particleRenderDataFluids = new ArrayList<>();
     private Random random = new Random();
 
     private record StockerRequest(StockerCardCache stockerCardCache, ItemStackKey itemStackKey) {
@@ -185,6 +187,7 @@ public class LaserNodeBE extends BaseLaserBE {
     public void tickClient() {
         drawParticlesClient();
         particleRenderData.clear();
+        particleRenderDataFluids.clear();
     }
 
     public void tickServer() {
@@ -487,6 +490,7 @@ public class LaserNodeBE extends BaseLaserBE {
             if (drainedStack.isEmpty()) continue; //If we didn't get anything for whatever reason
             foundAnything = true;
             handler.fill(drainedStack, IFluidHandler.FluidAction.EXECUTE);
+            drawParticlesFluid(drainedStack, extractorCardCache.direction, extractorCardCache.be, inserterCardCache.be, inserterCardCache.direction, extractorCardCache.cardSlot, inserterCardCache.cardSlot);
             amtToExtract -= drainedStack.getAmount();
             if (extractorCardCache.roundRobin != 0) getNextRR(extractorCardCache, inserterCardCaches);
             if (amtToExtract == 0) return true;
@@ -840,7 +844,7 @@ public class LaserNodeBE extends BaseLaserBE {
                 clientLevel.addParticle(data, fromPos.getX() + extractOffset.x() + d1, fromPos.getY() + extractOffset.y() + d3, fromPos.getZ() + extractOffset.z() + d5, 0, 0, 0);
             }
         }*/
-        if (particleRenderData.isEmpty()) return;
+        if (particleRenderData.isEmpty() && particleRenderDataFluids.isEmpty()) return;
         ClientLevel clientLevel = (ClientLevel) level;
         //int particlesDrawnThisTick = 0;
         for (ParticleRenderData partData : particleRenderData) {
@@ -866,6 +870,30 @@ public class LaserNodeBE extends BaseLaserBE {
                 clientLevel.addParticle(data, fromPos.getX() + extractOffset.x() + d1, fromPos.getY() + extractOffset.y() + d3, fromPos.getZ() + extractOffset.z() + d5, 0, 0, 0);
             }
         }
+
+        for (ParticleRenderDataFluid partData : particleRenderDataFluids) {
+            //if (particlesDrawnThisTick > 64) return;
+            FluidStack fluidStack = partData.fluidStack;
+            BlockPos toPos = partData.toPos;
+            BlockPos fromPos = partData.fromPos;
+            Direction direction = Direction.values()[partData.direction];
+
+            Vector3f extractOffset = findOffset(direction, partData.position, offsets);
+            FluidFlowParticleData data = new FluidFlowParticleData(fluidStack, toPos.getX() + extractOffset.x(), toPos.getY() + extractOffset.y(), toPos.getZ() + extractOffset.z(), 10);
+            float randomSpread = 0.01f;
+            int min = 100;
+            int max = 8000;
+            int minPart = 8;
+            int maxPart = 64;
+            int count = ((maxPart - minPart) * (fluidStack.getAmount() - min)) / (max - min) + minPart;
+            for (int i = 0; i < count; ++i) {
+                //particlesDrawnThisTick++;
+                double d1 = this.random.nextGaussian() * (double) randomSpread;
+                double d3 = this.random.nextGaussian() * (double) randomSpread;
+                double d5 = this.random.nextGaussian() * (double) randomSpread;
+                clientLevel.addParticle(data, fromPos.getX() + extractOffset.x() + d1, fromPos.getY() + extractOffset.y() + d3, fromPos.getZ() + extractOffset.z() + d5, 0, 0, 0);
+            }
+        }
         //System.out.println(particlesDrawnThisTick);
     }
 
@@ -874,9 +902,18 @@ public class LaserNodeBE extends BaseLaserBE {
         this.particleRenderData.add(particleRenderData);
     }
 
+    public void addParticleDataFluid(ParticleRenderDataFluid particleRenderData) {
+        this.particleRenderDataFluids.add(particleRenderData);
+    }
+
     /** Draw the particles between node and inventory **/
     public void drawParticles(ItemStack itemStack, Direction fromDirection, LaserNodeBE sourceBE, LaserNodeBE destinationBE, Direction destinationDirection, int extractPosition, int insertPosition) {
         drawParticles(itemStack, itemStack.getCount(), fromDirection, sourceBE, destinationBE, destinationDirection, extractPosition, insertPosition);
+    }
+
+    /** Draw the particles between node and inventory **/
+    public void drawParticlesFluid(FluidStack fluidStack, Direction fromDirection, LaserNodeBE sourceBE, LaserNodeBE destinationBE, Direction destinationDirection, int extractPosition, int insertPosition) {
+        ServerTickHandler.addToListFluid(new ParticleDataFluid(fluidStack, sourceBE.getBlockPos(), (byte) fromDirection.ordinal(), destinationBE.getBlockPos(), (byte) destinationDirection.ordinal(), (byte) extractPosition, (byte) insertPosition), level);
     }
 
     /** Draw the particles between node and inventory **/

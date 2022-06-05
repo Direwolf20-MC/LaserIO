@@ -31,8 +31,8 @@ public class FluidFlowParticle extends BreakingItemParticle {
         double distance = target.distanceTo(source);
         //System.out.println(source +":"+target);
         this.hasPhysics = false;
-        float minSize = 0.05f;
-        float maxSize = 0.15f;
+        float minSize = 0.15f;
+        float maxSize = 0.25f;
         float partSize = minSize + random.nextFloat() * (maxSize - minSize);
         float speedModifier = (1f - 0.5f) * (partSize - minSize) / (maxSize - minSize) + 0.25f;
         //float speedModifier = (0.5f - 1f) * (partSize - maxSize) / (minSize - maxSize) + 1f;
