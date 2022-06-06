@@ -1,5 +1,6 @@
 package com.direwolf20.laserio.common.network.packets;
 
+import com.direwolf20.laserio.common.containers.CardFluidContainer;
 import com.direwolf20.laserio.common.containers.CardItemContainer;
 import com.direwolf20.laserio.common.containers.FilterCountContainer;
 import com.direwolf20.laserio.common.containers.customhandler.FilterCountHandler;
@@ -18,21 +19,28 @@ public class PacketGhostSlot {
     private int slotNumber;
     private ItemStack stack;
     private int count;
+    private int mbAmt;
 
     public PacketGhostSlot(int slotNumber, ItemStack stack, int count) {
+        this(slotNumber, stack, count, -1);
+    }
+
+    public PacketGhostSlot(int slotNumber, ItemStack stack, int count, int mbAmt) {
         this.slotNumber = slotNumber;
         this.stack = stack;
         this.count = count;
+        this.mbAmt = mbAmt;
     }
 
     public static void encode(PacketGhostSlot msg, FriendlyByteBuf buffer) {
         buffer.writeInt(msg.slotNumber);
         buffer.writeItem(msg.stack);
         buffer.writeInt(msg.count);
+        buffer.writeInt(msg.mbAmt);
     }
 
     public static PacketGhostSlot decode(FriendlyByteBuf buffer) {
-        return new PacketGhostSlot(buffer.readInt(), buffer.readItem(), buffer.readInt());
+        return new PacketGhostSlot(buffer.readInt(), buffer.readItem(), buffer.readInt(), buffer.readInt());
     }
 
     public static class Handler {
@@ -50,9 +58,18 @@ public class PacketGhostSlot {
 
                 if (container instanceof CardItemContainer && filterStack.getItem() instanceof FilterCount) {
                     ItemStack stack = msg.stack;
-                    stack.setCount(msg.count);
                     FilterCountHandler handler = (FilterCountHandler) ((CardItemContainer) container).filterHandler;
+                    int mbAmt = msg.mbAmt;
+                    if (mbAmt == 0 && container instanceof CardFluidContainer) {
+                        stack.setCount(0);
+                    } else {
+                        stack.setCount(msg.count);
+                    }
                     handler.setStackInSlotSave(msg.slotNumber - CardItemContainer.SLOTS, stack);
+
+                    if (mbAmt != -1 && container instanceof CardFluidContainer) { //MB amt is only done in CardFluidContainers
+                        handler.setMBAmountInSlot(msg.slotNumber - CardItemContainer.SLOTS, mbAmt);
+                    }
                 } else if (container instanceof FilterCountContainer) {
                     ItemStack stack = msg.stack;
                     stack.setCount(msg.count);

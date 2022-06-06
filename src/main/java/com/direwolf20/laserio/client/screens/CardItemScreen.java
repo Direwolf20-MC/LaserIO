@@ -57,7 +57,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
     protected boolean showAllow;
     protected boolean showNBT;
     protected final ItemStack card;
-    protected ItemStack filter;
+    public ItemStack filter;
     protected Map<String, Button> buttons = new HashMap<>();
 
     protected final String[] sneakyNames = {
@@ -507,6 +507,24 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
         PacketHandler.sendToServer(new PacketUpdateCard(currentMode, currentChannel, currentItemExtractAmt, currentPriority, currentSneaky, (short) currentTicks, currentExact, currentRegulate, (byte) currentRoundRobin));
     }
 
+    public boolean filterSlot(int btn) {
+        ItemStack slotStack = hoveredSlot.getItem();
+        if (slotStack.isEmpty()) return true;
+        if (btn == 2) { //Todo IMC Inventory Sorter so this works
+            slotStack.setCount(0);
+            PacketHandler.sendToServer(new PacketGhostSlot(hoveredSlot.index, slotStack, slotStack.getCount()));
+            return true;
+        }
+        int amt = (btn == 0) ? 1 : -1;
+        if (Screen.hasShiftDown()) amt *= 10;
+        if (Screen.hasControlDown()) amt *= 64;
+        if (amt + slotStack.getCount() > 4096) amt = 4096 - slotStack.getCount();
+
+
+        PacketHandler.sendToServer(new PacketGhostSlot(hoveredSlot.index, slotStack, slotStack.getCount() + amt));
+        return true;
+    }
+
     @Override
     public boolean mouseClicked(double x, double y, int btn) {
         ChannelButton channelButton = ((ChannelButton) buttons.get("channel"));
@@ -554,7 +572,8 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
                     hoveredSlot.set(stack); // Temporarily update the client for continuity purposes
                     PacketHandler.sendToServer(new PacketGhostSlot(hoveredSlot.index, stack, stack.getCount()));
                 } else {
-                    ItemStack slotStack = hoveredSlot.getItem();
+                    filterSlot(btn);
+                    /*ItemStack slotStack = hoveredSlot.getItem();
                     if (slotStack.isEmpty()) return true;
                     if (btn == 2) { //Todo IMC Inventory Sorter so this works
                         slotStack.setCount(0);
@@ -567,7 +586,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
                     if (amt + slotStack.getCount() > 4096) amt = 4096 - slotStack.getCount();
                     //slotStack.grow(amt);
 
-                    PacketHandler.sendToServer(new PacketGhostSlot(hoveredSlot.index, slotStack, slotStack.getCount() + amt));
+                    PacketHandler.sendToServer(new PacketGhostSlot(hoveredSlot.index, slotStack, slotStack.getCount() + amt));*/
                 }
             }
             return true;

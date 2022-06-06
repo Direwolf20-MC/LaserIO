@@ -1,31 +1,48 @@
 package com.direwolf20.laserio.client.screens;
 
+import com.direwolf20.laserio.client.renderer.LaserIOItemRendererFluid;
 import com.direwolf20.laserio.client.screens.widgets.NumberButton;
 import com.direwolf20.laserio.client.screens.widgets.ToggleButton;
 import com.direwolf20.laserio.common.LaserIO;
 import com.direwolf20.laserio.common.containers.CardItemContainer;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.common.items.cards.CardFluid;
+import com.direwolf20.laserio.common.items.filters.FilterCount;
 import com.direwolf20.laserio.common.network.PacketHandler;
+import com.direwolf20.laserio.common.network.packets.PacketGhostSlot;
 import com.direwolf20.laserio.common.network.packets.PacketUpdateCard;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.ItemStack;
 
 public class CardFluidScreen extends CardItemScreen {
 
-    int currentFluidExtractAmt;
+    public int currentFluidExtractAmt;
+    public final int filterStartX;
+    public final int filterStartY;
+    public final int filterEndX;
+    public final int filterEndY;
 
     public CardFluidScreen(CardItemContainer container, Inventory inv, Component name) {
         super(container, inv, name);
+        filterStartX = 44;
+        filterStartY = 25;
+        filterEndX = 134;
+        filterEndY = 79;
     }
 
     @Override
     public void init() {
         this.currentFluidExtractAmt = CardFluid.getFluidExtractAmt(card);
         super.init();
+        Minecraft minecraft = Minecraft.getInstance();
+        BlockEntityWithoutLevelRenderer blockentitywithoutlevelrenderer = new BlockEntityWithoutLevelRenderer(minecraft.getBlockEntityRenderDispatcher(), minecraft.getEntityModels());
+        this.itemRenderer = new LaserIOItemRendererFluid(minecraft.getTextureManager(), minecraft.getModelManager(), minecraft.getItemColors(), blockentitywithoutlevelrenderer, this);
+
     }
 
     @Override
@@ -66,6 +83,29 @@ public class CardFluidScreen extends CardItemScreen {
                 currentFluidExtractAmt = (Math.min(currentFluidExtractAmt + change, Math.max(container.getSlot(1).getItem().getCount() * 2000, 1000)));
             }
         }
+    }
+
+    @Override
+    public boolean filterSlot(int btn) {
+        ItemStack slotStack = hoveredSlot.getItem();
+        if (!FilterCount.doesItemStackHoldFluids(slotStack))
+            return super.filterSlot(btn);
+        if (slotStack.isEmpty()) return true;
+        if (btn == 2) { //Todo IMC Inventory Sorter so this works
+            slotStack.setCount(0);
+            PacketHandler.sendToServer(new PacketGhostSlot(hoveredSlot.index, slotStack, slotStack.getCount(), 0));
+            return true;
+        }
+        int amt = (btn == 0) ? 1 : -1;
+        int filterSlot = hoveredSlot.index - CardItemContainer.SLOTS;
+        int currentMBAmt = FilterCount.getSlotAmount(filter, filterSlot);
+        if (Screen.hasShiftDown()) amt *= 10;
+        if (Screen.hasControlDown()) amt *= 100;
+        int newMBAmt = currentMBAmt + amt;
+        if (newMBAmt < 0) newMBAmt = 0;
+        if (newMBAmt > 4096000) newMBAmt = 4096000;
+        PacketHandler.sendToServer(new PacketGhostSlot(hoveredSlot.index, slotStack, slotStack.getCount(), newMBAmt));
+        return true;
     }
 
     @Override
