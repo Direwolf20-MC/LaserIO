@@ -11,17 +11,13 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.core.Direction;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 import net.minecraftforge.items.ItemStackHandler;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 public class BaseCardCache {
     public final Direction direction;
@@ -107,9 +103,9 @@ public class BaseCardCache {
         for (int i = 0; i < filterSlotHandler.getSlots(); i++) { //Gotta iterate the card's NBT because of the way we store amounts (in the MBAmt tag)
             ItemStack itemStack = filterSlotHandler.getStackInSlot(i);
             if (!itemStack.isEmpty()) {
-                LazyOptional<IFluidHandlerItem> fluidHandlerLazyOptional = FluidUtil.getFluidHandler(itemStack);
-                if (!fluidHandlerLazyOptional.isPresent()) continue;
-                IFluidHandler fluidHandler = fluidHandlerLazyOptional.resolve().get();
+                Optional<IFluidHandlerItem> fluidHandlerLazyOptional = FluidUtil.getFluidHandler(itemStack).resolve();
+                if (fluidHandlerLazyOptional.isEmpty()) continue;
+                IFluidHandler fluidHandler = fluidHandlerLazyOptional.get();
                 for (int tank = 0; tank < fluidHandler.getTanks(); tank++) {
                     FluidStack fluidStack = fluidHandler.getFluidInTank(tank);
                     if (key.equals(new FluidStackKey(fluidStack, isCompareNBT))) {
@@ -149,9 +145,9 @@ public class BaseCardCache {
         for (int i = 0; i < filterSlotHandler.getSlots(); i++) {
             ItemStack itemStack = filterSlotHandler.getStackInSlot(i);
             if (!itemStack.isEmpty()) {
-                LazyOptional<IFluidHandlerItem> fluidHandlerLazyOptional = FluidUtil.getFluidHandler(itemStack);
-                if (!fluidHandlerLazyOptional.isPresent()) continue;
-                IFluidHandler fluidHandler = fluidHandlerLazyOptional.resolve().get();
+                Optional<IFluidHandlerItem> fluidHandlerLazyOptional = FluidUtil.getFluidHandler(itemStack).resolve();
+                if (fluidHandlerLazyOptional.isEmpty()) continue;
+                IFluidHandler fluidHandler = fluidHandlerLazyOptional.get();
                 for (int tank = 0; tank < fluidHandler.getTanks(); tank++) {
                     FluidStack fluidStack = fluidHandler.getFluidInTank(tank);
                     if (!fluidStack.isEmpty())
