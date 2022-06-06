@@ -1189,12 +1189,12 @@ public class LaserNodeBE extends BaseLaserBE {
                 ItemStack card = h.getStackInSlot(slot);
                 if (!(card.getItem() instanceof BaseCard)) continue;
                 if (card.getItem() instanceof CardItem) {
-                    if (getAttachedInventoryNoCache(direction, (byte) -1).equals(LazyOptional.empty()))
+                    if (getAttachedInventoryNoCache(direction, BaseCard.getSneaky(card)).equals(LazyOptional.empty()))
                         continue;
 
                     cardRenders.add(new CardRender(direction, slot, card, getBlockPos()));
                 } else if (card.getItem() instanceof CardFluid) {
-                    if (getAttachedFluidTankNoCache(direction, (byte) -1).equals(LazyOptional.empty()))
+                    if (getAttachedFluidTankNoCache(direction, BaseCard.getSneaky(card)).equals(LazyOptional.empty()))
                         continue;
 
                     cardRenders.add(new CardRender(direction, slot, card, getBlockPos()));
