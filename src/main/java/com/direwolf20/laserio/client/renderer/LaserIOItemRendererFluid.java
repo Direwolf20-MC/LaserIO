@@ -57,7 +57,7 @@ public class LaserIOItemRendererFluid extends ItemRenderer {
 
     @Override
     public void renderGuiItemDecorations(Font font, ItemStack itemstack, int x, int y, @Nullable String altText) {
-        if (shouldRenderFluid(itemstack, x, y)) {
+        if (shouldRenderFluid(itemstack, x, y, true, false)) {
             CardFluidScreen cardFluidScreen = (CardFluidScreen) screen;
             int sloty = (int) Math.floor((y - cardFluidScreen.filterStartY) / 18);
             int slotx = (int) Math.floor((x - cardFluidScreen.filterStartX) / 18);
@@ -68,11 +68,8 @@ public class LaserIOItemRendererFluid extends ItemRenderer {
             int mbAmt = totalmbAmt % 1000;
             PoseStack posestack = new PoseStack();
             if (count != 0 || mbAmt != 0) {
-                String textToDraw = altText == null ? String.valueOf(itemstack.getCount()) : altText;
+                String textToDraw;
                 textToDraw = count + "b";
-                //System.out.println(itemstack.getItem()+":"+slotx+":"+sloty);
-                //System.out.println(itemstack.getItem()+":"+((5*sloty)+slotx));
-                //posestack.translate(0.0D, 0.0D, (double) (this.blitOffset + 200.0F));
                 MultiBufferSource.BufferSource multibuffersource$buffersource = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
                 posestack.pushPose();
                 posestack.translate(x, y, 300);
@@ -106,6 +103,18 @@ public class LaserIOItemRendererFluid extends ItemRenderer {
                         font.drawInBatch(textToDraw, (float) (x + 19 - 2 - font.width(textToDraw)), (float) (y + 6 + 3), 16777215, true, posestack.last().pose(), multibuffersource$buffersource, false, 0, 15728880);
                     }
                     multibuffersource$buffersource.endBatch();
+                }
+
+                if (!shouldRenderFluid(itemstack, x, y, true, true)) {
+                    RenderSystem.disableDepthTest();
+                    RenderSystem.disableTexture();
+                    RenderSystem.enableBlend();
+                    RenderSystem.defaultBlendFunc();
+                    Tesselator tesselator1 = Tesselator.getInstance();
+                    BufferBuilder bufferbuilder1 = tesselator1.getBuilder();
+                    this.fillRect(bufferbuilder1, x, y, 16, Mth.ceil(16.0F), 255, 0, 0, 127);
+                    RenderSystem.enableTexture();
+                    RenderSystem.enableDepthTest();
                 }
 
                 if (itemstack.isBarVisible()) {
@@ -187,20 +196,28 @@ public class LaserIOItemRendererFluid extends ItemRenderer {
         }
     }
 
-    public boolean shouldRenderFluid(ItemStack pStack, int pX, int pY) {
+    public boolean shouldRenderFluid(ItemStack pStack, int pX, int pY, boolean includeCarried, boolean reverseBounds) {
         if (!(screen instanceof CardFluidScreen)) {
-            return false;
+            return reverseBounds;
         }
         CardFluidScreen cardFluidScreen = (CardFluidScreen) screen;
         if (cardFluidScreen.getMenu().getCarried().equals(pStack)) {
-            return false;
+            if (includeCarried)
+                return reverseBounds;
+            else {
+                System.out.println("test");
+            }
         }
-        if (!MiscTools.inBounds(cardFluidScreen.filterStartX, cardFluidScreen.filterStartY, cardFluidScreen.filterEndX - cardFluidScreen.filterStartX, cardFluidScreen.filterEndY - cardFluidScreen.filterStartY, pX, pY)) {
-            return false;
+        if (reverseBounds) {
+            return !(MiscTools.inBounds(cardFluidScreen.filterStartX, cardFluidScreen.filterStartY, cardFluidScreen.filterEndX - cardFluidScreen.filterStartX, cardFluidScreen.filterEndY - cardFluidScreen.filterStartY, pX, pY));
+        } else {
+            if (!MiscTools.inBounds(cardFluidScreen.filterStartX, cardFluidScreen.filterStartY, cardFluidScreen.filterEndX - cardFluidScreen.filterStartX, cardFluidScreen.filterEndY - cardFluidScreen.filterStartY, pX, pY)) {
+                return reverseBounds;
+            }
         }
         LazyOptional<IFluidHandlerItem> fluidHandlerLazyOptional = FluidUtil.getFluidHandler(pStack);
         if (!fluidHandlerLazyOptional.isPresent()) {
-            return false;
+            return reverseBounds;
         }
         FluidStack fluidStack = FluidStack.EMPTY;
         IFluidHandler fluidHandler = fluidHandlerLazyOptional.resolve().get();
@@ -210,12 +227,12 @@ public class LaserIOItemRendererFluid extends ItemRenderer {
                 break;
         }
         if (fluidStack.isEmpty()) {
-            return false;
+            return reverseBounds;
         }
 
         Fluid fluid = fluidStack.getFluid();
         if (fluid == null) {
-            return false;
+            return reverseBounds;
         }
         ResourceLocation fluidStill = fluid.getAttributes().getStillTexture();
         TextureAtlasSprite fluidStillSprite = null;
@@ -224,63 +241,17 @@ public class LaserIOItemRendererFluid extends ItemRenderer {
         }
 
         if (fluidStillSprite == null) {
-            return false;
+            return reverseBounds;
         }
-        return true;
+        return !reverseBounds;
     }
 
     @Override
     protected void renderGuiItem(ItemStack pStack, int pX, int pY, BakedModel pBakedmodel) {
-        if (!shouldRenderFluid(pStack, pX, pY)) {
+        if (!shouldRenderFluid(pStack, pX, pY, true, false)) {
             super.renderGuiItem(pStack, pX, pY, pBakedmodel);
             return;
         }
-        /*if (!(screen instanceof CardFluidScreen)) {
-            super.renderGuiItem(pStack, pX, pY, pBakedmodel);
-            return;
-        }
-        CardFluidScreen cardFluidScreen = (CardFluidScreen) screen;
-        if (cardFluidScreen.getMenu().getCarried().equals(pStack)) {
-            super.renderGuiItem(pStack, pX, pY, pBakedmodel);
-            return;
-        }
-        if (!MiscTools.inBounds(cardFluidScreen.filterStartX, cardFluidScreen.filterStartY, cardFluidScreen.filterEndX-cardFluidScreen.filterStartX, cardFluidScreen.filterEndY-cardFluidScreen.filterStartY, pX, pY)) {
-            super.renderGuiItem(pStack, pX, pY, pBakedmodel);
-            return;
-        }
-        LazyOptional<IFluidHandlerItem> fluidHandlerLazyOptional = FluidUtil.getFluidHandler(pStack);
-        if (!fluidHandlerLazyOptional.isPresent()) {
-            super.renderGuiItem(pStack, pX, pY, pBakedmodel);
-            return;
-        }
-        FluidStack fluidStack = FluidStack.EMPTY;
-        IFluidHandler fluidHandler = fluidHandlerLazyOptional.resolve().get();
-        for (int tank = 0; tank < fluidHandler.getTanks(); tank++) {
-            fluidStack = fluidHandler.getFluidInTank(tank);
-            if (!fluidStack.isEmpty())
-                break;
-        }
-        if (fluidStack.isEmpty()) {
-            super.renderGuiItem(pStack, pX, pY, pBakedmodel);
-            return;
-        }
-
-        Fluid fluid = fluidStack.getFluid();
-        if (fluid == null) {
-            super.renderGuiItem(pStack, pX, pY, pBakedmodel);
-            return;
-        }
-        ResourceLocation fluidStill = fluid.getAttributes().getStillTexture();
-        TextureAtlasSprite fluidStillSprite = null;
-        if (fluidStill != null) {
-            fluidStillSprite = (TextureAtlasSprite)Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(fluidStill);
-        }
-
-        if (fluidStillSprite == null) {
-            super.renderGuiItem(pStack, pX, pY, pBakedmodel);
-            return;
-        }*/
-
         LazyOptional<IFluidHandlerItem> fluidHandlerLazyOptional = FluidUtil.getFluidHandler(pStack);
         FluidStack fluidStack = FluidStack.EMPTY;
         IFluidHandler fluidHandler = fluidHandlerLazyOptional.resolve().get();

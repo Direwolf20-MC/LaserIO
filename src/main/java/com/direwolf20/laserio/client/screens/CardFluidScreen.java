@@ -29,10 +29,10 @@ public class CardFluidScreen extends CardItemScreen {
 
     public CardFluidScreen(CardItemContainer container, Inventory inv, Component name) {
         super(container, inv, name);
-        filterStartX = 44;
-        filterStartY = 25;
-        filterEndX = 134;
-        filterEndY = 79;
+        filterStartX = 35;
+        filterStartY = 16;
+        filterEndX = 125;
+        filterEndY = 70;
     }
 
     @Override
