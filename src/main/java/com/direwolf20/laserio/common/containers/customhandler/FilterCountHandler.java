@@ -46,7 +46,8 @@ public class FilterCountHandler extends FilterBasicHandler {
 
     public void syncSlots() {
         for (int i = 0; i < this.getSlots(); i++) {
-            FilterCount.setSlotCount(this.stack, i, this.getStackInSlot(i).getCount());
+            if (FilterCount.getSlotAmount(this.stack, i) == 0)
+                FilterCount.setSlotCount(this.stack, i, this.getStackInSlot(i).getCount());
         }
         FilterCount.setInventory(this.stack, this);
     }
