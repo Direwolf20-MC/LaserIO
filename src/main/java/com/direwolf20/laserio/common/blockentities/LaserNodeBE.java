@@ -559,6 +559,17 @@ public class LaserNodeBE extends BaseLaserBE {
             if (fluidStack.isEmpty() || !extractorCardCache.isStackValidForCard(fluidStack)) continue;
             FluidStack extractStack = fluidStack.copy();
             extractStack.setAmount(extractorCardCache.extractAmt);
+
+            if (extractorCardCache.filterCard.getItem() instanceof FilterCount) { //If this is a count filter, only try to extract up to the amount in the filter
+                int filterCount = extractorCardCache.getFilterAmt(extractStack);
+                if (filterCount <= 0) continue; //This should never happen in theory...
+                int amtInInv = fluidStack.getAmount();
+                int amtAllowedToRemove = amtInInv - filterCount;
+                if (amtAllowedToRemove <= 0) continue;
+                int amtRemaining = Math.min(extractStack.getAmount(), amtAllowedToRemove);
+                extractStack.setAmount(amtRemaining);
+            }
+
             if (extractFluidStack(extractorCardCache, adjacentTank, extractStack))
                 return true;
         }
