@@ -204,9 +204,6 @@ public class LaserIOItemRendererFluid extends ItemRenderer {
         if (cardFluidScreen.getMenu().getCarried().equals(pStack)) {
             if (includeCarried)
                 return reverseBounds;
-            else {
-                System.out.println("test");
-            }
         }
         if (reverseBounds) {
             return !(MiscTools.inBounds(cardFluidScreen.filterStartX, cardFluidScreen.filterStartY, cardFluidScreen.filterEndX - cardFluidScreen.filterStartX, cardFluidScreen.filterEndY - cardFluidScreen.filterStartY, pX, pY));
