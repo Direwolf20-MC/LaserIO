@@ -273,7 +273,7 @@ public class BaseCard extends Item {
 
     public static int setRoundRobin(ItemStack stack, int roundRobin) {
         if (roundRobin == 0)
-            stack.removeTagKey("roundrobin");
+            stack.removeTagKey("roundRobin");
         else
             stack.getOrCreateTag().putInt("roundRobin", roundRobin);
         return roundRobin;
