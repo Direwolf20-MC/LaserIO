@@ -102,10 +102,22 @@ public class BaseCardCache {
         FluidStackKey key = new FluidStackKey(testStack, isCompareNBT);
         if (filterCountsFluid.containsKey(key)) //If we've already tested this, get it from the cache
             return filterCountsFluid.get(key);
-        for (FluidStack stack : filteredFluids) { //If the item is not in the cache, loop through filtered fluids list
-            if (key.equals(new FluidStackKey(stack, isCompareNBT))) {
-                filterCountsFluid.put(key, stack.getAmount());
-                return stack.getAmount();
+
+        ItemStackHandler filterSlotHandler = FilterCount.getInventory(filterCard);
+        for (int i = 0; i < filterSlotHandler.getSlots(); i++) { //Gotta iterate the card's NBT because of the way we store amounts (in the MBAmt tag)
+            ItemStack itemStack = filterSlotHandler.getStackInSlot(i);
+            if (!itemStack.isEmpty()) {
+                LazyOptional<IFluidHandlerItem> fluidHandlerLazyOptional = FluidUtil.getFluidHandler(itemStack);
+                if (!fluidHandlerLazyOptional.isPresent()) continue;
+                IFluidHandler fluidHandler = fluidHandlerLazyOptional.resolve().get();
+                for (int tank = 0; tank < fluidHandler.getTanks(); tank++) {
+                    FluidStack fluidStack = fluidHandler.getFluidInTank(tank);
+                    if (key.equals(new FluidStackKey(fluidStack, isCompareNBT))) {
+                        int mbAmt = FilterCount.getSlotAmount(filterCard, i);
+                        filterCountsFluid.put(key, mbAmt);
+                        return mbAmt;
+                    }
+                }
             }
         }
         filterCountsFluid.put(key, 0);

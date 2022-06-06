@@ -476,6 +476,20 @@ public class LaserNodeBE extends BaseLaserBE {
             if (laserNodeFluidHandler == null) continue;
             IFluidHandler handler = laserNodeFluidHandler.handler;
             //for (int tank = 0; tank < handler.getTanks(); tank++) {
+            if (inserterCardCache.filterCard.getItem() instanceof FilterCount) {
+                int filterCount = inserterCardCache.getFilterAmt(extractStack);
+                for (int tank = 0; tank < handler.getTanks(); tank++) {
+                    FluidStack fluidStack = handler.getFluidInTank(tank);
+                    if (fluidStack.isEmpty() || fluidStack.isFluidEqual(extractStack)) {
+                        int currentAmt = fluidStack.getAmount();
+                        int neededAmt = filterCount - currentAmt;
+                        if (neededAmt < extractStack.getAmount()) {
+                            amtToExtract = neededAmt;
+                            break;
+                        }
+                    }
+                }
+            }
             extractStack.setAmount(amtToExtract);
             int amtFit = handler.fill(extractStack, IFluidHandler.FluidAction.SIMULATE);
             if (amtFit == 0) { //Next inserter if nothing went in -- return false if enforcing round robin
