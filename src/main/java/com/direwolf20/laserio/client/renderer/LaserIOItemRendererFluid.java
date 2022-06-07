@@ -243,8 +243,43 @@ public class LaserIOItemRendererFluid extends ItemRenderer {
         return !reverseBounds;
     }
 
+    public void renderFluid(FluidStack fluidStack, int pX, int pY, int size) {
+        Fluid fluid = fluidStack.getFluid();
+        ResourceLocation fluidStill = fluid.getAttributes().getStillTexture();
+        FluidAttributes attributes = fluid.getAttributes();
+        TextureAtlasSprite fluidStillSprite = Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(fluidStill);
+        int fluidColor = attributes.getColor(fluidStack);
+
+        float red = (float) (fluidColor >> 16 & 255) / 255.0F;
+        float green = (float) (fluidColor >> 8 & 255) / 255.0F;
+        float blue = (float) (fluidColor & 255) / 255.0F;
+
+        RenderSystem.setShaderTexture(0, TextureAtlas.LOCATION_BLOCKS);
+
+        PoseStack posestack = RenderSystem.getModelViewStack();
+        posestack.pushPose();
+        RenderSystem.setShaderColor(red, green, blue, 1.0f);
+        int zLevel = 100;
+        float uMin = fluidStillSprite.getU0();
+        float uMax = fluidStillSprite.getU1();
+        float vMin = fluidStillSprite.getV0();
+        float vMax = fluidStillSprite.getV1();
+
+        Tesselator tessellator = Tesselator.getInstance();
+        BufferBuilder vertexBuffer = tessellator.getBuilder();
+
+        vertexBuffer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+        vertexBuffer.vertex(pX, pY + size, zLevel).uv(uMin, vMax).endVertex();
+        vertexBuffer.vertex(pX + size, pY + size, zLevel).uv(uMax, vMax).endVertex();
+        vertexBuffer.vertex(pX + size, pY, zLevel).uv(uMax, vMin).endVertex();
+        vertexBuffer.vertex(pX, pY, zLevel).uv(uMin, vMin).endVertex();
+        tessellator.end();
+        posestack.popPose();
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+    }
+
     @Override
-    protected void renderGuiItem(ItemStack pStack, int pX, int pY, BakedModel pBakedmodel) {
+    public void renderGuiItem(ItemStack pStack, int pX, int pY, BakedModel pBakedmodel) {
         if (!shouldRenderFluid(pStack, pX, pY, true, false)) {
             super.renderGuiItem(pStack, pX, pY, pBakedmodel);
             return;
