@@ -666,6 +666,25 @@ public class LaserNodeBE extends BaseLaserBE {
         return false;
     }
 
+    public boolean regulateFluidStocker(StockerCardCache stockerCardCache, IFluidHandler stockerTank) {
+        List<FluidStack> filteredFluidsList = stockerCardCache.getFilteredFluids();
+        for (FluidStack fluidStack : filteredFluidsList) { //Iterate the list of filtered items for extracting purposes
+            int desiredAmt = stockerCardCache.getFilterAmt(fluidStack);
+            int amtHad = 0;
+            for (int tank = 0; tank < stockerTank.getTanks(); tank++) { //Loop through all the tanks
+                FluidStack stackInTank = stockerTank.getFluidInTank(tank);
+                if (stackInTank.isFluidEqual(fluidStack))
+                    amtHad += stackInTank.getAmount();
+            }
+            if (amtHad > desiredAmt) { //If we have too much of this fluid, remove the difference.
+                fluidStack.setAmount(Math.min(amtHad - desiredAmt, stockerCardCache.extractAmt));
+                if (extractFluidStack(stockerCardCache, stockerTank, fluidStack))
+                    return true;
+            }
+        }
+        return false;
+    }
+
     /** Stocker Cards call this, and try to find an inserter card to pull their fluids from **/
     public boolean stockFluids(StockerCardCache stockerCardCache) {
         BlockPos adjacentPos = getBlockPos().relative(stockerCardCache.direction);
@@ -680,10 +699,10 @@ public class LaserNodeBE extends BaseLaserBE {
             return false;
         }
         if (filter.getItem() instanceof FilterBasic || filter.getItem() instanceof FilterCount) {
-            /*if (stockerCardCache.regulate && filter.getItem() instanceof FilterCount) { //TODO Regulate Stocker for Fluids
-                if (regulateItemStocker(stockerCardCache, adjacentInventory))
+            if (stockerCardCache.regulate && filter.getItem() instanceof FilterCount) {
+                if (regulateFluidStocker(stockerCardCache, adacentTank))
                     return true;
-            }*/
+            }
             if (!canAnyFluidFiltersFit(adacentTank, stockerCardCache)) {
                 return false; //If we can't fit any of our filtered items into this inventory, don't bother scanning for them
             }
