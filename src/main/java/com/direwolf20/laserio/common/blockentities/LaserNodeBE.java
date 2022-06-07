@@ -898,6 +898,22 @@ public class LaserNodeBE extends BaseLaserBE {
             int origCountNeeded = itemStack.getCount();
             TransferResult transferResult = tryStockerCacheCount(stockerCardCache, itemStack, stockerInventory);
             if (transferResult.getTotalItemCounts() == origCountNeeded) {//The item stack knows how many we need, so did we get enough?
+                itemStack.setCount(transferResult.getTotalItemCounts()); //Set the itemStack to how many items we got
+                ItemStack insertedStack = ItemHandlerHelper.insertItem(stockerInventory, itemStack, true);
+                int totalInserted = transferResult.getTotalItemCounts() - insertedStack.getCount();
+                if (totalInserted < transferResult.getTotalItemCounts()) { //We can insert less than we expected, lets fix this...
+                    if (totalInserted == 0 || (stockerCardCache.exact))
+                        break; //If we can't fit any of the items into this inventory, or failed to meet exact mode's needs, try the next filtered stack
+                    for (TransferResult.Result result : transferResult.results) { //Iterate the results and prune them to match what we can insert
+                        if (result.itemStack.getCount() > totalInserted) { //In this result is too big
+                            if (totalInserted <= 0)
+                                transferResult.results.remove(result); //If we can't fit this result at all, remove it
+                            else
+                                result.itemStack.setCount(totalInserted); //Set the result to match how many more can fit
+                        }
+                        totalInserted -= result.itemStack.getCount(); //Set the remaining amount to fit less the amount of this result
+                    }
+                }
                 transferResult.doIt(); //Move the items for real - we have both extractor/inserter caches from the above method
                 return true;
             }
