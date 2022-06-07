@@ -924,6 +924,22 @@ public class LaserNodeBE extends BaseLaserBE {
                 transferResult.addResult(ItemHandlerUtil.extractItemWithSlots(laserNodeItemHandler.be, laserNodeItemHandler.handler, itemStack, itemStack.getCount(), true, stockerCardCache.isCompareNBT, inserterCardCache));
                 transferResult.addOtherCard(stockerInventory, -1, stockerCardCache, stockerCardCache.be);
                 if (transferResult.getTotalItemCounts() == origCountNeeded) {
+                    itemStack.setCount(transferResult.getTotalItemCounts()); //Set the itemStack to how many items we got
+                    ItemStack insertedStack = ItemHandlerHelper.insertItem(stockerInventory, itemStack, true);
+                    int totalInserted = transferResult.getTotalItemCounts() - insertedStack.getCount();
+                    if (totalInserted < transferResult.getTotalItemCounts()) { //We can insert less than we expected, lets fix this...
+                        if (totalInserted == 0 || (stockerCardCache.exact))
+                            break; //If we can't fit any of the items into this inventory, or failed to meet exact mode's needs, try the next filtered stack
+                        for (TransferResult.Result result : transferResult.results) { //Iterate the results and prune them to match what we can insert
+                            if (result.itemStack.getCount() > totalInserted) { //In this result is too big
+                                if (totalInserted <= 0)
+                                    transferResult.results.remove(result); //If we can't fit this result at all, remove it
+                                else
+                                    result.itemStack.setCount(totalInserted); //Set the result to match how many more can fit
+                            }
+                            totalInserted -= result.itemStack.getCount(); //Set the remaining amount to fit less the amount of this result
+                        }
+                    }
                     transferResult.doIt(); //Move the items for real - we have both extractor/inserter caches from the above method
                     int lastSlot = transferResult.results.get(transferResult.results.size() - 1).extractSlot; //The last slot we pulled from in this inventory
                     if (!laserNodeItemHandler.handler.getStackInSlot(lastSlot).isEmpty()) //If its not empty now
@@ -935,6 +951,22 @@ public class LaserNodeBE extends BaseLaserBE {
             }
             //If we got here, we didn't get ALL we needed. If this is exact mode, we try the next item. If its not, and we got more than 0, return it.
             if (!stockerCardCache.exact && transferResult.getTotalItemCounts() > 0) { //If its exact mode and we got here, we clearly didn't get all we wanted....
+                itemStack.setCount(transferResult.getTotalItemCounts()); //Set the itemStack to how many items we got
+                ItemStack insertedStack = ItemHandlerHelper.insertItem(stockerInventory, itemStack, true);
+                int totalInserted = transferResult.getTotalItemCounts() - insertedStack.getCount();
+                if (totalInserted < transferResult.getTotalItemCounts()) { //We can insert less than we expected, lets fix this...
+                    if (totalInserted == 0)
+                        break; //If we can't fit any of the items into this inventory, try the next filtered stack
+                    for (TransferResult.Result result : transferResult.results) { //Iterate the results and prune them to match what we can insert
+                        if (result.itemStack.getCount() > totalInserted) { //In this result is too big
+                            if (totalInserted <= 0)
+                                transferResult.results.remove(result); //If we can't fit this result at all, remove it
+                            else
+                                result.itemStack.setCount(totalInserted); //Set the result to match how many more can fit
+                        }
+                        totalInserted -= result.itemStack.getCount(); //Set the remaining amount to fit less the amount of this result
+                    }
+                }
                 transferResult.doIt(); //Move the items for real - we have both extractor/inserter caches from the above method
                 return true;
             }
