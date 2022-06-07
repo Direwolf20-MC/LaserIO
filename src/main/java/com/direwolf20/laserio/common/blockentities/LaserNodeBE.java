@@ -166,6 +166,9 @@ public class LaserNodeBE extends BaseLaserBE {
                         if (extractorCardCache.cardType.equals(BaseCard.CardType.ITEM)) {
                             if (stockItems(stockerCardCache))
                                 countCardsHandled++;
+                        } else if (extractorCardCache.cardType.equals(BaseCard.CardType.FLUID)) {
+                            if (stockFluids(stockerCardCache))
+                                countCardsHandled++;
                         }
                     } else {
                         if (extractorCardCache.cardType.equals(BaseCard.CardType.ITEM)) {
@@ -635,6 +638,19 @@ public class LaserNodeBE extends BaseLaserBE {
         return false;
     }
 
+    public boolean canAnyFluidFiltersFit(IFluidHandler adjacentTank, StockerCardCache stockerCardCache) {
+        for (FluidStack fluidStack : stockerCardCache.getFilteredFluids()) {
+            int amtFit = adjacentTank.fill(fluidStack, IFluidHandler.FluidAction.SIMULATE);
+            if (amtFit > 0)
+                return true;
+        }
+        return false;
+    }
+
+    public boolean canFluidFitInTank(IFluidHandler handler, FluidStack fluidStack) {
+        return (handler.fill(fluidStack, IFluidHandler.FluidAction.SIMULATE) > 0);
+    }
+
     public boolean regulateItemStocker(StockerCardCache stockerCardCache, IItemHandler stockerInventory) {
         ItemHandlerUtil.InventoryCounts stockerInventoryCount = new ItemHandlerUtil.InventoryCounts(stockerInventory, stockerCardCache.isCompareNBT);
         List<ItemStack> filteredItemsList = stockerCardCache.getFilteredItems();
@@ -646,6 +662,39 @@ public class LaserNodeBE extends BaseLaserBE {
                 if (extractItemStack(stockerCardCache, stockerInventory, extractStack))
                     return true;
             }
+        }
+        return false;
+    }
+
+    /** Stocker Cards call this, and try to find an inserter card to pull their fluids from **/
+    public boolean stockFluids(StockerCardCache stockerCardCache) {
+        BlockPos adjacentPos = getBlockPos().relative(stockerCardCache.direction);
+        assert level != null;
+        if (!level.isLoaded(adjacentPos)) return false;
+        Optional<IFluidHandler> adjacentTankOptional = getAttachedFluidTank(stockerCardCache.direction, stockerCardCache.sneaky).resolve();
+        if (adjacentTankOptional.isEmpty()) return false;
+        IFluidHandler adacentTank = adjacentTankOptional.get();
+
+        ItemStack filter = stockerCardCache.filterCard;
+        if (filter.isEmpty() || !stockerCardCache.isAllowList) { //Needs a filter - at least for now? Also must be in whitelist mode
+            return false;
+        }
+        if (filter.getItem() instanceof FilterBasic || filter.getItem() instanceof FilterCount) {
+            /*if (stockerCardCache.regulate && filter.getItem() instanceof FilterCount) { //TODO Regulate Stocker for Fluids
+                if (regulateItemStocker(stockerCardCache, adjacentInventory))
+                    return true;
+            }*/
+            if (!canAnyFluidFiltersFit(adacentTank, stockerCardCache)) {
+                return false; //If we can't fit any of our filtered items into this inventory, don't bother scanning for them
+            }
+            boolean foundItems = findFluidStackForStocker(stockerCardCache, adacentTank); //Start looking for this item
+            if (foundItems)
+                return true;
+
+            //If we get to this line of code, it means we found none of the filter
+            //stockerCardCache.setRemainingSleep(stockerCardCache.tickSpeed * 5);
+        } else if (filter.getItem() instanceof FilterTag) {
+
         }
         return false;
     }
@@ -733,6 +782,74 @@ public class LaserNodeBE extends BaseLaserBE {
             }
         }
         return extractResult;
+    }
+
+    public boolean findFluidStackForStocker(StockerCardCache stockerCardCache, IFluidHandler stockerTank) {
+        boolean isCount = stockerCardCache.filterCard.getItem() instanceof FilterCount;
+        int extractAmt = stockerCardCache.extractAmt;
+
+        List<FluidStack> filteredFluidsList = new CopyOnWriteArrayList<>(stockerCardCache.getFilteredFluids());
+        filteredFluidsList.removeIf(fluidStack -> !canFluidFitInTank(stockerTank, fluidStack));//If this fluid can't fit in this tank at all, skip the fluid
+        if (filteredFluidsList.isEmpty()) //If nothing in the filter can fit, return false
+            return false;
+
+        if (isCount) { //If this is a filter count, prune the list of items to search for to just what we need
+            for (FluidStack fluidStack : filteredFluidsList) { //Remove all the items from the list that we already have enough of
+                for (int tank = 0; tank < stockerTank.getTanks(); tank++) {
+                    FluidStack tankStack = stockerTank.getFluidInTank(tank);
+                    if (tankStack.isEmpty() || tankStack.isFluidEqual(fluidStack)) {
+                        int filterAmt = stockerCardCache.getFilterAmt(fluidStack);
+                        int amtHad = tankStack.getAmount();
+                        int amtNeeded = filterAmt - amtHad;
+                        if (amtNeeded <= 0) {//if we have enough, move onto the next stack after removing this one from the list
+                            filteredFluidsList.remove(fluidStack);
+                            continue;
+                        }
+                        fluidStack.setAmount(Math.min(amtNeeded, extractAmt)); //Adjust the amount we need
+                    }
+                }
+            }
+        }
+
+        if (filteredFluidsList.isEmpty()) //If we have nothing left to look for! Probably only happens when its a count card.
+            return false;
+
+
+        //At this point we should have a list of fluids that we need to satisfy the stock request
+        for (FluidStack fluidStack : filteredFluidsList) {
+            Map<InserterCardCache, FluidStack> insertHandlers = new HashMap<>();
+            if (!isCount)
+                fluidStack.setAmount(extractAmt); //If this isn't a counting card, we want the extractAmt value
+            int amtNeeded = fluidStack.getAmount();
+
+            for (InserterCardCache inserterCardCache : getChannelMatchInserters(stockerCardCache)) { //Iterate through ALL inserter nodes on this channel only
+                if (!inserterCardCache.isStackValidForCard(fluidStack))
+                    continue;
+                LaserNodeFluidHandler laserNodeFluidHandler = getLaserNodeHandlerFluid(inserterCardCache);
+                if (laserNodeFluidHandler == null) continue;
+                fluidStack.setAmount(amtNeeded);
+                IFluidHandler handler = laserNodeFluidHandler.handler();
+                FluidStack extractStack = handler.drain(fluidStack, IFluidHandler.FluidAction.SIMULATE);
+                if (extractStack.isEmpty()) continue;
+                insertHandlers.put(inserterCardCache, extractStack);
+                amtNeeded -= extractStack.getAmount();
+                if (amtNeeded == 0) break;
+            }
+            if (!insertHandlers.isEmpty()) {
+                if (!stockerCardCache.exact || amtNeeded == 0) { //If its not exact mode, or it is exact mode and we found all we need to satisfy this
+                    for (Map.Entry<InserterCardCache, FluidStack> entry : insertHandlers.entrySet()) { //Do all the extracts/inserts
+                        InserterCardCache inserterCardCache = entry.getKey();
+                        FluidStack insertStack = entry.getValue();
+                        LaserNodeFluidHandler laserNodeFluidHandler = getLaserNodeHandlerFluid(inserterCardCache);
+                        IFluidHandler handler = laserNodeFluidHandler.handler;
+                        FluidStack drainedStack = handler.drain(insertStack, IFluidHandler.FluidAction.EXECUTE);
+                        stockerTank.fill(drainedStack, IFluidHandler.FluidAction.EXECUTE);
+                        drawParticlesFluid(drainedStack, inserterCardCache.direction, inserterCardCache.be, stockerCardCache.be, stockerCardCache.direction, inserterCardCache.cardSlot, stockerCardCache.cardSlot);
+                    }
+                }
+            }
+        }
+        return false; //If we got NOTHING
     }
 
     public boolean findItemStackForStocker(StockerCardCache stockerCardCache, IItemHandler stockerInventory) {
