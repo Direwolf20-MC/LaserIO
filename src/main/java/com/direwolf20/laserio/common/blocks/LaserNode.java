@@ -97,6 +97,7 @@ public class LaserNode extends BaseLaserBlock implements EntityBlock {
                 } else {
                     be.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, result.getDirection()).ifPresent(h -> {
                         ItemStack cardHolder = findCardHolders(player);
+                        if (!cardHolder.isEmpty()) CardHolder.getUUID(cardHolder);
                         MenuProvider containerProvider = new MenuProvider() {
                             @Override
                             public Component getDisplayName() {
