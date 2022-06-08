@@ -97,6 +97,7 @@ public class LaserNode extends BaseLaserBlock implements EntityBlock {
                 } else {
                     be.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, result.getDirection()).ifPresent(h -> {
                         ItemStack cardHolder = findCardHolders(player);
+                        if (!cardHolder.isEmpty()) CardHolder.getUUID(cardHolder);
                         MenuProvider containerProvider = new MenuProvider() {
                             @Override
                             public Component getDisplayName() {
@@ -152,11 +153,10 @@ public class LaserNode extends BaseLaserBlock implements EntityBlock {
     }
 
     public void neighborChanged(BlockState blockState, Level level, BlockPos pos, Block blockIn, BlockPos fromPos, boolean isMoving) {
-        //System.out.println(level.getBlockState(fromPos).getBlock() + " : " + fromPos + " : " + blockIn);
-        if (!level.getBlockState(fromPos).getBlock().equals(blockIn)) {
-            BlockEntity blockEntity = level.getBlockEntity(pos);
-            if (blockEntity instanceof LaserNodeBE)
-                ((LaserNodeBE) blockEntity).clearCachedInventories();
+        BlockEntity blockEntity = level.getBlockEntity(pos);
+        if (blockEntity instanceof LaserNodeBE laserNodeBE) {
+            laserNodeBE.rendersChecked = false;
+            laserNodeBE.clearCachedInventories();
         }
     }
 

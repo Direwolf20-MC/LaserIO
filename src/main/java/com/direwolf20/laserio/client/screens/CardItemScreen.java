@@ -42,25 +42,25 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
     private final ResourceLocation GUI = new ResourceLocation(LaserIO.MODID, "textures/gui/itemcard.png");
 
     protected final CardItemContainer container;
-    private byte currentMode;
-    private byte currentChannel;
-    private byte currentItemExtractAmt;
-    private short currentPriority;
-    private byte currentSneaky;
-    private int currentTicks;
-    private boolean currentExact;
-    private int currentRoundRobin;
-    private boolean currentRegulate;
-    private int isAllowList = -1;
-    private int isCompareNBT = -1;
-    private boolean showFilter;
-    private boolean showAllow;
-    private boolean showNBT;
-    private final ItemStack card;
-    private ItemStack filter;
-    private Map<String, Button> buttons = new HashMap<>();
+    protected byte currentMode;
+    protected byte currentChannel;
+    protected byte currentItemExtractAmt;
+    protected short currentPriority;
+    protected byte currentSneaky;
+    protected int currentTicks;
+    protected boolean currentExact;
+    protected int currentRoundRobin;
+    protected boolean currentRegulate;
+    protected int isAllowList = -1;
+    protected int isCompareNBT = -1;
+    protected boolean showFilter;
+    protected boolean showAllow;
+    protected boolean showNBT;
+    protected final ItemStack card;
+    public ItemStack filter;
+    protected Map<String, Button> buttons = new HashMap<>();
 
-    private final String[] sneakyNames = {
+    protected final String[] sneakyNames = {
             "screen.laserio.default",
             "screen.laserio.down",
             "screen.laserio.up",
@@ -166,6 +166,25 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
         }
     }
 
+    public void addAmtButton() {
+        buttons.put("amount", new NumberButton(getGuiLeft() + 147, getGuiTop() + 25, 24, 12, currentMode == 0 ? currentPriority : currentItemExtractAmt, (button) -> {
+            changeAmount(-1);
+        }));
+    }
+
+    public void addModeButton() {
+        ResourceLocation[] modeTextures = new ResourceLocation[3];
+        modeTextures[0] = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/modeinserter.png");
+        modeTextures[1] = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/modeextractor.png");
+        modeTextures[2] = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/modestocker.png");
+        buttons.put("mode", new ToggleButton(getGuiLeft() + 5, getGuiTop() + 5, 16, 16, modeTextures, currentMode, (button) -> {
+            currentMode = BaseCard.nextTransferMode(card);
+            ((ToggleButton) button).setTexturePosition(currentMode);
+            ((NumberButton) buttons.get("amount")).setValue(currentMode == 0 ? currentPriority : currentItemExtractAmt);
+            modeChange();
+        }));
+    }
+
     @Override
     public void init() {
         super.init();
@@ -174,10 +193,10 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
         this.itemRenderer = new LaserIOItemRenderer(minecraft.getTextureManager(), minecraft.getModelManager(), minecraft.getItemColors(), blockentitywithoutlevelrenderer);
         currentMode = BaseCard.getTransferMode(card);
         currentChannel = BaseCard.getChannel(card);
-        currentItemExtractAmt = BaseCard.getItemExtractAmt(card);
+        currentItemExtractAmt = CardItem.getItemExtractAmt(card);
         currentPriority = BaseCard.getPriority(card);
         currentSneaky = BaseCard.getSneaky(card);
-        currentTicks = BaseCard.getItemExtractSpeed(card);
+        currentTicks = BaseCard.getExtractSpeed(card);
         currentExact = BaseCard.getExact(card);
         currentRoundRobin = BaseCard.getRoundRobin(card);
         currentRegulate = BaseCard.getRegulate(card);
@@ -219,9 +238,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
             ((ToggleButton) button).setTexturePosition(isCompareNBT == 1 ? 1 : 0);
         }));
 
-        buttons.put("amount", new NumberButton(getGuiLeft() + 147, getGuiTop() + 25, 24, 12, currentMode == 0 ? currentPriority : currentItemExtractAmt, (button) -> {
-            changeAmount(-1);
-        }));
+        addAmtButton();
 
         buttons.put("speed", new NumberButton(getGuiLeft() + 147, getGuiTop() + 39, 24, 12, currentTicks, (button) -> {
             changeTick(-1);
@@ -252,18 +269,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
             ((ToggleButton) button).setTexturePosition(currentRegulate ? 1 : 0);
         }));
 
-
-        ResourceLocation[] modeTextures = new ResourceLocation[3];
-        modeTextures[0] = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/modeinserter.png");
-        modeTextures[1] = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/modeextractor.png");
-        modeTextures[2] = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/modestocker.png");
-
-        buttons.put("mode", new ToggleButton(getGuiLeft() + 5, getGuiTop() + 5, 16, 16, modeTextures, currentMode, (button) -> {
-            currentMode = BaseCard.nextTransferMode(card);
-            ((ToggleButton) button).setTexturePosition(currentMode);
-            ((NumberButton) buttons.get("amount")).setValue(currentMode == 0 ? currentPriority : currentItemExtractAmt);
-            modeChange();
-        }));
+        addModeButton();
 
         buttons.put("channel", new ChannelButton(getGuiLeft() + 5, getGuiTop() + 65, 16, 16, currentChannel, (button) -> {
             currentChannel = BaseCard.nextChannel(card);
@@ -404,19 +410,19 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
     }
 
     private boolean showExtractAmt() {
-        return card.getItem() instanceof CardItem && BaseCard.getNamedTransferMode(card) != BaseCard.TransferMode.INSERT;
+        return card.getItem() instanceof BaseCard && BaseCard.getNamedTransferMode(card) != BaseCard.TransferMode.INSERT;
     }
 
     private boolean showPriority() {
-        return card.getItem() instanceof CardItem && BaseCard.getNamedTransferMode(card) == BaseCard.TransferMode.INSERT;
+        return card.getItem() instanceof BaseCard && BaseCard.getNamedTransferMode(card) == BaseCard.TransferMode.INSERT;
     }
 
     private boolean showRegulate() {
-        return card.getItem() instanceof CardItem && BaseCard.getNamedTransferMode(card) == BaseCard.TransferMode.STOCK;
+        return card.getItem() instanceof BaseCard && BaseCard.getNamedTransferMode(card) == BaseCard.TransferMode.STOCK;
     }
 
     private boolean showRoundRobin() {
-        return card.getItem() instanceof CardItem && BaseCard.getNamedTransferMode(card) == BaseCard.TransferMode.EXTRACT;
+        return card.getItem() instanceof BaseCard && BaseCard.getNamedTransferMode(card) == BaseCard.TransferMode.EXTRACT;
     }
 
     @Override
@@ -458,7 +464,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
     public void onClose() {
         if (showFilter)
             PacketHandler.sendToServer(new PacketUpdateFilter(isAllowList == 1, isCompareNBT == 1));
-        PacketHandler.sendToServer(new PacketUpdateCard(currentMode, currentChannel, currentItemExtractAmt, currentPriority, currentSneaky, (short) currentTicks, currentExact, currentRegulate, (byte) currentRoundRobin));
+        saveSettings();
         super.onClose();
     }
 
@@ -488,6 +494,37 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
         return new TranslatableComponent(LaserIO.MODID + "." + key, args);
     }
 
+    public void setExtract(NumberButton amountButton, int btn) {
+        if (btn == 0)
+            changeAmount(1);
+        else if (btn == 1)
+            changeAmount(-1);
+        amountButton.setValue(currentMode == 0 ? currentPriority : currentItemExtractAmt);
+        amountButton.playDownSound(Minecraft.getInstance().getSoundManager());
+    }
+
+    public void saveSettings() {
+        PacketHandler.sendToServer(new PacketUpdateCard(currentMode, currentChannel, currentItemExtractAmt, currentPriority, currentSneaky, (short) currentTicks, currentExact, currentRegulate, (byte) currentRoundRobin));
+    }
+
+    public boolean filterSlot(int btn) {
+        ItemStack slotStack = hoveredSlot.getItem();
+        if (slotStack.isEmpty()) return true;
+        if (btn == 2) { //Todo IMC Inventory Sorter so this works
+            slotStack.setCount(0);
+            PacketHandler.sendToServer(new PacketGhostSlot(hoveredSlot.index, slotStack, slotStack.getCount()));
+            return true;
+        }
+        int amt = (btn == 0) ? 1 : -1;
+        if (Screen.hasShiftDown()) amt *= 10;
+        if (Screen.hasControlDown()) amt *= 64;
+        if (amt + slotStack.getCount() > 4096) amt = 4096 - slotStack.getCount();
+
+
+        PacketHandler.sendToServer(new PacketGhostSlot(hoveredSlot.index, slotStack, slotStack.getCount() + amt));
+        return true;
+    }
+
     @Override
     public boolean mouseClicked(double x, double y, int btn) {
         ChannelButton channelButton = ((ChannelButton) buttons.get("channel"));
@@ -502,12 +539,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
         }
         NumberButton amountButton = ((NumberButton) buttons.get("amount"));
         if (MiscTools.inBounds(amountButton.x, amountButton.y, amountButton.getWidth(), amountButton.getHeight(), x, y)) {
-            if (btn == 0)
-                changeAmount(1);
-            else if (btn == 1)
-                changeAmount(-1);
-            amountButton.setValue(currentMode == 0 ? currentPriority : currentItemExtractAmt);
-            amountButton.playDownSound(Minecraft.getInstance().getSoundManager());
+            setExtract(amountButton, btn);
             return true;
         }
 
@@ -540,7 +572,8 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
                     hoveredSlot.set(stack); // Temporarily update the client for continuity purposes
                     PacketHandler.sendToServer(new PacketGhostSlot(hoveredSlot.index, stack, stack.getCount()));
                 } else {
-                    ItemStack slotStack = hoveredSlot.getItem();
+                    filterSlot(btn);
+                    /*ItemStack slotStack = hoveredSlot.getItem();
                     if (slotStack.isEmpty()) return true;
                     if (btn == 2) { //Todo IMC Inventory Sorter so this works
                         slotStack.setCount(0);
@@ -553,7 +586,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
                     if (amt + slotStack.getCount() > 4096) amt = 4096 - slotStack.getCount();
                     //slotStack.grow(amt);
 
-                    PacketHandler.sendToServer(new PacketGhostSlot(hoveredSlot.index, slotStack, slotStack.getCount() + amt));
+                    PacketHandler.sendToServer(new PacketGhostSlot(hoveredSlot.index, slotStack, slotStack.getCount() + amt));*/
                 }
             }
             return true;
@@ -564,7 +597,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
                     PacketHandler.sendToServer(new PacketUpdateFilter(isAllowList == 1, isCompareNBT == 1));
             } else if (btn == 1) {
                 int slot = hoveredSlot.getSlotIndex();
-                PacketHandler.sendToServer(new PacketUpdateCard(currentMode, currentChannel, currentItemExtractAmt, currentPriority, currentSneaky, (short) currentTicks, currentExact, currentRegulate, (byte) currentRoundRobin));
+                saveSettings();
                 PacketHandler.sendToServer(new PacketOpenFilter(slot));
                 return true;
             }

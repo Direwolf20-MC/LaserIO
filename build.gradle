@@ -210,6 +210,12 @@ dependencies {
     runtimeOnly fg.deobf("curse.maven:create-328085:3737418")
     runtimeOnly fg.deobf("curse.maven:flywheel-486392:3737402")
     //runtimeOnly fg.deobf("curse.maven:inventory-sorter-240633:3543137") // already on the forge maven
+    runtimeOnly fg.deobf("curse.maven:tinkers-construct-74072:3784732")
+    runtimeOnly fg.deobf("curse.maven:mantle-74924:3784500")
+
+    runtimeOnly fg.deobf("curse.maven:thermal-expansion-69163:3803489")
+    runtimeOnly fg.deobf("curse.maven:thermal-foundation-222880:3803495")
+    runtimeOnly fg.deobf("curse.maven:cofh-core-69162:3803484")
 
     //MouseTweaks
     //runtimeOnly fg.deobf("curse.maven:mouse-tweaks-60089:3578801")

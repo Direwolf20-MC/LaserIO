@@ -1,5 +1,5 @@
 {
-  "name": "Fluid Cards (Not Implemented)",
+  "name": "Fluid Cards",
   "sortnum": 2,
   "category": "laserio:cards",
   "icon": "laserio:card_fluid",
@@ -7,6 +7,11 @@
     {
       "type": "patchouli:text",
       "text": "Fluid Cards are used to send Fluids between inventories, such as tanks."
+    },
+    {
+      "type": "patchouli:crafting",
+      "title": "Fluid Card",
+      "recipe": "laserio:card_fluid"
     }
   ]
 }

@@ -2,6 +2,8 @@ package com.direwolf20.laserio.common.network.packets;
 
 import com.direwolf20.laserio.common.containers.CardItemContainer;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
+import com.direwolf20.laserio.common.items.cards.CardFluid;
+import com.direwolf20.laserio.common.items.cards.CardItem;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -13,7 +15,7 @@ import java.util.function.Supplier;
 public class PacketUpdateCard {
     byte mode;
     byte channel;
-    byte extractAmt;
+    int extractAmt;
     short priority;
     byte sneaky;
     short ticks;
@@ -21,7 +23,7 @@ public class PacketUpdateCard {
     boolean regulate;
     byte roundRobin;
 
-    public PacketUpdateCard(byte mode, byte channel, byte extractAmt, short priority, byte sneaky, short ticks, boolean exact, boolean regulate, byte roundRobin) {
+    public PacketUpdateCard(byte mode, byte channel, int extractAmt, short priority, byte sneaky, short ticks, boolean exact, boolean regulate, byte roundRobin) {
         this.mode = mode;
         this.channel = channel;
         this.extractAmt = extractAmt;
@@ -36,7 +38,7 @@ public class PacketUpdateCard {
     public static void encode(PacketUpdateCard msg, FriendlyByteBuf buffer) {
         buffer.writeByte(msg.mode);
         buffer.writeByte(msg.channel);
-        buffer.writeByte(msg.extractAmt);
+        buffer.writeInt(msg.extractAmt);
         buffer.writeShort(msg.priority);
         buffer.writeByte(msg.sneaky);
         buffer.writeShort(msg.ticks);
@@ -46,7 +48,7 @@ public class PacketUpdateCard {
     }
 
     public static PacketUpdateCard decode(FriendlyByteBuf buffer) {
-        return new PacketUpdateCard(buffer.readByte(), buffer.readByte(), buffer.readByte(), buffer.readShort(), buffer.readByte(), buffer.readShort(), buffer.readBoolean(), buffer.readBoolean(), buffer.readByte());
+        return new PacketUpdateCard(buffer.readByte(), buffer.readByte(), buffer.readInt(), buffer.readShort(), buffer.readByte(), buffer.readShort(), buffer.readBoolean(), buffer.readBoolean(), buffer.readByte());
     }
 
     public static class Handler {
@@ -64,18 +66,25 @@ public class PacketUpdateCard {
                     ItemStack stack = ((CardItemContainer) container).cardItem;
                     BaseCard.setTransferMode(stack, msg.mode);
                     BaseCard.setChannel(stack, msg.channel);
-                    byte extractAmt = msg.extractAmt;
+                    int extractAmt = msg.extractAmt;
                     int overClockerCount = container.getSlot(1).getItem().getCount();
-                    if (extractAmt > Math.max(overClockerCount * 16, 8)) {
-                        extractAmt = (byte) Math.max(overClockerCount * 16, 8);
+                    if (stack.getItem() instanceof CardItem) {
+                        if (extractAmt > Math.max(overClockerCount * 16, 8)) {
+                            extractAmt = (byte) Math.max(overClockerCount * 16, 8);
+                        }
+                        CardItem.setItemExtractAmt(stack, (byte) extractAmt);
+                    } else if (stack.getItem() instanceof CardFluid) {
+                        if (extractAmt > Math.max(overClockerCount * 2000, 1000)) {
+                            extractAmt = Math.max(overClockerCount * 2000, 1000);
+                        }
+                        CardFluid.setFluidExtractAmt(stack, extractAmt);
                     }
-                    BaseCard.setItemExtractAmt(stack, extractAmt);
                     BaseCard.setPriority(stack, msg.priority);
                     BaseCard.setSneaky(stack, msg.sneaky);
                     short ticks = msg.ticks;
                     if (ticks < Math.max(20 - overClockerCount * 5, 1))
                         ticks = (short) Math.max(20 - overClockerCount * 5, 1);
-                    BaseCard.setItemExtractSpeed(stack, ticks);
+                    BaseCard.setExtractSpeed(stack, ticks);
                     BaseCard.setExact(stack, msg.exact);
                     BaseCard.setRoundRobin(stack, msg.roundRobin);
                     BaseCard.setRegulate(stack, msg.regulate);

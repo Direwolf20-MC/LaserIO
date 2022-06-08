@@ -1,6 +1,7 @@
 package com.direwolf20.laserio.client.screens;
 
 import com.direwolf20.laserio.client.renderer.LaserIOItemRenderer;
+import com.direwolf20.laserio.client.renderer.LaserIOItemRendererFluid;
 import com.direwolf20.laserio.client.screens.widgets.IconButton;
 import com.direwolf20.laserio.client.screens.widgets.ToggleButton;
 import com.direwolf20.laserio.common.LaserIO;
@@ -25,17 +26,21 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.FluidTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidUtil;
+import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 public class FilterTagScreen extends AbstractContainerScreen<FilterTagContainer> {
     private final ResourceLocation GUI = new ResourceLocation(LaserIO.MODID, "textures/gui/filtertag.png");
@@ -53,6 +58,7 @@ public class FilterTagScreen extends AbstractContainerScreen<FilterTagContainer>
     List<String> stackInSlotTags = new ArrayList<>();
     int cycleRenders = 0;
     LaserIOItemRenderer tagItemRenderer;
+    LaserIOItemRendererFluid tagFluidRenderer;
 
 
     public FilterTagScreen(FilterTagContainer container, Inventory inv, Component name) {
@@ -65,7 +71,7 @@ public class FilterTagScreen extends AbstractContainerScreen<FilterTagContainer>
         Minecraft minecraft = Minecraft.getInstance();
         BlockEntityWithoutLevelRenderer blockentitywithoutlevelrenderer = new BlockEntityWithoutLevelRenderer(minecraft.getBlockEntityRenderDispatcher(), minecraft.getEntityModels());
         tagItemRenderer = new LaserIOItemRenderer(minecraft.getTextureManager(), minecraft.getModelManager(), minecraft.getItemColors(), blockentitywithoutlevelrenderer);
-
+        tagFluidRenderer = new LaserIOItemRendererFluid(minecraft.getTextureManager(), minecraft.getModelManager(), minecraft.getItemColors(), blockentitywithoutlevelrenderer, this);
     }
 
     @Override
@@ -102,6 +108,19 @@ public class FilterTagScreen extends AbstractContainerScreen<FilterTagContainer>
                 if (!stackInSlotTags.contains(tag) && !tags.contains(tag))
                     stackInSlotTags.add(tag);
             });
+
+            Optional<IFluidHandlerItem> fluidHandlerLazyOptional = FluidUtil.getFluidHandler(stackInSlot).resolve();
+            if (fluidHandlerLazyOptional.isPresent()) {
+                IFluidHandler fluidHandler = fluidHandlerLazyOptional.get();
+                for (int tank = 0; tank < fluidHandler.getTanks(); tank++) {
+                    FluidStack fluidStack = fluidHandler.getFluidInTank(tank);
+                    fluidStack.getFluid().builtInRegistryHolder().tags().forEach(t -> {
+                        String tag = t.location().toString().toLowerCase(Locale.ROOT);
+                        if (!stackInSlotTags.contains(tag) && !tags.contains(tag))
+                            stackInSlotTags.add(tag);
+                    });
+                }
+            }
         }
 
         int tagsPerPage = 11;
@@ -139,6 +158,22 @@ public class FilterTagScreen extends AbstractContainerScreen<FilterTagContainer>
                     tagItemRenderer.renderGuiItem(8f, drawStack, (availableItemsstartX) - 4, (tagStartY) - 5, itemRenderer.getModel(drawStack, null, null, 0));
                 matrixStack.popPose();
             }
+
+            List<Fluid> tagFluids = ForgeRegistries.FLUIDS.tags().getTag(FluidTags.create(new ResourceLocation(tag))).stream().toList();
+            FluidStack drawFluidStack = FluidStack.EMPTY;
+            ItemStack bucketStack = ItemStack.EMPTY;
+            if (tagFluids.size() > 0) {
+                drawFluidStack = new FluidStack(tagFluids.get((cycleRenders / 120) % tagFluids.size()), 1000);
+                matrixStack.pushPose();
+                if (!drawFluidStack.isEmpty()) {
+                    bucketStack = new ItemStack(drawFluidStack.getFluid().getBucket(), 1);
+                    if (!bucketStack.isEmpty())
+                        tagItemRenderer.renderGuiItem(8f, bucketStack, (availableItemsstartX) - 4, (tagStartY) - 5, itemRenderer.getModel(bucketStack, null, null, 0));
+                    //tagFluidRenderer.renderGuiItem(stackInSlot,(availableItemsstartX), (tagStartY - 1), tagFluidRenderer.getModel(stackInSlot, (Level)null, (LivingEntity)null, 0));
+                    //tagFluidRenderer.renderFluid(drawFluidStack, (availableItemsstartX), (tagStartY - 1), 8);
+                }
+                matrixStack.popPose();
+            }
             matrixStack.pushPose();
             matrixStack.scale(0.75f, 0.75f, 0.75f);
             int fontColor = stackInSlotTags.contains(tag) ? Color.BLUE.getRGB() : Color.DARK_GRAY.getRGB();
@@ -153,8 +188,12 @@ public class FilterTagScreen extends AbstractContainerScreen<FilterTagContainer>
                 RenderSystem.disableDepthTest();
                 RenderSystem.colorMask(true, true, true, false);
                 fillGradient(matrixStack, availableItemsstartX - 1, tagStartY - 2, availableItemsstartX + 160, tagStartY + 8, color, color);
-                if (MiscTools.inBounds(availableItemsstartX, tagStartY - 2, 8, 8, mouseX, mouseY))
-                    this.renderTooltip(matrixStack, drawStack, mouseX, mouseY);
+                if (MiscTools.inBounds(availableItemsstartX, tagStartY - 2, 8, 8, mouseX, mouseY)) {
+                    if (!drawStack.isEmpty())
+                        this.renderTooltip(matrixStack, drawStack, mouseX, mouseY);
+                    if (!bucketStack.isEmpty())
+                        this.renderTooltip(matrixStack, bucketStack, mouseX, mouseY);
+                }
                 RenderSystem.colorMask(true, true, true, true);
                 matrixStack.popPose();
             }
@@ -202,6 +241,7 @@ public class FilterTagScreen extends AbstractContainerScreen<FilterTagContainer>
         Button addButton = new IconButton(getGuiLeft() + 155, getGuiTop() + 5, 16, 16, add, (button) -> {
             if (!tagField.getValue().isEmpty()) {
                 String tag = tagField.getValue().toLowerCase(Locale.ROOT);
+                tag = tag.replaceAll("[^a-z0-9/._-]", "");
                 if (!tags.contains(tag))
                     tags.add(tag);
                 tagField.setValue("");
@@ -315,6 +355,7 @@ public class FilterTagScreen extends AbstractContainerScreen<FilterTagContainer>
         if (tagField.isFocused() && (p_keyPressed_1_ == 257 || p_keyPressed_1_ == 335)) { //enter key
             if (!tagField.getValue().isEmpty()) {
                 String tag = tagField.getValue().toLowerCase(Locale.ROOT);
+                tag = tag.replaceAll("[^a-z0-9/._-]", "");
                 if (!tags.contains(tag))
                     tags.add(tag);
                 tagField.setValue("");
