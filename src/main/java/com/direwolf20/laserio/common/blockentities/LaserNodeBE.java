@@ -865,6 +865,7 @@ public class LaserNodeBE extends BaseLaserBE {
                         stockerTank.fill(drainedStack, IFluidHandler.FluidAction.EXECUTE);
                         drawParticlesFluid(drainedStack, inserterCardCache.direction, inserterCardCache.be, stockerCardCache.be, stockerCardCache.direction, inserterCardCache.cardSlot, stockerCardCache.cardSlot);
                     }
+                    return true;
                 }
             }
         }
