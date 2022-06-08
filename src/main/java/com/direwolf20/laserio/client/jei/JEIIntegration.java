@@ -40,6 +40,7 @@ public class JEIIntegration implements IModPlugin {
         RecipeManager recipeManager = Minecraft.getInstance().level.getRecipeManager();
         List<CraftingRecipe> hiddenRecipes = new ArrayList<>();
         hiddenRecipes.add((CraftingRecipe) recipeManager.byKey(new ResourceLocation(Registration.Card_Item.getId() + "_nbtclear")).get());
+        hiddenRecipes.add((CraftingRecipe) recipeManager.byKey(new ResourceLocation(Registration.Card_Fluid.getId() + "_nbtclear")).get());
         hiddenRecipes.add((CraftingRecipe) recipeManager.byKey(new ResourceLocation(Registration.Filter_Basic.getId() + "_nbtclear")).get());
         hiddenRecipes.add((CraftingRecipe) recipeManager.byKey(new ResourceLocation(Registration.Filter_Count.getId() + "_nbtclear")).get());
         hiddenRecipes.add((CraftingRecipe) recipeManager.byKey(new ResourceLocation(Registration.Filter_Tag.getId() + "_nbtclear")).get());
