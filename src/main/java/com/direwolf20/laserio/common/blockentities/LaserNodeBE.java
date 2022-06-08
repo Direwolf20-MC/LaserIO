@@ -861,6 +861,8 @@ public class LaserNodeBE extends BaseLaserBE {
                         FluidStack insertStack = entry.getValue();
                         LaserNodeFluidHandler laserNodeFluidHandler = getLaserNodeHandlerFluid(inserterCardCache);
                         IFluidHandler handler = laserNodeFluidHandler.handler;
+                        int amtFit = stockerTank.fill(insertStack, IFluidHandler.FluidAction.SIMULATE); //Test inserting into the target
+                        insertStack.setAmount(amtFit); //Change the stack to size to how much can fit
                         FluidStack drainedStack = handler.drain(insertStack, IFluidHandler.FluidAction.EXECUTE);
                         stockerTank.fill(drainedStack, IFluidHandler.FluidAction.EXECUTE);
                         drawParticlesFluid(drainedStack, inserterCardCache.direction, inserterCardCache.be, stockerCardCache.be, stockerCardCache.direction, inserterCardCache.cardSlot, stockerCardCache.cardSlot);
