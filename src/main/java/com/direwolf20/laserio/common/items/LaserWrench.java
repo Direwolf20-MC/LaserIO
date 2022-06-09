@@ -82,6 +82,6 @@ public class LaserWrench extends Item {
         }
 
         //System.out.println(getConnectionPos(wrench));
-        return InteractionResultHolder.pass(wrench);
+        return InteractionResultHolder.success(wrench);
     }
 }
