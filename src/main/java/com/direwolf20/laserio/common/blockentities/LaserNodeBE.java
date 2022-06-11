@@ -6,6 +6,7 @@ import com.direwolf20.laserio.common.blockentities.basebe.BaseLaserBE;
 import com.direwolf20.laserio.common.containers.LaserNodeContainer;
 import com.direwolf20.laserio.common.events.ServerTickHandler;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
+import com.direwolf20.laserio.common.items.cards.CardEnergy;
 import com.direwolf20.laserio.common.items.cards.CardFluid;
 import com.direwolf20.laserio.common.items.cards.CardItem;
 import com.direwolf20.laserio.common.items.filters.FilterBasic;
@@ -27,6 +28,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.common.util.NonNullConsumer;
+import net.minecraftforge.energy.CapabilityEnergy;
+import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
@@ -58,7 +61,6 @@ public class LaserNodeBE extends BaseLaserBE {
     /** A cache of this blocks sides - data we need to reference frequently **/
     public final NodeSideCache[] nodeSideCaches = new NodeSideCache[6];
     private final IItemHandler EMPTY = new ItemStackHandler(0);
-    //private final IFluidHandler EMPTYTANK = new EmptyFluidHandler();
 
     /** Adjacent Inventory Handlers **/
     private record SideConnection(Direction nodeSide, Direction sneakySide) {
@@ -73,22 +75,28 @@ public class LaserNodeBE extends BaseLaserBE {
 
     }
 
+    private record LaserNodeEnergyHandler(LaserNodeBE be, IEnergyStorage handler) {
+
+    }
+
     public Map<ExtractorCardCache, Integer> roundRobinMap = new Object2IntOpenHashMap<>();
 
-    private Map<SideConnection, LazyOptional<IItemHandler>> facingHandlerItem = new HashMap<>();
+    private final Map<SideConnection, LazyOptional<IItemHandler>> facingHandlerItem = new HashMap<>();
     private final Map<SideConnection, NonNullConsumer<LazyOptional<IItemHandler>>> connectionInvalidatorItem = new HashMap<>();
-    private Map<SideConnection, LazyOptional<IFluidHandler>> facingHandlerFluid = new HashMap<>();
+    private final Map<SideConnection, LazyOptional<IFluidHandler>> facingHandlerFluid = new HashMap<>();
     private final Map<SideConnection, NonNullConsumer<LazyOptional<IFluidHandler>>> connectionInvalidatorFluid = new HashMap<>();
+    private final Map<SideConnection, LazyOptional<IEnergyStorage>> facingHandlerEnergy = new HashMap<>();
+    private final Map<SideConnection, NonNullConsumer<LazyOptional<IEnergyStorage>>> connectionInvalidatorEnergy = new HashMap<>();
 
     /** Variables for tracking and sending items/filters/etc **/
-    private Set<BlockPos> otherNodesInNetwork = new HashSet<>();
+    private final Set<BlockPos> otherNodesInNetwork = new HashSet<>();
     private final List<InserterCardCache> inserterNodes = new CopyOnWriteArrayList<>(); //All Inventory nodes that contain an inserter card
     private final HashMap<ExtractorCardCache, HashMap<ItemStackKey, List<InserterCardCache>>> inserterCache = new HashMap<>();
     private final HashMap<ExtractorCardCache, HashMap<FluidStackKey, List<InserterCardCache>>> inserterCacheFluid = new HashMap<>();
     private final HashMap<ExtractorCardCache, List<InserterCardCache>> channelOnlyCache = new HashMap<>();
-    private List<ParticleRenderData> particleRenderData = new ArrayList<>();
-    private List<ParticleRenderDataFluid> particleRenderDataFluids = new ArrayList<>();
-    private Random random = new Random();
+    private final List<ParticleRenderData> particleRenderData = new ArrayList<>();
+    private final List<ParticleRenderDataFluid> particleRenderDataFluids = new ArrayList<>();
+    private final Random random = new Random();
 
     private record StockerRequest(StockerCardCache stockerCardCache, ItemStackKey itemStackKey) {
     }
@@ -1364,9 +1372,65 @@ public class LaserNodeBE extends BaseLaserBE {
         return LazyOptional.empty();
     }
 
+    /** Somehow this makes it so if you break an adjacent chest it immediately invalidates the cache of it **/
+    public LazyOptional<IEnergyStorage> getAttachedEnergyTank(Direction direction, Byte sneakySide) {
+        Direction inventorySide = direction.getOpposite();
+        if (sneakySide != -1)
+            inventorySide = Direction.values()[sneakySide];
+        SideConnection sideConnection = new SideConnection(direction, inventorySide);
+        LazyOptional<IEnergyStorage> testHandler = (facingHandlerEnergy.get(sideConnection));
+        if (testHandler != null && testHandler.isPresent()) {
+            return testHandler;
+        }
+
+        // if no inventory cached yet, find a new one
+        assert level != null;
+        BlockEntity be = level.getBlockEntity(getBlockPos().relative(direction));
+        // if we have a TE and its an item handler, try extracting from that
+        if (be != null) {
+            LazyOptional<IEnergyStorage> handler = be.getCapability(CapabilityEnergy.ENERGY, inventorySide);
+            if (handler.isPresent()) {
+                // add the invalidator
+                handler.addListener(getInvalidatorEnergy(sideConnection));
+                // cache and return
+                facingHandlerEnergy.put(sideConnection, handler);
+                return handler;
+            }
+        }
+        // no item handler, cache empty
+        facingHandlerFluid.remove(sideConnection);
+        return LazyOptional.empty();
+    }
+
+    public LazyOptional<IEnergyStorage> getAttachedEnergyTankNoCache(Direction direction, Byte sneakySide) {
+        Direction inventorySide = direction.getOpposite();
+        if (sneakySide != -1)
+            inventorySide = Direction.values()[sneakySide];
+
+        // if no inventory cached yet, find a new one
+        assert level != null;
+        BlockEntity be = level.getBlockEntity(getBlockPos().relative(direction));
+        // if we have a TE and its an item handler, try extracting from that
+        if (be != null) {
+            LazyOptional<IEnergyStorage> handler = be.getCapability(CapabilityEnergy.ENERGY, inventorySide);
+            if (handler.isPresent()) {
+                return handler;
+            }
+        }
+        return LazyOptional.empty();
+    }
+
     private NonNullConsumer<LazyOptional<IFluidHandler>> getInvalidatorFluid(SideConnection sideConnection) {
         return connectionInvalidatorFluid.computeIfAbsent(sideConnection, c -> new WeakConsumerWrapper<>(this, (te, handler) -> {
             if (te.facingHandlerFluid.get(sideConnection) == handler) {
+                te.clearCachedInventories(sideConnection);
+            }
+        }));
+    }
+
+    private NonNullConsumer<LazyOptional<IEnergyStorage>> getInvalidatorEnergy(SideConnection sideConnection) {
+        return connectionInvalidatorEnergy.computeIfAbsent(sideConnection, c -> new WeakConsumerWrapper<>(this, (te, handler) -> {
+            if (te.facingHandlerEnergy.get(sideConnection) == handler) {
                 te.clearCachedInventories(sideConnection);
             }
         }));
@@ -1378,6 +1442,7 @@ public class LaserNodeBE extends BaseLaserBE {
         stockerDestinationCache.clear();
         this.facingHandlerItem.remove(sideConnection);
         this.facingHandlerFluid.remove(sideConnection);
+        this.facingHandlerEnergy.remove(sideConnection);
     }
 
     /** Called when a neighbor updates to invalidate the inventory cache */
@@ -1385,6 +1450,7 @@ public class LaserNodeBE extends BaseLaserBE {
         stockerDestinationCache.clear();
         this.facingHandlerItem.clear();
         this.facingHandlerFluid.clear();
+        this.facingHandlerEnergy.clear();
         markDirtyClient();
     }
 
@@ -1406,6 +1472,18 @@ public class LaserNodeBE extends BaseLaserBE {
                         continue;
 
                     cardRenders.add(new CardRender(direction, slot, card, getBlockPos()));
+                } else if (card.getItem() instanceof CardEnergy) {
+                    Optional<IEnergyStorage> lazyEnergyStorage = getAttachedEnergyTankNoCache(direction, BaseCard.getSneaky(card)).resolve();
+                    if (lazyEnergyStorage.isEmpty())
+                        continue;
+                    IEnergyStorage energyStorage = lazyEnergyStorage.get();
+                    if (BaseCard.getTransferMode(card) == 1) { //Extract
+                        if (energyStorage.canExtract())
+                            cardRenders.add(new CardRender(direction, slot, card, getBlockPos()));
+                    } else { //Insert/Stock
+                        if (energyStorage.canReceive())
+                            cardRenders.add(new CardRender(direction, slot, card, getBlockPos()));
+                    }
                 }
             }
         }
