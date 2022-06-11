@@ -1,7 +1,9 @@
 package com.direwolf20.laserio.common.network.packets;
 
+import com.direwolf20.laserio.common.containers.CardEnergyContainer;
 import com.direwolf20.laserio.common.containers.CardItemContainer;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
+import com.direwolf20.laserio.common.items.cards.CardEnergy;
 import com.direwolf20.laserio.common.items.cards.CardFluid;
 import com.direwolf20.laserio.common.items.cards.CardItem;
 import net.minecraft.network.FriendlyByteBuf;
@@ -62,22 +64,34 @@ public class PacketUpdateCard {
                 if (container == null)
                     return;
 
-                if (container instanceof CardItemContainer) {
-                    ItemStack stack = ((CardItemContainer) container).cardItem;
+                if (container instanceof CardItemContainer || container instanceof CardEnergyContainer) {
+                    ItemStack stack;
+                    if (container instanceof CardEnergyContainer)
+                        stack = ((CardEnergyContainer) container).cardItem;
+                    else
+                        stack = ((CardItemContainer) container).cardItem;
                     BaseCard.setTransferMode(stack, msg.mode);
                     BaseCard.setChannel(stack, msg.channel);
                     int extractAmt = msg.extractAmt;
-                    int overClockerCount = container.getSlot(1).getItem().getCount();
+                    int overClockerCount = 0;
                     if (stack.getItem() instanceof CardItem) {
+                        overClockerCount = container.getSlot(1).getItem().getCount();
                         if (extractAmt > Math.max(overClockerCount * 16, 8)) {
                             extractAmt = (byte) Math.max(overClockerCount * 16, 8);
                         }
                         CardItem.setItemExtractAmt(stack, (byte) extractAmt);
                     } else if (stack.getItem() instanceof CardFluid) {
+                        overClockerCount = container.getSlot(1).getItem().getCount();
                         if (extractAmt > Math.max(overClockerCount * 2000, 1000)) {
                             extractAmt = Math.max(overClockerCount * 2000, 1000);
                         }
                         CardFluid.setFluidExtractAmt(stack, extractAmt);
+                    } else if (stack.getItem() instanceof CardEnergy) {
+                        overClockerCount = container.getSlot(0).getItem().getCount();
+                        if (extractAmt > Math.max((int) Math.pow(10, overClockerCount) * 10000, 10000)) {
+                            extractAmt = Math.max((int) Math.pow(10, overClockerCount) * 10000, 10000);
+                        }
+                        CardEnergy.setEnergyExtractAmt(stack, extractAmt);
                     }
                     BaseCard.setPriority(stack, msg.priority);
                     BaseCard.setSneaky(stack, msg.sneaky);
