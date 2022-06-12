@@ -172,6 +172,11 @@ public class LaserIORecipes extends RecipeProvider {
                 .group("laserio")
                 .unlockedBy("has_card_fluid", InventoryChangeTrigger.TriggerInstance.hasItems(Registration.Card_Fluid.get()))
                 .save(consumer, Registration.Card_Fluid.getId() + "_nbtclear");
+        CardClearRecipeBuilder.shapeless(Registration.Card_Energy.get())
+                .requires(Registration.Card_Energy.get())
+                .group("laserio")
+                .unlockedBy("has_card_energy", InventoryChangeTrigger.TriggerInstance.hasItems(Registration.Card_Energy.get()))
+                .save(consumer, Registration.Card_Energy.getId() + "_nbtclear");
         ShapelessRecipeBuilder.shapeless(Registration.Filter_Basic.get())
                 .requires(Registration.Filter_Basic.get())
                 .group("laserio")
