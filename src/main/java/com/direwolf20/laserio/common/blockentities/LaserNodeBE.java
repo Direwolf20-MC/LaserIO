@@ -177,6 +177,9 @@ public class LaserNodeBE extends BaseLaserBE {
                         } else if (extractorCardCache.cardType.equals(BaseCard.CardType.FLUID)) {
                             if (stockFluids(stockerCardCache))
                                 countCardsHandled++;
+                        } else if (extractorCardCache.cardType.equals(BaseCard.CardType.ENERGY)) {
+                            if (stockEnergy(stockerCardCache))
+                                countCardsHandled++;
                         }
                     } else {
                         if (extractorCardCache.cardType.equals(BaseCard.CardType.ITEM)) {
@@ -184,6 +187,9 @@ public class LaserNodeBE extends BaseLaserBE {
                                 countCardsHandled++;
                         } else if (extractorCardCache.cardType.equals(BaseCard.CardType.FLUID)) {
                             if (sendFluids(extractorCardCache))
+                                countCardsHandled++;
+                        } else if (extractorCardCache.cardType.equals(BaseCard.CardType.ENERGY)) {
+                            if (sendEnergy(extractorCardCache))
                                 countCardsHandled++;
                         }
                     }
@@ -636,6 +642,111 @@ public class LaserNodeBE extends BaseLaserBE {
         return false;
     }
 
+    public boolean extractEnergy(ExtractorCardCache extractorCardCache, IEnergyStorage fromEnergyTank, int extractAmt) {
+        int totalAmtNeeded = extractAmt;
+        List<InserterCardCache> inserterCardCaches = getChannelMatchInserters(extractorCardCache);
+        int roundRobin = -1;
+        boolean foundAnything = false;
+        if (extractorCardCache.roundRobin != 0) {
+            roundRobin = getRR(extractorCardCache);
+            inserterCardCaches = applyRR(extractorCardCache, inserterCardCaches, roundRobin);
+        }
+
+        for (InserterCardCache inserterCardCache : inserterCardCaches) {
+            LaserNodeEnergyHandler laserNodeEnergyHandler = getLaserNodeHandlerEnergy(inserterCardCache);
+            if (laserNodeEnergyHandler == null) continue;
+            IEnergyStorage energyStorage = laserNodeEnergyHandler.handler;
+
+            int desired = (int) (energyStorage.getMaxEnergyStored() * ((float) inserterCardCache.insertLimit / 100)) - energyStorage.getEnergyStored();
+            if (desired <= 0) continue;
+            int amtToTry = Math.min(desired, totalAmtNeeded);
+            int amtFit = energyStorage.receiveEnergy(amtToTry, true); //Simulate Insert Energy
+            if (amtFit == 0) { //Next inserter if nothing went in -- return false if enforcing round robin
+                if (extractorCardCache.roundRobin == 2) {
+                    return false;
+                }
+                if (extractorCardCache.roundRobin != 0) getNextRR(extractorCardCache, inserterCardCaches);
+                continue;
+            }
+            int amtDrained = fromEnergyTank.extractEnergy(amtFit, false); //Remove some energy from the extract tank
+            if (amtDrained == 0) continue; //If we didn't get anything, like the energy storage is empty
+            foundAnything = true;
+            energyStorage.receiveEnergy(amtDrained, false); //Insert the amount we removed from the source
+            //drawParticlesFluid(drainedStack, extractorCardCache.direction, extractorCardCache.be, inserterCardCache.be, inserterCardCache.direction, extractorCardCache.cardSlot, inserterCardCache.cardSlot);
+            totalAmtNeeded -= amtDrained; //If we removed 100 and wanted to remove 1000, keep looking for other nodes to insert into
+            if (extractorCardCache.roundRobin != 0) getNextRR(extractorCardCache, inserterCardCaches);
+            if (totalAmtNeeded == 0) return true;
+        }
+        return foundAnything;
+    }
+
+    public boolean extractEnergyExact(ExtractorCardCache extractorCardCache, IEnergyStorage fromEnergyTank, int extractAmt) {
+        int totalAmtNeeded = extractAmt;
+        List<InserterCardCache> inserterCardCaches = getChannelMatchInserters(extractorCardCache);
+        int roundRobin = -1;
+
+        if (extractorCardCache.roundRobin != 0) {
+            roundRobin = getRR(extractorCardCache);
+            inserterCardCaches = applyRR(extractorCardCache, inserterCardCaches, roundRobin);
+        }
+
+        Map<InserterCardCache, Integer> insertHandlers = new Object2IntOpenHashMap<>();
+
+        for (InserterCardCache inserterCardCache : inserterCardCaches) {
+            LaserNodeEnergyHandler laserNodeEnergyHandler = getLaserNodeHandlerEnergy(inserterCardCache);
+            if (laserNodeEnergyHandler == null) continue;
+            IEnergyStorage energyStorage = laserNodeEnergyHandler.handler;
+            int desired = (int) (energyStorage.getMaxEnergyStored() * ((float) inserterCardCache.insertLimit / 100)) - energyStorage.getEnergyStored();
+            if (desired <= 0) continue;
+            int amtToTry = Math.min(desired, totalAmtNeeded);
+            int amtFit = energyStorage.receiveEnergy(amtToTry, true); //Simulate Insert
+            if (amtFit == 0) { //Next inserter if nothing went in -- return false if enforcing round robin
+                if (extractorCardCache.roundRobin == 2) {
+                    return false;
+                }
+                if (extractorCardCache.roundRobin != 0) getNextRR(extractorCardCache, inserterCardCaches);
+                continue;
+            }
+            int amtDrained = fromEnergyTank.extractEnergy(amtFit, true); //Simulate Remove some energy
+            if (amtDrained == 0) continue; //If we didn't get anything
+            insertHandlers.put(inserterCardCache, amtDrained); //Add the handler to the list of handlers we found fluid in
+            totalAmtNeeded -= amtDrained; //Keep track of how much we have left to insert
+            if (extractorCardCache.roundRobin != 0) getNextRR(extractorCardCache, inserterCardCaches);
+            if (totalAmtNeeded == 0) break;
+        }
+
+        if (totalAmtNeeded > 0) return false;
+
+        for (Map.Entry<InserterCardCache, Integer> entry : insertHandlers.entrySet()) {
+            InserterCardCache inserterCardCache = entry.getKey();
+            LaserNodeEnergyHandler laserNodeEnergyHandler = getLaserNodeHandlerEnergy(inserterCardCache);
+            IEnergyStorage energyStorage = laserNodeEnergyHandler.handler;
+            int actualRemoved = fromEnergyTank.extractEnergy(entry.getValue(), false);
+            energyStorage.receiveEnergy(actualRemoved, false);
+            //drawParticlesFluid(drainedStack, extractorCardCache.direction, extractorCardCache.be, inserterCardCache.be, inserterCardCache.direction, extractorCardCache.cardSlot, inserterCardCache.cardSlot);
+        }
+
+        return true;
+    }
+
+    /** Extractor Cards call this, and try to find an inserter card to send their items to **/
+    public boolean sendEnergy(ExtractorCardCache extractorCardCache) {
+        BlockPos adjacentPos = getBlockPos().relative(extractorCardCache.direction);
+        assert level != null;
+        if (!level.isLoaded(adjacentPos)) return false;
+        Optional<IEnergyStorage> adjacentEnergyOptional = getAttachedEnergyTank(extractorCardCache.direction, extractorCardCache.sneaky).resolve();
+        if (adjacentEnergyOptional.isEmpty()) return false;
+        IEnergyStorage adjacentEnergy = adjacentEnergyOptional.get();
+        int desired = (int) (adjacentEnergy.getMaxEnergyStored() * ((float) extractorCardCache.extractLimit / 100));
+        int extractAmt = Math.min(extractorCardCache.extractAmt, adjacentEnergy.getEnergyStored() - desired);
+        if (extractAmt <= 0) return false;
+        if (extractorCardCache.exact) {
+            return extractEnergyExact(extractorCardCache, adjacentEnergy, extractAmt);
+        } else {
+            return extractEnergy(extractorCardCache, adjacentEnergy, extractAmt);
+        }
+    }
+
     public boolean canAnyItemFiltersFit(IItemHandler adjacentInventory, StockerCardCache stockerCardCache) {
         for (ItemStack stack : stockerCardCache.getFilteredItems()) {
             int amountFit = testInsertToInventory(adjacentInventory, stack.split(1)); //Try to put one in - if it fits we have room
@@ -691,6 +802,33 @@ public class LaserNodeBE extends BaseLaserBE {
             }
         }
         return false;
+    }
+
+    public boolean regulateEnergyStocker(StockerCardCache stockerCardCache, IEnergyStorage stockerTank) {
+        int desired = (int) (stockerTank.getMaxEnergyStored() * ((float) stockerCardCache.insertLimit / 100));
+        if (desired >= stockerTank.getEnergyStored()) return false;
+        int overFlow = Math.min(stockerCardCache.extractAmt, stockerTank.getEnergyStored() - desired);
+        return extractEnergy(stockerCardCache, stockerTank, overFlow);
+    }
+
+    /** Stocker Cards call this, and try to find an inserter card to pull their fluids from **/
+    public boolean stockEnergy(StockerCardCache stockerCardCache) {
+        BlockPos adjacentPos = getBlockPos().relative(stockerCardCache.direction);
+        assert level != null;
+        if (!level.isLoaded(adjacentPos)) return false;
+        Optional<IEnergyStorage> adjacentEnergyOptional = getAttachedEnergyTank(stockerCardCache.direction, stockerCardCache.sneaky).resolve();
+        if (adjacentEnergyOptional.isEmpty()) return false;
+        IEnergyStorage adjacentEnergy = adjacentEnergyOptional.get();
+
+        if (stockerCardCache.regulate) {
+            if (regulateEnergyStocker(stockerCardCache, adjacentEnergy))
+                return true;
+        }
+        int desired = (int) (adjacentEnergy.getMaxEnergyStored() * ((float) stockerCardCache.insertLimit / 100));
+        if (adjacentEnergy.getEnergyStored() >= desired) {
+            return false; //If we can't fit any more energy into here
+        }
+        return findEnergyForStocker(stockerCardCache, adjacentEnergy);
     }
 
     /** Stocker Cards call this, and try to find an inserter card to pull their fluids from **/
@@ -809,6 +947,42 @@ public class LaserNodeBE extends BaseLaserBE {
             }
         }
         return extractResult;
+    }
+
+    public boolean findEnergyForStocker(StockerCardCache stockerCardCache, IEnergyStorage toEnergyTank) {
+        int desired = (int) (toEnergyTank.getMaxEnergyStored() * ((float) stockerCardCache.insertLimit / 100));
+        int extractAmt = Math.min(stockerCardCache.extractAmt, desired - toEnergyTank.getEnergyStored());
+        List<InserterCardCache> inserterCardCaches = getChannelMatchInserters(stockerCardCache);
+        Map<InserterCardCache, Integer> insertHandlers = new Object2IntOpenHashMap<>();
+
+        for (InserterCardCache inserterCardCache : inserterCardCaches) {
+            LaserNodeEnergyHandler laserNodeEnergyHandler = getLaserNodeHandlerEnergy(inserterCardCache);
+            if (laserNodeEnergyHandler == null) continue;
+            IEnergyStorage energyStorage = laserNodeEnergyHandler.handler;
+
+            int amtRemoved = energyStorage.extractEnergy(extractAmt, true); //Simulate Extract
+            if (amtRemoved == 0) { //Next inserter if nothing removed
+                continue;
+            }
+            int amtInserted = toEnergyTank.receiveEnergy(amtRemoved, true); //Simulate Inserting some energy
+            if (amtInserted == 0) return false; //This really shouldn't happen - it means the tank is already full?
+            insertHandlers.put(inserterCardCache, amtInserted); //Add the handler
+            extractAmt -= amtInserted; //Keep track of how much we have left to insert
+            if (extractAmt == 0) break;
+        }
+
+        if ((stockerCardCache.exact && extractAmt > 0) || insertHandlers.isEmpty()) return false;
+
+        for (Map.Entry<InserterCardCache, Integer> entry : insertHandlers.entrySet()) {
+            InserterCardCache inserterCardCache = entry.getKey();
+            LaserNodeEnergyHandler laserNodeEnergyHandler = getLaserNodeHandlerEnergy(inserterCardCache);
+            IEnergyStorage energyStorage = laserNodeEnergyHandler.handler;
+            int actualRemoved = energyStorage.extractEnergy(entry.getValue(), false);
+            toEnergyTank.receiveEnergy(actualRemoved, false);
+            //drawParticlesFluid(drainedStack, extractorCardCache.direction, extractorCardCache.be, inserterCardCache.be, inserterCardCache.direction, extractorCardCache.cardSlot, inserterCardCache.cardSlot);
+        }
+
+        return false; //If we got NOTHING
     }
 
     public boolean findFluidStackForStocker(StockerCardCache stockerCardCache, IFluidHandler stockerTank) {
@@ -1230,11 +1404,6 @@ public class LaserNodeBE extends BaseLaserBE {
             for (int slot = 0; slot < LaserNodeContainer.CARDSLOTS; slot++) {
                 ItemStack card = nodeSideCache.itemHandler.getStackInSlot(slot);
                 if (card.getItem() instanceof BaseCard) {
-                    /*if (BaseCard.getNamedTransferMode(card).equals(BaseCard.TransferMode.EXTRACT)) {
-                        //sendItems(card, direction);
-                    } else if (BaseCard.getNamedTransferMode(card).equals(BaseCard.TransferMode.STOCK)) {
-                        //getItems(card, direction);
-                    } else*/
                     if (BaseCard.getNamedTransferMode(card).equals(BaseCard.TransferMode.INSERT)) {
                         inserterNodes.add(new InserterCardCache(relativePos, direction, card, be, slot));
                     }
@@ -1372,6 +1541,18 @@ public class LaserNodeBE extends BaseLaserBE {
         return LazyOptional.empty();
     }
 
+    public LaserNodeEnergyHandler getLaserNodeHandlerEnergy(InserterCardCache inserterCardCache) {
+        if (!inserterCardCache.cardType.equals(BaseCard.CardType.ENERGY)) return null;
+        BlockPos nodeWorldPos = getWorldPos(inserterCardCache.relativePos);
+        if (!chunksLoaded(nodeWorldPos, nodeWorldPos.relative(inserterCardCache.direction))) return null;
+        LaserNodeBE be = getNodeAt(getWorldPos(inserterCardCache.relativePos));
+        if (be == null) return null;
+        Optional<IEnergyStorage> energyhandler = be.getAttachedEnergyTank(inserterCardCache.direction, inserterCardCache.sneaky).resolve();
+        if (energyhandler.isEmpty()) return null;
+        IEnergyStorage energyTank = energyhandler.get();
+        return new LaserNodeEnergyHandler(be, energyTank);
+    }
+
     /** Somehow this makes it so if you break an adjacent chest it immediately invalidates the cache of it **/
     public LazyOptional<IEnergyStorage> getAttachedEnergyTank(Direction direction, Byte sneakySide) {
         Direction inventorySide = direction.getOpposite();
@@ -1476,14 +1657,14 @@ public class LaserNodeBE extends BaseLaserBE {
                     Optional<IEnergyStorage> lazyEnergyStorage = getAttachedEnergyTankNoCache(direction, BaseCard.getSneaky(card)).resolve();
                     if (lazyEnergyStorage.isEmpty())
                         continue;
-                    IEnergyStorage energyStorage = lazyEnergyStorage.get();
-                    if (BaseCard.getTransferMode(card) == 1) { //Extract
+                    //IEnergyStorage energyStorage = lazyEnergyStorage.get();
+                    /*if (BaseCard.getTransferMode(card) == 1) { //Extract
                         if (energyStorage.canExtract())
                             cardRenders.add(new CardRender(direction, slot, card, getBlockPos()));
                     } else { //Insert/Stock
-                        if (energyStorage.canReceive())
-                            cardRenders.add(new CardRender(direction, slot, card, getBlockPos()));
-                    }
+                        if (energyStorage.canReceive())*/
+                    cardRenders.add(new CardRender(direction, slot, card, getBlockPos()));
+                    //}
                 }
             }
         }

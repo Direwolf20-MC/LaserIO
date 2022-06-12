@@ -31,6 +31,8 @@ public class BaseCardCache {
     public final byte sneaky;
     public final LaserNodeBE be;
     public final BaseCard.CardType cardType;
+    public int extractLimit = 0;
+    public int insertLimit = 0;
 
     public final boolean isAllowList;
     public final boolean isCompareNBT;
@@ -51,9 +53,11 @@ public class BaseCardCache {
             cardType = BaseCard.CardType.ITEM;
         else if (cardItem.getItem() instanceof CardFluid)
             cardType = BaseCard.CardType.FLUID;
-        else if (cardItem.getItem() instanceof CardEnergy)
+        else if (cardItem.getItem() instanceof CardEnergy) {
             cardType = BaseCard.CardType.ENERGY;
-        else cardType = null;
+            this.insertLimit = CardEnergy.getInsertLimitPercent(cardItem);
+            this.extractLimit = CardEnergy.getExtractLimitPercent(cardItem);
+        } else cardType = null;
         this.be = be;
         if (filterCard.equals(ItemStack.EMPTY)) {
             filteredItems = new ArrayList<>();

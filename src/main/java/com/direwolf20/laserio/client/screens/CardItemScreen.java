@@ -504,7 +504,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
     }
 
     public void saveSettings() {
-        PacketHandler.sendToServer(new PacketUpdateCard(currentMode, currentChannel, currentItemExtractAmt, currentPriority, currentSneaky, (short) currentTicks, currentExact, currentRegulate, (byte) currentRoundRobin));
+        PacketHandler.sendToServer(new PacketUpdateCard(currentMode, currentChannel, currentItemExtractAmt, currentPriority, currentSneaky, (short) currentTicks, currentExact, currentRegulate, (byte) currentRoundRobin, 0, 0));
     }
 
     public boolean filterSlot(int btn) {

@@ -24,8 +24,10 @@ public class PacketUpdateCard {
     boolean exact;
     boolean regulate;
     byte roundRobin;
+    int extractLimit;
+    int insertLimit;
 
-    public PacketUpdateCard(byte mode, byte channel, int extractAmt, short priority, byte sneaky, short ticks, boolean exact, boolean regulate, byte roundRobin) {
+    public PacketUpdateCard(byte mode, byte channel, int extractAmt, short priority, byte sneaky, short ticks, boolean exact, boolean regulate, byte roundRobin, int extractLimit, int insertLimit) {
         this.mode = mode;
         this.channel = channel;
         this.extractAmt = extractAmt;
@@ -35,6 +37,8 @@ public class PacketUpdateCard {
         this.exact = exact;
         this.regulate = regulate;
         this.roundRobin = roundRobin;
+        this.extractLimit = extractLimit;
+        this.insertLimit = insertLimit;
     }
 
     public static void encode(PacketUpdateCard msg, FriendlyByteBuf buffer) {
@@ -47,10 +51,12 @@ public class PacketUpdateCard {
         buffer.writeBoolean(msg.exact);
         buffer.writeBoolean(msg.regulate);
         buffer.writeByte(msg.roundRobin);
+        buffer.writeInt(msg.extractLimit);
+        buffer.writeInt(msg.insertLimit);
     }
 
     public static PacketUpdateCard decode(FriendlyByteBuf buffer) {
-        return new PacketUpdateCard(buffer.readByte(), buffer.readByte(), buffer.readInt(), buffer.readShort(), buffer.readByte(), buffer.readShort(), buffer.readBoolean(), buffer.readBoolean(), buffer.readByte());
+        return new PacketUpdateCard(buffer.readByte(), buffer.readByte(), buffer.readInt(), buffer.readShort(), buffer.readByte(), buffer.readShort(), buffer.readBoolean(), buffer.readBoolean(), buffer.readByte(), buffer.readInt(), buffer.readInt());
     }
 
     public static class Handler {
@@ -80,25 +86,50 @@ public class PacketUpdateCard {
                             extractAmt = (byte) Math.max(overClockerCount * 16, 8);
                         }
                         CardItem.setItemExtractAmt(stack, (byte) extractAmt);
+                        short ticks = msg.ticks;
+                        if (ticks < Math.max(20 - overClockerCount * 5, 1))
+                            ticks = (short) Math.max(20 - overClockerCount * 5, 1);
+                        BaseCard.setExtractSpeed(stack, ticks);
                     } else if (stack.getItem() instanceof CardFluid) {
                         overClockerCount = container.getSlot(1).getItem().getCount();
                         if (extractAmt > Math.max(overClockerCount * 2000, 1000)) {
                             extractAmt = Math.max(overClockerCount * 2000, 1000);
                         }
                         CardFluid.setFluidExtractAmt(stack, extractAmt);
+                        short ticks = msg.ticks;
+                        if (ticks < Math.max(20 - overClockerCount * 5, 1))
+                            ticks = (short) Math.max(20 - overClockerCount * 5, 1);
+                        BaseCard.setExtractSpeed(stack, ticks);
                     } else if (stack.getItem() instanceof CardEnergy) {
-                        overClockerCount = container.getSlot(0).getItem().getCount();
-                        if (extractAmt > Math.max((int) Math.pow(10, overClockerCount) * 10000, 10000)) {
-                            extractAmt = Math.max((int) Math.pow(10, overClockerCount) * 10000, 10000);
+                        int overClockers = container.getSlot(0).getItem().getCount();
+                        int max = 1000;
+                        switch (overClockers) {
+                            case 1:
+                                max = 4000;
+                                break;
+                            case 2:
+                                max = 16000;
+                                break;
+                            case 3:
+                                max = 32000;
+                                break;
+                            case 4:
+                                max = 100000;
+                                break;
+                        }
+                        if (extractAmt > max) {
+                            extractAmt = max;
                         }
                         CardEnergy.setEnergyExtractAmt(stack, extractAmt);
+                        short ticks = msg.ticks;
+                        if (ticks < 1)
+                            ticks = (short) 1;
+                        CardEnergy.setExtractSpeed(stack, ticks);
+                        CardEnergy.setExtractLimitPercent(stack, msg.extractLimit);
+                        CardEnergy.setInsertLimitPercent(stack, msg.insertLimit);
                     }
                     BaseCard.setPriority(stack, msg.priority);
                     BaseCard.setSneaky(stack, msg.sneaky);
-                    short ticks = msg.ticks;
-                    if (ticks < Math.max(20 - overClockerCount * 5, 1))
-                        ticks = (short) Math.max(20 - overClockerCount * 5, 1);
-                    BaseCard.setExtractSpeed(stack, ticks);
                     BaseCard.setExact(stack, msg.exact);
                     BaseCard.setRoundRobin(stack, msg.roundRobin);
                     BaseCard.setRegulate(stack, msg.regulate);

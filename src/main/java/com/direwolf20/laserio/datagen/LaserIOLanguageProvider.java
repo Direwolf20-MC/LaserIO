@@ -44,6 +44,7 @@ public class LaserIOLanguageProvider extends LanguageProvider {
         add("screen.laserio.allowlist", "Allow");
         add("screen.laserio.comparenbt", "NBT");
         add("screen.laserio.lasernode", "Laser Node");
+        add("screen.laserio.energylimit", "Energy Limit (%)");
 
         add("screen.laserio.default", "Default");
         add("screen.laserio.up", "Up");

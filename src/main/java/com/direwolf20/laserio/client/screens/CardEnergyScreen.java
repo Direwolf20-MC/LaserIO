@@ -40,6 +40,8 @@ public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContaine
     protected boolean currentExact;
     protected int currentRoundRobin;
     protected boolean currentRegulate;
+    protected int currentExtractLimitPercent;
+    protected int currentInsertLimitPercent;
     protected final ItemStack card;
     protected Map<String, Button> buttons = new HashMap<>();
 
@@ -117,11 +119,21 @@ public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContaine
                 this.renderTooltip(matrixStack, new TranslatableComponent("screen.laserio.tickSpeed"), mouseX, mouseY);
             }
         }
+        Button limitButton = buttons.get("limit");
+        if (MiscTools.inBounds(limitButton.x, limitButton.y, limitButton.getWidth(), limitButton.getHeight(), mouseX, mouseY)) {
+            this.renderTooltip(matrixStack, new TranslatableComponent("screen.laserio.energylimit"), mouseX, mouseY);
+        }
     }
 
     public void addAmtButton() {
         buttons.put("amount", new NumberButton(getGuiLeft() + 125, getGuiTop() + 25, 46, 12, currentMode == 0 ? currentPriority : currentEnergyExtractAmt, (button) -> {
-            changeAmount(-1000);
+            changeAmount(-1);
+        }));
+    }
+
+    public void addLimitButton() {
+        buttons.put("limit", new NumberButton(getGuiLeft() + 147, getGuiTop() + 53, 24, 12, showExtractLimit() ? currentExtractLimitPercent : currentInsertLimitPercent, (button) -> {
+            changeLimitAmount(-1);
         }));
     }
 
@@ -134,6 +146,7 @@ public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContaine
             currentMode = BaseCard.nextTransferMode(card);
             ((ToggleButton) button).setTexturePosition(currentMode);
             ((NumberButton) buttons.get("amount")).setValue(currentMode == 0 ? currentPriority : currentEnergyExtractAmt);
+            ((NumberButton) buttons.get("limit")).setValue(showExtractLimit() ? currentExtractLimitPercent : currentInsertLimitPercent);
             modeChange();
         }));
     }
@@ -146,12 +159,15 @@ public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContaine
         currentEnergyExtractAmt = CardEnergy.getEnergyExtractAmt(card);
         currentPriority = BaseCard.getPriority(card);
         currentSneaky = BaseCard.getSneaky(card);
-        currentTicks = BaseCard.getExtractSpeed(card);
+        currentTicks = CardEnergy.getExtractSpeed(card);
         currentExact = BaseCard.getExact(card);
         currentRoundRobin = BaseCard.getRoundRobin(card);
         currentRegulate = BaseCard.getRegulate(card);
+        currentExtractLimitPercent = CardEnergy.getExtractLimitPercent(card);
+        currentInsertLimitPercent = CardEnergy.getInsertLimitPercent(card);
 
         addAmtButton();
+        addLimitButton();
 
         buttons.put("speed", new NumberButton(getGuiLeft() + 147, getGuiTop() + 39, 24, 12, currentTicks, (button) -> {
             changeTick(-1);
@@ -240,23 +256,51 @@ public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContaine
     public void changeAmount(int change) {
         if (Screen.hasShiftDown()) change *= 10;
         if (Screen.hasControlDown()) change *= 100;
+        int overClockers = container.getSlot(0).getItem().getCount();
+        int max = 1000;
+        switch (overClockers) {
+            case 1:
+                max = 4000;
+                break;
+            case 2:
+                max = 16000;
+                break;
+            case 3:
+                max = 32000;
+                break;
+            case 4:
+                max = 100000;
+                break;
+        }
         if (change < 0) {
             if (currentMode == 0) {
                 currentPriority = (short) (Math.max(currentPriority + change, -4096));
             } else {
-                change *= 10;
-                int multiplier = (int) Math.pow(10, container.getSlot(0).getItem().getCount());
-                change *= multiplier;
-                currentEnergyExtractAmt = (Math.max(currentEnergyExtractAmt + change, 1000));
+                currentEnergyExtractAmt = (Math.max(currentEnergyExtractAmt + change, 100));
             }
         } else {
             if (currentMode == 0) {
                 currentPriority = (short) (Math.min(currentPriority + change, 4096));
             } else {
-                change *= 10;
-                int multiplier = (int) Math.pow(10, container.getSlot(0).getItem().getCount());
-                change *= multiplier;
-                currentEnergyExtractAmt = (Math.min(currentEnergyExtractAmt + change, Math.max(multiplier * 10000, 10000)));
+                currentEnergyExtractAmt = (Math.min(currentEnergyExtractAmt + change, max));
+            }
+        }
+    }
+
+    public void changeLimitAmount(int change) {
+        if (Screen.hasShiftDown()) change *= 10;
+        if (Screen.hasControlDown()) change *= 100;
+        if (change < 0) {
+            if (showExtractLimit()) {
+                currentExtractLimitPercent = Math.max(currentExtractLimitPercent + change, 0);
+            } else {
+                currentInsertLimitPercent = Math.max(currentInsertLimitPercent + change, 0);
+            }
+        } else {
+            if (showExtractLimit()) {
+                currentExtractLimitPercent = Math.min(currentExtractLimitPercent + change, 100);
+            } else {
+                currentInsertLimitPercent = Math.min(currentInsertLimitPercent + change, 100);
             }
         }
     }
@@ -265,7 +309,7 @@ public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContaine
         if (Screen.hasShiftDown()) change *= 10;
         if (Screen.hasControlDown()) change *= 64;
         if (change < 0) {
-            currentTicks = (Math.max(currentTicks + change, Math.max(20 - container.getSlot(0).getItem().getCount() * 5, 1)));
+            currentTicks = (Math.max(currentTicks + change, 1));
         } else {
             currentTicks = (Math.min(currentTicks + change, 1200));
         }
@@ -284,6 +328,10 @@ public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContaine
     }
 
     private boolean showRoundRobin() {
+        return card.getItem() instanceof BaseCard && BaseCard.getNamedTransferMode(card) == BaseCard.TransferMode.EXTRACT;
+    }
+
+    private boolean showExtractLimit() {
         return card.getItem() instanceof BaseCard && BaseCard.getNamedTransferMode(card) == BaseCard.TransferMode.EXTRACT;
     }
 
@@ -348,15 +396,24 @@ public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContaine
 
     public void setExtract(NumberButton amountButton, int btn) {
         if (btn == 0)
-            changeAmount(1);
+            changeAmount(100);
         else if (btn == 1)
-            changeAmount(-1);
+            changeAmount(-100);
         amountButton.setValue(currentMode == 0 ? currentPriority : currentEnergyExtractAmt);
         amountButton.playDownSound(Minecraft.getInstance().getSoundManager());
     }
 
+    public void setLimitExtract(NumberButton amountButton, int btn) {
+        if (btn == 0)
+            changeLimitAmount(1);
+        else if (btn == 1)
+            changeLimitAmount(-1);
+        amountButton.setValue(showExtractLimit() ? currentExtractLimitPercent : currentInsertLimitPercent);
+        amountButton.playDownSound(Minecraft.getInstance().getSoundManager());
+    }
+
     public void saveSettings() {
-        PacketHandler.sendToServer(new PacketUpdateCard(currentMode, currentChannel, currentEnergyExtractAmt, currentPriority, currentSneaky, (short) currentTicks, currentExact, currentRegulate, (byte) currentRoundRobin));
+        PacketHandler.sendToServer(new PacketUpdateCard(currentMode, currentChannel, currentEnergyExtractAmt, currentPriority, currentSneaky, (short) currentTicks, currentExact, currentRegulate, (byte) currentRoundRobin, currentExtractLimitPercent, currentInsertLimitPercent));
     }
 
     @Override
@@ -374,6 +431,11 @@ public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContaine
         NumberButton amountButton = ((NumberButton) buttons.get("amount"));
         if (MiscTools.inBounds(amountButton.x, amountButton.y, amountButton.getWidth(), amountButton.getHeight(), x, y)) {
             setExtract(amountButton, btn);
+            return true;
+        }
+        NumberButton limitButton = ((NumberButton) buttons.get("limit"));
+        if (MiscTools.inBounds(limitButton.x, limitButton.y, limitButton.getWidth(), limitButton.getHeight(), x, y)) {
+            setLimitExtract(limitButton, btn);
             return true;
         }
 

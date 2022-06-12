@@ -56,7 +56,7 @@ public class CardEnergy extends BaseCard {
     }
 
     public static int setEnergyExtractAmt(ItemStack card, int energyextractamt) {
-        if (energyextractamt == 10000)
+        if (energyextractamt == 1000)
             card.removeTagKey("energyextractamt");
         else
             card.getOrCreateTag().putInt("energyextractamt", energyextractamt);
@@ -65,7 +65,49 @@ public class CardEnergy extends BaseCard {
 
     public static int getEnergyExtractAmt(ItemStack card) {
         CompoundTag compound = card.getTag();
-        if (compound == null || !compound.contains("energyextractamt")) return 10000;
+        if (compound == null || !compound.contains("energyextractamt")) return 1000;
         return compound.getInt("energyextractamt");
+    }
+
+    public static int setExtractSpeed(ItemStack card, int itemextractspeed) {
+        if (itemextractspeed == 1)
+            card.removeTagKey("itemextractspeed");
+        else
+            card.getOrCreateTag().putInt("itemextractspeed", itemextractspeed);
+        return itemextractspeed;
+    }
+
+    public static int getExtractSpeed(ItemStack card) {
+        CompoundTag compound = card.getTag();
+        if (compound == null || !compound.contains("itemextractspeed")) return 1;
+        return compound.getInt("itemextractspeed");
+    }
+
+    public static int setInsertLimitPercent(ItemStack card, int limitpercent) {
+        if (limitpercent == 100)
+            card.removeTagKey("limitinsertpercent");
+        else
+            card.getOrCreateTag().putInt("limitinsertpercent", limitpercent);
+        return limitpercent;
+    }
+
+    public static int getInsertLimitPercent(ItemStack card) {
+        CompoundTag compound = card.getTag();
+        if (compound == null || !compound.contains("limitinsertpercent")) return 100;
+        return compound.getInt("limitinsertpercent");
+    }
+
+    public static int setExtractLimitPercent(ItemStack card, int limitextractpercent) {
+        if (limitextractpercent == 0)
+            card.removeTagKey("limitextractpercent");
+        else
+            card.getOrCreateTag().putInt("limitextractpercent", limitextractpercent);
+        return limitextractpercent;
+    }
+
+    public static int getExtractLimitPercent(ItemStack card) {
+        CompoundTag compound = card.getTag();
+        if (compound == null || !compound.contains("limitextractpercent")) return 0;
+        return compound.getInt("limitextractpercent");
     }
 }

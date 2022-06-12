@@ -120,6 +120,6 @@ public class CardFluidScreen extends CardItemScreen {
 
     @Override
     public void saveSettings() {
-        PacketHandler.sendToServer(new PacketUpdateCard(currentMode, currentChannel, currentFluidExtractAmt, currentPriority, currentSneaky, (short) currentTicks, currentExact, currentRegulate, (byte) currentRoundRobin));
+        PacketHandler.sendToServer(new PacketUpdateCard(currentMode, currentChannel, currentFluidExtractAmt, currentPriority, currentSneaky, (short) currentTicks, currentExact, currentRegulate, (byte) currentRoundRobin, 0, 0));
     }
 }
