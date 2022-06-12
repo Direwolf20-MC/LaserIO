@@ -2,6 +2,8 @@ package com.direwolf20.laserio.common.network.packets;
 
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import com.direwolf20.laserio.common.blockentities.basebe.BaseLaserBE;
+import com.direwolf20.laserio.common.containers.CardEnergyContainer;
+import com.direwolf20.laserio.common.containers.CardItemContainer;
 import com.direwolf20.laserio.common.containers.LaserNodeContainer;
 import com.direwolf20.laserio.common.containers.customhandler.LaserNodeItemHandler;
 import com.direwolf20.laserio.common.network.PacketHandler;
@@ -59,7 +61,17 @@ public class PacketOpenNode {
                 if (container == null)
                     return;
 
-                BlockEntity be = sender.level.getBlockEntity(msg.sourcePos);
+                BlockPos pos;
+                if (container instanceof LaserNodeContainer)
+                    pos = msg.sourcePos;
+                else if (container instanceof CardItemContainer cardItemContainer)
+                    pos = cardItemContainer.sourceContainer;
+                else if (container instanceof CardEnergyContainer cardEnergyContainer)
+                    pos = cardEnergyContainer.sourceContainer;
+                else return;
+
+                final BlockPos sourcePos = pos;
+                BlockEntity be = sender.level.getBlockEntity(sourcePos);
                 if (be == null || !(be instanceof BaseLaserBE))
                     return;
 
@@ -82,7 +94,7 @@ public class PacketOpenNode {
                         }
                     };
                     NetworkHooks.openGui(sender, containerProvider, (buf -> {
-                        buf.writeBlockPos(msg.sourcePos);
+                        buf.writeBlockPos(sourcePos);
                         buf.writeByte(msg.side);
                         buf.writeItemStack(cardHolder, false);
                     }));

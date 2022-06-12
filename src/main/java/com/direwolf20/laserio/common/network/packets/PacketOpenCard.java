@@ -3,6 +3,7 @@ package com.direwolf20.laserio.common.network.packets;
 import com.direwolf20.laserio.common.containers.CardEnergyContainer;
 import com.direwolf20.laserio.common.containers.CardFluidContainer;
 import com.direwolf20.laserio.common.containers.CardItemContainer;
+import com.direwolf20.laserio.common.containers.LaserNodeContainer;
 import com.direwolf20.laserio.common.containers.customhandler.CardItemHandler;
 import com.direwolf20.laserio.common.items.cards.CardEnergy;
 import com.direwolf20.laserio.common.items.cards.CardFluid;
@@ -60,12 +61,13 @@ public class PacketOpenCard {
                 Slot slot = container.slots.get(msg.slotNumber);
                 ItemStack itemStack = slot.getItem();
                 CardItemHandler handler = getInventory(itemStack);
-
+                final byte side = ((LaserNodeContainer) container).side;
                 if (itemStack.getItem() instanceof CardItem) {
                     if (!msg.hasShiftDown) {
                         NetworkHooks.openGui(sender, new SimpleMenuProvider(
-                                (windowId, playerInventory, playerEntity) -> new CardItemContainer(windowId, playerInventory, sender, msg.sourcePos, itemStack), new TranslatableComponent("")), (buf -> {
+                                (windowId, playerInventory, playerEntity) -> new CardItemContainer(windowId, playerInventory, sender, msg.sourcePos, itemStack, side), new TranslatableComponent("")), (buf -> {
                             buf.writeItem(itemStack);
+                            buf.writeByte(side);
                         }));
                     } else {
                         ItemStack filterItem = handler.getStackInSlot(0);
@@ -75,8 +77,9 @@ public class PacketOpenCard {
                 } else if (itemStack.getItem() instanceof CardFluid) {
                     if (!msg.hasShiftDown) {
                         NetworkHooks.openGui(sender, new SimpleMenuProvider(
-                                (windowId, playerInventory, playerEntity) -> new CardFluidContainer(windowId, playerInventory, sender, msg.sourcePos, itemStack), new TranslatableComponent("")), (buf -> {
+                                (windowId, playerInventory, playerEntity) -> new CardFluidContainer(windowId, playerInventory, sender, msg.sourcePos, itemStack, side), new TranslatableComponent("")), (buf -> {
                             buf.writeItem(itemStack);
+                            buf.writeByte(side);
                         }));
                     } else {
                         ItemStack filterItem = handler.getStackInSlot(0);
@@ -85,8 +88,9 @@ public class PacketOpenCard {
                     }
                 } else if (itemStack.getItem() instanceof CardEnergy) {
                     NetworkHooks.openGui(sender, new SimpleMenuProvider(
-                            (windowId, playerInventory, playerEntity) -> new CardEnergyContainer(windowId, playerInventory, sender, msg.sourcePos, itemStack), new TranslatableComponent("")), (buf -> {
+                            (windowId, playerInventory, playerEntity) -> new CardEnergyContainer(windowId, playerInventory, sender, msg.sourcePos, itemStack, side), new TranslatableComponent("")), (buf -> {
                         buf.writeItem(itemStack);
+                        buf.writeByte(side);
                     }));
 
                 }

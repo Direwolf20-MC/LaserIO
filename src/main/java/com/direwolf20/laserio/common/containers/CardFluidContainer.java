@@ -14,6 +14,7 @@ public class CardFluidContainer extends CardItemContainer {
 
     public CardFluidContainer(int windowId, Inventory playerInventory, Player player, FriendlyByteBuf extraData) {
         this(windowId, playerInventory, player, extraData.readItem());
+        this.direction = extraData.readByte();
     }
 
     public CardFluidContainer(int windowId, Inventory playerInventory, Player player, ItemStack cardItem) {
@@ -32,8 +33,9 @@ public class CardFluidContainer extends CardItemContainer {
         layoutPlayerInventorySlots(8, 84);
     }
 
-    public CardFluidContainer(int windowId, Inventory playerInventory, Player player, BlockPos sourcePos, ItemStack cardItem) {
+    public CardFluidContainer(int windowId, Inventory playerInventory, Player player, BlockPos sourcePos, ItemStack cardItem, byte direction) {
         this(windowId, playerInventory, player, cardItem);
         this.sourceContainer = sourcePos;
+        this.direction = direction;
     }
 }

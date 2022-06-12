@@ -29,6 +29,7 @@ public class CardEnergyContainer extends AbstractContainerMenu {
     public Player playerEntity;
     protected IItemHandler playerInventory;
     public BlockPos sourceContainer = BlockPos.ZERO;
+    public byte direction = -1;
 
     protected CardEnergyContainer(@Nullable MenuType<?> pMenuType, int pContainerId) {
         super(pMenuType, pContainerId);
@@ -36,6 +37,7 @@ public class CardEnergyContainer extends AbstractContainerMenu {
 
     public CardEnergyContainer(int windowId, Inventory playerInventory, Player player, FriendlyByteBuf extraData) {
         this(windowId, playerInventory, player, extraData.readItem());
+        this.direction = extraData.readByte();
     }
 
     public CardEnergyContainer(int windowId, Inventory playerInventory, Player player, ItemStack cardItem) {
@@ -54,9 +56,10 @@ public class CardEnergyContainer extends AbstractContainerMenu {
         layoutPlayerInventorySlots(8, 84);
     }
 
-    public CardEnergyContainer(int windowId, Inventory playerInventory, Player player, BlockPos sourcePos, ItemStack cardItem) {
+    public CardEnergyContainer(int windowId, Inventory playerInventory, Player player, BlockPos sourcePos, ItemStack cardItem, byte direction) {
         this(windowId, playerInventory, player, cardItem);
         this.sourceContainer = sourcePos;
+        this.direction = direction;
     }
 
     @Override

@@ -27,6 +27,7 @@ public class CardItem extends BaseCard {
         NetworkHooks.openGui((ServerPlayer) player, new SimpleMenuProvider(
                 (windowId, playerInventory, playerEntity) -> new CardItemContainer(windowId, playerInventory, player, itemstack), new TranslatableComponent("")), (buf -> {
             buf.writeItem(itemstack);
+            buf.writeByte(-1);
         }));
 
         //System.out.println(itemstack.getItem().getRegistryName()+""+itemstack.getTag());

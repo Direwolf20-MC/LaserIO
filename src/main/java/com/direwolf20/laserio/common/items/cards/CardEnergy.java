@@ -28,6 +28,7 @@ public class CardEnergy extends BaseCard {
         NetworkHooks.openGui((ServerPlayer) player, new SimpleMenuProvider(
                 (windowId, playerInventory, playerEntity) -> new CardEnergyContainer(windowId, playerInventory, player, itemstack), new TranslatableComponent("")), (buf -> {
             buf.writeItem(itemstack);
+            buf.writeByte(-1);
         }));
 
         //System.out.println(itemstack.getItem().getRegistryName()+""+itemstack.getTag());
