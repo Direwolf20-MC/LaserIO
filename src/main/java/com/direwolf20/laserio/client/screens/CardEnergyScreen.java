@@ -5,6 +5,8 @@ import com.direwolf20.laserio.client.screens.widgets.NumberButton;
 import com.direwolf20.laserio.client.screens.widgets.ToggleButton;
 import com.direwolf20.laserio.common.LaserIO;
 import com.direwolf20.laserio.common.containers.CardEnergyContainer;
+import com.direwolf20.laserio.common.containers.customslot.CardItemSlot;
+import com.direwolf20.laserio.common.containers.customslot.CardOverclockSlot;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.common.items.cards.CardEnergy;
 import com.direwolf20.laserio.common.network.PacketHandler;
@@ -25,6 +27,7 @@ import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.HashMap;
@@ -229,6 +232,17 @@ public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContaine
 
         for (Map.Entry<String, Button> button : buttons.entrySet()) {
             addRenderableWidget(button.getValue());
+        }
+
+        if (card.getCount() > 1) {
+            for (int i = 0; i < container.SLOTS; i++) {
+                if (i >= container.slots.size()) continue;
+                Slot slot = container.getSlot(i);
+                if (slot instanceof CardItemSlot cardItemSlot)
+                    cardItemSlot.setEnabled(false);
+                if (slot instanceof CardOverclockSlot cardOverclockSlot)
+                    cardOverclockSlot.setEnabled(false);
+            }
         }
         modeChange();
     }

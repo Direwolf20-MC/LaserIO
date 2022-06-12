@@ -5,6 +5,7 @@ import com.direwolf20.laserio.common.containers.customhandler.CardItemHandler;
 import com.direwolf20.laserio.common.containers.customhandler.FilterBasicHandler;
 import com.direwolf20.laserio.common.containers.customhandler.FilterCountHandler;
 import com.direwolf20.laserio.common.containers.customslot.CardItemSlot;
+import com.direwolf20.laserio.common.containers.customslot.CardOverclockSlot;
 import com.direwolf20.laserio.common.containers.customslot.FilterBasicSlot;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.common.items.filters.BaseFilter;
@@ -111,6 +112,7 @@ public class CardItemContainer extends AbstractContainerMenu {
 
     @Override
     public ItemStack quickMoveStack(Player playerIn, int index) {
+        if (cardItem.getCount() > 1) return ItemStack.EMPTY; // Don't let quickMove happen in multistack cards
         ItemStack itemstack = ItemStack.EMPTY;
         Slot slot = this.slots.get(index);
         if (slot != null && slot.hasItem()) {
@@ -188,6 +190,8 @@ public class CardItemContainer extends AbstractContainerMenu {
         for (int i = 0; i < amount; i++) {
             if (handler instanceof CardItemHandler && index == 0)
                 addSlot(new CardItemSlot(handler, this, index, x, y));
+            else if (handler instanceof CardItemHandler && index == 1)
+                addSlot(new CardOverclockSlot(handler, index, x, y));
             else if (handler instanceof FilterBasicHandler)
                 addSlot(new FilterBasicSlot(handler, index, x, y, slots.get(0).getItem().getItem() instanceof FilterCount));
             else

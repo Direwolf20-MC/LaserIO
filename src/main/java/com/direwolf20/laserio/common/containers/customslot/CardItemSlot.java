@@ -10,6 +10,7 @@ import javax.annotation.Nonnull;
 
 public class CardItemSlot extends SlotItemHandler {
     CardItemContainer parentContainer;
+    protected boolean enabled = true;
 
     public CardItemSlot(IItemHandler itemHandler, CardItemContainer cardItemContainer, int index, int xPosition, int yPosition) {
         super(itemHandler, index, xPosition, yPosition);
@@ -25,5 +26,15 @@ public class CardItemSlot extends SlotItemHandler {
     public void setChanged() {
         super.setChanged();
         parentContainer.toggleFilterSlots();
+    }
+
+    @Override
+    public boolean isActive() {
+        return enabled;
+    }
+
+    public CardItemSlot setEnabled(boolean enabled) {
+        this.enabled = enabled;
+        return this;
     }
 }

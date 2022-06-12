@@ -8,6 +8,8 @@ import net.minecraftforge.items.SlotItemHandler;
 import javax.annotation.Nonnull;
 
 public class CardOverclockSlot extends SlotItemHandler {
+    protected boolean enabled = true;
+
     public CardOverclockSlot(IItemHandler itemHandler, int index, int xPosition, int yPosition) {
         super(itemHandler, index, xPosition, yPosition);
     }
@@ -15,5 +17,15 @@ public class CardOverclockSlot extends SlotItemHandler {
     @Override
     public boolean mayPlace(@Nonnull ItemStack stack) {
         return (stack.getItem() instanceof OverclockerCard);
+    }
+
+    @Override
+    public boolean isActive() {
+        return enabled;
+    }
+
+    public CardOverclockSlot setEnabled(boolean enabled) {
+        this.enabled = enabled;
+        return this;
     }
 }
