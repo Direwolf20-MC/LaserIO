@@ -1,21 +1,14 @@
 package com.direwolf20.laserio.client.screens;
 
-import com.direwolf20.laserio.client.renderer.LaserIOItemRenderer;
 import com.direwolf20.laserio.client.screens.widgets.ChannelButton;
 import com.direwolf20.laserio.client.screens.widgets.NumberButton;
 import com.direwolf20.laserio.client.screens.widgets.ToggleButton;
 import com.direwolf20.laserio.common.LaserIO;
-import com.direwolf20.laserio.common.containers.CardItemContainer;
-import com.direwolf20.laserio.common.containers.customslot.CardItemSlot;
-import com.direwolf20.laserio.common.containers.customslot.FilterBasicSlot;
+import com.direwolf20.laserio.common.containers.CardEnergyContainer;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
-import com.direwolf20.laserio.common.items.cards.CardItem;
-import com.direwolf20.laserio.common.items.filters.*;
+import com.direwolf20.laserio.common.items.cards.CardEnergy;
 import com.direwolf20.laserio.common.network.PacketHandler;
-import com.direwolf20.laserio.common.network.packets.PacketGhostSlot;
-import com.direwolf20.laserio.common.network.packets.PacketOpenFilter;
 import com.direwolf20.laserio.common.network.packets.PacketUpdateCard;
-import com.direwolf20.laserio.common.network.packets.PacketUpdateFilter;
 import com.direwolf20.laserio.util.MiscTools;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -24,40 +17,32 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemHandlerHelper;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
-    private final ResourceLocation GUI = new ResourceLocation(LaserIO.MODID, "textures/gui/itemcard.png");
+public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContainer> {
+    private final ResourceLocation GUI = new ResourceLocation(LaserIO.MODID, "textures/gui/energycard.png");
 
-    protected final CardItemContainer container;
+    protected final CardEnergyContainer container;
     protected byte currentMode;
     protected byte currentChannel;
-    protected byte currentItemExtractAmt;
+    protected int currentEnergyExtractAmt;
     protected short currentPriority;
     protected byte currentSneaky;
     protected int currentTicks;
     protected boolean currentExact;
     protected int currentRoundRobin;
     protected boolean currentRegulate;
-    protected int isAllowList = -1;
-    protected int isCompareNBT = -1;
-    protected boolean showFilter;
-    protected boolean showAllow;
-    protected boolean showNBT;
+    protected int currentExtractLimitPercent;
+    protected int currentInsertLimitPercent;
     protected final ItemStack card;
-    public ItemStack filter;
     protected Map<String, Button> buttons = new HashMap<>();
 
     protected final String[] sneakyNames = {
@@ -70,19 +55,15 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
             "screen.laserio.east",
     };
 
-    public CardItemScreen(CardItemContainer container, Inventory inv, Component name) {
+    public CardEnergyScreen(CardEnergyContainer container, Inventory inv, Component name) {
         super(container, inv, name);
         this.container = container;
         this.card = container.cardItem;
-        filter = container.slots.get(0).getItem();
     }
 
     @Override
     public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         this.renderBackground(matrixStack);
-        toggleFilterSlots();
-        if (showFilter)
-            updateItemCounts();
         super.render(matrixStack, mouseX, mouseY, partialTicks);
         this.renderTooltip(matrixStack, mouseX, mouseY);
         Button modeButton = buttons.get("mode");
@@ -138,37 +119,21 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
                 this.renderTooltip(matrixStack, new TranslatableComponent("screen.laserio.tickSpeed"), mouseX, mouseY);
             }
         }
-        if (showAllow) {
-            Button allowList = buttons.get("allowList");
-            if (MiscTools.inBounds(allowList.x, allowList.y, allowList.getWidth(), allowList.getHeight(), mouseX, mouseY)) {
-                if (isAllowList == 1)
-                    this.renderTooltip(matrixStack, new TranslatableComponent("screen.laserio.allowlist"), mouseX, mouseY);
-                else
-                    this.renderTooltip(matrixStack, new TranslatableComponent("screen.laserio.denylist"), mouseX, mouseY);
-            }
-        }
-        if (showNBT) {
-            Button nbtButton = buttons.get("nbt");
-            if (MiscTools.inBounds(nbtButton.x, nbtButton.y, nbtButton.getWidth(), nbtButton.getHeight(), mouseX, mouseY)) {
-                if (isCompareNBT == 1)
-                    this.renderTooltip(matrixStack, new TranslatableComponent("screen.laserio.nbttrue"), mouseX, mouseY);
-                else
-                    this.renderTooltip(matrixStack, new TranslatableComponent("screen.laserio.nbtfalse"), mouseX, mouseY);
-            }
-        }
-    }
-
-    public void updateItemCounts() {
-        IItemHandler handler = container.filterHandler;
-        for (int i = 0; i < handler.getSlots(); i++) {
-            ItemStack stack = handler.getStackInSlot(i);
-            stack.setCount(container.getStackSize(i + container.SLOTS));
+        Button limitButton = buttons.get("limit");
+        if (MiscTools.inBounds(limitButton.x, limitButton.y, limitButton.getWidth(), limitButton.getHeight(), mouseX, mouseY)) {
+            this.renderTooltip(matrixStack, new TranslatableComponent("screen.laserio.energylimit"), mouseX, mouseY);
         }
     }
 
     public void addAmtButton() {
-        buttons.put("amount", new NumberButton(getGuiLeft() + 147, getGuiTop() + 25, 24, 12, currentMode == 0 ? currentPriority : currentItemExtractAmt, (button) -> {
+        buttons.put("amount", new NumberButton(getGuiLeft() + 125, getGuiTop() + 25, 46, 12, currentMode == 0 ? currentPriority : currentEnergyExtractAmt, (button) -> {
             changeAmount(-1);
+        }));
+    }
+
+    public void addLimitButton() {
+        buttons.put("limit", new NumberButton(getGuiLeft() + 147, getGuiTop() + 53, 24, 12, showExtractLimit() ? currentExtractLimitPercent : currentInsertLimitPercent, (button) -> {
+            changeLimitAmount(-1);
         }));
     }
 
@@ -180,7 +145,8 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
         buttons.put("mode", new ToggleButton(getGuiLeft() + 5, getGuiTop() + 5, 16, 16, modeTextures, currentMode, (button) -> {
             currentMode = BaseCard.nextTransferMode(card);
             ((ToggleButton) button).setTexturePosition(currentMode);
-            ((NumberButton) buttons.get("amount")).setValue(currentMode == 0 ? currentPriority : currentItemExtractAmt);
+            ((NumberButton) buttons.get("amount")).setValue(currentMode == 0 ? currentPriority : currentEnergyExtractAmt);
+            ((NumberButton) buttons.get("limit")).setValue(showExtractLimit() ? currentExtractLimitPercent : currentInsertLimitPercent);
             modeChange();
         }));
     }
@@ -188,57 +154,20 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
     @Override
     public void init() {
         super.init();
-        Minecraft minecraft = Minecraft.getInstance();
-        BlockEntityWithoutLevelRenderer blockentitywithoutlevelrenderer = new BlockEntityWithoutLevelRenderer(minecraft.getBlockEntityRenderDispatcher(), minecraft.getEntityModels());
-        this.itemRenderer = new LaserIOItemRenderer(minecraft.getTextureManager(), minecraft.getModelManager(), minecraft.getItemColors(), blockentitywithoutlevelrenderer);
         currentMode = BaseCard.getTransferMode(card);
         currentChannel = BaseCard.getChannel(card);
-        currentItemExtractAmt = CardItem.getItemExtractAmt(card);
+        currentEnergyExtractAmt = CardEnergy.getEnergyExtractAmt(card);
         currentPriority = BaseCard.getPriority(card);
         currentSneaky = BaseCard.getSneaky(card);
-        currentTicks = BaseCard.getExtractSpeed(card);
+        currentTicks = CardEnergy.getExtractSpeed(card);
         currentExact = BaseCard.getExact(card);
         currentRoundRobin = BaseCard.getRoundRobin(card);
         currentRegulate = BaseCard.getRegulate(card);
-
-        showFilter = !(filter == null) && !filter.isEmpty() && !(filter.getItem() instanceof FilterTag);
-        if (showFilter) {
-            isAllowList = BaseFilter.getAllowList(filter) ? 1 : 0;
-            isCompareNBT = BaseFilter.getCompareNBT(filter) ? 1 : 0;
-            if (filter.getItem() instanceof FilterMod) {
-                showAllow = true;
-                showNBT = false;
-            } else if (filter.getItem() instanceof FilterBasic) {
-                showAllow = true;
-                showNBT = true;
-            } else if (filter.getItem() instanceof FilterCount) {
-                showAllow = false;
-                showNBT = true;
-            }
-        } else {
-            isAllowList = -1;
-            isCompareNBT = -1;
-        }
-
-        ResourceLocation[] allowListTextures = new ResourceLocation[2];
-        allowListTextures[0] = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/allowlistfalse.png");
-        allowListTextures[1] = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/allowlisttrue.png");
-
-        buttons.put("allowList", new ToggleButton(getGuiLeft() + 135, getGuiTop() + 61, 16, 16, allowListTextures, isAllowList == 1 ? 1 : 0, (button) -> {
-            isAllowList = isAllowList == 1 ? 0 : 1;
-            ((ToggleButton) button).setTexturePosition(isAllowList == 1 ? 1 : 0);
-        }));
-
-        ResourceLocation[] nbtTextures = new ResourceLocation[2];
-        nbtTextures[0] = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/matchnbtfalse.png");
-        nbtTextures[1] = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/matchnbttrue.png");
-
-        buttons.put("nbt", new ToggleButton(getGuiLeft() + 153, getGuiTop() + 61, 16, 16, nbtTextures, isCompareNBT == 1 ? 1 : 0, (button) -> {
-            isCompareNBT = isCompareNBT == 1 ? 0 : 1;
-            ((ToggleButton) button).setTexturePosition(isCompareNBT == 1 ? 1 : 0);
-        }));
+        currentExtractLimitPercent = CardEnergy.getExtractLimitPercent(card);
+        currentInsertLimitPercent = CardEnergy.getInsertLimitPercent(card);
 
         addAmtButton();
+        addLimitButton();
 
         buttons.put("speed", new NumberButton(getGuiLeft() + 147, getGuiTop() + 39, 24, 12, currentTicks, (button) -> {
             changeTick(-1);
@@ -292,13 +221,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
         for (Map.Entry<String, Button> button : buttons.entrySet()) {
             addRenderableWidget(button.getValue());
         }
-        if (!showNBT) removeWidget(buttons.get("nbt"));
-        if (!showAllow) removeWidget(buttons.get("allowList"));
         modeChange();
-        /*if (currentMode == 0) removeWidget(buttons.get("speed"));
-        if (currentMode == 0) removeWidget();
-        if (currentMode == 0 || currentMode == 1) removeWidget(buttons.get("roundrobin"));
-        if (currentMode == 0 || currentMode == 2) removeWidget(buttons.get("regulate"));*/
     }
 
     public void modeChange() {
@@ -332,18 +255,52 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
 
     public void changeAmount(int change) {
         if (Screen.hasShiftDown()) change *= 10;
-        if (Screen.hasControlDown()) change *= 64;
+        if (Screen.hasControlDown()) change *= 100;
+        int overClockers = container.getSlot(0).getItem().getCount();
+        int max = 1000;
+        switch (overClockers) {
+            case 1:
+                max = 4000;
+                break;
+            case 2:
+                max = 16000;
+                break;
+            case 3:
+                max = 32000;
+                break;
+            case 4:
+                max = 100000;
+                break;
+        }
         if (change < 0) {
             if (currentMode == 0) {
                 currentPriority = (short) (Math.max(currentPriority + change, -4096));
             } else {
-                currentItemExtractAmt = (byte) (Math.max(currentItemExtractAmt + change, 1));
+                currentEnergyExtractAmt = (Math.max(currentEnergyExtractAmt + change, 100));
             }
         } else {
             if (currentMode == 0) {
                 currentPriority = (short) (Math.min(currentPriority + change, 4096));
             } else {
-                currentItemExtractAmt = (byte) (Math.min(currentItemExtractAmt + change, Math.max(container.getSlot(1).getItem().getCount() * 16, 8)));
+                currentEnergyExtractAmt = (Math.min(currentEnergyExtractAmt + change, max));
+            }
+        }
+    }
+
+    public void changeLimitAmount(int change) {
+        if (Screen.hasShiftDown()) change *= 10;
+        if (Screen.hasControlDown()) change *= 100;
+        if (change < 0) {
+            if (showExtractLimit()) {
+                currentExtractLimitPercent = Math.max(currentExtractLimitPercent + change, 0);
+            } else {
+                currentInsertLimitPercent = Math.max(currentInsertLimitPercent + change, 0);
+            }
+        } else {
+            if (showExtractLimit()) {
+                currentExtractLimitPercent = Math.min(currentExtractLimitPercent + change, 100);
+            } else {
+                currentInsertLimitPercent = Math.min(currentInsertLimitPercent + change, 100);
             }
         }
     }
@@ -352,60 +309,9 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
         if (Screen.hasShiftDown()) change *= 10;
         if (Screen.hasControlDown()) change *= 64;
         if (change < 0) {
-            currentTicks = (Math.max(currentTicks + change, Math.max(20 - container.getSlot(1).getItem().getCount() * 5, 1)));
+            currentTicks = (Math.max(currentTicks + change, 1));
         } else {
-            currentTicks = (Math.min(currentTicks + change, 1200));//Math.max(container.getSlot(1).getItem().getCount() * 16, 1)));
-        }
-    }
-
-    public void toggleFilterSlots() {
-        filter = container.slots.get(0).getItem();
-        showFilter = !filter.isEmpty() && !(filter.getItem() instanceof FilterTag);
-        if (showFilter) { //If the filter isn't empty, and the allowList is set to -1, it means we don't have a real value for allow list yet so get it
-            if (filter.getItem() instanceof FilterMod) {
-                showNBT = false;
-                if (currentMode == 2) {
-                    showAllow = true;
-                    //removeWidget(buttons.get("allowList"));
-                } else {
-                    showAllow = true;
-                    if (!renderables.contains(buttons.get("allowList"))) addRenderableWidget(buttons.get("allowList"));
-                }
-            } else if (filter.getItem() instanceof FilterBasic) {
-                showNBT = true;
-                if (currentMode == 2) {
-                    showAllow = true;
-                    //removeWidget(buttons.get("allowList"));
-                } else {
-                    showAllow = true;
-                    if (!renderables.contains(buttons.get("allowList"))) addRenderableWidget(buttons.get("allowList"));
-                }
-            } else if (filter.getItem() instanceof FilterCount) {
-                showAllow = false;
-                showNBT = true;
-                removeWidget(buttons.get("allowList"));
-            }
-            if (isAllowList == -1) {
-                isAllowList = BaseFilter.getAllowList(filter) ? 1 : 0;
-                ((ToggleButton) buttons.get("allowList")).setTexturePosition(isAllowList == 1 ? 1 : 0);
-                isCompareNBT = BaseFilter.getCompareNBT(filter) ? 1 : 0;
-                ((ToggleButton) buttons.get("nbt")).setTexturePosition(isCompareNBT == 1 ? 1 : 0);
-                if (showAllow) addRenderableWidget(buttons.get("allowList"));
-                if (showNBT) addRenderableWidget(buttons.get("nbt"));
-            }
-        } else {
-            isAllowList = -1;
-            isCompareNBT = -1;
-            removeWidget(buttons.get("allowList"));
-            removeWidget(buttons.get("nbt"));
-            showAllow = false;
-            showNBT = false;
-        }
-        for (int i = container.SLOTS; i < container.SLOTS + container.FILTERSLOTS; i++) {
-            if (i >= container.slots.size()) continue;
-            Slot slot = container.getSlot(i);
-            if (!(slot instanceof FilterBasicSlot)) continue;
-            ((FilterBasicSlot) slot).setEnabled(showFilter);
+            currentTicks = (Math.min(currentTicks + change, 1200));
         }
     }
 
@@ -422,6 +328,10 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
     }
 
     private boolean showRoundRobin() {
+        return card.getItem() instanceof BaseCard && BaseCard.getNamedTransferMode(card) == BaseCard.TransferMode.EXTRACT;
+    }
+
+    private boolean showExtractLimit() {
         return card.getItem() instanceof BaseCard && BaseCard.getNamedTransferMode(card) == BaseCard.TransferMode.EXTRACT;
     }
 
@@ -445,14 +355,6 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
         int relX = (this.width - this.imageWidth) / 2;
         int relY = (this.height - this.imageHeight) / 2;
         this.blit(matrixStack, relX, relY, 0, 0, this.imageWidth, this.imageHeight);
-        filter = container.slots.get(0).getItem();
-        if (showFilter) {
-            int slotsWidth = 90;
-            int slotsHeight = 54;
-            relX = relX + 43;
-            relY = relY + 24;
-            blit(matrixStack, relX, relY, 0, 167, slotsWidth, slotsHeight);
-        }
     }
 
     @Override
@@ -462,8 +364,6 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
 
     @Override
     public void onClose() {
-        if (showFilter)
-            PacketHandler.sendToServer(new PacketUpdateFilter(isAllowList == 1, isCompareNBT == 1));
         saveSettings();
         super.onClose();
     }
@@ -496,33 +396,24 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
 
     public void setExtract(NumberButton amountButton, int btn) {
         if (btn == 0)
-            changeAmount(1);
+            changeAmount(100);
         else if (btn == 1)
-            changeAmount(-1);
-        amountButton.setValue(currentMode == 0 ? currentPriority : currentItemExtractAmt);
+            changeAmount(-100);
+        amountButton.setValue(currentMode == 0 ? currentPriority : currentEnergyExtractAmt);
+        amountButton.playDownSound(Minecraft.getInstance().getSoundManager());
+    }
+
+    public void setLimitExtract(NumberButton amountButton, int btn) {
+        if (btn == 0)
+            changeLimitAmount(1);
+        else if (btn == 1)
+            changeLimitAmount(-1);
+        amountButton.setValue(showExtractLimit() ? currentExtractLimitPercent : currentInsertLimitPercent);
         amountButton.playDownSound(Minecraft.getInstance().getSoundManager());
     }
 
     public void saveSettings() {
-        PacketHandler.sendToServer(new PacketUpdateCard(currentMode, currentChannel, currentItemExtractAmt, currentPriority, currentSneaky, (short) currentTicks, currentExact, currentRegulate, (byte) currentRoundRobin, 0, 0));
-    }
-
-    public boolean filterSlot(int btn) {
-        ItemStack slotStack = hoveredSlot.getItem();
-        if (slotStack.isEmpty()) return true;
-        if (btn == 2) { //Todo IMC Inventory Sorter so this works
-            slotStack.setCount(0);
-            PacketHandler.sendToServer(new PacketGhostSlot(hoveredSlot.index, slotStack, slotStack.getCount()));
-            return true;
-        }
-        int amt = (btn == 0) ? 1 : -1;
-        if (Screen.hasShiftDown()) amt *= 10;
-        if (Screen.hasControlDown()) amt *= 64;
-        if (amt + slotStack.getCount() > 4096) amt = 4096 - slotStack.getCount();
-
-
-        PacketHandler.sendToServer(new PacketGhostSlot(hoveredSlot.index, slotStack, slotStack.getCount() + amt));
-        return true;
+        PacketHandler.sendToServer(new PacketUpdateCard(currentMode, currentChannel, currentEnergyExtractAmt, currentPriority, currentSneaky, (short) currentTicks, currentExact, currentRegulate, (byte) currentRoundRobin, currentExtractLimitPercent, currentInsertLimitPercent));
     }
 
     @Override
@@ -542,6 +433,11 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
             setExtract(amountButton, btn);
             return true;
         }
+        NumberButton limitButton = ((NumberButton) buttons.get("limit"));
+        if (MiscTools.inBounds(limitButton.x, limitButton.y, limitButton.getWidth(), limitButton.getHeight(), x, y)) {
+            setLimitExtract(limitButton, btn);
+            return true;
+        }
 
         NumberButton speedButton = ((NumberButton) buttons.get("speed"));
         if (MiscTools.inBounds(speedButton.x, speedButton.y, speedButton.getWidth(), speedButton.getHeight(), x, y)) {
@@ -553,55 +449,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
             speedButton.playDownSound(Minecraft.getInstance().getSoundManager());
             return true;
         }
-        if (hoveredSlot == null)
-            return super.mouseClicked(x, y, btn);
 
-        if (hoveredSlot instanceof FilterBasicSlot) {
-            if (filter.getItem() instanceof FilterBasic) {
-                // By splitting the stack we can get air easily :) perfect removal basically
-                ItemStack stack = this.menu.getCarried();// getMinecraft().player.inventoryMenu.getCarried();
-                stack = stack.copy().split(hoveredSlot.getMaxStackSize()); // Limit to slot limit
-                if (ItemHandlerHelper.canItemStacksStack(stack, container.cardItem)) return true;
-                hoveredSlot.set(stack); // Temporarily update the client for continuity purposes
-                PacketHandler.sendToServer(new PacketGhostSlot(hoveredSlot.index, stack, stack.getCount()));
-            } else if (filter.getItem() instanceof FilterCount) {
-                ItemStack stack = this.menu.getCarried();// getMinecraft().player.inventoryMenu.getCarried();
-                if (!stack.isEmpty()) {
-                    stack = stack.copy();
-                    if (ItemHandlerHelper.canItemStacksStack(stack, container.cardItem)) return true;
-                    hoveredSlot.set(stack); // Temporarily update the client for continuity purposes
-                    PacketHandler.sendToServer(new PacketGhostSlot(hoveredSlot.index, stack, stack.getCount()));
-                } else {
-                    filterSlot(btn);
-                    /*ItemStack slotStack = hoveredSlot.getItem();
-                    if (slotStack.isEmpty()) return true;
-                    if (btn == 2) { //Todo IMC Inventory Sorter so this works
-                        slotStack.setCount(0);
-                        PacketHandler.sendToServer(new PacketGhostSlot(hoveredSlot.index, slotStack, slotStack.getCount()));
-                        return true;
-                    }
-                    int amt = (btn == 0) ? 1 : -1;
-                    if (Screen.hasShiftDown()) amt *= 10;
-                    if (Screen.hasControlDown()) amt *= 64;
-                    if (amt + slotStack.getCount() > 4096) amt = 4096 - slotStack.getCount();
-                    //slotStack.grow(amt);
-
-                    PacketHandler.sendToServer(new PacketGhostSlot(hoveredSlot.index, slotStack, slotStack.getCount() + amt));*/
-                }
-            }
-            return true;
-        }
-        if (hoveredSlot instanceof CardItemSlot) { //Right click
-            if (btn == 0) {
-                if (filter.getItem() instanceof BaseFilter && !(filter.getItem() instanceof FilterTag)) //Save the filter before removing it from the slot
-                    PacketHandler.sendToServer(new PacketUpdateFilter(isAllowList == 1, isCompareNBT == 1));
-            } else if (btn == 1) {
-                int slot = hoveredSlot.getSlotIndex();
-                saveSettings();
-                PacketHandler.sendToServer(new PacketOpenFilter(slot));
-                return true;
-            }
-        }
         return super.mouseClicked(x, y, btn);
     }
 }

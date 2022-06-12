@@ -37,9 +37,11 @@ public class NumberButton extends Button {
         stack.pushPose();
         float scale = 0.75f;//value > 99 || value < -99 ? 0.75f : 0.75f;
         stack.scale(scale, scale, scale);
-        float x = (this.x + this.width / 2f) / scale - font.width(String.valueOf(value)) / 2f;
+        String msg = String.format("%,d", value);
+        ;
+        float x = (this.x + this.width / 2f) / scale - font.width(msg) / 2f;
         float y = (this.y + (this.height - font.lineHeight) / 2f / scale) / scale + 1;
-        font.draw(stack, String.valueOf(value), x, y, Color.DARK_GRAY.getRGB());
+        font.draw(stack, msg, x, y, Color.DARK_GRAY.getRGB());
         //drawCenteredString(stack, font, String.valueOf(value), (this.x + this.width / 2)*2, (this.y + (this.height - 8) / 2)*2, Color.DARK_GRAY.getRGB());
         stack.popPose();
         //drawCenteredString(stack, font, String.valueOf(channel), this.x + this.width / 2, this.y + (this.height - 8) / 2, j | Mth.ceil(this.alpha * 255.0F) << 24);

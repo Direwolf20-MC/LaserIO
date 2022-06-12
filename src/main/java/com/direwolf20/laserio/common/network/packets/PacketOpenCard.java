@@ -1,8 +1,10 @@
 package com.direwolf20.laserio.common.network.packets;
 
+import com.direwolf20.laserio.common.containers.CardEnergyContainer;
 import com.direwolf20.laserio.common.containers.CardFluidContainer;
 import com.direwolf20.laserio.common.containers.CardItemContainer;
 import com.direwolf20.laserio.common.containers.customhandler.CardItemHandler;
+import com.direwolf20.laserio.common.items.cards.CardEnergy;
 import com.direwolf20.laserio.common.items.cards.CardFluid;
 import com.direwolf20.laserio.common.items.cards.CardItem;
 import com.direwolf20.laserio.common.items.filters.BaseFilter;
@@ -81,6 +83,12 @@ public class PacketOpenCard {
                         if (filterItem.getItem() instanceof BaseFilter)
                             PacketOpenFilter.doOpenFilter(filterItem, itemStack, sender, msg.sourcePos);
                     }
+                } else if (itemStack.getItem() instanceof CardEnergy) {
+                    NetworkHooks.openGui(sender, new SimpleMenuProvider(
+                            (windowId, playerInventory, playerEntity) -> new CardEnergyContainer(windowId, playerInventory, sender, msg.sourcePos, itemStack), new TranslatableComponent("")), (buf -> {
+                        buf.writeItem(itemStack);
+                    }));
+
                 }
             });
 

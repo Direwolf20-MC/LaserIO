@@ -39,6 +39,10 @@ public class CardRender {
             r = 0f;
             g = 0f;
             b = 1f;
+        } else if (((BaseCard) card.getItem()).getCardType() == BaseCard.CardType.ENERGY) {
+            r = 1f;
+            g = 1f;
+            b = 0f;
         }
         Vector3f offset = findOffset(direction, cardSlot, LaserNodeBERender.offsets);
         diffX = endBlock.getX() + offset.x() - startBlock.getX();

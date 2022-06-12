@@ -41,6 +41,7 @@
   "screen.laserio.denylist": "Deny",
   "screen.laserio.down": "Down",
   "screen.laserio.east": "East",
+  "screen.laserio.energylimit": "Energy Limit (%)",
   "screen.laserio.enforced": "Enforced",
   "screen.laserio.exact": "Exact",
   "screen.laserio.extract": "Extract",

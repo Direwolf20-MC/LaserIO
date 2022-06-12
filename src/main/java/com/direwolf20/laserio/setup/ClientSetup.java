@@ -42,6 +42,7 @@ public class ClientSetup {
             MenuScreens.register(Registration.LaserNode_Container.get(), LaserNodeScreen::new);           // Attach our container to the screen
             MenuScreens.register(Registration.CardItem_Container.get(), CardItemScreen::new);           // Attach our container to the screen
             MenuScreens.register(Registration.CardFluid_Container.get(), CardFluidScreen::new);           // Attach our container to the screen
+            MenuScreens.register(Registration.CardEnergy_Container.get(), CardEnergyScreen::new);           // Attach our container to the screen
             MenuScreens.register(Registration.CardHolder_Container.get(), CardHolderScreen::new);           // Attach our container to the screen
             MenuScreens.register(Registration.FilterBasic_Container.get(), FilterBasicScreen::new);           // Attach our container to the screen
             MenuScreens.register(Registration.FilterCount_Container.get(), FilterCountScreen::new);           // Attach our container to the screen
@@ -61,7 +62,12 @@ public class ClientSetup {
                         return (int) BaseCard.getTransferMode(stack);
                     });
         });
-
+        event.enqueueWork(() -> {
+            ItemProperties.register(Registration.Card_Energy.get(),
+                    new ResourceLocation(LaserIO.MODID, "mode"), (stack, level, living, id) -> {
+                        return (int) BaseCard.getTransferMode(stack);
+                    });
+        });
     }
 
     @SubscribeEvent
@@ -90,6 +96,13 @@ public class ClientSetup {
             }
             return 0xFFFFFFFF;
         }, Registration.Card_Fluid.get());
+        colors.register((stack, index) -> {
+            if (index == 2) {
+                Color color = LaserNodeBERender.colors[BaseCard.getChannel(stack)];
+                return color.getRGB();
+            }
+            return 0xFFFFFFFF;
+        }, Registration.Card_Energy.get());
     }
 
 

@@ -1,5 +1,4 @@
-4211744511436b9259d77a67b951a35cb7ad0775 assets/laserio/lang/en_us.json
-a54a7787d6ae6b7e3097e0116d0191b3b7502bf7 assets/laserio/models/item/card_energy.json
+a2c347f3e0567052cfa9a0f3e39dd6f6beb5b2f2 assets/laserio/lang/en_us.json
 f0e6560d7934862023d2eb87a795d45903b63b7d assets/laserio/models/item/card_holder.json
 4eb00592c18006de8ed3573a59681a6637ee772b assets/laserio/models/item/filter_basic.json
 c15661e6248d1169e158735b11d5a4839b53c01f assets/laserio/models/item/filter_count.json
@@ -12,6 +11,8 @@ f078ab97fe0309dbc315d95974a60e441f37515c assets/laserio/models/item/laser_wrench
 e1e7cda56571876f5f38f190311be8346a122bf4 assets/laserio/models/item/logic_chip_raw.json
 f0a6f3c6387d669d27040cab69453995d7c19224 assets/laserio/models/item/overclocker_card.json
 29b1fdfcfa5dccd723ba9146e18ac774f75079a9 assets/laserio/models/item/overclocker_node.json
+3e686c002ab4d0e89fabc1b09d891fd34d8d0078 data/laserio/advancements/recipes/laserio/card_energy.json
+8beafc75eee288d4bbe1b25532f949ea986b53e1 data/laserio/advancements/recipes/laserio/card_energy_nbtclear.json
 397bdffd6aea40cd57c9055c127a3555e9e8158e data/laserio/advancements/recipes/laserio/card_fluid.json
 84b99dadb01a22b2fd82149ff0f0672c76376fbd data/laserio/advancements/recipes/laserio/card_fluid_nbtclear.json
 8736e97f8eb95a220f4378d1c79dbbbfeff5ba70 data/laserio/advancements/recipes/laserio/card_holder.json
@@ -34,6 +35,8 @@ e8693d7b0e9dc1f47523375d4f397e40173b4a11 data/laserio/advancements/recipes/laser
 952b68239fa8db3463b3ffcf46c2b8fc6875d764 data/laserio/advancements/recipes/laserio/overclocker_node.json
 d0a9bd770fa4ac669626c1c8b07c197352550402 data/laserio/loot_tables/blocks/laser_connector.json
 943db5dfdaa8bad875dbae800312eebe4b53ed1a data/laserio/loot_tables/blocks/laser_node.json
+c480445a71b155da591a449962941d0673415e53 data/laserio/recipes/card_energy.json
+3d68f173a06c58f90b1d6e467f64d1c994e92ec4 data/laserio/recipes/card_energy_nbtclear.json
 8fd96f7e0501a9263fbf0e7d5d6138916cb779ad data/laserio/recipes/card_fluid.json
 ae551e1bac021c7f42e3c973128c6d5b0d783b15 data/laserio/recipes/card_fluid_nbtclear.json
 0413aa95f8719c50410613aecfd6b629280fcf88 data/laserio/recipes/card_holder.json
