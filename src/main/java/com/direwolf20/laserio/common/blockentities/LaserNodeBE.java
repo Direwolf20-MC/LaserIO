@@ -232,7 +232,7 @@ public class LaserNodeBE extends BaseLaserBE {
                 List<InserterCardCache> nodes = inserterNodes.stream().filter(p -> (p.channel == extractorCardCache.channel)
                                 && (p.isStackValidForCard(stack))
                                 && (p.cardType.equals(extractorCardCache.cardType))
-                                && (!(p.relativePos.equals(BlockPos.ZERO) && p.direction.equals(extractorCardCache.direction))))
+                                && (!(p.relativePos.equals(BlockPos.ZERO) && p.direction.equals(extractorCardCache.direction) && p.sneaky == extractorCardCache.sneaky)))
                         .toList();
                 inserterCache.get(extractorCardCache).put(key, nodes);
                 return nodes;
@@ -241,7 +241,7 @@ public class LaserNodeBE extends BaseLaserBE {
             List<InserterCardCache> nodes = inserterNodes.stream().filter(p -> (p.channel == extractorCardCache.channel)
                             && (p.isStackValidForCard(stack))
                             && (p.cardType.equals(extractorCardCache.cardType))
-                            && (!(p.relativePos.equals(BlockPos.ZERO) && p.direction.equals(extractorCardCache.direction))))
+                            && (!(p.relativePos.equals(BlockPos.ZERO) && p.direction.equals(extractorCardCache.direction) && p.sneaky == extractorCardCache.sneaky)))
                     .toList();
             HashMap<ItemStackKey, List<InserterCardCache>> tempMap = new HashMap<>();
             tempMap.put(key, nodes);
