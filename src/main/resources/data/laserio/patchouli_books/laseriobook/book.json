@@ -2,5 +2,6 @@
   "name": "LaserIO 101",
   "landing_text": "Can't have DireWire without Wires!",
   "version": 1,
-  "creative_tab": "laserio"
+  "creative_tab": "laserio",
+  "getCreatorModId ": "laserio"
 }
