@@ -7,6 +7,7 @@ import com.direwolf20.laserio.client.events.EventTooltip;
 import com.direwolf20.laserio.client.screens.*;
 import com.direwolf20.laserio.common.LaserIO;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
+import com.direwolf20.laserio.common.items.cards.CardRedstone;
 import net.minecraft.client.color.item.ItemColors;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
@@ -43,6 +44,7 @@ public class ClientSetup {
             MenuScreens.register(Registration.CardItem_Container.get(), CardItemScreen::new);           // Attach our container to the screen
             MenuScreens.register(Registration.CardFluid_Container.get(), CardFluidScreen::new);           // Attach our container to the screen
             MenuScreens.register(Registration.CardEnergy_Container.get(), CardEnergyScreen::new);           // Attach our container to the screen
+            MenuScreens.register(Registration.CardRedstone_Container.get(), CardRedstoneScreen::new);           // Attach our container to the screen
             MenuScreens.register(Registration.CardHolder_Container.get(), CardHolderScreen::new);           // Attach our container to the screen
             MenuScreens.register(Registration.FilterBasic_Container.get(), FilterBasicScreen::new);           // Attach our container to the screen
             MenuScreens.register(Registration.FilterCount_Container.get(), FilterCountScreen::new);           // Attach our container to the screen
@@ -66,6 +68,12 @@ public class ClientSetup {
             ItemProperties.register(Registration.Card_Energy.get(),
                     new ResourceLocation(LaserIO.MODID, "mode"), (stack, level, living, id) -> {
                         return (int) BaseCard.getTransferMode(stack);
+                    });
+        });
+        event.enqueueWork(() -> {
+            ItemProperties.register(Registration.Card_Redstone.get(),
+                    new ResourceLocation(LaserIO.MODID, "mode"), (stack, level, living, id) -> {
+                        return (int) CardRedstone.getTransferMode(stack);
                     });
         });
     }
@@ -103,6 +111,13 @@ public class ClientSetup {
             }
             return 0xFFFFFFFF;
         }, Registration.Card_Energy.get());
+        colors.register((stack, index) -> {
+            if (index == 2) {
+                Color color = LaserNodeBERender.colors[CardRedstone.getRedstoneChannel(stack)];
+                return color.getRGB();
+            }
+            return 0xFFFFFFFF;
+        }, Registration.Card_Redstone.get());
     }
 
 

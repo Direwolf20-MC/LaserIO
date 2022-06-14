@@ -2,6 +2,7 @@ package com.direwolf20.laserio.util;
 
 import com.direwolf20.laserio.client.blockentityrenders.LaserNodeBERender;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
+import com.direwolf20.laserio.common.items.cards.CardRedstone;
 import com.mojang.math.Vector3f;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -43,6 +44,10 @@ public class CardRender {
             r = 1f;
             g = 1f;
             b = 0f;
+        } else if (((BaseCard) card.getItem()).getCardType() == BaseCard.CardType.REDSTONE) {
+            r = 1f;
+            g = 0f;
+            b = 0f;
         }
         Vector3f offset = findOffset(direction, cardSlot, LaserNodeBERender.offsets);
         diffX = endBlock.getX() + offset.x() - startBlock.getX();
@@ -50,8 +55,13 @@ public class CardRender {
         diffZ = endBlock.getZ() + offset.z() - startBlock.getZ();
 
         boolean reverse = !direction.equals(Direction.DOWN);
-        if (BaseCard.getNamedTransferMode(card) != BaseCard.TransferMode.EXTRACT)
-            reverse = !reverse;
+        if (card.getItem() instanceof CardRedstone) {
+            if (BaseCard.getNamedTransferMode(card) != BaseCard.TransferMode.INSERT)
+                reverse = !reverse;
+        } else {
+            if (BaseCard.getNamedTransferMode(card) != BaseCard.TransferMode.EXTRACT)
+                reverse = !reverse;
+        }
         floatcolors = LaserNodeBERender.colors[BaseCard.getChannel(card)].getColorComponents(new float[3]);
         if (reverse) {
             endLaser = new Vector3f(offset.x(), offset.y(), offset.z());

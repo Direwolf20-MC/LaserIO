@@ -5,10 +5,7 @@ import com.direwolf20.laserio.client.particles.itemparticle.ItemFlowParticleData
 import com.direwolf20.laserio.common.blockentities.basebe.BaseLaserBE;
 import com.direwolf20.laserio.common.containers.LaserNodeContainer;
 import com.direwolf20.laserio.common.events.ServerTickHandler;
-import com.direwolf20.laserio.common.items.cards.BaseCard;
-import com.direwolf20.laserio.common.items.cards.CardEnergy;
-import com.direwolf20.laserio.common.items.cards.CardFluid;
-import com.direwolf20.laserio.common.items.cards.CardItem;
+import com.direwolf20.laserio.common.items.cards.*;
 import com.direwolf20.laserio.common.items.filters.FilterBasic;
 import com.direwolf20.laserio.common.items.filters.FilterCount;
 import com.direwolf20.laserio.common.items.filters.FilterTag;
@@ -1665,6 +1662,8 @@ public class LaserNodeBE extends BaseLaserBE {
                         if (energyStorage.canReceive())*/
                     cardRenders.add(new CardRender(direction, slot, card, getBlockPos()));
                     //}
+                } else if (card.getItem() instanceof CardRedstone) {
+                    cardRenders.add(new CardRender(direction, slot, card, getBlockPos()));
                 }
             }
         }

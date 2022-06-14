@@ -57,7 +57,9 @@ public class BaseCardCache {
             cardType = BaseCard.CardType.ENERGY;
             this.insertLimit = CardEnergy.getInsertLimitPercent(cardItem);
             this.extractLimit = CardEnergy.getExtractLimitPercent(cardItem);
-        } else cardType = null;
+        } else if (cardItem.getItem() instanceof CardEnergy)
+            cardType = BaseCard.CardType.REDSTONE;
+        else cardType = BaseCard.CardType.MISSING;
         this.be = be;
         if (filterCard.equals(ItemStack.EMPTY)) {
             filteredItems = new ArrayList<>();
