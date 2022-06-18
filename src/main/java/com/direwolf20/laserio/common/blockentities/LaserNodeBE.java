@@ -227,13 +227,18 @@ public class LaserNodeBE extends BaseLaserBE {
             populateThisRedstoneNetwork(true);
             redstoneChecked = true;
         }
+        if (!redstoneRefreshed) {
+            refreshRedstoneNetwork();
+            redstoneRefreshed = true;
+        }
         extract(); //If this node has any extractors, do stuff with them
     }
 
     public void populateThisRedstoneNetwork(boolean notifyOthers) {
         System.out.println("Checking redstone at: " + getBlockPos() + ", Gametime: " + level.getGameTime());
-        int myRedstoneCount = myRedstoneIn.size();
-        myRedstoneIn.clear();
+        //int myRedstoneCount = myRedstoneIn.size();
+        //myRedstoneIn.clear();
+        Map<Byte, Byte> myRedstoneInTemp = new Byte2ByteOpenHashMap();
         boolean updated = false;
         for (Direction direction : Direction.values()) {
             NodeSideCache nodeSideCache = nodeSideCaches[direction.ordinal()];
@@ -244,14 +249,24 @@ public class LaserNodeBE extends BaseLaserBE {
                     //System.out.println("Input: " + getBlockPos() + ":" + direction + ":" + redstoneStrength);
                     if (redstoneStrength > 0) {
                         byte redstoneChannel = BaseCard.getRedstoneChannel(card);
-                        if (updateMyRedstoneIn(redstoneChannel, (byte) redstoneStrength))
-                            updated = true;
+                        //if (updateMyRedstoneIn(redstoneChannel, (byte) redstoneStrength))
+                        //    updated = true;
+                        if (myRedstoneInTemp.containsKey(redstoneChannel)) {
+                            byte existingRedstoneStrength = myRedstoneInTemp.get(redstoneChannel);
+                            if (redstoneStrength > existingRedstoneStrength) { //Only update the network if the new strength is bigger.
+                                myRedstoneInTemp.put(redstoneChannel, (byte) redstoneStrength);
+                            }
+                        } else {
+                            myRedstoneInTemp.put(redstoneChannel, (byte) redstoneStrength);
+                        }
                     }
                 }
             }
         }
-        if (myRedstoneIn.size() < myRedstoneCount) //Handles the edge case of we had 1 signal before, and we now have 0, so the above never fired
+        if (!myRedstoneInTemp.equals(myRedstoneIn)) {
             updated = true;
+            myRedstoneIn = new Byte2ByteOpenHashMap(myRedstoneInTemp);
+        }
         if (updated && notifyOthers)
             notifyOtherNodesOfChange();
     }
@@ -325,10 +340,12 @@ public class LaserNodeBE extends BaseLaserBE {
     }
 
     public void updateRedstoneOutputs() {
-        //System.out.println("Checking Redstone Outputs at: " + getBlockPos());
-        myRedstoneOut.clear();
+        System.out.println("Checking Redstone Outputs at: " + getBlockPos());
+        //myRedstoneOut.clear();
+        Map<Byte, Byte> myRedstoneOutTemp = new Byte2ByteOpenHashMap();  //Side,Strength
         redstoneCardSides.clear();
         for (Direction direction : Direction.values()) {
+            byte side = (byte) direction.ordinal();
             NodeSideCache nodeSideCache = nodeSideCaches[direction.ordinal()];
             for (int slot = 0; slot < LaserNodeContainer.CARDSLOTS; slot++) {
                 ItemStack card = nodeSideCache.itemHandler.getStackInSlot(slot);
@@ -341,13 +358,29 @@ public class LaserNodeBE extends BaseLaserBE {
                         if (redstoneStrength > 0) {
                             if (CardRedstone.getStrong(card))
                                 redstoneStrength += 15;
-                            if (updateMyRedstoneOut((byte) direction.ordinal(), redstoneStrength)) ;
+
+                            if (myRedstoneOutTemp.containsKey(side)) {
+                                byte existingRedstoneStrength = myRedstoneOutTemp.get(side);
+                                if (redstoneStrength > existingRedstoneStrength) { //Only update the network if the new strength is bigger.
+                                    myRedstoneOutTemp.put(side, redstoneStrength);
+                                }
+                            } else {
+                                myRedstoneOutTemp.put(side, redstoneStrength);
+                            }
+                            //if (updateMyRedstoneOut((byte) direction.ordinal(), redstoneStrength)) ;
                         }
                     }
                 }
             }
-            level.neighborChanged(getBlockPos().relative(direction), this.getBlockState().getBlock(), getBlockPos());
-            level.updateNeighborsAtExceptFromFacing(getBlockPos().relative(direction), this.getBlockState().getBlock(), direction.getOpposite());
+            if (!Objects.equals(myRedstoneOutTemp.get(side), myRedstoneOut.get(side))) {
+                if (myRedstoneOutTemp.containsKey(side))
+                    myRedstoneOut.put(side, myRedstoneOutTemp.get(side));
+                else
+                    myRedstoneOut.remove(side);
+                level.neighborChanged(getBlockPos().relative(direction), this.getBlockState().getBlock(), getBlockPos());
+                level.updateNeighborsAtExceptFromFacing(getBlockPos().relative(direction), this.getBlockState().getBlock(), direction.getOpposite());
+
+            }
         }
         BlockState state = this.getBlockState();
         state.updateNeighbourShapes(level, getBlockPos(), UPDATE_ALL);
@@ -1506,7 +1539,8 @@ public class LaserNodeBE extends BaseLaserBE {
             LaserNodeBE node = getNodeAt(getWorldPos(pos));
             if (node == null) continue;
             node.checkInvNode(this.getBlockPos(), true);
-            node.refreshRedstoneNetwork();
+            //node.refreshRedstoneNetwork();
+            node.redstoneRefreshed = false;
         }
     }
 
@@ -1521,7 +1555,8 @@ public class LaserNodeBE extends BaseLaserBE {
         for (BlockPos pos : otherNodesInNetwork) {
             checkInvNode(getWorldPos(pos), false);
         }
-        refreshRedstoneNetwork();
+        //refreshRedstoneNetwork();
+        redstoneRefreshed = false;
         sortInserters();
     }
 
