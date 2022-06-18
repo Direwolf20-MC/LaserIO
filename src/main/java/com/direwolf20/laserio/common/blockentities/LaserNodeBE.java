@@ -235,7 +235,7 @@ public class LaserNodeBE extends BaseLaserBE {
     }
 
     public void populateThisRedstoneNetwork(boolean notifyOthers) {
-        System.out.println("Checking redstone at: " + getBlockPos() + ", Gametime: " + level.getGameTime());
+        //System.out.println("Checking redstone at: " + getBlockPos() + ", Gametime: " + level.getGameTime());
         //int myRedstoneCount = myRedstoneIn.size();
         //myRedstoneIn.clear();
         Map<Byte, Byte> myRedstoneInTemp = new Byte2ByteOpenHashMap();
@@ -303,7 +303,7 @@ public class LaserNodeBE extends BaseLaserBE {
 
     /** Visits all the notes in the network, and refreshes this redstone network cache from theirs **/
     public void refreshRedstoneNetwork() {
-        System.out.println("Updating Redstone Network at: " + getBlockPos() + ", Gametime: " + level.getGameTime());
+        //System.out.println("Updating Redstone Network at: " + getBlockPos() + ", Gametime: " + level.getGameTime());
         redstoneNetwork.clear();
         for (BlockPos pos : otherNodesInNetwork) {
             LaserNodeBE laserNodeBE = getNodeAt(getWorldPos(pos));
@@ -340,7 +340,7 @@ public class LaserNodeBE extends BaseLaserBE {
     }
 
     public void updateRedstoneOutputs() {
-        System.out.println("Checking Redstone Outputs at: " + getBlockPos());
+        //System.out.println("Checking Redstone Outputs at: " + getBlockPos());
         //myRedstoneOut.clear();
         Map<Byte, Byte> myRedstoneOutTemp = new Byte2ByteOpenHashMap();  //Side,Strength
         redstoneCardSides.clear();
