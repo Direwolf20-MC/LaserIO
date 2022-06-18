@@ -48,8 +48,15 @@ public class CardRedstoneScreen extends AbstractContainerScreen<CardRedstoneCont
         this.renderBackground(matrixStack);
         super.render(matrixStack, mouseX, mouseY, partialTicks);
         this.renderTooltip(matrixStack, mouseX, mouseY);
-        Button modeButton = buttons.get("strong");
+        Button modeButton = buttons.get("mode");
         if (MiscTools.inBounds(modeButton.x, modeButton.y, modeButton.getWidth(), modeButton.getHeight(), mouseX, mouseY)) {
+            TranslatableComponent translatableComponents[] = new TranslatableComponent[3];
+            translatableComponents[0] = new TranslatableComponent("screen.laserio.input");
+            translatableComponents[1] = new TranslatableComponent("screen.laserio.output");
+            this.renderTooltip(matrixStack, translatableComponents[currentMode], mouseX, mouseY);
+        }
+        Button strongButton = buttons.get("strong");
+        if (MiscTools.inBounds(strongButton.x, strongButton.y, strongButton.getWidth(), strongButton.getHeight(), mouseX, mouseY)) {
             TranslatableComponent translatableComponents[] = new TranslatableComponent[2];
             translatableComponents[0] = new TranslatableComponent("screen.laserio.weak");
             translatableComponents[1] = new TranslatableComponent("screen.laserio.strong");
