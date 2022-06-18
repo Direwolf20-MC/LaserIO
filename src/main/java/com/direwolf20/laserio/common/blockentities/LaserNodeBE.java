@@ -13,7 +13,9 @@ import com.direwolf20.laserio.common.items.upgrades.OverclockerNode;
 import com.direwolf20.laserio.setup.Registration;
 import com.direwolf20.laserio.util.*;
 import com.mojang.math.Vector3f;
+import it.unimi.dsi.fastutil.bytes.Byte2BooleanMap;
 import it.unimi.dsi.fastutil.bytes.Byte2BooleanOpenHashMap;
+import it.unimi.dsi.fastutil.bytes.Byte2ByteMap;
 import it.unimi.dsi.fastutil.bytes.Byte2ByteOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -110,10 +112,10 @@ public class LaserNodeBE extends BaseLaserBE {
     public List<CardRender> cardRenders = new ArrayList<>();
 
     /** Redstone Variables **/
-    public Map<Byte, Byte> redstoneNetwork = new Byte2ByteOpenHashMap(); //Channel,Strength
-    public Map<Byte, Byte> myRedstoneIn = new Byte2ByteOpenHashMap();  //Channel,Strength
-    public Map<Byte, Byte> myRedstoneOut = new Byte2ByteOpenHashMap();  //Side,Strength
-    public Map<Byte, Boolean> redstoneCardSides = new Byte2BooleanOpenHashMap(); //Side and whether it has a redstone card, for client
+    public Byte2ByteMap redstoneNetwork = new Byte2ByteOpenHashMap(); //Channel,Strength
+    public Byte2ByteMap myRedstoneIn = new Byte2ByteOpenHashMap();  //Channel,Strength
+    public Byte2ByteMap myRedstoneOut = new Byte2ByteOpenHashMap();  //Side,Strength
+    public Byte2BooleanMap redstoneCardSides = new Byte2BooleanOpenHashMap(); //Side and whether it has a redstone card, for client
     public boolean redstoneChecked = false;
     public boolean redstoneRefreshed = false;
 
@@ -238,7 +240,7 @@ public class LaserNodeBE extends BaseLaserBE {
         //System.out.println("Checking redstone at: " + getBlockPos() + ", Gametime: " + level.getGameTime());
         //int myRedstoneCount = myRedstoneIn.size();
         //myRedstoneIn.clear();
-        Map<Byte, Byte> myRedstoneInTemp = new Byte2ByteOpenHashMap();
+        Byte2ByteMap myRedstoneInTemp = new Byte2ByteOpenHashMap();
         boolean updated = false;
         for (Direction direction : Direction.values()) {
             NodeSideCache nodeSideCache = nodeSideCaches[direction.ordinal()];
@@ -342,7 +344,7 @@ public class LaserNodeBE extends BaseLaserBE {
     public void updateRedstoneOutputs() {
         //System.out.println("Checking Redstone Outputs at: " + getBlockPos());
         //myRedstoneOut.clear();
-        Map<Byte, Byte> myRedstoneOutTemp = new Byte2ByteOpenHashMap();  //Side,Strength
+        Byte2ByteMap myRedstoneOutTemp = new Byte2ByteOpenHashMap();  //Side,Strength
         redstoneCardSides.clear();
         for (Direction direction : Direction.values()) {
             byte side = (byte) direction.ordinal();
