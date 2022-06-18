@@ -13,6 +13,8 @@ import com.direwolf20.laserio.common.items.upgrades.OverclockerNode;
 import com.direwolf20.laserio.setup.Registration;
 import com.direwolf20.laserio.util.*;
 import com.mojang.math.Vector3f;
+import it.unimi.dsi.fastutil.bytes.Byte2BooleanOpenHashMap;
+import it.unimi.dsi.fastutil.bytes.Byte2ByteOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
@@ -42,6 +44,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 import static com.direwolf20.laserio.util.MiscTools.findOffset;
+import static net.minecraft.world.level.block.Block.UPDATE_ALL;
 
 public class LaserNodeBE extends BaseLaserBE {
     private static final Vector3f[] offsets = { //Used for where to draw particles from
@@ -106,6 +109,14 @@ public class LaserNodeBE extends BaseLaserBE {
     public boolean rendersChecked = false;
     public List<CardRender> cardRenders = new ArrayList<>();
 
+    /** Redstone Variables **/
+    public Map<Byte, Byte> redstoneNetwork = new Byte2ByteOpenHashMap(); //Channel,Strength
+    public Map<Byte, Byte> myRedstoneIn = new Byte2ByteOpenHashMap();  //Channel,Strength
+    public Map<Byte, Byte> myRedstoneOut = new Byte2ByteOpenHashMap();  //Side,Strength
+    public Map<Byte, Boolean> redstoneCardSides = new Byte2BooleanOpenHashMap(); //Side and whether it has a redstone card, for client
+    public boolean redstoneChecked = false;
+
+
     /** Misc Variables **/
     private boolean discoveredNodes = false; //The first time this block entity loads, it'll run discovery to refresh itself
 
@@ -147,7 +158,7 @@ public class LaserNodeBE extends BaseLaserBE {
             nodeSideCache.extractorCardCaches.clear();
             for (int slot = 0; slot < LaserNodeContainer.CARDSLOTS; slot++) {
                 ItemStack card = nodeSideCache.itemHandler.getStackInSlot(slot);
-                if (card.getItem() instanceof BaseCard) {
+                if (card.getItem() instanceof BaseCard && !(card.getItem() instanceof CardRedstone)) {
                     if (BaseCard.getNamedTransferMode(card).equals(BaseCard.TransferMode.EXTRACT)) {
                         nodeSideCache.extractorCardCaches.add(new ExtractorCardCache(direction, card, slot, this));
                     }
@@ -207,11 +218,138 @@ public class LaserNodeBE extends BaseLaserBE {
     public void tickServer() {
         if (!discoveredNodes) { //On world / chunk reload, lets rediscover the network, including this block's extractor cards.
             discoverAllNodes();
+            populateThisRedstoneNetwork(true);
             findMyExtractors();
             updateOverclockers();
             discoveredNodes = true;
         }
+        if (!redstoneChecked) {
+
+        }
         extract(); //If this node has any extractors, do stuff with them
+    }
+
+    public void populateThisRedstoneNetwork(boolean notifyOthers) {
+        System.out.println("Checking redstone at: " + getBlockPos());
+        int myRedstoneCount = myRedstoneIn.size();
+        myRedstoneIn.clear();
+        boolean updated = false;
+        for (Direction direction : Direction.values()) {
+            NodeSideCache nodeSideCache = nodeSideCaches[direction.ordinal()];
+            for (int slot = 0; slot < LaserNodeContainer.CARDSLOTS; slot++) {
+                ItemStack card = nodeSideCache.itemHandler.getStackInSlot(slot);
+                if (card.getItem() instanceof CardRedstone && BaseCard.getTransferMode(card) == 0) { //Redstone mode and input mode
+                    int redstoneStrength = level.getSignal(getBlockPos().relative(direction), direction);
+                    //System.out.println("Input: " + getBlockPos() + ":" + direction + ":" + redstoneStrength);
+                    if (redstoneStrength > 0) {
+                        byte redstoneChannel = BaseCard.getRedstoneChannel(card);
+                        if (updateMyRedstoneIn(redstoneChannel, (byte) redstoneStrength))
+                            updated = true;
+                    }
+                }
+            }
+        }
+        if (myRedstoneIn.size() < myRedstoneCount) //Handles the edge case of we had 1 signal before, and we now have 0, so the above never fired
+            updated = true;
+        if (updated && notifyOthers)
+            notifyOtherNodesOfChange();
+    }
+
+    public boolean updateMyRedstoneIn(byte redstoneChannel, byte redstoneStrength) {
+        //System.out.println("Updating My Redstone In at: " + getBlockPos());
+        if (myRedstoneIn.containsKey(redstoneChannel)) {
+            byte existingRedstoneStrength = myRedstoneIn.get(redstoneChannel);
+            if (redstoneStrength > existingRedstoneStrength) { //Only update the network if the new strength is bigger.
+                this.myRedstoneIn.put(redstoneChannel, redstoneStrength);
+                return true;
+            }
+        } else {
+            this.myRedstoneIn.put(redstoneChannel, redstoneStrength);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean updateMyRedstoneOut(byte side, byte redstoneStrength) {
+        //System.out.println("Updating My Redstone Out at: " + getBlockPos());
+        if (myRedstoneOut.containsKey(side)) {
+            byte existingRedstoneStrength = myRedstoneOut.get(side);
+            if (redstoneStrength > existingRedstoneStrength) { //Only update the network if the new strength is bigger.
+                this.myRedstoneOut.put(side, redstoneStrength);
+                return true;
+            }
+        } else {
+            this.myRedstoneOut.put(side, redstoneStrength);
+            return true;
+        }
+        return false;
+    }
+
+    /** Visits all the notes in the network, and refreshes this redstone network cache from theirs **/
+    public void refreshRedstoneNetwork() {
+        //System.out.println("Updating Redstone Network at: " + getBlockPos());
+        redstoneNetwork.clear();
+        for (BlockPos pos : otherNodesInNetwork) {
+            LaserNodeBE laserNodeBE = getNodeAt(getWorldPos(pos));
+            if (laserNodeBE == null) continue;
+            for (Map.Entry<Byte, Byte> entry : laserNodeBE.myRedstoneIn.entrySet()) {
+                updateRedstoneNetwork(entry.getKey(), entry.getValue());
+            }
+        }
+        updateRedstoneOutputs(); //Now that we know what the network should look like - update the outputs
+    }
+
+    public void updateRedstoneNetwork(byte redstoneChannel, byte redstoneStrength) {
+        if (redstoneNetwork.containsKey(redstoneChannel)) {
+            byte existingRedstoneStrength = redstoneNetwork.get(redstoneChannel);
+            if (redstoneStrength > existingRedstoneStrength) //Only update the network if the new strength is bigger.
+                this.redstoneNetwork.put(redstoneChannel, redstoneStrength);
+        } else {
+            this.redstoneNetwork.put(redstoneChannel, redstoneStrength);
+        }
+    }
+
+    public boolean getRedstoneSideStrong(Direction direction) {
+        byte side = (byte) direction.ordinal();
+        if (!myRedstoneOut.containsKey(side)) return false;
+        byte redstoneOut = myRedstoneOut.get(side);
+        return redstoneOut > 15; //>15 means strong signal
+    }
+
+    public int getRedstoneSide(Direction direction) {
+        byte side = (byte) direction.ordinal();
+        if (!myRedstoneOut.containsKey(side)) return 0;
+        byte redstoneOut = myRedstoneOut.get(side);
+        return redstoneOut > 15 ? redstoneOut - 15 : redstoneOut; //>15 means strong signal
+    }
+
+    public void updateRedstoneOutputs() {
+        //System.out.println("Checking Redstone Outputs at: " + getBlockPos());
+        myRedstoneOut.clear();
+        redstoneCardSides.clear();
+        for (Direction direction : Direction.values()) {
+            NodeSideCache nodeSideCache = nodeSideCaches[direction.ordinal()];
+            for (int slot = 0; slot < LaserNodeContainer.CARDSLOTS; slot++) {
+                ItemStack card = nodeSideCache.itemHandler.getStackInSlot(slot);
+                if (card.getItem() instanceof CardRedstone && BaseCard.getTransferMode(card) == 1) { //Redstone mode and Output mode
+                    redstoneCardSides.put((byte) direction.ordinal(), true);
+                    byte cardChannel = BaseCard.getRedstoneChannel(card);
+                    if (redstoneNetwork.containsKey(cardChannel)) { //Not in the list, so move on
+                        byte redstoneStrength = redstoneNetwork.get(cardChannel);
+                        //System.out.println("Output: " + getBlockPos() + ":" + direction + ":" + redstoneStrength);
+                        if (redstoneStrength > 0) {
+                            if (CardRedstone.getStrong(card))
+                                redstoneStrength += 15;
+                            if (updateMyRedstoneOut((byte) direction.ordinal(), redstoneStrength)) ;
+                        }
+                    }
+                }
+            }
+            level.neighborChanged(getBlockPos().relative(direction), this.getBlockState().getBlock(), getBlockPos());
+            level.updateNeighborsAtExceptFromFacing(getBlockPos().relative(direction), this.getBlockState().getBlock(), direction.getOpposite());
+        }
+        BlockState state = this.getBlockState();
+        state.updateNeighbourShapes(level, getBlockPos(), UPDATE_ALL);
     }
 
     public void sortInserters() {
@@ -1352,10 +1490,12 @@ public class LaserNodeBE extends BaseLaserBE {
     /** Called when changes happen - such as a card going into a side, or a card being modified via container **/
     public void updateThisNode() {
         setChanged();
+        populateThisRedstoneNetwork(false);
         notifyOtherNodesOfChange();
         markDirtyClient();
         findMyExtractors();
         updateOverclockers();
+        //updateRedstoneOutputs();
     }
 
     /** When this node changes, tell other nodes to refresh their cache of it **/
@@ -1364,6 +1504,7 @@ public class LaserNodeBE extends BaseLaserBE {
             LaserNodeBE node = getNodeAt(getWorldPos(pos));
             if (node == null) continue;
             node.checkInvNode(this.getBlockPos(), true);
+            node.refreshRedstoneNetwork();
         }
     }
 
@@ -1374,9 +1515,11 @@ public class LaserNodeBE extends BaseLaserBE {
         inserterCacheFluid.clear();
         channelOnlyCache.clear();
         this.stockerDestinationCache.clear();
+        this.redstoneNetwork.clear();
         for (BlockPos pos : otherNodesInNetwork) {
             checkInvNode(getWorldPos(pos), false);
         }
+        refreshRedstoneNetwork();
         sortInserters();
     }
 
@@ -1396,11 +1539,14 @@ public class LaserNodeBE extends BaseLaserBE {
         channelOnlyCache.clear();
         this.stockerDestinationCache.clear();
         if (be == null) return; //If the block position given doesn't contain a LaserNodeBE stop
+        /*for (Map.Entry<Byte, Byte> beRedstone: be.myRedstoneIn.entrySet()) {
+            updateRedstoneNetwork(beRedstone.getKey(), beRedstone.getValue());
+        }*/
         for (Direction direction : Direction.values()) {
             NodeSideCache nodeSideCache = be.nodeSideCaches[direction.ordinal()];
             for (int slot = 0; slot < LaserNodeContainer.CARDSLOTS; slot++) {
                 ItemStack card = nodeSideCache.itemHandler.getStackInSlot(slot);
-                if (card.getItem() instanceof BaseCard) {
+                if (card.getItem() instanceof BaseCard && !(card.getItem() instanceof CardRedstone)) {
                     if (BaseCard.getNamedTransferMode(card).equals(BaseCard.TransferMode.INSERT)) {
                         inserterNodes.add(new InserterCardCache(relativePos, direction, card, be, slot));
                     }
@@ -1635,6 +1781,7 @@ public class LaserNodeBE extends BaseLaserBE {
     public void populateRenderList() {
         if (level == null || !level.isClientSide) return;
         this.cardRenders.clear();
+        redstoneCardSides.clear();
         for (Direction direction : Direction.values()) {
             IItemHandler h = getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction).orElse(new ItemStackHandler(0));
             for (int slot = 0; slot < h.getSlots(); slot++) {
@@ -1663,10 +1810,14 @@ public class LaserNodeBE extends BaseLaserBE {
                     cardRenders.add(new CardRender(direction, slot, card, getBlockPos()));
                     //}
                 } else if (card.getItem() instanceof CardRedstone) {
+                    redstoneCardSides.put((byte) direction.ordinal(), true);
                     cardRenders.add(new CardRender(direction, slot, card, getBlockPos()));
                 }
             }
         }
+        BlockState state = this.getBlockState();
+        level.updateNeighborsAt(getBlockPos(), this.getBlockState().getBlock());
+        state.updateNeighbourShapes(level, getBlockPos(), UPDATE_ALL);
         rendersChecked = true;
     }
 

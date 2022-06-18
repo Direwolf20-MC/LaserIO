@@ -13,20 +13,23 @@ import java.util.function.Supplier;
 public class PacketUpdateRedstoneCard {
     byte mode;
     byte channel;
+    boolean strong;
 
 
-    public PacketUpdateRedstoneCard(byte mode, byte channel) {
+    public PacketUpdateRedstoneCard(byte mode, byte channel, boolean strong) {
         this.mode = mode;
         this.channel = channel;
+        this.strong = strong;
     }
 
     public static void encode(PacketUpdateRedstoneCard msg, FriendlyByteBuf buffer) {
         buffer.writeByte(msg.mode);
         buffer.writeByte(msg.channel);
+        buffer.writeBoolean(msg.strong);
     }
 
     public static PacketUpdateRedstoneCard decode(FriendlyByteBuf buffer) {
-        return new PacketUpdateRedstoneCard(buffer.readByte(), buffer.readByte());
+        return new PacketUpdateRedstoneCard(buffer.readByte(), buffer.readByte(), buffer.readBoolean());
     }
 
     public static class Handler {
@@ -47,6 +50,7 @@ public class PacketUpdateRedstoneCard {
                 stack = ((CardRedstoneContainer) container).cardItem;
                 CardRedstone.setTransferMode(stack, msg.mode);
                 CardRedstone.setRedstoneChannel(stack, msg.channel);
+                CardRedstone.setStrong(stack, msg.strong);
             });
 
             ctx.get().setPacketHandled(true);

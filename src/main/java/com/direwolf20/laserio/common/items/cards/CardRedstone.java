@@ -1,6 +1,7 @@
 package com.direwolf20.laserio.common.items.cards;
 
 import com.direwolf20.laserio.common.containers.CardRedstoneContainer;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -39,22 +40,17 @@ public class CardRedstone extends BaseCard {
         return setTransferMode(card, (byte) (mode == 1 ? 0 : mode + 1));
     }
 
-    /*public static byte setMode(ItemStack card, byte mode) {
-        if (mode == 0)
-            card.removeTagKey("mode");
+    public static boolean getStrong(ItemStack stack) {
+        CompoundTag compound = stack.getTag();
+        if (compound == null || !compound.contains("redstonestrong")) return false;
+        return compound.getBoolean("redstonestrong");
+    }
+
+    public static boolean setStrong(ItemStack stack, boolean strong) {
+        if (!strong)
+            stack.removeTagKey("redstonestrong");
         else
-            card.getOrCreateTag().putByte("mode", mode);
-        return mode;
+            stack.getOrCreateTag().putBoolean("redstonestrong", strong);
+        return strong;
     }
-
-    public static byte getMode(ItemStack card) {
-        CompoundTag compound = card.getTag();
-        if (compound == null || !compound.contains("mode")) return (byte) 0;
-        return compound.getByte("mode");
-    }
-
-    public static byte nextMode(ItemStack card) {
-        byte mode = getMode(card);
-        return setMode(card, (byte) (mode == 1 ? 0 : mode + 1));
-    }*/
 }

@@ -60,6 +60,8 @@ public class LaserIOLanguageProvider extends LanguageProvider {
         add("screen.laserio.stock", "Stock");
         add("screen.laserio.input", "Input");
         add("screen.laserio.output", "Output");
+        add("screen.laserio.weak", "Weak");
+        add("screen.laserio.strong", "Strong");
 
         add("screen.laserio.denylist", "Deny");
         add("screen.laserio.nbttrue", "Match NBT");

@@ -23,6 +23,7 @@ public class BaseCardCache {
     public final Direction direction;
     public final ItemStack cardItem;
     public final byte channel;
+    public final byte redstoneChannel;
     public final ItemStack filterCard;
     public final int cardSlot;
     public final List<ItemStack> filteredItems;
@@ -47,6 +48,7 @@ public class BaseCardCache {
         this.direction = direction;
         this.sneaky = BaseCard.getSneaky(cardItem);
         this.channel = BaseCard.getChannel(cardItem);
+        this.redstoneChannel = BaseCard.getRedstoneChannel(cardItem);
         this.filterCard = BaseCard.getFilter(cardItem);
         this.cardSlot = cardSlot;
         if (cardItem.getItem() instanceof CardItem)

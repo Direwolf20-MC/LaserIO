@@ -33,6 +33,7 @@ public class CardRedstoneScreen extends AbstractContainerScreen<CardRedstoneCont
     protected final CardRedstoneContainer container;
     protected byte currentMode;
     protected byte currentRedstoneChannel;
+    protected boolean currentStrong;
     protected final ItemStack card;
     protected Map<String, Button> buttons = new HashMap<>();
 
@@ -47,12 +48,12 @@ public class CardRedstoneScreen extends AbstractContainerScreen<CardRedstoneCont
         this.renderBackground(matrixStack);
         super.render(matrixStack, mouseX, mouseY, partialTicks);
         this.renderTooltip(matrixStack, mouseX, mouseY);
-        Button modeButton = buttons.get("mode");
+        Button modeButton = buttons.get("strong");
         if (MiscTools.inBounds(modeButton.x, modeButton.y, modeButton.getWidth(), modeButton.getHeight(), mouseX, mouseY)) {
             TranslatableComponent translatableComponents[] = new TranslatableComponent[2];
-            translatableComponents[0] = new TranslatableComponent("screen.laserio.input");
-            translatableComponents[1] = new TranslatableComponent("screen.laserio.output");
-            this.renderTooltip(matrixStack, translatableComponents[currentMode], mouseX, mouseY);
+            translatableComponents[0] = new TranslatableComponent("screen.laserio.weak");
+            translatableComponents[1] = new TranslatableComponent("screen.laserio.strong");
+            this.renderTooltip(matrixStack, translatableComponents[currentStrong ? 1 : 0], mouseX, mouseY);
         }
         Button channelButton = buttons.get("channel");
         if (MiscTools.inBounds(channelButton.x, channelButton.y, channelButton.getWidth(), channelButton.getHeight(), mouseX, mouseY)) {
@@ -71,6 +72,16 @@ public class CardRedstoneScreen extends AbstractContainerScreen<CardRedstoneCont
         }));
     }
 
+    public void addStrongButton() {
+        ResourceLocation[] strongTextures = new ResourceLocation[2];
+        strongTextures[0] = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/redstonelow.png");
+        strongTextures[1] = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/redstonehigh.png");
+        buttons.put("strong", new ToggleButton(getGuiLeft() + 5, getGuiTop() + 25, 16, 16, strongTextures, currentStrong ? 1 : 0, (button) -> {
+            currentStrong = !currentStrong;
+            ((ToggleButton) button).setTexturePosition(currentStrong ? 1 : 0);
+        }));
+    }
+
     public void addChannelButton() {
         buttons.put("channel", new ChannelButton(getGuiLeft() + 5, getGuiTop() + 65, 16, 16, currentRedstoneChannel, (button) -> {
             currentRedstoneChannel = CardRedstone.nextRedstoneChannel(card);
@@ -83,9 +94,10 @@ public class CardRedstoneScreen extends AbstractContainerScreen<CardRedstoneCont
         super.init();
         currentMode = CardRedstone.getTransferMode(card);
         currentRedstoneChannel = CardRedstone.getRedstoneChannel(card);
-
+        currentStrong = CardRedstone.getStrong(card);
         addModeButton();
         addChannelButton();
+        addStrongButton();
 
         if (container.direction != -1) {
             buttons.put("return", new Button(getGuiLeft() - 25, getGuiTop() + 1, 25, 20, new TextComponent("<--"), (button) -> {
@@ -164,7 +176,7 @@ public class CardRedstoneScreen extends AbstractContainerScreen<CardRedstoneCont
     }
 
     public void saveSettings() {
-        PacketHandler.sendToServer(new PacketUpdateRedstoneCard(currentMode, currentRedstoneChannel));
+        PacketHandler.sendToServer(new PacketUpdateRedstoneCard(currentMode, currentRedstoneChannel, currentStrong));
     }
 
     public void openNode() {

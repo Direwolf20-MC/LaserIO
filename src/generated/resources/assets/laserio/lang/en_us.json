@@ -60,8 +60,10 @@
   "screen.laserio.roundrobin": "Round Robin: ",
   "screen.laserio.south": "South",
   "screen.laserio.stock": "Stock",
+  "screen.laserio.strong": "Strong",
   "screen.laserio.tickSpeed": "Transfer Speed (Ticks)",
   "screen.laserio.true": "True",
   "screen.laserio.up": "Up",
+  "screen.laserio.weak": "Weak",
   "screen.laserio.west": "West"
 }
