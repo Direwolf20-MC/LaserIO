@@ -158,7 +158,8 @@ public class LaserNode extends BaseLaserBlock implements EntityBlock {
         if (blockEntity instanceof LaserNodeBE laserNodeBE) {
             laserNodeBE.rendersChecked = false;
             laserNodeBE.clearCachedInventories();
-            laserNodeBE.populateThisRedstoneNetwork(true);
+            laserNodeBE.redstoneChecked = false;
+            //laserNodeBE.populateThisRedstoneNetwork(true);
         }
     }
 

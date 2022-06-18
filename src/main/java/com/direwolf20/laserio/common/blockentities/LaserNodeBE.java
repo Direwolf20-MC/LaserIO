@@ -115,6 +115,7 @@ public class LaserNodeBE extends BaseLaserBE {
     public Map<Byte, Byte> myRedstoneOut = new Byte2ByteOpenHashMap();  //Side,Strength
     public Map<Byte, Boolean> redstoneCardSides = new Byte2BooleanOpenHashMap(); //Side and whether it has a redstone card, for client
     public boolean redstoneChecked = false;
+    public boolean redstoneRefreshed = false;
 
 
     /** Misc Variables **/
@@ -218,19 +219,19 @@ public class LaserNodeBE extends BaseLaserBE {
     public void tickServer() {
         if (!discoveredNodes) { //On world / chunk reload, lets rediscover the network, including this block's extractor cards.
             discoverAllNodes();
-            populateThisRedstoneNetwork(true);
             findMyExtractors();
             updateOverclockers();
             discoveredNodes = true;
         }
         if (!redstoneChecked) {
-
+            populateThisRedstoneNetwork(true);
+            redstoneChecked = true;
         }
         extract(); //If this node has any extractors, do stuff with them
     }
 
     public void populateThisRedstoneNetwork(boolean notifyOthers) {
-        System.out.println("Checking redstone at: " + getBlockPos());
+        System.out.println("Checking redstone at: " + getBlockPos() + ", Gametime: " + level.getGameTime());
         int myRedstoneCount = myRedstoneIn.size();
         myRedstoneIn.clear();
         boolean updated = false;
@@ -287,7 +288,7 @@ public class LaserNodeBE extends BaseLaserBE {
 
     /** Visits all the notes in the network, and refreshes this redstone network cache from theirs **/
     public void refreshRedstoneNetwork() {
-        //System.out.println("Updating Redstone Network at: " + getBlockPos());
+        System.out.println("Updating Redstone Network at: " + getBlockPos() + ", Gametime: " + level.getGameTime());
         redstoneNetwork.clear();
         for (BlockPos pos : otherNodesInNetwork) {
             LaserNodeBE laserNodeBE = getNodeAt(getWorldPos(pos));
@@ -1490,7 +1491,8 @@ public class LaserNodeBE extends BaseLaserBE {
     /** Called when changes happen - such as a card going into a side, or a card being modified via container **/
     public void updateThisNode() {
         setChanged();
-        populateThisRedstoneNetwork(false);
+        redstoneChecked = false;
+        //populateThisRedstoneNetwork(false);
         notifyOtherNodesOfChange();
         markDirtyClient();
         findMyExtractors();
