@@ -23,6 +23,7 @@ public class BaseCardCache {
     public final Direction direction;
     public final ItemStack cardItem;
     public final byte channel;
+    public final byte redstoneMode;
     public final byte redstoneChannel;
     public final ItemStack filterCard;
     public final int cardSlot;
@@ -49,6 +50,7 @@ public class BaseCardCache {
         this.direction = direction;
         this.sneaky = BaseCard.getSneaky(cardItem);
         this.channel = BaseCard.getChannel(cardItem);
+        this.redstoneMode = BaseCard.getRedstoneMode(cardItem);
         this.redstoneChannel = BaseCard.getRedstoneChannel(cardItem);
         this.filterCard = BaseCard.getFilter(cardItem);
         this.cardSlot = cardSlot;
@@ -76,6 +78,22 @@ public class BaseCardCache {
             this.filterTags = getFilterTags();
             isAllowList = BaseFilter.getAllowList(filterCard);
             isCompareNBT = BaseFilter.getCompareNBT(filterCard);
+        }
+        setEnabled();
+    }
+
+    public void setEnabled() {
+        if (redstoneMode == 0) {
+            enabled = true;
+        } else {
+            byte strength = be.getRedstoneChannelStrength(redstoneChannel);
+            if (strength > 0 && redstoneMode == 1) {
+                enabled = false;
+            } else if (strength == 0 && redstoneMode == 2) {
+                enabled = false;
+            } else {
+                enabled = true;
+            }
         }
     }
 

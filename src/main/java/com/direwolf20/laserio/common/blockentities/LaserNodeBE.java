@@ -182,6 +182,7 @@ public class LaserNodeBE extends BaseLaserBE {
             int countCardsHandled = 0;
             for (ExtractorCardCache extractorCardCache : nodeSideCache.extractorCardCaches) {
                 if (extractorCardCache.decrementSleep() == 0) {
+                    if (!extractorCardCache.enabled) continue;
                     if (countCardsHandled > nodeSideCache.overClocker) continue;
                     if (extractorCardCache instanceof StockerCardCache stockerCardCache) {
                         if (extractorCardCache.cardType.equals(BaseCard.CardType.ITEM)) {
@@ -275,36 +276,6 @@ public class LaserNodeBE extends BaseLaserBE {
             notifyOtherNodesOfChange();
     }
 
-    public boolean updateMyRedstoneIn(byte redstoneChannel, byte redstoneStrength) {
-        //System.out.println("Updating My Redstone In at: " + getBlockPos());
-        if (myRedstoneIn.containsKey(redstoneChannel)) {
-            byte existingRedstoneStrength = myRedstoneIn.get(redstoneChannel);
-            if (redstoneStrength > existingRedstoneStrength) { //Only update the network if the new strength is bigger.
-                this.myRedstoneIn.put(redstoneChannel, redstoneStrength);
-                return true;
-            }
-        } else {
-            this.myRedstoneIn.put(redstoneChannel, redstoneStrength);
-            return true;
-        }
-        return false;
-    }
-
-    public boolean updateMyRedstoneOut(byte side, byte redstoneStrength) {
-        //System.out.println("Updating My Redstone Out at: " + getBlockPos());
-        if (myRedstoneOut.containsKey(side)) {
-            byte existingRedstoneStrength = myRedstoneOut.get(side);
-            if (redstoneStrength > existingRedstoneStrength) { //Only update the network if the new strength is bigger.
-                this.myRedstoneOut.put(side, redstoneStrength);
-                return true;
-            }
-        } else {
-            this.myRedstoneOut.put(side, redstoneStrength);
-            return true;
-        }
-        return false;
-    }
-
     /** Visits all the notes in the network, and refreshes this redstone network cache from theirs **/
     public void refreshRedstoneNetwork() {
         //System.out.println("Updating Redstone Network at: " + getBlockPos() + ", Gametime: " + level.getGameTime());
@@ -317,12 +288,42 @@ public class LaserNodeBE extends BaseLaserBE {
             }
         }
         updateRedstoneOutputs(); //Now that we know what the network should look like - update the outputs
+        refreshCardsRedstone();
     }
 
+    /** Goes through all the cards in this node, and updates their redstone state **/
     public void refreshCardsRedstone() {
+        boolean updated = false;
         for (InserterCardCache inserterCardCache : inserterNodes) {
-
+            if (inserterCardCache.be.getBlockPos().equals(getBlockPos())) {
+                boolean tempEnabled = inserterCardCache.enabled;
+                inserterCardCache.setEnabled();
+                updated = (tempEnabled != inserterCardCache.enabled);
+            }
         }
+        for (Direction direction : Direction.values()) {
+            NodeSideCache nodeSideCache = nodeSideCaches[direction.ordinal()];
+            for (ExtractorCardCache extractorCardCache : nodeSideCache.extractorCardCaches) {
+                extractorCardCache.setEnabled();
+            }
+        }
+        if (updated) {
+            for (BlockPos pos : otherNodesInNetwork) {
+                LaserNodeBE node = getNodeAt(getWorldPos(pos));
+                if (node == null) continue;
+                node.checkInvNode(this.getBlockPos(), true);
+            }
+        }
+        /*inserterCache.clear();
+        inserterCacheFluid.clear();
+        channelOnlyCache.clear();
+        stockerDestinationCache.clear();*/
+    }
+
+    public byte getRedstoneChannelStrength(byte channel) {
+        if (redstoneNetwork.containsKey(channel))
+            return redstoneNetwork.get(channel);
+        return 0;
     }
 
     public void updateRedstoneNetwork(byte redstoneChannel, byte redstoneStrength) {
@@ -409,6 +410,7 @@ public class LaserNodeBE extends BaseLaserBE {
                 return inserterCache.get(extractorCardCache).get(key); //Return the cached results
             else { //Find the list of items that can be extracted by this extractor and cache them
                 List<InserterCardCache> nodes = inserterNodes.stream().filter(p -> (p.channel == extractorCardCache.channel)
+                                && (p.enabled)
                                 && (p.isStackValidForCard(stack))
                                 && (p.cardType.equals(extractorCardCache.cardType))
                                 && (!(p.relativePos.equals(BlockPos.ZERO) && p.direction.equals(extractorCardCache.direction) && p.sneaky == extractorCardCache.sneaky)))
@@ -418,6 +420,7 @@ public class LaserNodeBE extends BaseLaserBE {
             }
         } else { //Find the list of items that can be extracted by this extractor and cache them along with the extractor card
             List<InserterCardCache> nodes = inserterNodes.stream().filter(p -> (p.channel == extractorCardCache.channel)
+                            && (p.enabled)
                             && (p.isStackValidForCard(stack))
                             && (p.cardType.equals(extractorCardCache.cardType))
                             && (!(p.relativePos.equals(BlockPos.ZERO) && p.direction.equals(extractorCardCache.direction) && p.sneaky == extractorCardCache.sneaky)))
@@ -437,6 +440,7 @@ public class LaserNodeBE extends BaseLaserBE {
                 return inserterCacheFluid.get(extractorCardCache).get(key); //Return the cached results
             else { //Find the list of items that can be extracted by this extractor and cache them
                 List<InserterCardCache> nodes = inserterNodes.stream().filter(p -> (p.channel == extractorCardCache.channel)
+                                && (p.enabled)
                                 && (p.isStackValidForCard(stack))
                                 && (p.cardType.equals(extractorCardCache.cardType))
                                 && (!(p.relativePos.equals(BlockPos.ZERO) && p.direction.equals(extractorCardCache.direction))))
@@ -446,6 +450,7 @@ public class LaserNodeBE extends BaseLaserBE {
             }
         } else { //Find the list of items that can be extracted by this extractor and cache them along with the extractor card
             List<InserterCardCache> nodes = inserterNodes.stream().filter(p -> (p.channel == extractorCardCache.channel)
+                            && (p.enabled)
                             && (p.isStackValidForCard(stack))
                             && (p.cardType.equals(extractorCardCache.cardType))
                             && (!(p.relativePos.equals(BlockPos.ZERO) && p.direction.equals(extractorCardCache.direction))))
@@ -463,6 +468,7 @@ public class LaserNodeBE extends BaseLaserBE {
             return channelOnlyCache.get(extractorCardCache);
         } else {
             List<InserterCardCache> nodes = inserterNodes.stream().filter(p -> (p.channel == extractorCardCache.channel)
+                            && (p.enabled)
                             && (!(p.relativePos.equals(BlockPos.ZERO) && p.direction.equals(extractorCardCache.direction) && (p.cardType.equals(extractorCardCache.cardType)))))
                     .toList();
             channelOnlyCache.put(extractorCardCache, nodes);
@@ -1613,6 +1619,7 @@ public class LaserNodeBE extends BaseLaserBE {
      * This method is called by refreshAllInvNodes() or on demand when the contents of an inventory node's container is changed
      */
     public void checkInvNode(BlockPos pos, boolean sortInserters) {
+        System.out.println("Check inv node at: " + getBlockPos());
         LaserNodeBE be = getNodeAt(pos);
         BlockPos relativePos = getRelativePos(pos);
         //Remove this position from all caches, so we can repopulate below
