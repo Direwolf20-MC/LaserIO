@@ -1830,12 +1830,12 @@ public class LaserNodeBE extends BaseLaserBE {
                     if (getAttachedInventoryNoCache(direction, BaseCard.getSneaky(card)).equals(LazyOptional.empty()))
                         continue;
 
-                    cardRenders.add(new CardRender(direction, slot, card, getBlockPos()));
+                    cardRenders.add(new CardRender(direction, slot, card, getBlockPos(), level));
                 } else if (card.getItem() instanceof CardFluid) {
                     if (getAttachedFluidTankNoCache(direction, BaseCard.getSneaky(card)).equals(LazyOptional.empty()))
                         continue;
 
-                    cardRenders.add(new CardRender(direction, slot, card, getBlockPos()));
+                    cardRenders.add(new CardRender(direction, slot, card, getBlockPos(), level));
                 } else if (card.getItem() instanceof CardEnergy) {
                     Optional<IEnergyStorage> lazyEnergyStorage = getAttachedEnergyTankNoCache(direction, BaseCard.getSneaky(card)).resolve();
                     if (lazyEnergyStorage.isEmpty())
@@ -1846,11 +1846,11 @@ public class LaserNodeBE extends BaseLaserBE {
                             cardRenders.add(new CardRender(direction, slot, card, getBlockPos()));
                     } else { //Insert/Stock
                         if (energyStorage.canReceive())*/
-                    cardRenders.add(new CardRender(direction, slot, card, getBlockPos()));
+                    cardRenders.add(new CardRender(direction, slot, card, getBlockPos(), level));
                     //}
                 } else if (card.getItem() instanceof CardRedstone) {
                     redstoneCardSides.put((byte) direction.ordinal(), true);
-                    cardRenders.add(new CardRender(direction, slot, card, getBlockPos()));
+                    cardRenders.add(new CardRender(direction, slot, card, getBlockPos(), level));
                 }
             }
         }

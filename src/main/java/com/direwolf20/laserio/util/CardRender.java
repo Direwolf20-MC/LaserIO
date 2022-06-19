@@ -7,6 +7,9 @@ import com.mojang.math.Vector3f;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
 import static com.direwolf20.laserio.util.MiscTools.findOffset;
 
@@ -26,12 +29,14 @@ public class CardRender {
     public float[] floatcolors;
 
 
-    public CardRender(Direction direction, int cardSlot, ItemStack card, BlockPos start) {
+    public CardRender(Direction direction, int cardSlot, ItemStack card, BlockPos start, Level level) {
         this.direction = direction;
         this.cardSlot = cardSlot;
         this.startBlock = start;
         endBlock = startBlock.relative(direction);
-
+        BlockState targetState = level.getBlockState(endBlock);
+        VoxelShape voxelShape = targetState.getShape(level, endBlock);
+        //System.out.println(voxelShape + ":" + voxelShape.getFaceShape(direction.getOpposite()));
         if (((BaseCard) card.getItem()).getCardType() == BaseCard.CardType.ITEM) {
             r = 0f;
             g = 1f;
@@ -53,7 +58,6 @@ public class CardRender {
         diffX = endBlock.getX() + offset.x() - startBlock.getX();
         diffY = endBlock.getY() + offset.y() - startBlock.getY();
         diffZ = endBlock.getZ() + offset.z() - startBlock.getZ();
-
         boolean reverse = !direction.equals(Direction.DOWN);
         if (card.getItem() instanceof CardRedstone) {
             if (BaseCard.getNamedTransferMode(card) != BaseCard.TransferMode.INSERT)
@@ -61,6 +65,51 @@ public class CardRender {
         } else {
             if (BaseCard.getNamedTransferMode(card) != BaseCard.TransferMode.EXTRACT)
                 reverse = !reverse;
+        }
+        if (!voxelShape.isEmpty()) {
+            diffX = (float) (((voxelShape.bounds().maxX - voxelShape.bounds().minX) * diffX) + voxelShape.bounds().minX);
+            diffY = (float) (((voxelShape.bounds().maxY - voxelShape.bounds().minY) * diffY) + voxelShape.bounds().minY);
+            diffZ = (float) (((voxelShape.bounds().maxZ - voxelShape.bounds().minZ) * diffZ) + voxelShape.bounds().minZ);
+            if (direction.equals(Direction.WEST)) {
+                if (targetState.getOffset(level, endBlock).x != 0)
+                    diffX = -1 - (float) (targetState.getOffset(level, endBlock).x + (float) 1 / 16 - ((voxelShape.bounds().maxX - voxelShape.bounds().minX)));
+                else {
+                    diffX = -1 + (float) voxelShape.bounds().maxX;
+                }
+                offset.setX(offset.x() - 0.1875f);
+            } else if (direction.equals(Direction.EAST)) {
+                if (targetState.getOffset(level, endBlock).x != 0)
+                    diffX = 1 + (float) (targetState.getOffset(level, endBlock).x - (float) 1 / 16 + ((voxelShape.bounds().maxX - voxelShape.bounds().minX)));
+                else
+                    diffX = 1 + (float) voxelShape.bounds().minX;
+                offset.setX(offset.x() + 0.1875f);
+            } else if (direction.equals(Direction.SOUTH)) {
+                if (targetState.getOffset(level, endBlock).z != 0)
+                    diffZ = 1 + (float) (targetState.getOffset(level, endBlock).z - (float) 1 / 16 + ((voxelShape.bounds().maxZ - voxelShape.bounds().minZ)));
+                else
+                    diffZ = 1 + (float) voxelShape.bounds().minZ;
+                offset.setZ(offset.z() + 0.1875f);
+            } else if (direction.equals(Direction.NORTH)) {
+                if (targetState.getOffset(level, endBlock).z != 0)
+                    diffZ = (float) (targetState.getOffset(level, endBlock).z + (float) 1 / 16 - ((voxelShape.bounds().maxZ - voxelShape.bounds().minZ)));
+                else {
+                    diffZ = -1 + (float) voxelShape.bounds().maxZ;
+                }
+                offset.setZ(offset.z() - 0.1875f);
+            } else if (direction.equals(Direction.UP)) {
+                if (targetState.getOffset(level, endBlock).y != 0)
+                    diffY = 1 + (float) (targetState.getOffset(level, endBlock).y - (float) 1 / 16 + ((voxelShape.bounds().maxY - voxelShape.bounds().minY)));
+                else
+                    diffY = 1 + (float) voxelShape.bounds().minY;
+                offset.setY(offset.y() + 0.1875f);
+            } else if (direction.equals(Direction.DOWN)) {
+                if (targetState.getOffset(level, endBlock).y != 0)
+                    diffY = (float) (targetState.getOffset(level, endBlock).y + (float) 1 / 16 - ((voxelShape.bounds().maxY - voxelShape.bounds().minY)));
+                else {
+                    diffY = -1 + (float) voxelShape.bounds().maxY;
+                }
+                offset.setY(offset.y() - 0.1875f);
+            }
         }
         floatcolors = LaserNodeBERender.colors[BaseCard.getChannel(card)].getColorComponents(new float[3]);
         if (reverse) {
