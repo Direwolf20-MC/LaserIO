@@ -29,7 +29,7 @@ public class CardRender {
     public float[] floatcolors;
 
 
-    public CardRender(Direction direction, int cardSlot, ItemStack card, BlockPos start, Level level) {
+    public CardRender(Direction direction, int cardSlot, ItemStack card, BlockPos start, Level level, boolean enabled) {
         this.direction = direction;
         this.cardSlot = cardSlot;
         this.startBlock = start;
@@ -54,6 +54,12 @@ public class CardRender {
             g = 0f;
             b = 0f;
         }
+        if (!enabled) {
+            r /= 4f;
+            g /= 4f;
+            b /= 4f;
+        }
+
         Vector3f offset = findOffset(direction, cardSlot, LaserNodeBERender.offsets);
         Vector3f shapeOffset = shapeOffset(offset, voxelShape, startBlock, endBlock, direction, level, targetState);
         diffX = shapeOffset.x();

@@ -23,6 +23,10 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.Connection;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -278,12 +282,12 @@ public class LaserNodeBE extends BaseLaserBE {
 
     /** Visits all the notes in the network, and refreshes this redstone network cache from theirs **/
     public void refreshRedstoneNetwork() {
-        //System.out.println("Updating Redstone Network at: " + getBlockPos() + ", Gametime: " + level.getGameTime());
+        System.out.println("Updating Redstone Network at: " + getBlockPos() + ", Gametime: " + level.getGameTime());
         redstoneNetwork.clear();
         for (BlockPos pos : otherNodesInNetwork) {
             LaserNodeBE laserNodeBE = getNodeAt(getWorldPos(pos));
             if (laserNodeBE == null) continue;
-            for (Map.Entry<Byte, Byte> entry : laserNodeBE.myRedstoneIn.entrySet()) {
+            for (Map.Entry<Byte, Byte> entry : laserNodeBE.myRedstoneIn.byte2ByteEntrySet()) {
                 updateRedstoneNetwork(entry.getKey(), entry.getValue());
             }
         }
@@ -293,31 +297,34 @@ public class LaserNodeBE extends BaseLaserBE {
 
     /** Goes through all the cards in this node, and updates their redstone state **/
     public void refreshCardsRedstone() {
-        boolean updated = false;
+        boolean inserterUpdated = false;
+        boolean extractorUpdated = false;
         for (InserterCardCache inserterCardCache : inserterNodes) {
             if (inserterCardCache.be.getBlockPos().equals(getBlockPos())) {
                 boolean tempEnabled = inserterCardCache.enabled;
                 inserterCardCache.setEnabled();
-                updated = (tempEnabled != inserterCardCache.enabled);
+                if (tempEnabled != inserterCardCache.enabled)
+                    inserterUpdated = true;
             }
         }
         for (Direction direction : Direction.values()) {
             NodeSideCache nodeSideCache = nodeSideCaches[direction.ordinal()];
             for (ExtractorCardCache extractorCardCache : nodeSideCache.extractorCardCaches) {
+                boolean tempEnabled = extractorCardCache.enabled;
                 extractorCardCache.setEnabled();
+                if (tempEnabled != extractorCardCache.enabled)
+                    extractorUpdated = true;
             }
         }
-        if (updated) {
+        //if (inserterUpdated || extractorUpdated)
+        markDirtyClient();
+        if (inserterUpdated) {
             for (BlockPos pos : otherNodesInNetwork) {
                 LaserNodeBE node = getNodeAt(getWorldPos(pos));
                 if (node == null) continue;
                 node.checkInvNode(this.getBlockPos(), true);
             }
         }
-        /*inserterCache.clear();
-        inserterCacheFluid.clear();
-        channelOnlyCache.clear();
-        stockerDestinationCache.clear();*/
     }
 
     public byte getRedstoneChannelStrength(byte channel) {
@@ -1619,7 +1626,7 @@ public class LaserNodeBE extends BaseLaserBE {
      * This method is called by refreshAllInvNodes() or on demand when the contents of an inventory node's container is changed
      */
     public void checkInvNode(BlockPos pos, boolean sortInserters) {
-        System.out.println("Check inv node at: " + getBlockPos());
+        //System.out.println("Check inv node at: " + getBlockPos());
         LaserNodeBE be = getNodeAt(pos);
         BlockPos relativePos = getRelativePos(pos);
         //Remove this position from all caches, so we can repopulate below
@@ -1869,6 +1876,7 @@ public class LaserNodeBE extends BaseLaserBE {
     }
 
     public void populateRenderList() {
+        //System.out.println("Refreshing Renders at: " + getBlockPos());
         if (level == null || !level.isClientSide) return;
         this.cardRenders.clear();
         redstoneCardSides.clear();
@@ -1877,16 +1885,33 @@ public class LaserNodeBE extends BaseLaserBE {
             for (int slot = 0; slot < h.getSlots(); slot++) {
                 ItemStack card = h.getStackInSlot(slot);
                 if (!(card.getItem() instanceof BaseCard)) continue;
+                byte redstoneMode = BaseCard.getRedstoneMode(card);
+                if (card.getItem() instanceof CardRedstone) redstoneMode = 2;
+                byte redstoneChannel = BaseCard.getRedstoneChannel(card);
+                boolean enabled;
+                if (redstoneMode == 0) {
+                    enabled = true;
+                } else {
+                    byte strength = getRedstoneChannelStrength(redstoneChannel);
+                    if (strength > 0 && redstoneMode == 1) {
+                        enabled = false;
+                    } else if (strength == 0 && redstoneMode == 2) {
+                        enabled = false;
+                    } else {
+                        enabled = true;
+                    }
+                }
+
                 if (card.getItem() instanceof CardItem) {
                     if (getAttachedInventoryNoCache(direction, BaseCard.getSneaky(card)).equals(LazyOptional.empty()))
                         continue;
 
-                    cardRenders.add(new CardRender(direction, slot, card, getBlockPos(), level));
+                    cardRenders.add(new CardRender(direction, slot, card, getBlockPos(), level, enabled));
                 } else if (card.getItem() instanceof CardFluid) {
                     if (getAttachedFluidTankNoCache(direction, BaseCard.getSneaky(card)).equals(LazyOptional.empty()))
                         continue;
 
-                    cardRenders.add(new CardRender(direction, slot, card, getBlockPos(), level));
+                    cardRenders.add(new CardRender(direction, slot, card, getBlockPos(), level, enabled));
                 } else if (card.getItem() instanceof CardEnergy) {
                     Optional<IEnergyStorage> lazyEnergyStorage = getAttachedEnergyTankNoCache(direction, BaseCard.getSneaky(card)).resolve();
                     if (lazyEnergyStorage.isEmpty())
@@ -1897,11 +1922,11 @@ public class LaserNodeBE extends BaseLaserBE {
                             cardRenders.add(new CardRender(direction, slot, card, getBlockPos()));
                     } else { //Insert/Stock
                         if (energyStorage.canReceive())*/
-                    cardRenders.add(new CardRender(direction, slot, card, getBlockPos(), level));
+                    cardRenders.add(new CardRender(direction, slot, card, getBlockPos(), level, enabled));
                     //}
                 } else if (card.getItem() instanceof CardRedstone) {
                     redstoneCardSides.put((byte) direction.ordinal(), true);
-                    cardRenders.add(new CardRender(direction, slot, card, getBlockPos(), level));
+                    cardRenders.add(new CardRender(direction, slot, card, getBlockPos(), level, enabled));
                 }
             }
         }
@@ -1918,6 +1943,35 @@ public class LaserNodeBE extends BaseLaserBE {
             return nodeSideCaches[side.ordinal()].handlerLazyOptional.cast();
         }
         return super.getCapability(cap, side);
+    }
+
+    @Override
+    public CompoundTag getUpdateTag() {
+        CompoundTag tag = new CompoundTag();
+        saveAdditional(tag);
+        ListTag redstoneNetworkTag = new ListTag();
+        for (Map.Entry<Byte, Byte> entry : redstoneNetwork.byte2ByteEntrySet()) {
+            CompoundTag comp = new CompoundTag();
+            comp.putByte("channel", entry.getKey());
+            comp.putByte("strength", entry.getValue());
+            redstoneNetworkTag.add(comp);
+        }
+        tag.put("redstoneNetworkTag", redstoneNetworkTag);
+        System.out.println(redstoneNetworkTag + " at " + getBlockPos());
+        return tag;
+    }
+
+    @Override
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
+        CompoundTag tag = pkt.getTag();
+        this.load(tag);
+        redstoneNetwork.clear();
+        ListTag redstoneNetworkTag = tag.getList("redstoneNetworkTag", Tag.TAG_COMPOUND);
+        for (int i = 0; i < redstoneNetworkTag.size(); i++) {
+            byte channel = redstoneNetworkTag.getCompound(i).getByte("channel");
+            byte strength = redstoneNetworkTag.getCompound(i).getByte("strength");
+            redstoneNetwork.put(channel, strength);
+        }
     }
 
     @Override
