@@ -34,6 +34,7 @@ public class BaseCardCache {
     public final BaseCard.CardType cardType;
     public int extractLimit = 0;
     public int insertLimit = 0;
+    public boolean enabled = true;
 
     public final boolean isAllowList;
     public final boolean isCompareNBT;

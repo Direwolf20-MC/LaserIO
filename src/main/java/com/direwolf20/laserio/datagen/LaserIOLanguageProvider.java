@@ -62,6 +62,10 @@ public class LaserIOLanguageProvider extends LanguageProvider {
         add("screen.laserio.output", "Output");
         add("screen.laserio.weak", "Weak");
         add("screen.laserio.strong", "Strong");
+        add("screen.laserio.redstoneMode", "Redstone: ");
+        add("screen.laserio.ignored", "Ignored");
+        add("screen.laserio.low", "Low");
+        add("screen.laserio.high", "High");
 
         add("screen.laserio.denylist", "Deny");
         add("screen.laserio.nbttrue", "Match NBT");

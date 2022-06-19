@@ -319,6 +319,12 @@ public class LaserNodeBE extends BaseLaserBE {
         updateRedstoneOutputs(); //Now that we know what the network should look like - update the outputs
     }
 
+    public void refreshCardsRedstone() {
+        for (InserterCardCache inserterCardCache : inserterNodes) {
+
+        }
+    }
+
     public void updateRedstoneNetwork(byte redstoneChannel, byte redstoneStrength) {
         if (redstoneNetwork.containsKey(redstoneChannel)) {
             byte existingRedstoneStrength = redstoneNetwork.get(redstoneChannel);
