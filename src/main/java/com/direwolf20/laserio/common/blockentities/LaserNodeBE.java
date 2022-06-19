@@ -282,7 +282,7 @@ public class LaserNodeBE extends BaseLaserBE {
 
     /** Visits all the notes in the network, and refreshes this redstone network cache from theirs **/
     public void refreshRedstoneNetwork() {
-        System.out.println("Updating Redstone Network at: " + getBlockPos() + ", Gametime: " + level.getGameTime());
+        //System.out.println("Updating Redstone Network at: " + getBlockPos() + ", Gametime: " + level.getGameTime());
         redstoneNetwork.clear();
         for (BlockPos pos : otherNodesInNetwork) {
             LaserNodeBE laserNodeBE = getNodeAt(getWorldPos(pos));
@@ -1957,7 +1957,7 @@ public class LaserNodeBE extends BaseLaserBE {
             redstoneNetworkTag.add(comp);
         }
         tag.put("redstoneNetworkTag", redstoneNetworkTag);
-        System.out.println(redstoneNetworkTag + " at " + getBlockPos());
+        //System.out.println(redstoneNetworkTag + " at " + getBlockPos());
         return tag;
     }
 
