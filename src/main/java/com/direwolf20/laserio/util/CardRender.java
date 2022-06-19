@@ -55,9 +55,10 @@ public class CardRender {
             b = 0f;
         }
         Vector3f offset = findOffset(direction, cardSlot, LaserNodeBERender.offsets);
-        diffX = endBlock.getX() + offset.x() - startBlock.getX();
-        diffY = endBlock.getY() + offset.y() - startBlock.getY();
-        diffZ = endBlock.getZ() + offset.z() - startBlock.getZ();
+        Vector3f shapeOffset = shapeOffset(offset, voxelShape, startBlock, endBlock, direction, level, targetState);
+        diffX = shapeOffset.x();
+        diffY = shapeOffset.y();
+        diffZ = shapeOffset.z();
         boolean reverse = !direction.equals(Direction.DOWN);
         if (card.getItem() instanceof CardRedstone) {
             if (BaseCard.getNamedTransferMode(card) != BaseCard.TransferMode.INSERT)
@@ -66,6 +67,21 @@ public class CardRender {
             if (BaseCard.getNamedTransferMode(card) != BaseCard.TransferMode.EXTRACT)
                 reverse = !reverse;
         }
+        floatcolors = LaserNodeBERender.colors[BaseCard.getChannel(card)].getColorComponents(new float[3]);
+        if (reverse) {
+            endLaser = new Vector3f(offset.x(), offset.y(), offset.z());
+            startLaser = new Vector3f(diffX, diffY, diffZ);
+        } else {
+            startLaser = new Vector3f(offset.x(), offset.y(), offset.z());
+            endLaser = new Vector3f(diffX, diffY, diffZ);
+        }
+    }
+
+    public static Vector3f shapeOffset(Vector3f offset, VoxelShape voxelShape, BlockPos startBlock, BlockPos endBlock, Direction direction, Level level, BlockState targetState) {
+        float diffX, diffY, diffZ;
+        diffX = endBlock.getX() + offset.x() - startBlock.getX();
+        diffY = endBlock.getY() + offset.y() - startBlock.getY();
+        diffZ = endBlock.getZ() + offset.z() - startBlock.getZ();
         if (!voxelShape.isEmpty()) {
             diffX = (float) (((voxelShape.bounds().maxX - voxelShape.bounds().minX) * diffX) + voxelShape.bounds().minX);
             diffY = (float) (((voxelShape.bounds().maxY - voxelShape.bounds().minY) * diffY) + voxelShape.bounds().minY);
@@ -111,14 +127,6 @@ public class CardRender {
                 offset.setY(offset.y() - 0.1875f);
             }
         }
-        floatcolors = LaserNodeBERender.colors[BaseCard.getChannel(card)].getColorComponents(new float[3]);
-        if (reverse) {
-            endLaser = new Vector3f(offset.x(), offset.y(), offset.z());
-            startLaser = new Vector3f(diffX, diffY, diffZ);
-        } else {
-            startLaser = new Vector3f(offset.x(), offset.y(), offset.z());
-            endLaser = new Vector3f(diffX, diffY, diffZ);
-        }
+        return new Vector3f(diffX, diffY, diffZ);
     }
-
 }

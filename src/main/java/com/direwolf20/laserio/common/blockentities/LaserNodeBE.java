@@ -3,6 +3,7 @@ package com.direwolf20.laserio.common.blockentities;
 import com.direwolf20.laserio.client.particles.fluidparticle.FluidFlowParticleData;
 import com.direwolf20.laserio.client.particles.itemparticle.ItemFlowParticleData;
 import com.direwolf20.laserio.common.blockentities.basebe.BaseLaserBE;
+import com.direwolf20.laserio.common.blocks.LaserNode;
 import com.direwolf20.laserio.common.containers.LaserNodeContainer;
 import com.direwolf20.laserio.common.events.ServerTickHandler;
 import com.direwolf20.laserio.common.items.cards.*;
@@ -26,6 +27,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.common.util.NonNullConsumer;
@@ -1439,21 +1441,39 @@ public class LaserNodeBE extends BaseLaserBE {
             BlockPos toPos = partData.toPos;
             BlockPos fromPos = partData.fromPos;
             Direction direction = Direction.values()[partData.direction];
-
-            Vector3f extractOffset = findOffset(direction, partData.position, offsets);
-            ItemFlowParticleData data = new ItemFlowParticleData(itemStack, toPos.getX() + extractOffset.x(), toPos.getY() + extractOffset.y(), toPos.getZ() + extractOffset.z(), 10);
+            BlockState targetState = level.getBlockState(toPos);
             float randomSpread = 0.01f;
             int min = 1;
             int max = 64;
             int minPart = 32;
             int maxPart = 64;
             int count = ((maxPart - minPart) * (itemStack.getCount() - min)) / (max - min) + minPart;
-            for (int i = 0; i < count; ++i) {
-                //particlesDrawnThisTick++;
-                double d1 = this.random.nextGaussian() * (double) randomSpread;
-                double d3 = this.random.nextGaussian() * (double) randomSpread;
-                double d5 = this.random.nextGaussian() * (double) randomSpread;
-                clientLevel.addParticle(data, fromPos.getX() + extractOffset.x() + d1, fromPos.getY() + extractOffset.y() + d3, fromPos.getZ() + extractOffset.z() + d5, 0, 0, 0);
+
+            if (targetState.getBlock() instanceof LaserNode) {
+                targetState = level.getBlockState(fromPos);
+                VoxelShape voxelShape = targetState.getShape(level, toPos);
+                Vector3f extractOffset = findOffset(direction, partData.position, offsets);
+                Vector3f insertOffset = CardRender.shapeOffset(extractOffset, voxelShape, fromPos, toPos, direction, level, targetState);
+                ItemFlowParticleData data = new ItemFlowParticleData(itemStack, toPos.getX() + extractOffset.x(), toPos.getY() + extractOffset.y(), toPos.getZ() + extractOffset.z(), 10);
+                for (int i = 0; i < count; ++i) {
+                    //particlesDrawnThisTick++;
+                    double d1 = this.random.nextGaussian() * (double) randomSpread;
+                    double d3 = this.random.nextGaussian() * (double) randomSpread;
+                    double d5 = this.random.nextGaussian() * (double) randomSpread;
+                    clientLevel.addParticle(data, toPos.getX() + insertOffset.x() + d1, toPos.getY() + insertOffset.y() + d3, toPos.getZ() + insertOffset.z() + d5, 0, 0, 0);
+                }
+            } else {
+                VoxelShape voxelShape = targetState.getShape(level, toPos);
+                Vector3f extractOffset = findOffset(direction, partData.position, offsets);
+                Vector3f insertOffset = CardRender.shapeOffset(extractOffset, voxelShape, fromPos, toPos, direction, level, targetState);
+                ItemFlowParticleData data = new ItemFlowParticleData(itemStack, fromPos.getX() + insertOffset.x(), fromPos.getY() + insertOffset.y(), fromPos.getZ() + insertOffset.z(), 10);
+                for (int i = 0; i < count; ++i) {
+                    //particlesDrawnThisTick++;
+                    double d1 = this.random.nextGaussian() * (double) randomSpread;
+                    double d3 = this.random.nextGaussian() * (double) randomSpread;
+                    double d5 = this.random.nextGaussian() * (double) randomSpread;
+                    clientLevel.addParticle(data, fromPos.getX() + extractOffset.x() + d1, fromPos.getY() + extractOffset.y() + d3, fromPos.getZ() + extractOffset.z() + d5, 0, 0, 0);
+                }
             }
         }
 
@@ -1463,21 +1483,39 @@ public class LaserNodeBE extends BaseLaserBE {
             BlockPos toPos = partData.toPos;
             BlockPos fromPos = partData.fromPos;
             Direction direction = Direction.values()[partData.direction];
-
-            Vector3f extractOffset = findOffset(direction, partData.position, offsets);
-            FluidFlowParticleData data = new FluidFlowParticleData(fluidStack, toPos.getX() + extractOffset.x(), toPos.getY() + extractOffset.y(), toPos.getZ() + extractOffset.z(), 10);
+            BlockState targetState = level.getBlockState(toPos);
             float randomSpread = 0.01f;
             int min = 100;
             int max = 8000;
             int minPart = 8;
             int maxPart = 64;
             int count = ((maxPart - minPart) * (fluidStack.getAmount() - min)) / (max - min) + minPart;
-            for (int i = 0; i < count; ++i) {
-                //particlesDrawnThisTick++;
-                double d1 = this.random.nextGaussian() * (double) randomSpread;
-                double d3 = this.random.nextGaussian() * (double) randomSpread;
-                double d5 = this.random.nextGaussian() * (double) randomSpread;
-                clientLevel.addParticle(data, fromPos.getX() + extractOffset.x() + d1, fromPos.getY() + extractOffset.y() + d3, fromPos.getZ() + extractOffset.z() + d5, 0, 0, 0);
+
+            if (targetState.getBlock() instanceof LaserNode) {
+                targetState = level.getBlockState(fromPos);
+                VoxelShape voxelShape = targetState.getShape(level, toPos);
+                Vector3f extractOffset = findOffset(direction, partData.position, offsets);
+                Vector3f insertOffset = CardRender.shapeOffset(extractOffset, voxelShape, fromPos, toPos, direction, level, targetState);
+                FluidFlowParticleData data = new FluidFlowParticleData(fluidStack, toPos.getX() + extractOffset.x(), toPos.getY() + extractOffset.y(), toPos.getZ() + extractOffset.z(), 10);
+                for (int i = 0; i < count; ++i) {
+                    //particlesDrawnThisTick++;
+                    double d1 = this.random.nextGaussian() * (double) randomSpread;
+                    double d3 = this.random.nextGaussian() * (double) randomSpread;
+                    double d5 = this.random.nextGaussian() * (double) randomSpread;
+                    clientLevel.addParticle(data, toPos.getX() + insertOffset.x() + d1, toPos.getY() + insertOffset.y() + d3, toPos.getZ() + insertOffset.z() + d5, 0, 0, 0);
+                }
+            } else {
+                VoxelShape voxelShape = targetState.getShape(level, toPos);
+                Vector3f extractOffset = findOffset(direction, partData.position, offsets);
+                Vector3f insertOffset = CardRender.shapeOffset(extractOffset, voxelShape, fromPos, toPos, direction, level, targetState);
+                FluidFlowParticleData data = new FluidFlowParticleData(fluidStack, fromPos.getX() + insertOffset.x(), fromPos.getY() + insertOffset.y(), fromPos.getZ() + insertOffset.z(), 10);
+                for (int i = 0; i < count; ++i) {
+                    //particlesDrawnThisTick++;
+                    double d1 = this.random.nextGaussian() * (double) randomSpread;
+                    double d3 = this.random.nextGaussian() * (double) randomSpread;
+                    double d5 = this.random.nextGaussian() * (double) randomSpread;
+                    clientLevel.addParticle(data, fromPos.getX() + extractOffset.x() + d1, fromPos.getY() + extractOffset.y() + d3, fromPos.getZ() + extractOffset.z() + d5, 0, 0, 0);
+                }
             }
         }
         //System.out.println(particlesDrawnThisTick);
