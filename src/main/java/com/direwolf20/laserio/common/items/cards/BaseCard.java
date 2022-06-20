@@ -32,7 +32,9 @@ public class BaseCard extends Item {
     public enum CardType {
         ITEM,
         FLUID,
-        ENERGY
+        ENERGY,
+        REDSTONE,
+        MISSING
     }
 
     public enum TransferMode {
@@ -279,6 +281,25 @@ public class BaseCard extends Item {
         return roundRobin;
     }
 
+    public static byte getRedstoneMode(ItemStack stack) {
+        CompoundTag compound = stack.getTag();
+        if (compound == null || !compound.contains("redstoneMode")) return 0;
+        return compound.getByte("redstoneMode");
+    }
+
+    public static byte setRedstoneMode(ItemStack stack, byte redstoneMode) {
+        if (redstoneMode == 0)
+            stack.removeTagKey("redstoneMode");
+        else
+            stack.getOrCreateTag().putByte("redstoneMode", redstoneMode);
+        return redstoneMode;
+    }
+
+    public static byte nextRedstoneMode(ItemStack card) {
+        byte mode = getRedstoneMode(card);
+        return setRedstoneMode(card, (byte) (mode == 2 ? 0 : mode + 1));
+    }
+
     public static boolean getExact(ItemStack stack) {
         CompoundTag compound = stack.getTag();
         if (compound == null || !compound.contains("exact")) return false;
@@ -291,5 +312,29 @@ public class BaseCard extends Item {
         else
             stack.getOrCreateTag().putBoolean("exact", exact);
         return exact;
+    }
+
+    public static byte setRedstoneChannel(ItemStack card, byte redstonechannel) {
+        if (redstonechannel == 0)
+            card.removeTagKey("redstonechannel");
+        else
+            card.getOrCreateTag().putByte("redstonechannel", redstonechannel);
+        return redstonechannel;
+    }
+
+    public static byte getRedstoneChannel(ItemStack card) {
+        CompoundTag compound = card.getTag();
+        if (compound == null || !compound.contains("redstonechannel")) return (byte) 0;
+        return compound.getByte("redstonechannel");
+    }
+
+    public static byte nextRedstoneChannel(ItemStack card) {
+        byte k = getRedstoneChannel(card);
+        return setRedstoneChannel(card, (byte) (k == 15 ? 0 : k + 1));
+    }
+
+    public static byte previousRedstoneChannel(ItemStack card) {
+        byte k = getRedstoneChannel(card);
+        return setRedstoneChannel(card, (byte) (k == 0 ? 15 : k - 1));
     }
 }

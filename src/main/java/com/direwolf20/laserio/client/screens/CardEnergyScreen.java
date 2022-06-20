@@ -9,6 +9,7 @@ import com.direwolf20.laserio.common.containers.customslot.CardItemSlot;
 import com.direwolf20.laserio.common.containers.customslot.CardOverclockSlot;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.common.items.cards.CardEnergy;
+import com.direwolf20.laserio.common.items.cards.CardRedstone;
 import com.direwolf20.laserio.common.network.PacketHandler;
 import com.direwolf20.laserio.common.network.packets.PacketOpenNode;
 import com.direwolf20.laserio.common.network.packets.PacketUpdateCard;
@@ -39,6 +40,7 @@ public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContaine
     protected final CardEnergyContainer container;
     protected byte currentMode;
     protected byte currentChannel;
+    protected byte currentRedstoneChannel;
     protected int currentEnergyExtractAmt;
     protected short currentPriority;
     protected byte currentSneaky;
@@ -50,6 +52,7 @@ public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContaine
     protected int currentInsertLimitPercent;
     protected final ItemStack card;
     protected Map<String, Button> buttons = new HashMap<>();
+    protected byte currentRedstoneMode;
 
     protected final String[] sneakyNames = {
             "screen.laserio.default",
@@ -84,6 +87,10 @@ public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContaine
         if (MiscTools.inBounds(channelButton.x, channelButton.y, channelButton.getWidth(), channelButton.getHeight(), mouseX, mouseY)) {
             this.renderTooltip(matrixStack, new TextComponent(String.valueOf(currentChannel)), mouseX, mouseY);
         }
+        Button redstoneChannelButton = buttons.get("redstoneChannel");
+        if (MiscTools.inBounds(redstoneChannelButton.x, redstoneChannelButton.y, redstoneChannelButton.getWidth(), redstoneChannelButton.getHeight(), mouseX, mouseY)) {
+            this.renderTooltip(matrixStack, new TextComponent(String.valueOf(currentRedstoneChannel)), mouseX, mouseY);
+        }
         Button sneakyButton = buttons.get("sneaky");
         if (MiscTools.inBounds(sneakyButton.x, sneakyButton.y, sneakyButton.getWidth(), sneakyButton.getHeight(), mouseX, mouseY)) {
             this.renderTooltip(matrixStack, new TranslatableComponent(String.valueOf(sneakyNames[currentSneaky + 1])), mouseX, mouseY);
@@ -112,6 +119,14 @@ public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContaine
                 translatableComponents[2] = new TranslatableComponent("screen.laserio.enforced");
                 this.renderTooltip(matrixStack, new TranslatableComponent("screen.laserio.roundrobin").append(translatableComponents[currentRoundRobin]), mouseX, mouseY);
             }
+        }
+        Button redstoneMode = buttons.get("redstoneMode");
+        if (MiscTools.inBounds(redstoneMode.x, redstoneMode.y, redstoneMode.getWidth(), redstoneMode.getHeight(), mouseX, mouseY)) {
+            TranslatableComponent translatableComponents[] = new TranslatableComponent[3];
+            translatableComponents[0] = new TranslatableComponent("screen.laserio.ignored");
+            translatableComponents[1] = new TranslatableComponent("screen.laserio.low");
+            translatableComponents[2] = new TranslatableComponent("screen.laserio.high");
+            this.renderTooltip(matrixStack, new TranslatableComponent("screen.laserio.redstoneMode").append(translatableComponents[currentRedstoneMode]), mouseX, mouseY);
         }
         Button exact = buttons.get("exact");
         if (MiscTools.inBounds(exact.x, exact.y, exact.getWidth(), exact.getHeight(), mouseX, mouseY)) {
@@ -157,6 +172,24 @@ public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContaine
         }));
     }
 
+    public void addRedstoneButton() {
+        ResourceLocation[] redstoneTextures = new ResourceLocation[3];
+        redstoneTextures[0] = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/redstoneignore.png");
+        redstoneTextures[1] = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/redstonelow.png");
+        redstoneTextures[2] = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/redstonehigh.png");
+        buttons.put("redstoneMode", new ToggleButton(getGuiLeft() + 105, getGuiTop() + 5, 16, 16, redstoneTextures, currentRedstoneMode, (button) -> {
+            currentRedstoneMode = (byte) (currentRedstoneMode == 2 ? 0 : currentRedstoneMode + 1);
+            ((ToggleButton) button).setTexturePosition(currentRedstoneMode);
+        }));
+    }
+
+    public void addRedstoneChannelButton() {
+        buttons.put("redstoneChannel", new ChannelButton(getGuiLeft() + 125, getGuiTop() + 5, 16, 16, currentRedstoneChannel, (button) -> {
+            currentRedstoneChannel = CardRedstone.nextRedstoneChannel(card);
+            ((ChannelButton) button).setChannel(currentRedstoneChannel);
+        }));
+    }
+
     @Override
     public void init() {
         super.init();
@@ -171,6 +204,8 @@ public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContaine
         currentRegulate = BaseCard.getRegulate(card);
         currentExtractLimitPercent = CardEnergy.getExtractLimitPercent(card);
         currentInsertLimitPercent = CardEnergy.getInsertLimitPercent(card);
+        currentRedstoneMode = CardEnergy.getRedstoneMode(card);
+        currentRedstoneChannel = BaseCard.getRedstoneChannel(card);
 
         addAmtButton();
         addLimitButton();
@@ -205,6 +240,8 @@ public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContaine
         }));
 
         addModeButton();
+        addRedstoneButton();
+        addRedstoneChannelButton();
 
         buttons.put("channel", new ChannelButton(getGuiLeft() + 5, getGuiTop() + 65, 16, 16, currentChannel, (button) -> {
             currentChannel = BaseCard.nextChannel(card);
@@ -436,7 +473,7 @@ public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContaine
     }
 
     public void saveSettings() {
-        PacketHandler.sendToServer(new PacketUpdateCard(currentMode, currentChannel, currentEnergyExtractAmt, currentPriority, currentSneaky, (short) currentTicks, currentExact, currentRegulate, (byte) currentRoundRobin, currentExtractLimitPercent, currentInsertLimitPercent));
+        PacketHandler.sendToServer(new PacketUpdateCard(currentMode, currentChannel, currentEnergyExtractAmt, currentPriority, currentSneaky, (short) currentTicks, currentExact, currentRegulate, (byte) currentRoundRobin, currentExtractLimitPercent, currentInsertLimitPercent, currentRedstoneMode, currentRedstoneChannel));
     }
 
     public void openNode() {
@@ -455,6 +492,16 @@ public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContaine
                 currentChannel = BaseCard.previousChannel(card);
             channelButton.setChannel(currentChannel);
             channelButton.playDownSound(Minecraft.getInstance().getSoundManager());
+            return true;
+        }
+        ChannelButton redstoneChannelButton = ((ChannelButton) buttons.get("redstoneChannel"));
+        if (MiscTools.inBounds(redstoneChannelButton.x, redstoneChannelButton.y, redstoneChannelButton.getWidth(), redstoneChannelButton.getHeight(), x, y)) {
+            if (btn == 0)
+                currentRedstoneChannel = BaseCard.nextRedstoneChannel(card);
+            else if (btn == 1)
+                currentRedstoneChannel = BaseCard.previousRedstoneChannel(card);
+            redstoneChannelButton.setChannel(currentRedstoneChannel);
+            redstoneChannelButton.playDownSound(Minecraft.getInstance().getSoundManager());
             return true;
         }
         NumberButton amountButton = ((NumberButton) buttons.get("amount"));

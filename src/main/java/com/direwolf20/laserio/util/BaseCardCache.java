@@ -23,6 +23,8 @@ public class BaseCardCache {
     public final Direction direction;
     public final ItemStack cardItem;
     public final byte channel;
+    public final byte redstoneMode;
+    public final byte redstoneChannel;
     public final ItemStack filterCard;
     public final int cardSlot;
     public final List<ItemStack> filteredItems;
@@ -33,6 +35,7 @@ public class BaseCardCache {
     public final BaseCard.CardType cardType;
     public int extractLimit = 0;
     public int insertLimit = 0;
+    public boolean enabled = true;
 
     public final boolean isAllowList;
     public final boolean isCompareNBT;
@@ -47,6 +50,8 @@ public class BaseCardCache {
         this.direction = direction;
         this.sneaky = BaseCard.getSneaky(cardItem);
         this.channel = BaseCard.getChannel(cardItem);
+        this.redstoneMode = BaseCard.getRedstoneMode(cardItem);
+        this.redstoneChannel = BaseCard.getRedstoneChannel(cardItem);
         this.filterCard = BaseCard.getFilter(cardItem);
         this.cardSlot = cardSlot;
         if (cardItem.getItem() instanceof CardItem)
@@ -57,7 +62,9 @@ public class BaseCardCache {
             cardType = BaseCard.CardType.ENERGY;
             this.insertLimit = CardEnergy.getInsertLimitPercent(cardItem);
             this.extractLimit = CardEnergy.getExtractLimitPercent(cardItem);
-        } else cardType = null;
+        } else if (cardItem.getItem() instanceof CardEnergy)
+            cardType = BaseCard.CardType.REDSTONE;
+        else cardType = BaseCard.CardType.MISSING;
         this.be = be;
         if (filterCard.equals(ItemStack.EMPTY)) {
             filteredItems = new ArrayList<>();
@@ -71,6 +78,22 @@ public class BaseCardCache {
             this.filterTags = getFilterTags();
             isAllowList = BaseFilter.getAllowList(filterCard);
             isCompareNBT = BaseFilter.getCompareNBT(filterCard);
+        }
+        setEnabled();
+    }
+
+    public void setEnabled() {
+        if (redstoneMode == 0) {
+            enabled = true;
+        } else {
+            byte strength = be.getRedstoneChannelStrength(redstoneChannel);
+            if (strength > 0 && redstoneMode == 1) {
+                enabled = false;
+            } else if (strength == 0 && redstoneMode == 2) {
+                enabled = false;
+            } else {
+                enabled = true;
+            }
         }
     }
 

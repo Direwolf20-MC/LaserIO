@@ -4,6 +4,7 @@ import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import com.direwolf20.laserio.common.blockentities.basebe.BaseLaserBE;
 import com.direwolf20.laserio.common.containers.CardEnergyContainer;
 import com.direwolf20.laserio.common.containers.CardItemContainer;
+import com.direwolf20.laserio.common.containers.CardRedstoneContainer;
 import com.direwolf20.laserio.common.containers.LaserNodeContainer;
 import com.direwolf20.laserio.common.containers.customhandler.LaserNodeItemHandler;
 import com.direwolf20.laserio.common.network.PacketHandler;
@@ -68,6 +69,8 @@ public class PacketOpenNode {
                     pos = cardItemContainer.sourceContainer;
                 else if (container instanceof CardEnergyContainer cardEnergyContainer)
                     pos = cardEnergyContainer.sourceContainer;
+                else if (container instanceof CardRedstoneContainer cardRedstoneContainer)
+                    pos = cardRedstoneContainer.sourceContainer;
                 else return;
 
                 final BlockPos sourcePos = pos;

@@ -26,8 +26,10 @@ public class PacketUpdateCard {
     byte roundRobin;
     int extractLimit;
     int insertLimit;
+    byte redstoneMode;
+    byte redstoneChannel;
 
-    public PacketUpdateCard(byte mode, byte channel, int extractAmt, short priority, byte sneaky, short ticks, boolean exact, boolean regulate, byte roundRobin, int extractLimit, int insertLimit) {
+    public PacketUpdateCard(byte mode, byte channel, int extractAmt, short priority, byte sneaky, short ticks, boolean exact, boolean regulate, byte roundRobin, int extractLimit, int insertLimit, byte redstoneMode, byte redstoneChannel) {
         this.mode = mode;
         this.channel = channel;
         this.extractAmt = extractAmt;
@@ -39,6 +41,8 @@ public class PacketUpdateCard {
         this.roundRobin = roundRobin;
         this.extractLimit = extractLimit;
         this.insertLimit = insertLimit;
+        this.redstoneMode = redstoneMode;
+        this.redstoneChannel = redstoneChannel;
     }
 
     public static void encode(PacketUpdateCard msg, FriendlyByteBuf buffer) {
@@ -53,10 +57,12 @@ public class PacketUpdateCard {
         buffer.writeByte(msg.roundRobin);
         buffer.writeInt(msg.extractLimit);
         buffer.writeInt(msg.insertLimit);
+        buffer.writeByte(msg.redstoneMode);
+        buffer.writeByte(msg.redstoneChannel);
     }
 
     public static PacketUpdateCard decode(FriendlyByteBuf buffer) {
-        return new PacketUpdateCard(buffer.readByte(), buffer.readByte(), buffer.readInt(), buffer.readShort(), buffer.readByte(), buffer.readShort(), buffer.readBoolean(), buffer.readBoolean(), buffer.readByte(), buffer.readInt(), buffer.readInt());
+        return new PacketUpdateCard(buffer.readByte(), buffer.readByte(), buffer.readInt(), buffer.readShort(), buffer.readByte(), buffer.readShort(), buffer.readBoolean(), buffer.readBoolean(), buffer.readByte(), buffer.readInt(), buffer.readInt(), buffer.readByte(), buffer.readByte());
     }
 
     public static class Handler {
@@ -133,6 +139,8 @@ public class PacketUpdateCard {
                     BaseCard.setExact(stack, msg.exact);
                     BaseCard.setRoundRobin(stack, msg.roundRobin);
                     BaseCard.setRegulate(stack, msg.regulate);
+                    BaseCard.setRedstoneMode(stack, msg.redstoneMode);
+                    BaseCard.setRedstoneChannel(stack, msg.redstoneChannel);
                 }
             });
 

@@ -153,11 +153,44 @@ public class LaserNode extends BaseLaserBlock implements EntityBlock {
     }
 
     public void neighborChanged(BlockState blockState, Level level, BlockPos pos, Block blockIn, BlockPos fromPos, boolean isMoving) {
+        //System.out.println("Neighbor changed at: " + pos + " from: " + fromPos);
         BlockEntity blockEntity = level.getBlockEntity(pos);
         if (blockEntity instanceof LaserNodeBE laserNodeBE) {
             laserNodeBE.rendersChecked = false;
             laserNodeBE.clearCachedInventories();
+            laserNodeBE.redstoneChecked = false;
+            //laserNodeBE.populateThisRedstoneNetwork(true);
         }
+    }
+
+    @Override
+    public int getSignal(BlockState pBlockState, BlockGetter pBlockAccess, BlockPos pPos, Direction pSide) {
+        BlockEntity blockEntity = pBlockAccess.getBlockEntity(pPos);
+        if (blockEntity instanceof LaserNodeBE laserNodeBE) {
+            return laserNodeBE.getRedstoneSide(pSide.getOpposite());
+        }
+        return 0;
+    }
+
+    @Override
+    public boolean canConnectRedstone(BlockState state, BlockGetter level, BlockPos pos, @Nullable Direction direction) {
+        BlockEntity blockEntity = level.getBlockEntity(pos);
+        if (blockEntity instanceof LaserNodeBE laserNodeBE) {
+            if ((direction == null) || !laserNodeBE.redstoneCardSides.containsKey((byte) direction.getOpposite().ordinal()))
+                return false;
+            return laserNodeBE.redstoneCardSides.get((byte) direction.getOpposite().ordinal());
+        }
+        return false;
+    }
+
+    @Override
+    public int getDirectSignal(BlockState pBlockState, BlockGetter pBlockAccess, BlockPos pPos, Direction pSide) {
+        BlockEntity blockEntity = pBlockAccess.getBlockEntity(pPos);
+        if (blockEntity instanceof LaserNodeBE laserNodeBE) {
+            if (laserNodeBE.getRedstoneSideStrong(pSide.getOpposite()))
+                return laserNodeBE.getRedstoneSide(pSide.getOpposite());
+        }
+        return 0;
     }
 
     @Nullable

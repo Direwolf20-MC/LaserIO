@@ -1,0 +1,6 @@
+{
+  "parent": "laserio:item/card_redstone",
+  "textures": {
+    "layer1": "laserio:item/cardlayers/extract"
+  }
+}

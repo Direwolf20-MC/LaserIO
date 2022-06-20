@@ -22,6 +22,7 @@ public class LaserIOLanguageProvider extends LanguageProvider {
         add(Registration.Card_Item.get(), "Item Card");
         add(Registration.Card_Fluid.get(), "Fluid Card");
         add(Registration.Card_Energy.get(), "Energy Card");
+        add(Registration.Card_Redstone.get(), "Redstone Card");
         add(Registration.Filter_Basic.get(), "Basic Filter");
         add(Registration.Filter_Count.get(), "Counting Filter");
         add(Registration.Filter_Tag.get(), "Tag Filter");
@@ -57,6 +58,14 @@ public class LaserIOLanguageProvider extends LanguageProvider {
         add("screen.laserio.extract", "Extract");
         add("screen.laserio.insert", "Insert");
         add("screen.laserio.stock", "Stock");
+        add("screen.laserio.input", "Input");
+        add("screen.laserio.output", "Output");
+        add("screen.laserio.weak", "Weak");
+        add("screen.laserio.strong", "Strong");
+        add("screen.laserio.redstoneMode", "Redstone: ");
+        add("screen.laserio.ignored", "Ignored");
+        add("screen.laserio.low", "Low");
+        add("screen.laserio.high", "High");
 
         add("screen.laserio.denylist", "Deny");
         add("screen.laserio.nbttrue", "Match NBT");

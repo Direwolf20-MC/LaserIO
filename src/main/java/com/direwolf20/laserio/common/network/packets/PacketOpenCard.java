@@ -1,13 +1,11 @@
 package com.direwolf20.laserio.common.network.packets;
 
-import com.direwolf20.laserio.common.containers.CardEnergyContainer;
-import com.direwolf20.laserio.common.containers.CardFluidContainer;
-import com.direwolf20.laserio.common.containers.CardItemContainer;
-import com.direwolf20.laserio.common.containers.LaserNodeContainer;
+import com.direwolf20.laserio.common.containers.*;
 import com.direwolf20.laserio.common.containers.customhandler.CardItemHandler;
 import com.direwolf20.laserio.common.items.cards.CardEnergy;
 import com.direwolf20.laserio.common.items.cards.CardFluid;
 import com.direwolf20.laserio.common.items.cards.CardItem;
+import com.direwolf20.laserio.common.items.cards.CardRedstone;
 import com.direwolf20.laserio.common.items.filters.BaseFilter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
@@ -92,6 +90,13 @@ public class PacketOpenCard {
                 } else if (itemStack.getItem() instanceof CardEnergy) {
                     NetworkHooks.openGui(sender, new SimpleMenuProvider(
                             (windowId, playerInventory, playerEntity) -> new CardEnergyContainer(windowId, playerInventory, sender, msg.sourcePos, itemStack, side), new TranslatableComponent("")), (buf -> {
+                        buf.writeItem(itemStack);
+                        buf.writeByte(side);
+                    }));
+
+                } else if (itemStack.getItem() instanceof CardRedstone) {
+                    NetworkHooks.openGui(sender, new SimpleMenuProvider(
+                            (windowId, playerInventory, playerEntity) -> new CardRedstoneContainer(windowId, playerInventory, sender, msg.sourcePos, itemStack, side), new TranslatableComponent("")), (buf -> {
                         buf.writeItem(itemStack);
                         buf.writeByte(side);
                     }));

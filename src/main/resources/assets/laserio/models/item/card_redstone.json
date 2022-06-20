@@ -1,0 +1,16 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "laserio:item/card_redstone",
+    "layer1": "laserio:item/cardlayers/insert",
+    "layer2": "laserio:item/cardlayers/channel"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "laserio:mode": 1
+      },
+      "model": "laserio:item/card_redstone_extract"
+    }
+  ]
+}

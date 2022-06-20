@@ -11,7 +11,6 @@ public class NodeSideCache {
     public LazyOptional<LaserNodeItemHandler> handlerLazyOptional;
     public int overClocker;
     public final List<ExtractorCardCache> extractorCardCaches = new CopyOnWriteArrayList<>();
-    public final List<StockerCardCache> stockerCardCaches = new CopyOnWriteArrayList<>();
 
     public NodeSideCache() {
 
