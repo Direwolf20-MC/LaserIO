@@ -21,6 +21,10 @@
       "text": "In extract mode, this designates what percent should be left behind.$(br2)For example: If you are extracting FE from an energy cell that can hold 1,000,000FE, and specify a limit of 25%, it will not extract below 250,000 FE."
     },
     {
+      "type": "patchouli:text",
+      "text": "Technical Note: The Forge Energy system supports energy storage up to MAXINT which is approximately 2.14 billion RF. If you are using a mod like Draconic Evolution or Mekanism, their storage cells can store greater than this amount by 'hacking' how Forge Energy works. As a result, this % indicator will not work on storage cells greater than 2.14 billion RF. Sorry! :)"
+    },
+    {
       "type": "patchouli:crafting",
       "title": "Energy Card",
       "recipe": "laserio:card_energy"

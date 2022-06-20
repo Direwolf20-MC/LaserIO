@@ -848,8 +848,11 @@ public class LaserNodeBE extends BaseLaserBE {
             LaserNodeEnergyHandler laserNodeEnergyHandler = getLaserNodeHandlerEnergy(inserterCardCache);
             if (laserNodeEnergyHandler == null) continue;
             IEnergyStorage energyStorage = laserNodeEnergyHandler.handler;
-
-            int desired = (int) (energyStorage.getMaxEnergyStored() * ((float) inserterCardCache.insertLimit / 100)) - energyStorage.getEnergyStored();
+            int desired;
+            if (inserterCardCache.insertLimit != 100)
+                desired = (int) (energyStorage.getMaxEnergyStored() * ((float) inserterCardCache.insertLimit / 100)) - energyStorage.getEnergyStored();
+            else
+                desired = extractAmt;
             if (desired <= 0) continue;
             int amtToTry = Math.min(desired, totalAmtNeeded);
             int amtFit = energyStorage.receiveEnergy(amtToTry, true); //Simulate Insert Energy
@@ -888,7 +891,11 @@ public class LaserNodeBE extends BaseLaserBE {
             LaserNodeEnergyHandler laserNodeEnergyHandler = getLaserNodeHandlerEnergy(inserterCardCache);
             if (laserNodeEnergyHandler == null) continue;
             IEnergyStorage energyStorage = laserNodeEnergyHandler.handler;
-            int desired = (int) (energyStorage.getMaxEnergyStored() * ((float) inserterCardCache.insertLimit / 100)) - energyStorage.getEnergyStored();
+            int desired;
+            if (inserterCardCache.insertLimit != 100)
+                desired = (int) (energyStorage.getMaxEnergyStored() * ((float) inserterCardCache.insertLimit / 100)) - energyStorage.getEnergyStored();
+            else
+                desired = extractAmt;
             if (desired <= 0) continue;
             int amtToTry = Math.min(desired, totalAmtNeeded);
             int amtFit = energyStorage.receiveEnergy(amtToTry, true); //Simulate Insert
