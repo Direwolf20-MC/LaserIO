@@ -55,12 +55,14 @@ public class CardRedstoneScreen extends AbstractContainerScreen<CardRedstoneCont
             translatableComponents[1] = new TranslatableComponent("screen.laserio.output");
             this.renderTooltip(matrixStack, translatableComponents[currentMode], mouseX, mouseY);
         }
-        Button strongButton = buttons.get("strong");
-        if (MiscTools.inBounds(strongButton.x, strongButton.y, strongButton.getWidth(), strongButton.getHeight(), mouseX, mouseY)) {
-            TranslatableComponent translatableComponents[] = new TranslatableComponent[2];
-            translatableComponents[0] = new TranslatableComponent("screen.laserio.weak");
-            translatableComponents[1] = new TranslatableComponent("screen.laserio.strong");
-            this.renderTooltip(matrixStack, translatableComponents[currentStrong ? 1 : 0], mouseX, mouseY);
+        if (currentMode == 1) {
+            Button strongButton = buttons.get("strong");
+            if (MiscTools.inBounds(strongButton.x, strongButton.y, strongButton.getWidth(), strongButton.getHeight(), mouseX, mouseY)) {
+                TranslatableComponent translatableComponents[] = new TranslatableComponent[2];
+                translatableComponents[0] = new TranslatableComponent("screen.laserio.weak");
+                translatableComponents[1] = new TranslatableComponent("screen.laserio.strong");
+                this.renderTooltip(matrixStack, translatableComponents[currentStrong ? 1 : 0], mouseX, mouseY);
+            }
         }
         Button channelButton = buttons.get("channel");
         if (MiscTools.inBounds(channelButton.x, channelButton.y, channelButton.getWidth(), channelButton.getHeight(), mouseX, mouseY)) {
@@ -120,7 +122,13 @@ public class CardRedstoneScreen extends AbstractContainerScreen<CardRedstoneCont
     }
 
     public void modeChange() {
-
+        Button strongButton = buttons.get("strong");
+        if (currentMode == 0) {
+            removeWidget(strongButton);
+        } else if (currentMode == 1) { //extract
+            if (!renderables.contains(strongButton))
+                addRenderableWidget(strongButton);
+        }
     }
 
     @Override
