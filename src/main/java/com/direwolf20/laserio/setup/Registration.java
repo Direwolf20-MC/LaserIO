@@ -64,16 +64,22 @@ public class Registration {
     //Items
     public static final RegistryObject<Item> Laser_Wrench = ITEMS.register("laser_wrench", LaserWrench::new);
     public static final RegistryObject<Item> Card_Holder = ITEMS.register("card_holder", CardHolder::new);
-    public static final RegistryObject<Item> Card_Redstone = ITEMS.register("card_redstone", CardRedstone::new);
-    public static final RegistryObject<Item> Card_Energy = ITEMS.register("card_energy", CardEnergy::new);
-    public static final RegistryObject<Item> Card_Fluid = ITEMS.register("card_fluid", CardFluid::new);
+
+    //Cards
     public static final RegistryObject<Item> Card_Item = ITEMS.register("card_item", CardItem::new);
+    public static final RegistryObject<Item> Card_Fluid = ITEMS.register("card_fluid", CardFluid::new);
+    public static final RegistryObject<Item> Card_Energy = ITEMS.register("card_energy", CardEnergy::new);
+    public static final RegistryObject<Item> Card_Redstone = ITEMS.register("card_redstone", CardRedstone::new);
+
+    //Filters
     public static final RegistryObject<Item> Filter_Basic = ITEMS.register("filter_basic", FilterBasic::new);
     public static final RegistryObject<Item> Filter_Count = ITEMS.register("filter_count", FilterCount::new);
     public static final RegistryObject<Item> Filter_Tag = ITEMS.register("filter_tag", FilterTag::new);
     public static final RegistryObject<Item> Filter_Mod = ITEMS.register("filter_mod", FilterMod::new);
-    public static final RegistryObject<Item> Logic_Chip = ITEMS.register("logic_chip", LogicChip::new);
+
+    //Misc
     public static final RegistryObject<Item> Logic_Chip_Raw = ITEMS.register("logic_chip_raw", LogicChipRaw::new);
+    public static final RegistryObject<Item> Logic_Chip = ITEMS.register("logic_chip", LogicChip::new);
     public static final RegistryObject<Item> Overclocker_Card = ITEMS.register("overclocker_card", OverclockerCard::new);
     public static final RegistryObject<Item> Overclocker_Node = ITEMS.register("overclocker_node", OverclockerNode::new);
 
