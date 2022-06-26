@@ -10,7 +10,7 @@
     },
     {
       "type": "patchouli:text",
-      "text": "Redstone cards have 2 modes:$(br2)$(bold)Input$()$(br)Input mode will accept a redstone signal from something like redstone dust, a level, or a button, and transmit it across the network on the redstone channel configured on the card.$(br2)$(bold)Output$()$(br)Output will emit a redstone signal to blocks like redstone dust, lamp, or repeaters."
+      "text": "Redstone cards have 2 modes:$(br2)$(bold)Input$()$(br)Input mode will accept a redstone signal from something like redstone dust, a lever, or a button, and transmit it across the network on the redstone channel configured on the card.$(br2)$(bold)Output$()$(br)Output will emit a redstone signal to blocks like redstone dust, lamp, or repeaters."
     },
     {
       "type": "patchouli:text",

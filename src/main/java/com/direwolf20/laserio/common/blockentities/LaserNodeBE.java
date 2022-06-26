@@ -2092,6 +2092,7 @@ public class LaserNodeBE extends BaseLaserBE {
     public void setRemoved() {
         super.setRemoved();
         Arrays.stream(nodeSideCaches).forEach(e -> e.handlerLazyOptional.invalidate());
+        Arrays.stream(nodeSideCaches).forEach(e -> e.laserEnergyStorage.invalidate());
     }
 
     public class LaserEnergyStorage implements IEnergyStorage {
