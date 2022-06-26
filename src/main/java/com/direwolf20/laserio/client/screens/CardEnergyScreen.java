@@ -495,6 +495,18 @@ public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContaine
             channelButton.playDownSound(Minecraft.getInstance().getSoundManager());
             return true;
         }
+        ToggleButton sneakyButton = ((ToggleButton) buttons.get("sneaky"));
+        if (MiscTools.inBounds(sneakyButton.x, sneakyButton.y, sneakyButton.getWidth(), sneakyButton.getHeight(), x, y)) {
+            if (btn == 0) {
+                currentSneaky = BaseCard.nextSneaky(card);
+                sneakyButton.setTexturePosition(currentSneaky + 1);
+            } else if (btn == 1) {
+                currentSneaky = BaseCard.previousSneaky(card);
+                sneakyButton.setTexturePosition(currentSneaky + 1);
+            }
+            sneakyButton.playDownSound(Minecraft.getInstance().getSoundManager());
+            return true;
+        }
         ChannelButton redstoneChannelButton = ((ChannelButton) buttons.get("redstoneChannel"));
         if (MiscTools.inBounds(redstoneChannelButton.x, redstoneChannelButton.y, redstoneChannelButton.getWidth(), redstoneChannelButton.getHeight(), x, y)) {
             if (btn == 0)
