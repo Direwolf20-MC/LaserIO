@@ -134,7 +134,7 @@ public class LaserNodeBE extends BaseLaserBE {
         for (Direction direction : Direction.values()) {
             final int j = direction.ordinal();
             com.direwolf20.laserio.common.containers.customhandler.LaserNodeItemHandler tempHandler = new com.direwolf20.laserio.common.containers.customhandler.LaserNodeItemHandler(LaserNodeContainer.SLOTS, this);
-            nodeSideCaches[j] = new NodeSideCache(tempHandler, LazyOptional.of(() -> tempHandler), 0, LazyOptional.of(() -> new LaserEnergyStorage(direction)));
+            nodeSideCaches[j] = new NodeSideCache(tempHandler, LazyOptional.of(() -> tempHandler), 0, new LaserEnergyStorage(direction));
         }
     }
 
@@ -309,6 +309,7 @@ public class LaserNodeBE extends BaseLaserBE {
         }
         for (Direction direction : Direction.values()) {
             NodeSideCache nodeSideCache = nodeSideCaches[direction.ordinal()];
+            nodeSideCache.invalidateEnergy();
             for (ExtractorCardCache extractorCardCache : nodeSideCache.extractorCardCaches) {
                 boolean tempEnabled = extractorCardCache.enabled;
                 extractorCardCache.setEnabled();
@@ -1665,6 +1666,7 @@ public class LaserNodeBE extends BaseLaserBE {
         markDirtyClient();
         findMyExtractors();
         updateOverclockers();
+        Arrays.stream(nodeSideCaches).forEach(NodeSideCache::invalidateEnergy);
         //updateRedstoneOutputs();
     }
 
@@ -2026,7 +2028,9 @@ public class LaserNodeBE extends BaseLaserBE {
                 for (int slot = 0; slot < LaserNodeContainer.CARDSLOTS; slot++) {
                     ItemStack card = nodeSideCache.itemHandler.getStackInSlot(slot);
                     if (card.getItem() instanceof CardEnergy) {
-                        return nodeSideCaches[side.ordinal()].laserEnergyStorage.cast();
+                        BaseCardCache baseCardCache = new BaseCardCache(side, card, slot, this);
+                        if (baseCardCache.enabled)
+                            return nodeSideCaches[side.ordinal()].laserEnergyStorage.cast();
                     }
                 }
                 return LazyOptional.empty();
