@@ -455,10 +455,11 @@ public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContaine
     }
 
     public void setExtract(NumberButton amountButton, int btn) {
+        int change = currentMode == 0 ? 1 : 100;
         if (btn == 0)
-            changeAmount(100);
+            changeAmount(change);
         else if (btn == 1)
-            changeAmount(-100);
+            changeAmount(change * -1);
         amountButton.setValue(currentMode == 0 ? currentPriority : currentEnergyExtractAmt);
         amountButton.playDownSound(Minecraft.getInstance().getSoundManager());
     }
