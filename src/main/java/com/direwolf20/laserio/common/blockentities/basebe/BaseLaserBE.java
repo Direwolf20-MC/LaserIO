@@ -18,10 +18,13 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
+
+import static com.direwolf20.laserio.common.items.LaserWrench.maxDistance;
 
 public class BaseLaserBE extends BlockEntity {
-    protected final Set<BlockPos> connections = new HashSet<>();
-    protected final Set<BlockPos> renderedConnections = new HashSet<>();
+    protected final Set<BlockPos> connections = new CopyOnWriteArraySet<>();
+    protected final Set<BlockPos> renderedConnections = new CopyOnWriteArraySet<>();
 
     public BaseLaserBE(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
@@ -65,12 +68,12 @@ public class BaseLaserBE extends BlockEntity {
         }
     }
 
-    /**Add another node to this ones connected list*/
+    /** Add another node to this ones connected list */
     public boolean addNode(BlockPos pos) {
         return connections.add(getRelativePos(pos));
     }
 
-    /**Only one of the nodes should render the laser connection - doesn't really matter which one*/
+    /** Only one of the nodes should render the laser connection - doesn't really matter which one */
     public boolean addRenderNode(BlockPos pos) {
         boolean success = renderedConnections.add(getRelativePos(pos));
         if (success) {
@@ -143,12 +146,12 @@ public class BaseLaserBE extends BlockEntity {
         be.discoverAllNodes();
     }
 
-    /**Get the connections relative coordinates*/
+    /** Get the connections relative coordinates */
     public Set<BlockPos> getConnections() {
         return connections;
     }
 
-    /**Get the connections world coordinates*/
+    /** Get the connections world coordinates */
     public Set<BlockPos> getWorldConnections() {
         Set<BlockPos> worldConnections = new HashSet<>();
         for (BlockPos relativePos : connections)
@@ -160,7 +163,7 @@ public class BaseLaserBE extends BlockEntity {
         return renderedConnections;
     }
 
-    /**Disconnect ALL connected nodes - called when the block is broken for example*/
+    /** Disconnect ALL connected nodes - called when the block is broken for example */
     public void disconnectAllNodes() {
         Set<BaseLaserBE> connectionsToUpdate = new HashSet<>(); //We're going to want to rediscover the network on each disconnected node, but not until all disconnections are done
         for (BlockPos pos : connections) {
@@ -180,7 +183,47 @@ public class BaseLaserBE extends BlockEntity {
         discoverAllNodes(); //Typically this isn't really needed, but in case its used in some future point i guess it can't hurt
     }
 
-    /**Misc Methods for TE's*/
+    /** Validates the connections are still valid -- for use if a block is moved **/
+    public void validateConnections(BlockPos originalPos) {
+        if (level == null || level.isClientSide) {
+            return;
+        }
+        Set<BaseLaserBE> connectionsToUpdate = new HashSet<>(); //We're going to want to rediscover the network on each disconnected node, but not until all disconnections are done
+        BlockPos movedPos = getBlockPos().subtract(originalPos);
+        for (BlockPos pos : connections) {
+            BlockPos oldPos = pos.subtract(movedPos);
+            BlockPos oldWorldPos = getWorldPos(oldPos);
+            BlockEntity oldBe = level.getBlockEntity(oldWorldPos);
+            if (oldBe instanceof BaseLaserBE baseLaserBE) {
+                boolean wasRender = renderedConnections.contains(pos);
+                baseLaserBE.removeNode(originalPos); // Remove this node from that one
+                removeNode(baseLaserBE.getBlockPos().offset(movedPos)); //Remove that node from this one
+                connectionsToUpdate.add(baseLaserBE); //Prepare to update that node's connections
+                if (oldWorldPos.closerThan(getBlockPos(), maxDistance)) {
+                    addNode(baseLaserBE.getBlockPos()); // Add that node to this one
+                    baseLaserBE.addNode(getBlockPos()); // Add this node to that one
+                    if (wasRender) //IF this was responsible for rendering, hook me up, otherwise get the other node to render
+                        addRenderNode(baseLaserBE.getBlockPos());
+                    else
+                        baseLaserBE.addRenderNode(getBlockPos());
+                }
+            }
+        }
+        for (BlockPos pos : connections) { //Now that we remapped connections, theres an OFF chance that some connections are still invalid, so lets validate them -- This can happen if the two nodes move in different directions at the same time
+            BlockPos connectingPos = getWorldPos(pos);
+            BlockEntity be = level.getBlockEntity(connectingPos);
+
+            if (!(be instanceof BaseLaserBE)) {
+                removeNode(getWorldPos(pos)); //Remove that node from this one - since that node is no longer a node, we can't update it. Its abandoned!
+            }
+        }
+        for (BaseLaserBE be : connectionsToUpdate)
+            be.discoverAllNodes(); //Tell the other node to re-discover their new (possibly disconnected) network(s)
+
+        discoverAllNodes(); //Typically this isn't really needed, but in case its used in some future point i guess it can't hurt
+    }
+
+    /** Misc Methods for TE's */
     @Override
     public void load(CompoundTag tag) {
         super.load(tag);
@@ -196,6 +239,9 @@ public class BaseLaserBE extends BlockEntity {
             BlockPos blockPos = NbtUtils.readBlockPos(renderedConnections.getCompound(i).getCompound("pos"));
             this.renderedConnections.add(blockPos);
         }
+        BlockPos originalPos = NbtUtils.readBlockPos(tag.getCompound("myWorldPos"));
+        if (!originalPos.equals(getBlockPos()) && !originalPos.equals(BlockPos.ZERO))
+            validateConnections(originalPos);
     }
 
     @Override
@@ -215,6 +261,7 @@ public class BaseLaserBE extends BlockEntity {
             renderedConnections.add(comp);
         }
         tag.put("renderedConnections", renderedConnections);
+        tag.put("myWorldPos", NbtUtils.writeBlockPos(getBlockPos()));
     }
 
     @Nonnull
@@ -253,5 +300,18 @@ public class BaseLaserBE extends BlockEntity {
             this.getLevel().sendBlockUpdated(this.getBlockPos(), state, state, 3);
         }
     }
+
+    @Override
+    public void setRemoved() {
+        super.setRemoved();
+    }
+
+    @Override
+    public void clearRemoved() {
+        //if (!level.isClientSide)
+        //    validateConnections();
+        super.clearRemoved();
+    }
+
 
 }

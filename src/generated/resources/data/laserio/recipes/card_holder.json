@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "laserio",
+  "pattern": [
+    "i i",
+    "cbc",
+    "i i"
+  ],
+  "key": {
+    "b": {
+      "item": "laserio:logic_chip"
+    },
+    "i": {
+      "tag": "forge:ingots/iron"
+    },
+    "c": {
+      "tag": "forge:chests"
+    }
+  },
+  "result": {
+    "item": "laserio:card_holder"
+  }
+}

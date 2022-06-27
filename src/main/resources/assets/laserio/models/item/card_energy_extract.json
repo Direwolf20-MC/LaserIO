@@ -1,0 +1,6 @@
+{
+  "parent": "laserio:item/card_energy",
+  "textures": {
+    "layer1": "laserio:item/cardlayers/extract"
+  }
+}

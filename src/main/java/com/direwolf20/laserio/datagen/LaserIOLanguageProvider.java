@@ -18,12 +18,15 @@ public class LaserIOLanguageProvider extends LanguageProvider {
         add(Registration.LaserConnector.get(), "Laser Connector");
         add(Registration.LaserNode.get(), "Laser Node");
         add(Registration.Laser_Wrench.get(), "Laser Wrench");
+        add(Registration.Card_Holder.get(), "Card Holder");
         add(Registration.Card_Item.get(), "Item Card");
         add(Registration.Card_Fluid.get(), "Fluid Card");
         add(Registration.Card_Energy.get(), "Energy Card");
+        add(Registration.Card_Redstone.get(), "Redstone Card");
         add(Registration.Filter_Basic.get(), "Basic Filter");
         add(Registration.Filter_Count.get(), "Counting Filter");
         add(Registration.Filter_Tag.get(), "Tag Filter");
+        add(Registration.Filter_Mod.get(), "Mod Filter");
         add(Registration.Logic_Chip.get(), "Logic Chip");
         add(Registration.Logic_Chip_Raw.get(), "Raw Logic Chip");
         add(Registration.Overclocker_Card.get(), "Card Overclocker");
@@ -42,6 +45,7 @@ public class LaserIOLanguageProvider extends LanguageProvider {
         add("screen.laserio.allowlist", "Allow");
         add("screen.laserio.comparenbt", "NBT");
         add("screen.laserio.lasernode", "Laser Node");
+        add("screen.laserio.energylimit", "Energy Limit (%)");
 
         add("screen.laserio.default", "Default");
         add("screen.laserio.up", "Up");
@@ -54,6 +58,14 @@ public class LaserIOLanguageProvider extends LanguageProvider {
         add("screen.laserio.extract", "Extract");
         add("screen.laserio.insert", "Insert");
         add("screen.laserio.stock", "Stock");
+        add("screen.laserio.input", "Input");
+        add("screen.laserio.output", "Output");
+        add("screen.laserio.weak", "Weak");
+        add("screen.laserio.strong", "Strong");
+        add("screen.laserio.redstoneMode", "Redstone: ");
+        add("screen.laserio.ignored", "Ignored");
+        add("screen.laserio.low", "Low");
+        add("screen.laserio.high", "High");
 
         add("screen.laserio.denylist", "Deny");
         add("screen.laserio.nbttrue", "Match NBT");

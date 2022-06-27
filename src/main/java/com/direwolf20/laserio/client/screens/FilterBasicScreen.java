@@ -5,6 +5,7 @@ import com.direwolf20.laserio.common.LaserIO;
 import com.direwolf20.laserio.common.containers.FilterBasicContainer;
 import com.direwolf20.laserio.common.containers.customslot.FilterBasicSlot;
 import com.direwolf20.laserio.common.items.filters.FilterBasic;
+import com.direwolf20.laserio.common.items.filters.FilterMod;
 import com.direwolf20.laserio.common.network.PacketHandler;
 import com.direwolf20.laserio.common.network.packets.PacketGhostSlot;
 import com.direwolf20.laserio.common.network.packets.PacketUpdateFilter;
@@ -49,11 +50,13 @@ public class FilterBasicScreen extends AbstractContainerScreen<FilterBasicContai
             else
                 this.renderTooltip(matrixStack, new TranslatableComponent("screen.laserio.denylist"), mouseX, mouseY);
         }
-        if (MiscTools.inBounds(getGuiLeft() + 5, getGuiTop() + 25, 16, 16, mouseX, mouseY)) {
-            if (isCompareNBT)
-                this.renderTooltip(matrixStack, new TranslatableComponent("screen.laserio.nbttrue"), mouseX, mouseY);
-            else
-                this.renderTooltip(matrixStack, new TranslatableComponent("screen.laserio.nbtfalse"), mouseX, mouseY);
+        if (!(filter.getItem() instanceof FilterMod)) {
+            if (MiscTools.inBounds(getGuiLeft() + 5, getGuiTop() + 25, 16, 16, mouseX, mouseY)) {
+                if (isCompareNBT)
+                    this.renderTooltip(matrixStack, new TranslatableComponent("screen.laserio.nbttrue"), mouseX, mouseY);
+                else
+                    this.renderTooltip(matrixStack, new TranslatableComponent("screen.laserio.nbtfalse"), mouseX, mouseY);
+            }
         }
     }
 
@@ -74,14 +77,16 @@ public class FilterBasicScreen extends AbstractContainerScreen<FilterBasicContai
             ((ToggleButton) button).setTexturePosition(isAllowList ? 1 : 0);
         }));
 
-        ResourceLocation[] nbtTextures = new ResourceLocation[2];
-        nbtTextures[0] = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/matchnbtfalse.png");
-        nbtTextures[1] = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/matchnbttrue.png");
+        if (!(filter.getItem() instanceof FilterMod)) {
+            ResourceLocation[] nbtTextures = new ResourceLocation[2];
+            nbtTextures[0] = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/matchnbtfalse.png");
+            nbtTextures[1] = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/matchnbttrue.png");
 
-        leftWidgets.add(new ToggleButton(getGuiLeft() + 5, getGuiTop() + 25, 16, 16, nbtTextures, isCompareNBT ? 1 : 0, (button) -> {
-            isCompareNBT = !isCompareNBT;
-            ((ToggleButton) button).setTexturePosition(isCompareNBT ? 1 : 0);
-        }));
+            leftWidgets.add(new ToggleButton(getGuiLeft() + 5, getGuiTop() + 25, 16, 16, nbtTextures, isCompareNBT ? 1 : 0, (button) -> {
+                isCompareNBT = !isCompareNBT;
+                ((ToggleButton) button).setTexturePosition(isCompareNBT ? 1 : 0);
+            }));
+        }
 
         // Lay the buttons out, too lazy to figure out the math every damn time.
         // Ordered by where you add them.

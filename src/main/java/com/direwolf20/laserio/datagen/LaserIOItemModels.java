@@ -19,12 +19,14 @@ public class LaserIOItemModels extends ItemModelProvider {
 
         //Item items
         singleTexture(Registration.Laser_Wrench.get().getRegistryName().getPath(), mcLoc("item/generated"), "layer0", modLoc("item/laser_wrench"));
+        singleTexture(Registration.Card_Holder.get().getRegistryName().getPath(), mcLoc("item/generated"), "layer0", modLoc("item/card_holder"));
         //singleTexture(Registration.Card_Item.get().getRegistryName().getPath(), mcLoc("item/generated"), "layer0", modLoc("item/card_item"));
-        singleTexture(Registration.Card_Fluid.get().getRegistryName().getPath(), mcLoc("item/generated"), "layer0", modLoc("item/card_fluid"));
-        singleTexture(Registration.Card_Energy.get().getRegistryName().getPath(), mcLoc("item/generated"), "layer0", modLoc("item/card_energy"));
+        //singleTexture(Registration.Card_Fluid.get().getRegistryName().getPath(), mcLoc("item/generated"), "layer0", modLoc("item/card_fluid"));
+        //singleTexture(Registration.Card_Energy.get().getRegistryName().getPath(), mcLoc("item/generated"), "layer0", modLoc("item/card_energy"));
         singleTexture(Registration.Filter_Basic.get().getRegistryName().getPath(), mcLoc("item/generated"), "layer0", modLoc("item/filter_basic"));
         singleTexture(Registration.Filter_Count.get().getRegistryName().getPath(), mcLoc("item/generated"), "layer0", modLoc("item/filter_count"));
         singleTexture(Registration.Filter_Tag.get().getRegistryName().getPath(), mcLoc("item/generated"), "layer0", modLoc("item/filter_tag"));
+        singleTexture(Registration.Filter_Mod.get().getRegistryName().getPath(), mcLoc("item/generated"), "layer0", modLoc("item/filter_mod"));
         singleTexture(Registration.Logic_Chip.get().getRegistryName().getPath(), mcLoc("item/generated"), "layer0", modLoc("item/logic_chip"));
         singleTexture(Registration.Logic_Chip_Raw.get().getRegistryName().getPath(), mcLoc("item/generated"), "layer0", modLoc("item/logic_chip_raw"));
         singleTexture(Registration.Overclocker_Card.get().getRegistryName().getPath(), mcLoc("item/generated"), "layer0", modLoc("item/overclocker_card"));

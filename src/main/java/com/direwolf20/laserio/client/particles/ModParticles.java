@@ -1,5 +1,7 @@
 package com.direwolf20.laserio.client.particles;
 
+import com.direwolf20.laserio.client.particles.fluidparticle.FluidFlowParticleData;
+import com.direwolf20.laserio.client.particles.fluidparticle.FluidFlowParticleType;
 import com.direwolf20.laserio.client.particles.itemparticle.ItemFlowParticleData;
 import com.direwolf20.laserio.client.particles.itemparticle.ItemFlowParticleType;
 import com.direwolf20.laserio.common.LaserIO;
@@ -15,10 +17,14 @@ public class ModParticles {
     @ObjectHolder("itemflowparticle")
     public static ParticleType<ItemFlowParticleData> ITEMFLOWPARTICLE;
 
+    @ObjectHolder("fluidflowparticle")
+    public static ParticleType<FluidFlowParticleData> FLUIDFLOWPARTICLE;
+
     @SubscribeEvent
     public static void registerParticles(RegistryEvent.Register<ParticleType<?>> evt) {
-        evt.getRegistry().register(
-                new ItemFlowParticleType().setRegistryName("itemflowparticle")
+        evt.getRegistry().registerAll(
+                new ItemFlowParticleType().setRegistryName("itemflowparticle"),
+                new FluidFlowParticleType().setRegistryName("fluidflowparticle")
         );
     }
 }

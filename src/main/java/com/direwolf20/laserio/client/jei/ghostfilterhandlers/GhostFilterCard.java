@@ -33,8 +33,9 @@ public class GhostFilterCard implements IGhostIngredientHandler<CardItemScreen> 
 
                     @Override
                     public void accept(I ingredient) {
-                        slot.set((ItemStack) ingredient);
-                        PacketHandler.sendToServer(new PacketGhostSlot(slot.index, (ItemStack) ingredient, ((ItemStack) ingredient).getCount()));
+                        ItemStack itemStack = (ItemStack) ingredient;
+                        slot.set(itemStack.copy());
+                        PacketHandler.sendToServer(new PacketGhostSlot(slot.index, itemStack, itemStack.getCount()));
                         //RS.NETWORK_HANDLER.sendToServer(new SetFilterSlotMessage(slot.index, (ItemStack) ingredient));
                     }
                 });

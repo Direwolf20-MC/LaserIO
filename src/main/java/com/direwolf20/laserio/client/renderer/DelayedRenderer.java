@@ -25,7 +25,7 @@ public class DelayedRenderer {
 
     public static void renderConnections(PoseStack matrixStackIn) {
         if (beConnectingRenders.isEmpty()) return;
-        RenderUtils.drawConnectingLasersLast3(beConnectingRenders, matrixStackIn);
+        RenderUtils.drawConnectingLasersLast4(beConnectingRenders, matrixStackIn);
         /*for (LaserNodeBE blockentity : beConnectingRenders) {
             //LaserNodeBE blockentity = beConnectingRenders.remove();
             RenderUtils.drawConnectingLasersLast2(blockentity, matrixStackIn);

@@ -13,19 +13,12 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TranslatableComponent;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.SimpleMenuProvider;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.network.NetworkHooks;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -39,7 +32,9 @@ public class BaseCard extends Item {
     public enum CardType {
         ITEM,
         FLUID,
-        ENERGY
+        ENERGY,
+        REDSTONE,
+        MISSING
     }
 
     public enum TransferMode {
@@ -106,20 +101,6 @@ public class BaseCard extends Item {
         return false;
     }
 
-    @Override
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
-        ItemStack itemstack = player.getItemInHand(hand);
-        if (level.isClientSide()) return new InteractionResultHolder<>(InteractionResult.PASS, itemstack);
-
-        NetworkHooks.openGui((ServerPlayer) player, new SimpleMenuProvider(
-                (windowId, playerInventory, playerEntity) -> new CardItemContainer(windowId, playerInventory, player, itemstack), new TranslatableComponent("")), (buf -> {
-            buf.writeItem(itemstack);
-        }));
-
-        //System.out.println(itemstack.getItem().getRegistryName()+""+itemstack.getTag());
-        return new InteractionResultHolder<>(InteractionResult.PASS, itemstack);
-    }
-
     /**
      * ItemStack sensitive version of getContainerItem. Returns a full ItemStack
      * instance of the result.
@@ -148,27 +129,38 @@ public class BaseCard extends Item {
     }
 
     public static CardItemHandler getInventory(ItemStack stack) {
-        CompoundTag compound = stack.getOrCreateTag();
+        CompoundTag compound = stack.getTag();
+        if (compound == null || !compound.contains("inv")) return new CardItemHandler(CardItemContainer.SLOTS, stack);
         CardItemHandler handler = new CardItemHandler(CardItemContainer.SLOTS, stack);
         handler.deserializeNBT(compound.getCompound("inv"));
         if (handler.getSlots() < CardItemContainer.SLOTS)
             handler.reSize(CardItemContainer.SLOTS);
-        return !compound.contains("inv") ? setInventory(stack, new CardItemHandler(CardItemContainer.SLOTS, stack)) : handler;
+        return handler;
     }
 
     public static CardItemHandler setInventory(ItemStack stack, CardItemHandler handler) {
-        stack.getOrCreateTag().put("inv", handler.serializeNBT());
+        for (int i = 0; i < handler.getSlots(); i++) {
+            if (!handler.getStackInSlot(i).isEmpty()) {
+                stack.getOrCreateTag().put("inv", handler.serializeNBT());
+                return handler;
+            }
+        }
+        stack.removeTagKey("inv");
         return handler;
     }
 
     public static byte setTransferMode(ItemStack card, byte mode) {
-        card.getOrCreateTag().putByte("mode", mode);
+        if (mode == 0)
+            card.removeTagKey("mode");
+        else
+            card.getOrCreateTag().putByte("mode", mode);
         return mode;
     }
 
     public static byte getTransferMode(ItemStack card) {
-        CompoundTag compound = card.getOrCreateTag();
-        return !compound.contains("mode") ? setTransferMode(card, (byte) 0) : compound.getByte("mode");
+        CompoundTag compound = card.getTag();
+        if (compound == null || !compound.contains("mode")) return (byte) 0;
+        return compound.getByte("mode");
     }
 
     public static byte nextTransferMode(ItemStack card) {
@@ -181,13 +173,17 @@ public class BaseCard extends Item {
     }
 
     public static byte setChannel(ItemStack card, byte channel) {
-        card.getOrCreateTag().putByte("channel", channel);
+        if (channel == 0)
+            card.removeTagKey("channel");
+        else
+            card.getOrCreateTag().putByte("channel", channel);
         return channel;
     }
 
     public static byte getChannel(ItemStack card) {
-        CompoundTag compound = card.getOrCreateTag();
-        return !compound.contains("channel") ? setChannel(card, (byte) 0) : compound.getByte("channel");
+        CompoundTag compound = card.getTag();
+        if (compound == null || !compound.contains("channel")) return (byte) 0;
+        return compound.getByte("channel");
     }
 
     public static byte nextChannel(ItemStack card) {
@@ -200,34 +196,32 @@ public class BaseCard extends Item {
         return setChannel(card, (byte) (k == 0 ? 15 : k - 1));
     }
 
-    public static byte setItemExtractAmt(ItemStack card, byte itemextractamt) {
-        card.getOrCreateTag().putByte("itemextractamt", itemextractamt);
-        return itemextractamt;
-    }
-
-    public static byte getItemExtractAmt(ItemStack card) {
-        CompoundTag compound = card.getOrCreateTag();
-        return !compound.contains("itemextractamt") ? setItemExtractAmt(card, (byte) 1) : compound.getByte("itemextractamt");
-    }
-
-    public static int setItemExtractSpeed(ItemStack card, int itemextractspeed) {
-        card.getOrCreateTag().putInt("itemextractspeed", itemextractspeed);
+    public static int setExtractSpeed(ItemStack card, int itemextractspeed) {
+        if (itemextractspeed == 20)
+            card.removeTagKey("itemextractspeed");
+        else
+            card.getOrCreateTag().putInt("itemextractspeed", itemextractspeed);
         return itemextractspeed;
     }
 
-    public static int getItemExtractSpeed(ItemStack card) {
-        CompoundTag compound = card.getOrCreateTag();
-        return !compound.contains("itemextractspeed") ? setItemExtractSpeed(card, 20) : compound.getInt("itemextractspeed");
+    public static int getExtractSpeed(ItemStack card) {
+        CompoundTag compound = card.getTag();
+        if (compound == null || !compound.contains("itemextractspeed")) return 20;
+        return compound.getInt("itemextractspeed");
     }
 
     public static short setPriority(ItemStack card, short priority) {
-        card.getOrCreateTag().putShort("priority", priority);
+        if (priority == 0)
+            card.removeTagKey("priority");
+        else
+            card.getOrCreateTag().putShort("priority", priority);
         return priority;
     }
 
     public static short getPriority(ItemStack card) {
-        CompoundTag compound = card.getOrCreateTag();
-        return !compound.contains("priority") ? setPriority(card, (short) 0) : compound.getShort("priority");
+        CompoundTag compound = card.getTag();
+        if (compound == null || !compound.contains("priority")) return (short) 0;
+        return compound.getShort("priority");
     }
 
     public static ItemStack getFilter(ItemStack card) {
@@ -236,13 +230,17 @@ public class BaseCard extends Item {
     }
 
     public static byte setSneaky(ItemStack card, byte sneaky) {
-        card.getOrCreateTag().putByte("sneaky", sneaky);
+        if (sneaky == -1)
+            card.removeTagKey("sneaky");
+        else
+            card.getOrCreateTag().putByte("sneaky", sneaky);
         return sneaky;
     }
 
     public static byte getSneaky(ItemStack card) {
-        CompoundTag compound = card.getOrCreateTag();
-        return !compound.contains("sneaky") ? setSneaky(card, (byte) -1) : compound.getByte("sneaky");
+        CompoundTag compound = card.getTag();
+        if (compound == null || !compound.contains("sneaky")) return (byte) -1;
+        return compound.getByte("sneaky");
     }
 
     public static byte nextSneaky(ItemStack card) {
@@ -256,42 +254,87 @@ public class BaseCard extends Item {
     }
 
     public static boolean getRegulate(ItemStack stack) {
-        CompoundTag compound = stack.getOrCreateTag();
-        return !compound.contains("regulate") ? setRegulate(stack, false) : compound.getBoolean("regulate");
+        CompoundTag compound = stack.getTag();
+        if (compound == null || !compound.contains("regulate")) return false;
+        return compound.getBoolean("regulate");
     }
 
     public static boolean setRegulate(ItemStack stack, boolean regulate) {
-        stack.getOrCreateTag().putBoolean("regulate", regulate);
+        if (!regulate)
+            stack.removeTagKey("regulate");
+        else
+            stack.getOrCreateTag().putBoolean("regulate", regulate);
         return regulate;
     }
 
     public static int getRoundRobin(ItemStack stack) {
-        CompoundTag compound = stack.getOrCreateTag();
-        return !compound.contains("roundRobin") ? setRoundRobin(stack, 0) : compound.getInt("roundRobin");
+        CompoundTag compound = stack.getTag();
+        if (compound == null || !compound.contains("roundRobin")) return 0;
+        return compound.getInt("roundRobin");
     }
 
     public static int setRoundRobin(ItemStack stack, int roundRobin) {
-        stack.getOrCreateTag().putInt("roundRobin", roundRobin);
+        if (roundRobin == 0)
+            stack.removeTagKey("roundRobin");
+        else
+            stack.getOrCreateTag().putInt("roundRobin", roundRobin);
         return roundRobin;
     }
 
-    /*public static int getRoundRobinPosition(ItemStack stack) {
-        CompoundTag compound = stack.getOrCreateTag();
-        return !compound.contains("roundRobinPosition") ? setRoundRobinPosition(stack, -1) : compound.getInt("roundRobinPosition");
+    public static byte getRedstoneMode(ItemStack stack) {
+        CompoundTag compound = stack.getTag();
+        if (compound == null || !compound.contains("redstoneMode")) return 0;
+        return compound.getByte("redstoneMode");
     }
 
-    public static int setRoundRobinPosition(ItemStack stack, int roundRobinPosition) {
-        stack.getOrCreateTag().putInt("roundRobinPosition", roundRobinPosition);
-        return roundRobinPosition;
-    }*/
+    public static byte setRedstoneMode(ItemStack stack, byte redstoneMode) {
+        if (redstoneMode == 0)
+            stack.removeTagKey("redstoneMode");
+        else
+            stack.getOrCreateTag().putByte("redstoneMode", redstoneMode);
+        return redstoneMode;
+    }
+
+    public static byte nextRedstoneMode(ItemStack card) {
+        byte mode = getRedstoneMode(card);
+        return setRedstoneMode(card, (byte) (mode == 2 ? 0 : mode + 1));
+    }
 
     public static boolean getExact(ItemStack stack) {
-        CompoundTag compound = stack.getOrCreateTag();
-        return !compound.contains("exact") ? setExact(stack, false) : compound.getBoolean("exact");
+        CompoundTag compound = stack.getTag();
+        if (compound == null || !compound.contains("exact")) return false;
+        return compound.getBoolean("exact");
     }
 
     public static boolean setExact(ItemStack stack, boolean exact) {
-        stack.getOrCreateTag().putBoolean("exact", exact);
+        if (!exact)
+            stack.removeTagKey("exact");
+        else
+            stack.getOrCreateTag().putBoolean("exact", exact);
         return exact;
+    }
+
+    public static byte setRedstoneChannel(ItemStack card, byte redstonechannel) {
+        if (redstonechannel == 0)
+            card.removeTagKey("redstonechannel");
+        else
+            card.getOrCreateTag().putByte("redstonechannel", redstonechannel);
+        return redstonechannel;
+    }
+
+    public static byte getRedstoneChannel(ItemStack card) {
+        CompoundTag compound = card.getTag();
+        if (compound == null || !compound.contains("redstonechannel")) return (byte) 0;
+        return compound.getByte("redstonechannel");
+    }
+
+    public static byte nextRedstoneChannel(ItemStack card) {
+        byte k = getRedstoneChannel(card);
+        return setRedstoneChannel(card, (byte) (k == 15 ? 0 : k + 1));
+    }
+
+    public static byte previousRedstoneChannel(ItemStack card) {
+        byte k = getRedstoneChannel(card);
+        return setRedstoneChannel(card, (byte) (k == 0 ? 15 : k - 1));
     }
 }

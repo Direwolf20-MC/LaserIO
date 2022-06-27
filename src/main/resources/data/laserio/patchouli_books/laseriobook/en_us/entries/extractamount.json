@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "Extract Amount is only available on Extractor and Stocker Modes.$(br2)This setting determines how many items (or how much fluid/rf) are extracted per operation.$(br2)For example, if set to 8 items per 20 ticks, the extractor will extract 8 items at a time, every 20 ticks."
+      "text": "Extract Amount is only available on Extractor and Stocker Modes.$(br2)This setting determines how many items (or how much fluid/fe) are extracted per operation.$(br2)For example, if set to 8 items per 20 ticks, the extractor will extract 8 items at a time, every 20 ticks."
     },
     {
       "type": "patchouli:text",

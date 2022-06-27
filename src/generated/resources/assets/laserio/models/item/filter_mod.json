@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "laserio:item/card_energy"
+    "layer0": "laserio:item/filter_mod"
   }
 }

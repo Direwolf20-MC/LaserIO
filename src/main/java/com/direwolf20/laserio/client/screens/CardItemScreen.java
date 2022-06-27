@@ -7,18 +7,14 @@ import com.direwolf20.laserio.client.screens.widgets.ToggleButton;
 import com.direwolf20.laserio.common.LaserIO;
 import com.direwolf20.laserio.common.containers.CardItemContainer;
 import com.direwolf20.laserio.common.containers.customslot.CardItemSlot;
+import com.direwolf20.laserio.common.containers.customslot.CardOverclockSlot;
 import com.direwolf20.laserio.common.containers.customslot.FilterBasicSlot;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.common.items.cards.CardItem;
-import com.direwolf20.laserio.common.items.filters.BaseFilter;
-import com.direwolf20.laserio.common.items.filters.FilterBasic;
-import com.direwolf20.laserio.common.items.filters.FilterCount;
-import com.direwolf20.laserio.common.items.filters.FilterTag;
+import com.direwolf20.laserio.common.items.cards.CardRedstone;
+import com.direwolf20.laserio.common.items.filters.*;
 import com.direwolf20.laserio.common.network.PacketHandler;
-import com.direwolf20.laserio.common.network.packets.PacketGhostSlot;
-import com.direwolf20.laserio.common.network.packets.PacketOpenFilter;
-import com.direwolf20.laserio.common.network.packets.PacketUpdateCard;
-import com.direwolf20.laserio.common.network.packets.PacketUpdateFilter;
+import com.direwolf20.laserio.common.network.packets.*;
 import com.direwolf20.laserio.util.MiscTools;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -28,10 +24,12 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
@@ -45,25 +43,27 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
     private final ResourceLocation GUI = new ResourceLocation(LaserIO.MODID, "textures/gui/itemcard.png");
 
     protected final CardItemContainer container;
-    private byte currentMode;
-    private byte currentChannel;
-    private byte currentItemExtractAmt;
-    private short currentPriority;
-    private byte currentSneaky;
-    private int currentTicks;
-    private boolean currentExact;
-    private int currentRoundRobin;
-    private boolean currentRegulate;
-    private int isAllowList = -1;
-    private int isCompareNBT = -1;
-    private boolean showFilter;
-    private boolean showAllow;
-    private boolean showNBT;
-    private final ItemStack card;
-    private ItemStack filter;
-    private Map<String, Button> buttons = new HashMap<>();
+    protected byte currentMode;
+    protected byte currentChannel;
+    protected byte currentRedstoneChannel;
+    protected byte currentItemExtractAmt;
+    protected short currentPriority;
+    protected byte currentSneaky;
+    protected int currentTicks;
+    protected boolean currentExact;
+    protected int currentRoundRobin;
+    protected boolean currentRegulate;
+    protected int isAllowList = -1;
+    protected int isCompareNBT = -1;
+    protected boolean showFilter;
+    protected boolean showAllow;
+    protected boolean showNBT;
+    protected final ItemStack card;
+    public ItemStack filter;
+    protected Map<String, Button> buttons = new HashMap<>();
+    protected byte currentRedstoneMode;
 
-    private final String[] sneakyNames = {
+    protected final String[] sneakyNames = {
             "screen.laserio.default",
             "screen.laserio.down",
             "screen.laserio.up",
@@ -100,6 +100,10 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
         if (MiscTools.inBounds(channelButton.x, channelButton.y, channelButton.getWidth(), channelButton.getHeight(), mouseX, mouseY)) {
             this.renderTooltip(matrixStack, new TextComponent(String.valueOf(currentChannel)), mouseX, mouseY);
         }
+        Button redstoneChannelButton = buttons.get("redstoneChannel");
+        if (MiscTools.inBounds(redstoneChannelButton.x, redstoneChannelButton.y, redstoneChannelButton.getWidth(), redstoneChannelButton.getHeight(), mouseX, mouseY)) {
+            this.renderTooltip(matrixStack, new TextComponent(String.valueOf(currentRedstoneChannel)), mouseX, mouseY);
+        }
         Button sneakyButton = buttons.get("sneaky");
         if (MiscTools.inBounds(sneakyButton.x, sneakyButton.y, sneakyButton.getWidth(), sneakyButton.getHeight(), mouseX, mouseY)) {
             this.renderTooltip(matrixStack, new TranslatableComponent(String.valueOf(sneakyNames[currentSneaky + 1])), mouseX, mouseY);
@@ -128,6 +132,14 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
                 translatableComponents[2] = new TranslatableComponent("screen.laserio.enforced");
                 this.renderTooltip(matrixStack, new TranslatableComponent("screen.laserio.roundrobin").append(translatableComponents[currentRoundRobin]), mouseX, mouseY);
             }
+        }
+        Button redstoneMode = buttons.get("redstoneMode");
+        if (MiscTools.inBounds(redstoneMode.x, redstoneMode.y, redstoneMode.getWidth(), redstoneMode.getHeight(), mouseX, mouseY)) {
+            TranslatableComponent translatableComponents[] = new TranslatableComponent[3];
+            translatableComponents[0] = new TranslatableComponent("screen.laserio.ignored");
+            translatableComponents[1] = new TranslatableComponent("screen.laserio.low");
+            translatableComponents[2] = new TranslatableComponent("screen.laserio.high");
+            this.renderTooltip(matrixStack, new TranslatableComponent("screen.laserio.redstoneMode").append(translatableComponents[currentRedstoneMode]), mouseX, mouseY);
         }
         Button exact = buttons.get("exact");
         if (MiscTools.inBounds(exact.x, exact.y, exact.getWidth(), exact.getHeight(), mouseX, mouseY)) {
@@ -169,6 +181,43 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
         }
     }
 
+    public void addAmtButton() {
+        buttons.put("amount", new NumberButton(getGuiLeft() + 147, getGuiTop() + 25, 24, 12, currentMode == 0 ? currentPriority : currentItemExtractAmt, (button) -> {
+            changeAmount(-1);
+        }));
+    }
+
+    public void addModeButton() {
+        ResourceLocation[] modeTextures = new ResourceLocation[3];
+        modeTextures[0] = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/modeinserter.png");
+        modeTextures[1] = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/modeextractor.png");
+        modeTextures[2] = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/modestocker.png");
+        buttons.put("mode", new ToggleButton(getGuiLeft() + 5, getGuiTop() + 5, 16, 16, modeTextures, currentMode, (button) -> {
+            currentMode = BaseCard.nextTransferMode(card);
+            ((ToggleButton) button).setTexturePosition(currentMode);
+            ((NumberButton) buttons.get("amount")).setValue(currentMode == 0 ? currentPriority : currentItemExtractAmt);
+            modeChange();
+        }));
+    }
+
+    public void addRedstoneButton() {
+        ResourceLocation[] redstoneTextures = new ResourceLocation[3];
+        redstoneTextures[0] = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/redstoneignore.png");
+        redstoneTextures[1] = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/redstonelow.png");
+        redstoneTextures[2] = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/redstonehigh.png");
+        buttons.put("redstoneMode", new ToggleButton(getGuiLeft() + 105, getGuiTop() + 5, 16, 16, redstoneTextures, currentRedstoneMode, (button) -> {
+            currentRedstoneMode = (byte) (currentRedstoneMode == 2 ? 0 : currentRedstoneMode + 1);
+            ((ToggleButton) button).setTexturePosition(currentRedstoneMode);
+        }));
+    }
+
+    public void addRedstoneChannelButton() {
+        buttons.put("redstoneChannel", new ChannelButton(getGuiLeft() + 125, getGuiTop() + 5, 16, 16, currentRedstoneChannel, (button) -> {
+            currentRedstoneChannel = CardRedstone.nextRedstoneChannel(card);
+            ((ChannelButton) button).setChannel(currentRedstoneChannel);
+        }));
+    }
+
     @Override
     public void init() {
         super.init();
@@ -177,19 +226,24 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
         this.itemRenderer = new LaserIOItemRenderer(minecraft.getTextureManager(), minecraft.getModelManager(), minecraft.getItemColors(), blockentitywithoutlevelrenderer);
         currentMode = BaseCard.getTransferMode(card);
         currentChannel = BaseCard.getChannel(card);
-        currentItemExtractAmt = BaseCard.getItemExtractAmt(card);
+        currentItemExtractAmt = CardItem.getItemExtractAmt(card);
         currentPriority = BaseCard.getPriority(card);
         currentSneaky = BaseCard.getSneaky(card);
-        currentTicks = BaseCard.getItemExtractSpeed(card);
+        currentTicks = BaseCard.getExtractSpeed(card);
         currentExact = BaseCard.getExact(card);
         currentRoundRobin = BaseCard.getRoundRobin(card);
         currentRegulate = BaseCard.getRegulate(card);
+        currentRedstoneMode = BaseCard.getRedstoneMode(card);
+        currentRedstoneChannel = BaseCard.getRedstoneChannel(card);
 
         showFilter = !(filter == null) && !filter.isEmpty() && !(filter.getItem() instanceof FilterTag);
         if (showFilter) {
             isAllowList = BaseFilter.getAllowList(filter) ? 1 : 0;
             isCompareNBT = BaseFilter.getCompareNBT(filter) ? 1 : 0;
-            if (filter.getItem() instanceof FilterBasic) {
+            if (filter.getItem() instanceof FilterMod) {
+                showAllow = true;
+                showNBT = false;
+            } else if (filter.getItem() instanceof FilterBasic) {
                 showAllow = true;
                 showNBT = true;
             } else if (filter.getItem() instanceof FilterCount) {
@@ -219,9 +273,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
             ((ToggleButton) button).setTexturePosition(isCompareNBT == 1 ? 1 : 0);
         }));
 
-        buttons.put("amount", new NumberButton(getGuiLeft() + 147, getGuiTop() + 25, 24, 12, currentMode == 0 ? currentPriority : currentItemExtractAmt, (button) -> {
-            changeAmount(-1);
-        }));
+        addAmtButton();
 
         buttons.put("speed", new NumberButton(getGuiLeft() + 147, getGuiTop() + 39, 24, 12, currentTicks, (button) -> {
             changeTick(-1);
@@ -252,18 +304,9 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
             ((ToggleButton) button).setTexturePosition(currentRegulate ? 1 : 0);
         }));
 
-
-        ResourceLocation[] modeTextures = new ResourceLocation[3];
-        modeTextures[0] = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/modeinserter.png");
-        modeTextures[1] = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/modeextractor.png");
-        modeTextures[2] = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/modestocker.png");
-
-        buttons.put("mode", new ToggleButton(getGuiLeft() + 5, getGuiTop() + 5, 16, 16, modeTextures, currentMode, (button) -> {
-            currentMode = BaseCard.nextTransferMode(card);
-            ((ToggleButton) button).setTexturePosition(currentMode);
-            ((NumberButton) buttons.get("amount")).setValue(currentMode == 0 ? currentPriority : currentItemExtractAmt);
-            modeChange();
-        }));
+        addModeButton();
+        addRedstoneButton();
+        addRedstoneChannelButton();
 
         buttons.put("channel", new ChannelButton(getGuiLeft() + 5, getGuiTop() + 65, 16, 16, currentChannel, (button) -> {
             currentChannel = BaseCard.nextChannel(card);
@@ -283,11 +326,30 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
             ((ToggleButton) button).setTexturePosition(currentSneaky + 1);
         }));
 
+        if (container.direction != -1) {
+            buttons.put("return", new Button(getGuiLeft() - 25, getGuiTop() + 1, 25, 20, new TextComponent("<--"), (button) -> {
+                openNode();
+            }));
+        }
+
         for (Map.Entry<String, Button> button : buttons.entrySet()) {
             addRenderableWidget(button.getValue());
         }
         if (!showNBT) removeWidget(buttons.get("nbt"));
         if (!showAllow) removeWidget(buttons.get("allowList"));
+
+
+        if (card.getCount() > 1) {
+            for (int i = 0; i < container.SLOTS; i++) {
+                if (i >= container.slots.size()) continue;
+                Slot slot = container.getSlot(i);
+                if (slot instanceof CardItemSlot cardItemSlot)
+                    cardItemSlot.setEnabled(false);
+                if (slot instanceof CardOverclockSlot cardOverclockSlot)
+                    cardOverclockSlot.setEnabled(false);
+            }
+        }
+
         modeChange();
         /*if (currentMode == 0) removeWidget(buttons.get("speed"));
         if (currentMode == 0) removeWidget();
@@ -356,7 +418,16 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
         filter = container.slots.get(0).getItem();
         showFilter = !filter.isEmpty() && !(filter.getItem() instanceof FilterTag);
         if (showFilter) { //If the filter isn't empty, and the allowList is set to -1, it means we don't have a real value for allow list yet so get it
-            if (filter.getItem() instanceof FilterBasic) {
+            if (filter.getItem() instanceof FilterMod) {
+                showNBT = false;
+                if (currentMode == 2) {
+                    showAllow = true;
+                    //removeWidget(buttons.get("allowList"));
+                } else {
+                    showAllow = true;
+                    if (!renderables.contains(buttons.get("allowList"))) addRenderableWidget(buttons.get("allowList"));
+                }
+            } else if (filter.getItem() instanceof FilterBasic) {
                 showNBT = true;
                 if (currentMode == 2) {
                     showAllow = true;
@@ -395,19 +466,19 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
     }
 
     private boolean showExtractAmt() {
-        return card.getItem() instanceof CardItem && BaseCard.getNamedTransferMode(card) != BaseCard.TransferMode.INSERT;
+        return card.getItem() instanceof BaseCard && BaseCard.getNamedTransferMode(card) != BaseCard.TransferMode.INSERT;
     }
 
     private boolean showPriority() {
-        return card.getItem() instanceof CardItem && BaseCard.getNamedTransferMode(card) == BaseCard.TransferMode.INSERT;
+        return card.getItem() instanceof BaseCard && BaseCard.getNamedTransferMode(card) == BaseCard.TransferMode.INSERT;
     }
 
     private boolean showRegulate() {
-        return card.getItem() instanceof CardItem && BaseCard.getNamedTransferMode(card) == BaseCard.TransferMode.STOCK;
+        return card.getItem() instanceof BaseCard && BaseCard.getNamedTransferMode(card) == BaseCard.TransferMode.STOCK;
     }
 
     private boolean showRoundRobin() {
-        return card.getItem() instanceof CardItem && BaseCard.getNamedTransferMode(card) == BaseCard.TransferMode.EXTRACT;
+        return card.getItem() instanceof BaseCard && BaseCard.getNamedTransferMode(card) == BaseCard.TransferMode.EXTRACT;
     }
 
     @Override
@@ -449,7 +520,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
     public void onClose() {
         if (showFilter)
             PacketHandler.sendToServer(new PacketUpdateFilter(isAllowList == 1, isCompareNBT == 1));
-        PacketHandler.sendToServer(new PacketUpdateCard(currentMode, currentChannel, currentItemExtractAmt, currentPriority, currentSneaky, (short) currentTicks, currentExact, currentRegulate, (byte) currentRoundRobin));
+        saveSettings();
         super.onClose();
     }
 
@@ -479,6 +550,43 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
         return new TranslatableComponent(LaserIO.MODID + "." + key, args);
     }
 
+    public void setExtract(NumberButton amountButton, int btn) {
+        if (btn == 0)
+            changeAmount(1);
+        else if (btn == 1)
+            changeAmount(-1);
+        amountButton.setValue(currentMode == 0 ? currentPriority : currentItemExtractAmt);
+        amountButton.playDownSound(Minecraft.getInstance().getSoundManager());
+    }
+
+    public void saveSettings() {
+        PacketHandler.sendToServer(new PacketUpdateCard(currentMode, currentChannel, currentItemExtractAmt, currentPriority, currentSneaky, (short) currentTicks, currentExact, currentRegulate, (byte) currentRoundRobin, 0, 0, currentRedstoneMode, currentRedstoneChannel));
+    }
+
+    public boolean filterSlot(int btn) {
+        ItemStack slotStack = hoveredSlot.getItem();
+        if (slotStack.isEmpty()) return true;
+        if (btn == 2) { //Todo IMC Inventory Sorter so this works
+            slotStack.setCount(0);
+            PacketHandler.sendToServer(new PacketGhostSlot(hoveredSlot.index, slotStack, slotStack.getCount()));
+            return true;
+        }
+        int amt = (btn == 0) ? 1 : -1;
+        if (Screen.hasShiftDown()) amt *= 10;
+        if (Screen.hasControlDown()) amt *= 64;
+        if (amt + slotStack.getCount() > 4096) amt = 4096 - slotStack.getCount();
+
+
+        PacketHandler.sendToServer(new PacketGhostSlot(hoveredSlot.index, slotStack, slotStack.getCount() + amt));
+        return true;
+    }
+
+    public void openNode() {
+        saveSettings();
+        PacketHandler.sendToServer(new PacketOpenNode(container.sourceContainer, container.direction));
+        Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+    }
+
     @Override
     public boolean mouseClicked(double x, double y, int btn) {
         ChannelButton channelButton = ((ChannelButton) buttons.get("channel"));
@@ -491,14 +599,31 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
             channelButton.playDownSound(Minecraft.getInstance().getSoundManager());
             return true;
         }
+        ChannelButton redstoneChannelButton = ((ChannelButton) buttons.get("redstoneChannel"));
+        if (MiscTools.inBounds(redstoneChannelButton.x, redstoneChannelButton.y, redstoneChannelButton.getWidth(), redstoneChannelButton.getHeight(), x, y)) {
+            if (btn == 0)
+                currentRedstoneChannel = BaseCard.nextRedstoneChannel(card);
+            else if (btn == 1)
+                currentRedstoneChannel = BaseCard.previousRedstoneChannel(card);
+            redstoneChannelButton.setChannel(currentRedstoneChannel);
+            redstoneChannelButton.playDownSound(Minecraft.getInstance().getSoundManager());
+            return true;
+        }
+        ToggleButton sneakyButton = ((ToggleButton) buttons.get("sneaky"));
+        if (MiscTools.inBounds(sneakyButton.x, sneakyButton.y, sneakyButton.getWidth(), sneakyButton.getHeight(), x, y)) {
+            if (btn == 0) {
+                currentSneaky = BaseCard.nextSneaky(card);
+                sneakyButton.setTexturePosition(currentSneaky + 1);
+            } else if (btn == 1) {
+                currentSneaky = BaseCard.previousSneaky(card);
+                sneakyButton.setTexturePosition(currentSneaky + 1);
+            }
+            sneakyButton.playDownSound(Minecraft.getInstance().getSoundManager());
+            return true;
+        }
         NumberButton amountButton = ((NumberButton) buttons.get("amount"));
         if (MiscTools.inBounds(amountButton.x, amountButton.y, amountButton.getWidth(), amountButton.getHeight(), x, y)) {
-            if (btn == 0)
-                changeAmount(1);
-            else if (btn == 1)
-                changeAmount(-1);
-            amountButton.setValue(currentMode == 0 ? currentPriority : currentItemExtractAmt);
-            amountButton.playDownSound(Minecraft.getInstance().getSoundManager());
+            setExtract(amountButton, btn);
             return true;
         }
 
@@ -531,7 +656,8 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
                     hoveredSlot.set(stack); // Temporarily update the client for continuity purposes
                     PacketHandler.sendToServer(new PacketGhostSlot(hoveredSlot.index, stack, stack.getCount()));
                 } else {
-                    ItemStack slotStack = hoveredSlot.getItem();
+                    filterSlot(btn);
+                    /*ItemStack slotStack = hoveredSlot.getItem();
                     if (slotStack.isEmpty()) return true;
                     if (btn == 2) { //Todo IMC Inventory Sorter so this works
                         slotStack.setCount(0);
@@ -544,18 +670,18 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
                     if (amt + slotStack.getCount() > 4096) amt = 4096 - slotStack.getCount();
                     //slotStack.grow(amt);
 
-                    PacketHandler.sendToServer(new PacketGhostSlot(hoveredSlot.index, slotStack, slotStack.getCount() + amt));
+                    PacketHandler.sendToServer(new PacketGhostSlot(hoveredSlot.index, slotStack, slotStack.getCount() + amt));*/
                 }
             }
             return true;
         }
         if (hoveredSlot instanceof CardItemSlot) { //Right click
             if (btn == 0) {
-                if (filter.getItem() instanceof BaseFilter) //Save the filter before removing it from the slot
+                if (filter.getItem() instanceof BaseFilter && !(filter.getItem() instanceof FilterTag)) //Save the filter before removing it from the slot
                     PacketHandler.sendToServer(new PacketUpdateFilter(isAllowList == 1, isCompareNBT == 1));
             } else if (btn == 1) {
                 int slot = hoveredSlot.getSlotIndex();
-                PacketHandler.sendToServer(new PacketUpdateCard(currentMode, currentChannel, currentItemExtractAmt, currentPriority, currentSneaky, (short) currentTicks, currentExact, currentRegulate, (byte) currentRoundRobin));
+                saveSettings();
                 PacketHandler.sendToServer(new PacketOpenFilter(slot));
                 return true;
             }

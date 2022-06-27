@@ -29,6 +29,7 @@ public class PacketHandler {
 
         // Server side
         HANDLER.registerMessage(id++, PacketUpdateCard.class, PacketUpdateCard::encode, PacketUpdateCard::decode, PacketUpdateCard.Handler::handle);
+        HANDLER.registerMessage(id++, PacketUpdateRedstoneCard.class, PacketUpdateRedstoneCard::encode, PacketUpdateRedstoneCard::decode, PacketUpdateRedstoneCard.Handler::handle);
         HANDLER.registerMessage(id++, PacketUpdateFilter.class, PacketUpdateFilter::encode, PacketUpdateFilter::decode, PacketUpdateFilter.Handler::handle);
         HANDLER.registerMessage(id++, PacketOpenCard.class, PacketOpenCard::encode, PacketOpenCard::decode, PacketOpenCard.Handler::handle);
         HANDLER.registerMessage(id++, PacketOpenFilter.class, PacketOpenFilter::encode, PacketOpenFilter::decode, PacketOpenFilter.Handler::handle);
@@ -39,6 +40,7 @@ public class PacketHandler {
 
         //Client Side
         HANDLER.registerMessage(id++, PacketNodeParticles.class, PacketNodeParticles::encode, PacketNodeParticles::decode, PacketNodeParticles.Handler::handle);
+        HANDLER.registerMessage(id++, PacketNodeParticlesFluid.class, PacketNodeParticlesFluid::encode, PacketNodeParticlesFluid::decode, PacketNodeParticlesFluid.Handler::handle);
         //HANDLER.registerMessage(id++, PacketDurabilitySync.class,     PacketDurabilitySync::encode,       PacketDurabilitySync::decode,       PacketDurabilitySync.Handler::handle);
 
     }

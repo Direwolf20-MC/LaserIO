@@ -4,6 +4,7 @@ import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import com.direwolf20.laserio.common.blocks.baseblocks.BaseLaserBlock;
 import com.direwolf20.laserio.common.containers.LaserNodeContainer;
 import com.direwolf20.laserio.common.containers.customhandler.LaserNodeItemHandler;
+import com.direwolf20.laserio.common.items.CardHolder;
 import com.direwolf20.laserio.common.items.LaserWrench;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
 import net.minecraft.core.BlockPos;
@@ -95,6 +96,8 @@ public class LaserNode extends BaseLaserBlock implements EntityBlock {
                     });
                 } else {
                     be.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, result.getDirection()).ifPresent(h -> {
+                        ItemStack cardHolder = findCardHolders(player);
+                        if (!cardHolder.isEmpty()) CardHolder.getUUID(cardHolder);
                         MenuProvider containerProvider = new MenuProvider() {
                             @Override
                             public Component getDisplayName() {
@@ -103,12 +106,14 @@ public class LaserNode extends BaseLaserBlock implements EntityBlock {
 
                             @Override
                             public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player playerEntity) {
-                                return new LaserNodeContainer((LaserNodeBE) be, windowId, (byte) result.getDirection().ordinal(), playerInventory, playerEntity, (LaserNodeItemHandler) h, ContainerLevelAccess.create(be.getLevel(), be.getBlockPos()));
+                                return new LaserNodeContainer((LaserNodeBE) be, windowId, (byte) result.getDirection().ordinal(), playerInventory, playerEntity, (LaserNodeItemHandler) h, ContainerLevelAccess.create(be.getLevel(), be.getBlockPos()), cardHolder);
                             }
                         };
+
                         NetworkHooks.openGui((ServerPlayer) player, containerProvider, (buf -> {
                             buf.writeBlockPos(pos);
                             buf.writeByte((byte) result.getDirection().ordinal());
+                            buf.writeItemStack(cardHolder, false);
                         }));
                     });
                 }
@@ -118,6 +123,16 @@ public class LaserNode extends BaseLaserBlock implements EntityBlock {
 
         }
         return InteractionResult.SUCCESS;
+    }
+
+    public static ItemStack findCardHolders(Player player) {
+        ItemStack cardHolder = ItemStack.EMPTY;
+        Inventory playerInventory = player.getInventory();
+        for (int i = 0; i < playerInventory.items.size(); i++) {
+            ItemStack itemStack = playerInventory.items.get(i);
+            if (itemStack.getItem() instanceof CardHolder) return itemStack;
+        }
+        return cardHolder;
     }
 
     @Nullable
@@ -138,12 +153,44 @@ public class LaserNode extends BaseLaserBlock implements EntityBlock {
     }
 
     public void neighborChanged(BlockState blockState, Level level, BlockPos pos, Block blockIn, BlockPos fromPos, boolean isMoving) {
-        //System.out.println(level.getBlockState(fromPos).getBlock() + " : " + fromPos + " : " + blockIn);
-        if (!level.getBlockState(fromPos).getBlock().equals(blockIn)) {
-            BlockEntity blockEntity = level.getBlockEntity(pos);
-            if (blockEntity instanceof LaserNodeBE)
-                ((LaserNodeBE) blockEntity).clearCachedInventories();
+        //System.out.println("Neighbor changed at: " + pos + " from: " + fromPos);
+        BlockEntity blockEntity = level.getBlockEntity(pos);
+        if (blockEntity instanceof LaserNodeBE laserNodeBE) {
+            laserNodeBE.rendersChecked = false;
+            laserNodeBE.clearCachedInventories();
+            laserNodeBE.redstoneChecked = false;
+            //laserNodeBE.populateThisRedstoneNetwork(true);
         }
+    }
+
+    @Override
+    public int getSignal(BlockState pBlockState, BlockGetter pBlockAccess, BlockPos pPos, Direction pSide) {
+        BlockEntity blockEntity = pBlockAccess.getBlockEntity(pPos);
+        if (blockEntity instanceof LaserNodeBE laserNodeBE) {
+            return laserNodeBE.getRedstoneSide(pSide.getOpposite());
+        }
+        return 0;
+    }
+
+    @Override
+    public boolean canConnectRedstone(BlockState state, BlockGetter level, BlockPos pos, @Nullable Direction direction) {
+        BlockEntity blockEntity = level.getBlockEntity(pos);
+        if (blockEntity instanceof LaserNodeBE laserNodeBE) {
+            if ((direction == null) || !laserNodeBE.redstoneCardSides.containsKey((byte) direction.getOpposite().ordinal()))
+                return false;
+            return laserNodeBE.redstoneCardSides.get((byte) direction.getOpposite().ordinal());
+        }
+        return false;
+    }
+
+    @Override
+    public int getDirectSignal(BlockState pBlockState, BlockGetter pBlockAccess, BlockPos pPos, Direction pSide) {
+        BlockEntity blockEntity = pBlockAccess.getBlockEntity(pPos);
+        if (blockEntity instanceof LaserNodeBE laserNodeBE) {
+            if (laserNodeBE.getRedstoneSideStrong(pSide.getOpposite()))
+                return laserNodeBE.getRedstoneSide(pSide.getOpposite());
+        }
+        return 0;
     }
 
     @Nullable

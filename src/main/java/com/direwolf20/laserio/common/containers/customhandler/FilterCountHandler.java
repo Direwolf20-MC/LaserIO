@@ -39,9 +39,15 @@ public class FilterCountHandler extends FilterBasicHandler {
         }
     }
 
+    public void setMBAmountInSlot(int slot, int mbAmt) {
+        if (mbAmt == -1) return; //Shouldn't happen unless i done did goofed
+        FilterCount.setSlotAmount(this.stack, slot, mbAmt);
+    }
+
     public void syncSlots() {
         for (int i = 0; i < this.getSlots(); i++) {
-            FilterCount.setSlotCount(this.stack, i, this.getStackInSlot(i).getCount());
+            if (FilterCount.getSlotAmount(this.stack, i) == 0)
+                FilterCount.setSlotCount(this.stack, i, this.getStackInSlot(i).getCount());
         }
         FilterCount.setInventory(this.stack, this);
     }

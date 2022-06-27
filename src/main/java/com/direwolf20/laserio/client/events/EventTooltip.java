@@ -13,10 +13,13 @@ import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.FluidTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.lwjgl.opengl.GL11;
@@ -151,10 +154,24 @@ public class EventTooltip {
         LaserIOItemRenderer tooltipItemRenderer = new LaserIOItemRenderer(mc.getTextureManager(), mc.getModelManager(), mc.getItemColors(), blockentitywithoutlevelrenderer);
 
         List<Item> tagItems = ForgeRegistries.ITEMS.tags().getTag(ItemTags.create(new ResourceLocation(tag))).stream().toList();
-        ItemStack drawStack = new ItemStack(tagItems.get((int) (mc.level.getGameTime() / 20) % tagItems.size()));
-        matrices.pushPose();
-        tooltipItemRenderer.renderGuiItem(8f, drawStack, x, y, itemRenderer.getModel(drawStack, null, null, 0));
-        matrices.popPose();
+        if (tagItems.size() > 0) {
+            ItemStack drawStack = new ItemStack(tagItems.get((int) (mc.level.getGameTime() / 20) % tagItems.size()));
+            matrices.pushPose();
+            tooltipItemRenderer.renderGuiItem(8f, drawStack, x, y, itemRenderer.getModel(drawStack, null, null, 0));
+            matrices.popPose();
+        }
+
+        List<Fluid> tagFluids = ForgeRegistries.FLUIDS.tags().getTag(FluidTags.create(new ResourceLocation(tag))).stream().toList();
+        if (tagFluids.size() > 0) {
+            FluidStack drawFluidStack = new FluidStack(tagFluids.get((int) (mc.level.getGameTime() / 20) % tagFluids.size()), 1000);
+            matrices.pushPose();
+            if (!drawFluidStack.isEmpty()) {
+                ItemStack bucketStack = new ItemStack(drawFluidStack.getFluid().getBucket(), 1);
+                if (!bucketStack.isEmpty())
+                    tooltipItemRenderer.renderGuiItem(8f, bucketStack, x, y, itemRenderer.getModel(bucketStack, null, null, 0));
+            }
+            matrices.popPose();
+        }
     }
 }
 

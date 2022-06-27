@@ -64,6 +64,7 @@ public class ItemHandlerUtil {
                     tempStack.grow(source.extractItem(i, extractAmt, simulate).getCount());
                 else //This in theory should never happen but who knows
                     return new ExtractResult(tempStack, i);
+                if (tempStack.isEmpty()) continue; //This happens with some 'fake item' inventories like RFTools crafter
                 amount -= extractAmt;
                 if (amount == 0)
                     return new ExtractResult(tempStack, i); // If we found all we need, return the stack and the last slot we got it from
@@ -90,6 +91,7 @@ public class ItemHandlerUtil {
                     tempStack.grow(source.extractItem(i, extractAmt, simulate).getCount());
                 else //This in theory should never happen but who knows
                     return new ExtractResult(tempStack, i);
+                if (tempStack.isEmpty()) continue; //This happens with some 'fake item' inventories like RFTools crafter
                 amount -= extractAmt;
                 if (amount == 0)
                     return new ExtractResult(tempStack, i); // If we found all we need, return the stack and the last slot we got it from
@@ -113,6 +115,8 @@ public class ItemHandlerUtil {
             if (key.equals(new ItemStackKey(stackInSlot, isCompareNBT))) {
                 int extractAmt = Math.min(amtRemaining, stackInSlot.getCount());
                 ItemStack extractStack = source.extractItem(i, extractAmt, simulate);
+                if (extractStack.isEmpty())
+                    continue; //This happens with some 'fake item' inventories like RFTools crafter
                 amtRemaining -= extractAmt;
                 extractResults.addResult(new TransferResult.Result(source, i, cardCache, extractStack, be, true));
                 remainingStack.setCount(amtRemaining);

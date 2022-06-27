@@ -2,6 +2,9 @@ package com.direwolf20.laserio.common.network.packets;
 
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import com.direwolf20.laserio.common.blockentities.basebe.BaseLaserBE;
+import com.direwolf20.laserio.common.containers.CardEnergyContainer;
+import com.direwolf20.laserio.common.containers.CardItemContainer;
+import com.direwolf20.laserio.common.containers.CardRedstoneContainer;
 import com.direwolf20.laserio.common.containers.LaserNodeContainer;
 import com.direwolf20.laserio.common.containers.customhandler.LaserNodeItemHandler;
 import com.direwolf20.laserio.common.network.PacketHandler;
@@ -26,6 +29,7 @@ import net.minecraftforge.network.NetworkHooks;
 import java.util.function.Supplier;
 
 import static com.direwolf20.laserio.common.blocks.LaserNode.SCREEN_LASERNODE;
+import static com.direwolf20.laserio.common.blocks.LaserNode.findCardHolders;
 
 
 public class PacketOpenNode {
@@ -58,7 +62,19 @@ public class PacketOpenNode {
                 if (container == null)
                     return;
 
-                BlockEntity be = sender.level.getBlockEntity(msg.sourcePos);
+                BlockPos pos;
+                if (container instanceof LaserNodeContainer)
+                    pos = msg.sourcePos;
+                else if (container instanceof CardItemContainer cardItemContainer)
+                    pos = cardItemContainer.sourceContainer;
+                else if (container instanceof CardEnergyContainer cardEnergyContainer)
+                    pos = cardEnergyContainer.sourceContainer;
+                else if (container instanceof CardRedstoneContainer cardRedstoneContainer)
+                    pos = cardRedstoneContainer.sourceContainer;
+                else return;
+
+                final BlockPos sourcePos = pos;
+                BlockEntity be = sender.level.getBlockEntity(sourcePos);
                 if (be == null || !(be instanceof BaseLaserBE))
                     return;
 
@@ -68,6 +84,7 @@ public class PacketOpenNode {
                     sender.containerMenu.setCarried(ItemStack.EMPTY);
                 }
                 be.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, Direction.values()[msg.side]).ifPresent(h -> {
+                    ItemStack cardHolder = findCardHolders(sender);
                     MenuProvider containerProvider = new MenuProvider() {
                         @Override
                         public Component getDisplayName() {
@@ -76,12 +93,13 @@ public class PacketOpenNode {
 
                         @Override
                         public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player playerEntity) {
-                            return new LaserNodeContainer((LaserNodeBE) be, windowId, msg.side, playerInventory, playerEntity, (LaserNodeItemHandler) h, ContainerLevelAccess.create(be.getLevel(), be.getBlockPos()));
+                            return new LaserNodeContainer((LaserNodeBE) be, windowId, msg.side, playerInventory, playerEntity, (LaserNodeItemHandler) h, ContainerLevelAccess.create(be.getLevel(), be.getBlockPos()), cardHolder);
                         }
                     };
                     NetworkHooks.openGui(sender, containerProvider, (buf -> {
-                        buf.writeBlockPos(msg.sourcePos);
+                        buf.writeBlockPos(sourcePos);
                         buf.writeByte(msg.side);
+                        buf.writeItemStack(cardHolder, false);
                     }));
                     if (!heldStack.isEmpty()) {
                         sender.containerMenu.setCarried(heldStack);
