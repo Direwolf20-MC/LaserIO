@@ -1,47 +1,47 @@
 {
-  "name": "Basics",
+  "name": "Básico",
   "sortnum": 0,
   "category": "laserio:mechanics",
   "icon": "laserio:logic_chip",
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "Right clicking a Card in your hand will open up it's UI. You can also right click a card inside a $(l:laserio:laser_node)Node$(/l) UI.$(br2)Insert Mode:$(br)1. $(l:laserio:modes)Mode$(/l)$(br)2. $(l:laserio:sneaky)Sneaky$(/l)$(br)3. Filter$(br)4. $(l:laserio:overclocker_card)Card Overclocker$(/l)$(br)5. $(l:laserio:priority)Priority$(/l)$(br)6. $(l:laserio:channel)Channel$(/l)$(br)7. $(l:laserio:redstonemode)Redstone Mode$(/l)$(br)8. $(l:laserio:redstonechannel)Redstone Channel$(/l)"
+      "text": "Clicar com o botão direito em um Cartão na sua mão abrirá a sua UI. Você também pode clicar com o botão direito dentro da UI do $(l:laserio:laser_node)Nó$(/l).$(br2)Modo de Inserção:$(br)1. $(l:laserio:modes)Modo$(/l)$(br)2. $(l:laserio:sneaky)Sorrateiro$(/l)$(br)3. Filtro$(br)4. $(l:laserio:overclocker_card)Overclocker de Cartão$(/l)$(br)5. $(l:laserio:priority)Prioridade$(/l)$(br)6. $(l:laserio:channel)Canal$(/l)$(br)7. $(l:laserio:redstonemode)Modo de Redstone$(/l)$(br)8. $(l:laserio:redstonechannel)Canal da Redstone$(/l)"
     },
     {
       "type": "patchouli:image",
-      "title": "Insert UI",
+      "title": "UI de Inserção",
       "images": [
         "laserio:textures/book/entries/basics1.png"
       ],
       "border": true,
-      "text": "An item card set to Insert Mode"
+      "text": "Um Cartão de Item definido para o Modo de Inserção"
     },
     {
       "type": "patchouli:text",
-      "text": "Extract Mode:$(br2)1. $(l:laserio:modes)Mode$(/l)$(br)2. $(l:laserio:sneaky)Sneaky$(/l)$(br)3. $(l:laserio:roundrobin)Round Robin$(/l)$(br)4. $(l:laserio:exact)Exact$(/l)$(br)5. Filter$(br)6. $(l:laserio:overclocker_card)Card Overclocker$(/l)$(br)7. $(l:laserio:extractamount)Extract Amount$(/l)$(br)8. $(l:laserio:tickspeed)Tick Speed$(/l)$(br)9. $(l:laserio:channel)Channel$(/l)"
+      "text": "Modo de Extração:$(br2)1. $(l:laserio:modes)Modo$(/l)$(br)2. $(l:laserio:sneaky)Sorrateiro$(/l)$(br)3. $(l:laserio:roundrobin)Rodízio$(/l)$(br)4. $(l:laserio:exact)Exato$(/l)$(br)5. Filtro$(br)6. $(l:laserio:overclocker_card)Overclocker de Cartão$(/l)$(br)7. $(l:laserio:extractamount)Quantidade de Extração$(/l)$(br)8. $(l:laserio:tickspeed)Velocidade em Ticks$(/l)$(br)9. $(l:laserio:channel)Canal$(/l)"
     },
     {
       "type": "patchouli:image",
-      "title": "Extract UI",
+      "title": "UI de Extração",
       "images": [
         "laserio:textures/book/entries/basics-extract.png"
       ],
       "border": true,
-      "text": "An item card set to Extract Mode."
+      "text": "Um Cartão de Item definido para o Modo de Extração"
     },
     {
       "type": "patchouli:text",
-      "text": "Stock Mode:$(br2)1. $(l:laserio:modes)Mode$(/l)$(br)2. $(l:laserio:sneaky)Sneaky$(/l)$(br)3. $(l:laserio:regulate)Regulate$(/l)$(br)4. $(l:laserio:exact)Exact$(/l)$(br)5. Filter$(br)6. $(l:laserio:overclocker_card)Card Overclocker$(/l)$(br)7. $(l:laserio:extractamount)Extract Amount$(/l)$(br)8. $(l:laserio:tickspeed)Tick Speed$(/l)$(br)9. $(l:laserio:channel)Channel$(/l)"
+      "text": "Modo de Estoque:$(br2)1. $(l:laserio:modes)Modo$(/l)$(br)2. $(l:laserio:sneaky)Sorrateiro$(/l)$(br)3. $(l:laserio:regulate)Regulado$(/l)$(br)4. $(l:laserio:exact)Exato$(/l)$(br)5. Filtro$(br)6. $(l:laserio:overclocker_card)Overclocker de Cartão$(/l)$(br)7. $(l:laserio:extractamount)Quantidade de Extração$(/l)$(br)8. $(l:laserio:tickspeed)Velocidade em Ticks$(/l)$(br)9. $(l:laserio:channel)Canal$(/l)"
     },
     {
       "type": "patchouli:image",
-      "title": "Stock UI",
+      "title": "UI de Estoque",
       "images": [
         "laserio:textures/book/entries/basics-stock.png"
       ],
       "border": true,
-      "text": "An item card set to Stock Mode."
+      "text": "Um Cartão de Item definido para o Modo de Estoque"
     }
   ]
 }
