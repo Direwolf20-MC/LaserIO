@@ -1,24 +1,24 @@
 {
-  "name": "Card Holder",
+  "name": "Recipiente para Cartões",
   "icon": "laserio:card_holder",
   "sortnum": 2,
   "category": "laserio:items",
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "The card holder is the solution to all your inventory woes! At least, the ones caused by this mod....Simply craft a Card Holder and right click it to open up the UI. Cards placed in this UI can stack up to 64, provided their NBT data matches. (Reminder: You can craft cards by themselves to reset their NBT)"
+      "text": "O Recipiente para Cartões é a solução para as preocupações com o seu inventário! Pelo menos, aquelas causadas por este mod....Basicamente basta criar um Recipiente para Cartões e clicar com o botão direito para abrir sua UI. Cartões colocados nessa UI podem ter uma stack de até 64, desde que as tags NBT sejam compatíveis. (Lembrete: Você pode resetar as tags NBT de um cartão colocando-os na tela de craft)"
     },
     {
       "type": "patchouli:text",
-      "text": "Cards can be modified from within the holder - by right clicking on a cardstack (Just like in a laser node).$(br2)NOTE: If the stacksize of the card is larger than 1, it will disable the Filter and Overclocker slots to prevent item duping. #BlameSoaryn"
+      "text": "Os Cartões podem ser modificados quando estão no Recipiente - clique com o botão direito na stack (igual é feito no Nó Laser).$(br2)BOTA: Se o tamanho da stack do cartão é maior do que 1, os slots do Filtro e do Overclocker serão desabilitados para evitar duplicação de itens. #BlameSoaryn"
     },
     {
       "type": "patchouli:text",
-      "text": "By holding shift and right clicking the Card holder, it will start automatically pulling cards out of your inventory! You can tell this is activated because the card holder starts to glow as if it were enchanted. Shift-right click again to toggle it off. If you have the card holder in your inventory when you open a node, you'll see its cards displayed"
+      "text": "Segurando a tecla shift e cliquando com o botão direito no Recipiente para Cartões, será iniciando uma coleta automática de todos os cartões presentes em seu inventário! Você conseguirá saber se está ativado ou não por conta do brilho de encantamento que o Recipiente para Cartões terá. Segurando a tecla shift e cliquando com o botão direito novamente irá desabilitar a coleta automática. Se você tiver o Recipiente para Cartões em seu inventário enquanto abre a UI de um Nó Laser, você verá todos os cartões que estão dentro do recipiente"
     },
     {
       "type": "patchouli:crafting",
-      "title": "Card Holder",
+      "title": "Recipiente para Cartões",
       "recipe": "laserio:card_holder"
     }
   ]
