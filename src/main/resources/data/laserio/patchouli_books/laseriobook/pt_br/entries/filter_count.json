@@ -1,5 +1,5 @@
 {
-  "name": "Counting Filter",
+  "name": "Filtro de Contagem",
   "sortnum": 2,
   "category": "laserio:filters",
   "icon": "laserio:filter_count",

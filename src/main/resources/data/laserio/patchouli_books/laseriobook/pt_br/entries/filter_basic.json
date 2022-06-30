@@ -1,16 +1,16 @@
 {
-  "name": "Basic Filter",
+  "name": "Filtro Básico",
   "sortnum": 1,
   "category": "laserio:filters",
   "icon": "laserio:filter_basic",
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "The basic filter can be used to limit what items are allowed in an inventory.$(br2)These slots are 'ghost slots', which means they do not REALLY hold items, just an image of an item."
+      "text": "O filtro básico pode ser usado para limitar quais itens são permitidos em um inventário.$(br2)Esses slots são 'slots fantasmas', o que significa que eles realmente NÃO contêm itens, apenas uma imagem de um item."
     },
     {
       "type": "patchouli:text",
-      "text": "If JEI is installed, you may drag items from JEI into these 'ghost slots'. Simply left click and drag out of JEI into the filter UI."
+      "text": "Se o JEI estiver instalado, você poderá clicar e arrastar os itens do JEI para os 'slots fantasma'. Clique com o botão esquerdo, segure e arraste para a UI do filtro."
     }
   ]
 }

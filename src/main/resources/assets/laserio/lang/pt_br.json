@@ -28,7 +28,7 @@
   "laserio.tooltip.item.card.sneaky.SOUTH": "Sul",
   "laserio.tooltip.item.card.sneaky.UP": "Para cima",
   "laserio.tooltip.item.card.sneaky.WEST": "Oeste",
-  "laserio.tooltip.item.filter.nbt": "Combinar NBT: ",
+  "laserio.tooltip.item.filter.nbt": "Comparar tag NBT: ",
   "laserio.tooltip.item.filter.nbt.allow": "Verdadeiro",
   "laserio.tooltip.item.filter.nbt.deny": "Falso",
   "laserio.tooltip.item.filter.type": "Tipo: ",
