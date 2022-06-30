@@ -10,7 +10,7 @@
     },
     {
       "type": "patchouli:text",
-      "text": "Ao contrário dos Cartões de Itens ou Fluídos que exigem que os overclockers operem mais rápido do que uma vez a cada 20 ticks, os Cartões de Energia podem operar a cada tick por padrão.$(br2)Valores (max) de FE/T para os Overclockers:$(br)$(li)0 Overclockers: 1.000fe/t$(li)1 Overclocker:  4.000fe/t$(li)2 Overclockers: 16.000fe/t$(li)3 Overclockers: 32.000fe/t$(li)4 Overclockers: 100.000fe/t"
+      "text": "Ao contrário dos Cartões de Itens ou Fluidos que exigem que os overclockers operem mais rápido do que uma vez a cada 20 ticks, os Cartões de Energia podem operar a cada tick por padrão.$(br2)Valores (max) de FE/T para os Overclockers:$(br)$(li)0 Overclockers: 1.000fe/t$(li)1 Overclocker:  4.000fe/t$(li)2 Overclockers: 16.000fe/t$(li)3 Overclockers: 32.000fe/t$(li)4 Overclockers: 100.000fe/t"
     },
     {
       "type": "patchouli:text",
