@@ -1,21 +1,21 @@
 {
-  "name": "Logic Chips",
+  "name": "Chips Lógicos",
   "icon": "laserio:logic_chip",
   "sortnum": 0,
   "category": "laserio:items",
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "Logic Chips are the primary crafting ingredient in LaserIO. $(br2)They are the only item crafted with 'vanilla' materials, and all subsequent items use a chip in one way or another."
+      "text": "Os Chips Lógicos são o principal ingrediente de criação no LaserIO. $(br2)Eles são os únicos itens criamos com materiais 'vanilla', e todos os outros itens subsequentes utilizam o chip de uma forma ou de outra."
     },
     {
       "type": "patchouli:crafting",
-      "title": "Raw Logic Chip",
+      "title": "Chip Lógico Bruto",
       "recipe": "laserio:logic_chip_raw"
     },
     {
       "type": "patchouli:smelting",
-      "title": "Logic Chip",
+      "title": "Chip Lógico",
       "recipe": "laserio:logic_chip"
     }
   ]

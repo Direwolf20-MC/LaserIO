@@ -1,16 +1,16 @@
 {
-  "name": "Card Overclocker",
+  "name": "Overclocker de Cartão",
   "icon": "laserio:overclocker_card",
   "sortnum": 2,
   "category": "laserio:items",
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "Card Overclockers allow individual cards to operate more quickly.$(br2)For example, Item Cards can only extract at most 8 items every 20 ticks (1 second). With 4 overclockers installed they can reach 64 items per 1 tick!$(br2)See the Cards section for more details on how each card is affected by overclockers."
+      "text": "Os Overclockers de Cartão permitem que os cartões operem individualmente mais rápido.$(br2)Por exemplo, os Cartões de Item extrarem 8 itens a cada 20 ticks (1 segundo). Com 4 overclockers instalados ele pode atingir até 64 itens a cada 1 tick!$(br2)Veja a seção de Cartões para mais detalhes de como os cartões são afetados pelos overclockers."
     },
     {
       "type": "patchouli:crafting",
-      "title": "Card Overclocker",
+      "title": "Overclocker de Cartão",
       "recipe": "laserio:overclocker_card"
     }
   ]

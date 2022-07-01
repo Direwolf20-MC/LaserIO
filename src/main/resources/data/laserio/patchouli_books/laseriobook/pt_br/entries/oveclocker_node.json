@@ -1,38 +1,38 @@
 {
-  "name": "Node Overclocker",
+  "name": "Overclocker de Nó",
   "icon": "laserio:overclocker_node",
   "sortnum": 3,
   "category": "laserio:items",
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "Node Overclockers are a more complex component.$(br2)Each $(l:laserio:laser_node)Node$(/l) can only operate on 1 card per side per tick. $(br2)If there are 3 extractor cards in the side of a node, only the first one will operate during a game tick, and the second will only operate if the first fails to do anything."
+      "text": "Os Overclockers de Nós são componentes mais complexos.$(br2)Cada $(l:laserio:laser_node)Nó$(/l) somente opera 1 cartão por lado a cada tick. $(br2)Se existiram 3 Cartões no modo de Extração dentro de um Nó, somente o primeiro irá operar durante um tick do jogo, e o segundo irá operar se o primeiro falhar ao fazer qualquer coisa."
     },
     {
       "type": "patchouli:image",
-      "title": "No Node Overclockers",
+      "title": "Sem o Overclockers de Nó",
       "images": [
         "laserio:textures/book/entries/overclocker_node1.png"
       ],
       "border": true,
-      "text": "There are zero Node Overclockers installed"
+      "text": "Não tem nenhum Overclocker de Nó instalado"
     },
     {
       "type": "patchouli:text",
-      "text": "Each Node Overclocker installed on the side of a Node allows that side to operate on more cards per tick. A total of 8 Node Overclockers can be installed, allowing all 9 nodes to be operated on. $(br2)Inserter cards do $(l)$(#ff0000)NOT$() need overclockers to function, $(l)ONLY$() Extractor and Stocker cards need them."
+      "text": "Cada Overclocker de Nó instalado no lado de um Nó permitirá que aquele lado consiga operar mais cartões por tick. Um total de 8 Overclockers de Nó podem ser instalados, permitindo que todos os 9 cartões funcionem. $(br2)Cartões de Inserção $(l)$(#ff0000)NÃO$() precisam de overclockers para funcionar, $(l)SOMENTE$() os Cartões de Extração e Estoque precisam."
     },
     {
       "type": "patchouli:image",
-      "title": "2 Node Overclockers",
+      "title": "2 Overclockers de Nó",
       "images": [
         "laserio:textures/book/entries/overclocker_node2.png"
       ],
       "border": true,
-      "text": "There are two Node Overclockers installed"
+      "text": "Existem dois Overclockers de Nó instalados"
     },
     {
       "type": "patchouli:crafting",
-      "title": "Node Overclocker",
+      "title": "Overclocker de Nó",
       "recipe": "laserio:overclocker_node"
     }
   ]
