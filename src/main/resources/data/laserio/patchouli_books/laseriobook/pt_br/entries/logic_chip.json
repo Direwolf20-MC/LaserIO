@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "Os Chips Lógicos são o principal ingrediente de criação no LaserIO. $(br2)Eles são os únicos itens criamos com materiais 'vanilla', e todos os outros itens subsequentes utilizam o chip de uma forma ou de outra."
+      "text": "Os Chips Lógicos são o principal ingrediente de criação no LaserIO. $(br2)Eles são os únicos itens criados com materiais 'vanilla', e todos os outros itens subsequentes utilizam o chip de uma forma ou de outra."
     },
     {
       "type": "patchouli:crafting",

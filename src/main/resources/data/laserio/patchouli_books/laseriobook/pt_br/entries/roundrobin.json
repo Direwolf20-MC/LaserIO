@@ -14,7 +14,7 @@
     },
     {
       "type": "patchouli:text",
-      "text": "Quando configurado para $(l)Forçado$(), as mesmas regras do modo 'Verdadeiro' serão seguidas. No entanto, se um dos destinos ficar cheio, o extrator deixará de funcionar até ficar disponível novamente.$(br2)Note: O descarregamento de chunks pode causar uma mudança na mecânica do rodízio, especialmente se alguns Nós forem descarregados quando outros não forem."
+      "text": "Quando configurado para $(l)Forçado$(), as mesmas regras do modo 'Verdadeiro' serão seguidas. No entanto, se um dos destinos ficar cheio, o extrator deixará de funcionar até ficar disponível novamente.$(br2)Nota: O descarregamento de chunks pode causar uma mudança na mecânica do rodízio, especialmente se alguns Nós forem descarregados quando outros não forem."
     }
   ]
 }

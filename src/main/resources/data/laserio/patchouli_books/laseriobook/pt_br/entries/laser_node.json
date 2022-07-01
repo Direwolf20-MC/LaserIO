@@ -19,7 +19,7 @@
     },
     {
       "type": "patchouli:text",
-      "text": "Cada lado do Nó tem um inventário no formado de tabela 3x3 que aceita Cartões. Clique com o botão direto em algum lado do Nó para abrir sua interface. $(br2)Use os botões na parte superior para alterar em qual lado você está trabalhando, caso o lado que você deseja modificar não seja facilmente acessível.$(br2)A captura de tela ao lado mostra um Nó interagindo com um inventário no lado oeste."
+      "text": "Cada lado do Nó tem um inventário no formato de tabela 3x3 que aceita Cartões. Clique com o botão direto em algum lado do Nó para abrir sua interface. $(br2)Use os botões na parte superior para alterar em qual lado você está trabalhando, caso o lado que você deseja modificar não esteja facilmente acessível.$(br2)A captura de tela ao lado mostra um Nó interagindo com um inventário no lado oeste."
     },
     {
       "type": "patchouli:image",

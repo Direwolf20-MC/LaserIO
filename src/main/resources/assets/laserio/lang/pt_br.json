@@ -40,7 +40,7 @@
   "screen.laserio.comparenbt": "NBT",
   "screen.laserio.default": "Padrão",
   "screen.laserio.denylist": "Negar",
-  "screen.laserio.down": "Baixo",
+  "screen.laserio.down": "Por Baixo",
   "screen.laserio.east": "Leste",
   "screen.laserio.energylimit": "Limite de Energia (%)",
   "screen.laserio.enforced": "Forçado",
@@ -67,7 +67,7 @@
   "screen.laserio.strong": "Forte",
   "screen.laserio.tickSpeed": "Velocidade de transferência (Ticks)",
   "screen.laserio.true": "Verdadeiro",
-  "screen.laserio.up": "Para cima",
+  "screen.laserio.up": "Por Cima",
   "screen.laserio.weak": "Fraco",
   "screen.laserio.west": "Oeste"
 }

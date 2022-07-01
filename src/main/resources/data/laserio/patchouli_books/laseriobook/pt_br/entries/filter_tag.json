@@ -10,12 +10,12 @@
     },
     {
       "type": "patchouli:image",
-      "title": "UI de Tags",
+      "title": "Interface de Tags",
       "images": [
         "laserio:textures/book/entries/filter_tag.png"
       ],
       "border": true,
-      "text": "UI de Tags"
+      "text": "Interface de Tags"
     },
     {
       "type": "patchouli:text",

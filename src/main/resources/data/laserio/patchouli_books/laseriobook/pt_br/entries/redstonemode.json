@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "O Modo Redstone determina como um sinal de redstone no $(l:laserio:redstonechannel)Canal de Redstone$(/l) afetará um cartão.$(br2)Por padrão, está definido para $(bold)ingnorar$() significando que o cartão sempre funcionará, e um sinal de redstone não afetará em nada."
+      "text": "O Modo Redstone determina como um sinal de redstone no $(l:laserio:redstonechannel)Canal de Redstone$(/l) afetará um cartão.$(br2)Por padrão, está definido para $(bold)ingnorar$() significando que o cartão sempre funcionará, e um sinal de redstone não o afetará em nada."
     },
     {
       "type": "patchouli:text",
