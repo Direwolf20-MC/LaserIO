@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "O Filtro de Contagem pode designar um número específico de itens e desempenha um papel diferente com base no modo do cartão.$(br2)O tamanho da stack de itens pode ir de 1 a 4096. Clicar com o botão esquerdo aumentará o tamanho da stack, enquanto clicar com o botão direito o diminuirá. Segurar Shift ou Control modificará este valor em 10 ou 64 respectivamente."
+      "text": "O Filtro de Contagem pode designar um número específico de itens e desempenha um papel diferente com base no modo do cartão.$(br2)O tamanho da stack de itens pode ir de 1 a 4096. Clicar com o botão esquerdo aumentará o tamanho da stack, enquanto clicar com o botão direito o diminuirá. Segurar Shift ou Ctrl modificará este valor em 10 ou 64 respectivamente."
     },
     {
       "type": "patchouli:text",

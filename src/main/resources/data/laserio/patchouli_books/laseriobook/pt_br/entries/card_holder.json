@@ -14,7 +14,7 @@
     },
     {
       "type": "patchouli:text",
-      "text": "Segurando a tecla shift e cliquando com o botão direito no Recipiente para Cartões, será iniciando uma coleta automática de todos os cartões presentes em seu inventário! Você conseguirá saber se está ativado ou não por conta do brilho de encantamento que o Recipiente para Cartões terá. Segurando a tecla shift e cliquando com o botão direito novamente irá desabilitar a coleta automática. Se você tiver o Recipiente para Cartões em seu inventário enquanto abre a UI de um Nó a Laser, você verá todos os cartões que estão dentro do recipiente"
+      "text": "Segurando a tecla Shift e cliquando com o botão direito no Recipiente para Cartões, será iniciando uma coleta automática de todos os cartões presentes em seu inventário! Você conseguirá saber se está ativado ou não por conta do brilho de encantamento que o Recipiente para Cartões terá. Segurando a tecla Shift e cliquando com o botão direito novamente irá desabilitar a coleta automática. Se você tiver o Recipiente para Cartões em seu inventário enquanto abre a UI de um Nó a Laser, você verá todos os cartões que estão dentro do recipiente"
     },
     {
       "type": "patchouli:crafting",

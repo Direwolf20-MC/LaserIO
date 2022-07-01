@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "Os cartões somente interagem com outros cartões que estiverem no mesmo canal. Isso permite ao jogador possuir multiplas rotas lógicas na mesma rede.$(br2)Por exemplo, os Cartões de Extração no canal 'Laranja' somente tentará inserir nos Cartões de Inserção que estiverem no canal 'Laranja', e ignorará todos os outros cartões."
+      "text": "Os cartões somente interagem com outros cartões que estiverem no mesmo canal. Isso permite ao jogador possuir multiplas rotas lógicas na mesma rede.$(br2)Por exemplo, os Cartões de Extração no canal 'Laranja' somente tentarão inserir nos Cartões de Inserção que estiverem no canal 'Laranja', e ignorará todos os outros cartões."
     },
     {
       "type": "patchouli:text",

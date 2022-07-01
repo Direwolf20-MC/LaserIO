@@ -19,7 +19,7 @@
     },
     {
       "type": "patchouli:text",
-      "text": "Primeiro, comece colocando um item no slot no canto superior direito. Uma lista de tags neste item aparecerá em $(#0000ff)azul$(). Clique na tag que deseja adicionar e pressione o botão +. Segurar shift e pressionar o botão + adicionará todas as tags à lista.$(br2)Para remover uma tag da lista, selecione-a e pressione o botão -.$(br2)Alternativamente, você pode clicar com a tecla shift pressionada para adicionar/remover automaticamente a tag."
+      "text": "Primeiro, comece colocando um item no slot no canto superior direito. Uma lista de tags neste item aparecerá em $(#0000ff)azul$(). Clique na tag que deseja adicionar e pressione o botão +. Segurar Shift e pressionar o botão + adicionará todas as tags à lista.$(br2)Para remover uma tag da lista, selecione-a e pressione o botão -.$(br2)Alternativamente, você pode clicar com a tecla Shift pressionada para adicionar/remover automaticamente a tag."
     },
     {
       "type": "patchouli:text",
