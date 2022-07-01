@@ -23,7 +23,7 @@
     },
     {
       "type": "patchouli:text",
-      "text": "Comparar tags NBT$(br2)Quando a comparação de tags NBT estiver ativa, as tags NBT dos itens serão consideradas pelo filtro. Por exemplo, uma espada armazena a quantidade de dano sofrida em uma tag NBT. Com o modo 'Comparar tags NFT' estiver ativo, uma espada de diamante sem nenhum dano é diferente de uma já danificada, ou de uma encantada.$(br2)Com a Comparação de tags NBT desativada, todas as espadas de diamante serão aceitas, independente dos status."
+      "text": "Comparar tags NBT$(br2)Quando a comparação de tags NBT estiver ativa, as tags NBT dos itens serão consideradas pelo filtro. Por exemplo, uma espada armazena a quantidade de dano sofrida em uma tag NBT. Com o modo 'Comparar tags NBT' estiver ativo, uma espada de diamante sem nenhum dano é diferente de uma já danificada, ou de uma encantada.$(br2)Com a Comparação de tags NBT desativada, todas as espadas de diamante serão aceitas, independente dos status."
     }
   ]
 }

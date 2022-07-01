@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "O filtro básico pode ser usado para limitar quais itens são permitidos em um inventário.$(br2)Esses slots são 'slots fantasmas', o que significa que eles realmente NÃO contêm itens, apenas uma imagem de um item."
+      "text": "O Filtro Básico pode ser usado para limitar quais itens são permitidos em um inventário.$(br2)Esses slots são 'slots fantasmas', o que significa que eles realmente NÃO contêm itens, apenas uma imagem de um item."
     },
     {
       "type": "patchouli:text",

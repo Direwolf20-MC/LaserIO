@@ -1,12 +1,12 @@
 {
-  "name": "Cartões de Itens",
+  "name": "Cartões de Item",
   "sortnum": 1,
   "category": "laserio:cards",
   "icon": "laserio:card_item",
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "Os Cartões de Itens são utilizados para enviar itens entre inventários, como baús e fornalhas.$(br2)Os valores de overclocker estão documentados na página seguinte."
+      "text": "Os Cartões de Item são utilizados para enviar itens entre inventários, como baús e fornalhas.$(br2)Os valores de overclocker estão documentados na página seguinte."
     },
     {
       "type": "patchouli:text",

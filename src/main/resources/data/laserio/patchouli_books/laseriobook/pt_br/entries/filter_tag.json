@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "O Filtro de Tags permite que um jogador filtre por tags em recursos.$(br2)As tags são uma maneira de o Minecraft agrupar recursos semelhantes. Por exemplo, à direita podemos ver que uma barra de ferro tem a tag 'forge:ingots'. O mesmo para o outro, cobre, latão, etc.$(br2)O Filtro de Tags permitiria classificar todos os lingotes com uma única entrada!"
+      "text": "O Filtro de Tags permite que um jogador filtre por tags em recursos.$(br2)As tags são uma maneira de o Minecraft agrupar recursos semelhantes. Por exemplo, à direita podemos ver que uma barra de ferro tem a tag 'forge:ingots'. O mesmo para o ouro, cobre, latão, etc.$(br2)O Filtro de Tags permitiria classificar todos os lingotes com uma única entrada!"
     },
     {
       "type": "patchouli:image",
