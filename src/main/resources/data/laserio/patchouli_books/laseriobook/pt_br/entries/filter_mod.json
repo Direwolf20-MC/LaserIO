@@ -1,12 +1,12 @@
 {
-  "name": "Mod Filter",
+  "name": "Filtro de Mods",
   "sortnum": 3,
   "category": "laserio:filters",
   "icon": "laserio:filter_mod",
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "The mod filter will sort based on what mod an item/block comes from. For example, if you place a Laser Wrench in the filter, all LaserIO items and blocks will match that filter."
+      "text": "O Filtro de Mod irá classificar com base em qual mod um item/bloco vem. Por exemplo, se você colocar uma Chave a Laser no filtro, todos os itens e blocos LaserIO corresponderão a esse filtro."
     }
   ]
 }

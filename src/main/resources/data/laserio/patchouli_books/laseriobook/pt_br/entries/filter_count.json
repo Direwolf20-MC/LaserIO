@@ -6,15 +6,15 @@
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "The Count Filter can designate a specified number of items, and plays a different role based on the card's mode.$(br2)Stack sizes of items can go from 1 to 4096. Left click will increase the stack size, while right click will decrease it. Holding shift or control will modify this amount by 10 or 64 respectively."
+      "text": "O Filtro de Contagem pode designar um número específico de itens e desempenha um papel diferente com base no modo do cartão.$(br2)O tamanho da stack de itens pode ir de 1 a 4096. Clicar com o botão esquerdo aumentará o tamanho da stack, enquanto clicar com o botão direito o diminuirá. Segurar Shift ou Control modificará este valor em 10 ou 64 respectivamente."
     },
     {
       "type": "patchouli:text",
-      "text": "If a counting filter is used in a stocker mode card, it will try to keep the specified amount of resources in stock. For example, keeping 64 cobblestone in a chest is done by using a Counting Filter with 64 cobblestone.$(br2)If a counting filter is used in an Inserter card, it will limit how many items are allowed to be sent to that inventory by extractor cards."
+      "text": "Se um Filtro de Contagem for usado em um cartão de modo de estoque, ele tentará manter a quantidade especificada de recursos em estoque. Por exemplo, para manter 64 pedras em um baú basta usar um filtro de contagem com 64 pedras.$(br2)Se um Filtro de Contagem for usado em um cartão de inserção, ele limitará quantos itens podem ser enviados para esse inventário por cartões de extração."
     },
     {
       "type": "patchouli:text",
-      "text": "If a counting filter is used in a extractor mode card, it will leave the designated number of items behind. For example, if you set an extract card with a filter of 8 cobblestone, it will pull out all but the last 8 cobblestone from a chest.$(br2)Counting filters do not have an Allow vs Deny button - as Deny mode would not make any sense for a counting filter. All counting filters are 'Allow mode'.  JEI Interaction works the same as it does in a $(l:laserio:filter_basic)Basic Filter$(/l)."
+      "text": "Se um Filtro de Contagem for usado em um cartão de modo extrator, ele deixará o número designado de itens para trás. Por exemplo, se você definir um cartão de extração com um filtro de 8 pedras, ele retirará todos, exceto os últimos 8, de um baú.$(br2)Os Filtros de Contagem não têm um botão Permitir vs Negar - pois o modo Negar não faria sentido para um filtro de contagem. Todos os filtros de contagem estão no 'Modo Permitir'. A integração com o JEI funciona da mesma forma que um $(l:laserio:filter_basic)Filtro Básico$(/l)."
     }
   ]
 }
