@@ -1,6 +1,6 @@
 {
-  "block.laserio.laser_connector": "Conector Laser",
-  "block.laserio.laser_node": "Nó Laser",
+  "block.laserio.laser_connector": "Conector a Laser",
+  "block.laserio.laser_node": "Nó a Laser",
   "item.laserio.card_energy": "Cartão de Energia",
   "item.laserio.card_fluid": "Cartão de Fluido",
   "item.laserio.card_holder": "Recipiente para Cartões",

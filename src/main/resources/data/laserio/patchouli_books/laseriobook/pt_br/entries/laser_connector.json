@@ -1,25 +1,25 @@
 {
-  "name": "Laser Connector",
+  "name": "Conector Laser",
   "icon": "laserio:laser_connector",
   "sortnum": 1,
   "category": "laserio:blocks",
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "Multiple $(l:laserio:laser_node)Laser Nodes$(/l) can be connected directly to each other using the $(l:laserio:laser_wrench)Laser Wrench$(/l), however the maximum range is 8 blocks. $(br2)Laser Connectors can act as a cheaper intermediary point between nodes, allowing you to build a network of interconnected inventories."
+      "text": "Multiplos $(l:laserio:laser_node)Nós a Laser$(/l) podem ser conectados diretamente uns aos outros usando a $(l:laserio:laser_wrench)Chave a Laser$(/l), no entanto, o alcance máximo é de 8 blocos. $(br2)Os Conectores a Laser podem atuar como um ponto intermediário mais barato entre os Nós, permitindo que você construa uma rede de inventários interconectados."
     },
     {
       "type": "patchouli:image",
-      "title": "Laser Node",
+      "title": "Nó a Laser",
       "images": [
         "laserio:textures/book/entries/laser_connector1.png"
       ],
       "border": true,
-      "text": "Connector between 2 nodes"
+      "text": "Conector entre 2 nós"
     },
     {
       "type": "patchouli:crafting",
-      "title": "Laser Connector",
+      "title": "Conector a Laser",
       "recipe": "laserio:laser_connector"
     }
   ]
