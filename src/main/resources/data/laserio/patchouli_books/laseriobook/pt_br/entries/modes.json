@@ -1,0 +1,27 @@
+{
+  "name": "Modos",
+  "sortnum": 1,
+  "category": "laserio:mechanics",
+  "icon": "laserio:textures/gui/buttons/modestocker.png",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Os Modos determinam o que um cartão faz fundamentalmente. As páginas a seguir definem cada tipo de modo atualmente disponível.$(br2)Cada tipo de cartão (Item/Fluido/Energia) suporta os três modos a seguir. Os Cartões de Item serão utilizados como exemplo.$(br2)Os Cartões de Redstone suportarão um conjunto diferente de modos."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "laserio:card_item{channel:0b,exact:0b,inv:{Items:[],Size:2},itemextractamt:1b,itemextractspeed:20,mode:0b,priority:0s,regulate:0b,roundRobin:0,sneaky:-1b}",
+      "text": "Os Cartões no Modo de Inserção são um destino de validação para objetos que estão sendo extraídos por Cartões no Modo de Extração.$(br2)Os Cartões no Modo de Estoque tentarão extrair dos Cartões do modo de Inserção."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "laserio:card_item{channel:0b,exact:0b,inv:{Items:[],Size:2},itemextractamt:1b,itemextractspeed:20,mode:1b,priority:0s,regulate:0b,roundRobin:0,sneaky:-1b}",
+      "text": "Os Cartões no Modo de Extração tentam remover objetos do bloco adjacente. Itens, por exemplo, serão removidos de um baú adjacente e enviados para um Cartão de Inserção."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "laserio:card_item{channel:0b,exact:0b,inv:{Items:[],Size:2},itemextractamt:1b,itemextractspeed:20,mode:2b,priority:0s,regulate:0b,roundRobin:0,sneaky:-1b}",
+      "text": "Os Cartões no Modo de Estoque tentam encontrar os itens designados em seu filtro e os extraem de outros Nós de Inserção na mesma rede.$(br2)Os Cartões no Modo de Estoque exigem um filtro definido como Permitir."
+    }
+  ]
+}

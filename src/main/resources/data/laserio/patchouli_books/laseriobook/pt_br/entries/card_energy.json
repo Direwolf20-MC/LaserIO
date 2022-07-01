@@ -1,0 +1,33 @@
+{
+  "name": "Cartão de Energia",
+  "sortnum": 3,
+  "category": "laserio:cards",
+  "icon": "laserio:card_energy",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Os Cartões de Energia são usados para enviar Energia entre inventários, como máquinas e baterias.$(br2)Os Cartões de Energia têm algumas mecânicas ligeiramente diferentes dos outros cartões e serão documentadas nas páginas seguintes."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Ao contrário dos Cartões de Item ou Fluidos que exigem que os overclockers operem mais rápido do que uma vez a cada 20 ticks, os Cartões de Energia podem operar a cada tick por padrão.$(br2)Valores (max) de FE/T para os Overclockers:$(br)$(li)0 Overclockers: 1.000fe/t$(li)1 Overclocker:  4.000fe/t$(li)2 Overclockers: 16.000fe/t$(li)3 Overclockers: 32.000fe/t$(li)4 Overclockers: 100.000fe/t"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Os Cartões de Energia também possuem uma configuração de '% de Limite de Energia' -- Por padrão, no modo de inserção/estoque o valor é de 100%, e no modo de extração é de 0%. No modo de inserção/estoque é especificado o quanto se deseja encher o receptor de energia especificado. $(br2)Por exemplo: Se o bloco pode armazenar 1.000.000 FE, e você especificar 50%, será preenchido em até 500.000 FE."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "No modo de extração, é desiginado a porcentagem que será deixada para trás.$(br2)Por exemplo: Se você está extraindo FE de uma célula de energia que consegue armazenar 1.000.000 FE, e especifiar um limite de 25%, não será extraído abaixo de 250.000 FE."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Nota Técnica: O sistema Energia Forge (Forge Energy/FE) suporta armazenar energia até MAXINT o que é aproximadamente 2.14 bilhões de Fluxo de Redstone (Redstone Flux/RF). Se você está utilizando um mod como o Draconic Evolution ou Mekanism, as células de energia deles podem armazenar além dessa quantidade 'hackeando' como a Energia Forge funciona. Como resultado, o indicador de % não funcionará em células de armazenamento maiores que 2.14 bilhões de RF. Desculpa! :)"
+    },
+    {
+      "type": "patchouli:crafting",
+      "title": "Cartão de Energia",
+      "recipe": "laserio:card_energy"
+    }
+  ]
+}

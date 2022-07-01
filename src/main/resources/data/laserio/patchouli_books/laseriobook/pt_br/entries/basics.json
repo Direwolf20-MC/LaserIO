@@ -1,0 +1,47 @@
+{
+  "name": "Básico",
+  "sortnum": 0,
+  "category": "laserio:mechanics",
+  "icon": "laserio:logic_chip",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Clicar com o botão direito em um Cartão na sua mão abrirá a sua interface. Você também pode clicar com o botão direito dentro da interface do $(l:laserio:laser_node)Nó$(/l).$(br2)Modo de Inserção:$(br)1. $(l:laserio:modes)Modo$(/l)$(br)2. $(l:laserio:sneaky)Furtivo$(/l)$(br)3. Filtro$(br)4. $(l:laserio:overclocker_card)Overclocker de Cartão$(/l)$(br)5. $(l:laserio:priority)Prioridade$(/l)$(br)6. $(l:laserio:channel)Canal$(/l)$(br)7. $(l:laserio:redstonemode)Modo de Redstone$(/l)$(br)8. $(l:laserio:redstonechannel)Canal da Redstone$(/l)"
+    },
+    {
+      "type": "patchouli:image",
+      "title": "Interface de Inserção",
+      "images": [
+        "laserio:textures/book/entries/basics1.png"
+      ],
+      "border": true,
+      "text": "Um Cartão de Item definido para o Modo de Inserção"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Modo de Extração:$(br2)1. $(l:laserio:modes)Modo$(/l)$(br)2. $(l:laserio:sneaky)Furtivo$(/l)$(br)3. $(l:laserio:roundrobin)Rodízio$(/l)$(br)4. $(l:laserio:exact)Exato$(/l)$(br)5. Filtro$(br)6. $(l:laserio:overclocker_card)Overclocker de Cartão$(/l)$(br)7. $(l:laserio:extractamount)Quantidade de Extração$(/l)$(br)8. $(l:laserio:tickspeed)Velocidade em Ticks$(/l)$(br)9. $(l:laserio:channel)Canal$(/l)"
+    },
+    {
+      "type": "patchouli:image",
+      "title": "Interface de Extração",
+      "images": [
+        "laserio:textures/book/entries/basics-extract.png"
+      ],
+      "border": true,
+      "text": "Um Cartão de Item definido para o Modo de Extração"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Modo de Estoque:$(br2)1. $(l:laserio:modes)Modo$(/l)$(br)2. $(l:laserio:sneaky)Furtivo$(/l)$(br)3. $(l:laserio:regulate)Regulado$(/l)$(br)4. $(l:laserio:exact)Exato$(/l)$(br)5. Filtro$(br)6. $(l:laserio:overclocker_card)Overclocker de Cartão$(/l)$(br)7. $(l:laserio:extractamount)Quantidade de Extração$(/l)$(br)8. $(l:laserio:tickspeed)Velocidade em Ticks$(/l)$(br)9. $(l:laserio:channel)Canal$(/l)"
+    },
+    {
+      "type": "patchouli:image",
+      "title": "Interface de Estoque",
+      "images": [
+        "laserio:textures/book/entries/basics-stock.png"
+      ],
+      "border": true,
+      "text": "Um Cartão de Item definido para o Modo de Estoque"
+    }
+  ]
+}

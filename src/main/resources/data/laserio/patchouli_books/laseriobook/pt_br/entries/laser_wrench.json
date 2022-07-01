@@ -1,0 +1,26 @@
+{
+  "name": "Chave a Laser",
+  "icon": "laserio:laser_wrench",
+  "sortnum": 1,
+  "category": "laserio:items",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "A Chave a Laser é usada principalmente para conectar vários blocos juntos.$(br2)$(l:laserio:laser_node)Nós$(/l) e $(l:laserio:laser_connector)Conectores$(/l) podem ser conectados através do Shift e clique direito do mouse para selecionar um bloco, e clicando novamente com o botão direito em outro bloco para formar uma conexão.$(br2)A distância máxima de conexão é de 8 blocos."
+    },
+    {
+      "type": "patchouli:image",
+      "title": "Chave a Laser",
+      "images": [
+        "laserio:textures/book/entries/laser_wrench.png"
+      ],
+      "border": true,
+      "text": "O bloco selecionado ficará destacado em verde."
+    },
+    {
+      "type": "patchouli:crafting",
+      "title": "Chave a Laser",
+      "recipe": "laserio:laser_wrench"
+    }
+  ]
+}

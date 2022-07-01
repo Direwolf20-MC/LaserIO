@@ -1,0 +1,20 @@
+{
+  "name": "Rodízio",
+  "sortnum": 5,
+  "category": "laserio:mechanics",
+  "icon": "laserio:textures/gui/buttons/roundrobintrue.png",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "O modo Rodízio está somente disponível no Modo de Extração.$(br2)O Rodízio instrui um Extrator a distribuir os itens uniformemente entre vários insersores.$(br2)Existem três modos disponíveis:$(br)1. Falso$(br)2. Verdadeiro$(br)3. Forçado"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Quando configurado para $(l)Falso$(), o Rodízio é desativado, e o sistema de $(l:laserio:priority)prioridade$(/l) é seguido. O primeiro inventário será preenchido completamente antes dos objetos serem enviados para o próximo inventário.$(br2)Quando configurado para $(l)Verdadeiro$(), os itens serão enviados para os baús em ordem de prioridade e distribuídos uniformemente.$(br2)Se houverem 3 baús em uma rede, o primeiro conjunto de itens irá para o primeiro baú, o 2º conjunto para o 2º baú, etc.."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Quando configurado para $(l)Forçado$(), as mesmas regras do modo 'Verdadeiro' serão seguidas. No entanto, se um dos destinos ficar cheio, o extrator deixará de funcionar até ficar disponível novamente.$(br2)Nota: O descarregamento de chunks pode causar uma mudança na mecânica do rodízio, especialmente se alguns Nós forem descarregados quando outros não forem."
+    }
+  ]
+}

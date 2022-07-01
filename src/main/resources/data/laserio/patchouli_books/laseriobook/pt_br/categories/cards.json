@@ -1,0 +1,6 @@
+{
+  "name": "Cartões",
+  "description": "Os Cartões oferecem maneiras para que os Nós consigam interagir com os blocos adjacentes. Sem eles os Nós são inúteis!",
+  "sortnum": 1,
+  "icon": "laserio:card_item"
+}

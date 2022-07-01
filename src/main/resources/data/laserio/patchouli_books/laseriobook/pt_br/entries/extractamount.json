@@ -1,0 +1,20 @@
+{
+  "name": "Valor da Transferência",
+  "sortnum": 7,
+  "category": "laserio:mechanics",
+  "icon": "laserio:textures/gui/buttons/modeextractor.png",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "O Valor da Transferência esta somente disponível nos modos de Extração e Estoque.$(br2)Esta configuração determina quantos itens (ou quanto de um fluido/energia) serão extraídos por operação.$(br2)Por exemplo, se definido em 8 itens a cada 20 ticks, o extrator irá extrair 8 itens por vez, a cada 20 ticks."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Os Cartões de Extração e Estoque tem um valor padrão de 1, e um valor máximo de 8, a não ser que $(l:laserio:overclocker_card)Overclockers de Cartão$(/l) estiverem instalados. As seguintes quantidades de extração são permitidas com os overclockers devidamente instalados:$(br)1. 16$(br)2. 32$(br)3. 48$(br)4. 64$(br2)Se você deseja extrair 64 itens por vez, você precisará de 4 overclockers instalados."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Clique com o botão esquerdo para aumentar o valor em 1. Clique com o botão direito para diminuir. Segure Shift para multiplicar a quantidade por 10, segurando o Ctrl multiplicará o valor por 64.$(br2)Essas ações podem ser combinadas, significando que ao segurar Shift+Ctrl o valor será multiplicado por 640.$(br2)Por exemplo, segurando o Shift e clicar com o botão direito irá diminuir em 10."
+    }
+  ]
+}

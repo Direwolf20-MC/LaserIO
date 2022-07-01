@@ -1,0 +1,26 @@
+{
+  "name": "Conector a Laser",
+  "icon": "laserio:laser_connector",
+  "sortnum": 1,
+  "category": "laserio:blocks",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Multiplos $(l:laserio:laser_node)Nós a Laser$(/l) podem ser conectados diretamente uns aos outros usando a $(l:laserio:laser_wrench)Chave a Laser$(/l), no entanto, o alcance máximo é de 8 blocos. $(br2)Os Conectores a Laser podem atuar como um ponto intermediário mais barato entre os Nós, permitindo que você construa uma rede de inventários interconectados."
+    },
+    {
+      "type": "patchouli:image",
+      "title": "Nó a Laser",
+      "images": [
+        "laserio:textures/book/entries/laser_connector1.png"
+      ],
+      "border": true,
+      "text": "Conector entre 2 nós"
+    },
+    {
+      "type": "patchouli:crafting",
+      "title": "Conector a Laser",
+      "recipe": "laserio:laser_connector"
+    }
+  ]
+}

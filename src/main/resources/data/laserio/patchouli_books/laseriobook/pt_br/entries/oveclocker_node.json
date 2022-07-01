@@ -1,0 +1,39 @@
+{
+  "name": "Overclocker de Nó",
+  "icon": "laserio:overclocker_node",
+  "sortnum": 3,
+  "category": "laserio:items",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Os Overclockers de Nós são componentes mais complexos.$(br2)Cada $(l:laserio:laser_node)Nó$(/l) somente opera 1 cartão por lado a cada tick. $(br2)Se existiram 3 Cartões no modo de Extração dentro de um Nó, somente o primeiro irá operar durante um tick do jogo, e o segundo irá operar se o primeiro falhar ao fazer qualquer coisa."
+    },
+    {
+      "type": "patchouli:image",
+      "title": "Sem o Overclockers de Nó",
+      "images": [
+        "laserio:textures/book/entries/overclocker_node1.png"
+      ],
+      "border": true,
+      "text": "Não tem nenhum Overclocker de Nó instalado"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Cada Overclocker de Nó instalado no lado de um Nó permitirá que aquele lado consiga operar mais cartões por tick. Um total de 8 Overclockers de Nó podem ser instalados, permitindo que todos os 9 cartões funcionem. $(br2)Cartões de Inserção $(l)$(#ff0000)NÃO$() precisam de overclockers para funcionar, $(l)SOMENTE$() os Cartões de Extração e Estoque precisam."
+    },
+    {
+      "type": "patchouli:image",
+      "title": "2 Overclockers de Nó",
+      "images": [
+        "laserio:textures/book/entries/overclocker_node2.png"
+      ],
+      "border": true,
+      "text": "Existem dois Overclockers de Nó instalados"
+    },
+    {
+      "type": "patchouli:crafting",
+      "title": "Overclocker de Nó",
+      "recipe": "laserio:overclocker_node"
+    }
+  ]
+}

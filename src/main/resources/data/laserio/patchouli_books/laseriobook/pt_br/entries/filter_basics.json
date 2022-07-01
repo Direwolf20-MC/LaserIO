@@ -1,0 +1,29 @@
+{
+  "name": "Mecânicas Básicas",
+  "icon": "laserio:logic_chip",
+  "sortnum": 0,
+  "category": "laserio:filters",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Clique com o botão direto para abrir sua interface. Como alternativa, a interface também está disponível quando os filtros estão dentro de cartões.$(br2)Os filtros permitem restringir quais itens podem ser inseridos, extraídos ou estocados.$(br2)1. Permitir vs Negar$(br)2. Comparar tags NBT$(br)3. Slots do Filtro"
+    },
+    {
+      "type": "patchouli:image",
+      "title": "Interface do Filtro",
+      "images": [
+        "laserio:textures/book/entries/filter_basic.png"
+      ],
+      "border": true,
+      "text": "Interface do Filtro Básico"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Permitir vs Negar$(br2)No modo de Permitir, os itens no filtro serão permitidos pelo filtro. O que significa que os insersores podem aceitar pedras ou os extratores podem extrair pedras.$(br2)No modo de Negar, será o oposto."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Comparar tags NBT$(br2)Quando a comparação de tags NBT estiver ativa, as tags NBT dos itens serão consideradas pelo filtro. Por exemplo, uma espada armazena a quantidade de dano sofrida em uma tag NBT. Com o modo 'Comparar tags NBT' estiver ativo, uma espada de diamante sem nenhum dano é diferente de uma já danificada, ou de uma encantada.$(br2)Com a Comparação de tags NBT desativada, todas as espadas de diamante serão aceitas, independente dos status."
+    }
+  ]
+}

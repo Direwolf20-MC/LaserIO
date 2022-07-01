@@ -1,0 +1,6 @@
+{
+  "name": "Filtros",
+  "description": "Os filtros permitem que você controle o que pode ou não ser movido pelos Cartões.",
+  "sortnum": 3,
+  "icon": "laserio:filter_basic"
+}

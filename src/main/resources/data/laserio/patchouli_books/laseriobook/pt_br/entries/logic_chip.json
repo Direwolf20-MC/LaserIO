@@ -1,0 +1,22 @@
+{
+  "name": "Chips Lógicos",
+  "icon": "laserio:logic_chip",
+  "sortnum": 0,
+  "category": "laserio:items",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Os Chips Lógicos são o principal ingrediente de criação no LaserIO. $(br2)Eles são os únicos itens criados com materiais 'vanilla', e todos os outros itens subsequentes utilizam o chip de uma forma ou de outra."
+    },
+    {
+      "type": "patchouli:crafting",
+      "title": "Chip Lógico Bruto",
+      "recipe": "laserio:logic_chip_raw"
+    },
+    {
+      "type": "patchouli:smelting",
+      "title": "Chip Lógico",
+      "recipe": "laserio:logic_chip"
+    }
+  ]
+}

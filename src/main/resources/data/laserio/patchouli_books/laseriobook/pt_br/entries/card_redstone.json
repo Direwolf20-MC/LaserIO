@@ -1,0 +1,29 @@
+{
+  "name": "Cartão de Redstone",
+  "sortnum": 4,
+  "category": "laserio:cards",
+  "icon": "laserio:card_redstone",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Os Cartões de Redstone são utilizados para transmitir sinais de redstone para toda a rede LaserIO. $(br2)Os Cartões de Redstone tem um 'canal de redstone' dedicado, separado dos canais utilizados pelos outros cartões."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Os Cartões de Redstone possuem 2 modos:$(br2)$(bold)Entrada$()$(br)O modo de Entrada aceitará um sinal de redstone de algo como um pó de redstone, uma alavanca, ou um botão, e transmitirá através de toda a rede do canal configurado no cartão.$(br2)$(bold)Saída$()$(br)O modo de Saída emitirá um sinal de redstone para blocos como um pó de redstone, lâmpadas ou repetidores."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "O modo de Saída tem um chaveamento para Fraco vs Forte. No modo Fraco, somente blocos diretamente adjacentes receberão o sinal, similar ao funcionamento do pó de redstone.$(br2)No modo Forte o sinal de redstone pode ser transmitido através de um bloco adjacente e afetar o outro lado, semelhante ao funcionamento de uma alavanca."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Todos os cartões tem um modo para alternar a ação da redstone, por padrão irá ignorar, significando que os cartões sempre funcionarão.$(br2)Se definido como baixo, os cartões somente funcionarão se NÃO houver um sinal de redstone no canal (o botão para o canal é o da direita do alternador de redstone).$(br2)No modo de operação alto, os cartões somente funcionarão se HOUVER um sinal de redstone no canal."
+    },
+    {
+      "type": "patchouli:crafting",
+      "title": "Cartão de Redstone",
+      "recipe": "laserio:card_redstone"
+    }
+  ]
+}

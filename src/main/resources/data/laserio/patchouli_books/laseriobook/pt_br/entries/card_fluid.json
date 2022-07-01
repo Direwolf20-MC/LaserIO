@@ -1,0 +1,21 @@
+{
+  "name": "Cartão de Fluido",
+  "sortnum": 2,
+  "category": "laserio:cards",
+  "icon": "laserio:card_fluid",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Cartões de Fluido são utilizados para enviar Fluido entre inventários, como os tanques.$(br2)Os valores de Overclocker estão documentados na página seguinte."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Os valores (max) de Mili Baldes/Tick (MB/T) para os Overclockers:$(br2)$(li)0 Overclockers: 1.000mb/20t$(li)1 Overclocker:  2.000mb/15t$(li)2 Overclockers: 4.000mb/10t$(li)3 Overclockers: 6.000mb/5t$(li)4 Overclockers: 8.000mb/1t"
+    },
+    {
+      "type": "patchouli:crafting",
+      "title": "Cartão de Fluido",
+      "recipe": "laserio:card_fluid"
+    }
+  ]
+}

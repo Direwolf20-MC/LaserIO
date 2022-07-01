@@ -1,0 +1,29 @@
+{
+  "name": "Filtro de Tags",
+  "sortnum": 2,
+  "category": "laserio:filters",
+  "icon": "laserio:filter_tag",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "O Filtro de Tags permite que um jogador filtre por tags em recursos.$(br2)As tags são uma maneira de o Minecraft agrupar recursos semelhantes. Por exemplo, à direita podemos ver que uma barra de ferro tem a tag 'forge:ingots'. O mesmo para o ouro, cobre, latão, etc.$(br2)O Filtro de Tags permitiria classificar todos os lingotes com uma única entrada!"
+    },
+    {
+      "type": "patchouli:image",
+      "title": "Interface de Tags",
+      "images": [
+        "laserio:textures/book/entries/filter_tag.png"
+      ],
+      "border": true,
+      "text": "Interface de Tags"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Primeiro, comece colocando um item no slot no canto superior direito. Uma lista de tags neste item aparecerá em $(#0000ff)azul$(). Clique na tag que deseja adicionar e pressione o botão +. Segurar Shift e pressionar o botão + adicionará todas as tags à lista.$(br2)Para remover uma tag da lista, selecione-a e pressione o botão -.$(br2)Alternativamente, você pode clicar com a tecla Shift pressionada para adicionar/remover automaticamente a tag."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "O botão X limpará toda a lista.$(br2)A lista é tratada como uma lista 'ou' - o que significa que um item que corresponder a qualquer uma das tags da lista será filtrado.$(br2)Filtros de Tags não suportam comparações NBT, pois isso não faria sentido."
+    }
+  ]
+}
