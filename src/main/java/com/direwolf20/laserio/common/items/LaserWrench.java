@@ -18,6 +18,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.BlockHitResult;
 
+import static com.direwolf20.laserio.util.VectorHelper.RANGE;
+
 public class LaserWrench extends Item {
     public static int maxDistance = 8;
 
@@ -42,9 +44,8 @@ public class LaserWrench extends Item {
         if (level.isClientSide()) //No client
             return InteractionResultHolder.pass(wrench);
 
-        int range = 10; // How far away you can click on blocks from
-        BlockHitResult lookingAt = VectorHelper.getLookingAt(player, ClipContext.Fluid.NONE, range);
-        if (lookingAt == null || !((level.getBlockState(VectorHelper.getLookingAt(player, wrench, range).getBlockPos()).getBlock() instanceof BaseLaserBlock))) {
+        BlockHitResult lookingAt = VectorHelper.getLookingAt(player, ClipContext.Fluid.NONE, RANGE);
+        if (!(level.getBlockState(VectorHelper.getLookingAt(player, RANGE).getBlockPos()).getBlock() instanceof BaseLaserBlock)) {
             if (player.isShiftKeyDown()) {
                 storeConnectionPos(wrench, BlockPos.ZERO);
                 return InteractionResultHolder.pass(wrench);
