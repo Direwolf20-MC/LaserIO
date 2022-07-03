@@ -11,6 +11,7 @@ public class ModSetup {
     public static void init(final FMLCommonSetupEvent event) {
         PacketHandler.register();
         MinecraftForge.EVENT_BUS.register(ServerTickHandler.class);
+        MinecraftForge.EVENT_BUS.register(new ForgeEventHandlers());
     }
 
     public static final String TAB_NAME = "laserio";
