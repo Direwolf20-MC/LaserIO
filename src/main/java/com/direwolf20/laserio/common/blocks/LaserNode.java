@@ -81,6 +81,10 @@ public class LaserNode extends BaseLaserBlock implements EntityBlock, SimpleWate
 
     public LaserNode() {
         super();
+
+        registerDefaultState(stateDefinition.any()
+                .setValue(BlockStateProperties.WATERLOGGED, false)
+        );
     }
 
     @SuppressWarnings("deprecation")

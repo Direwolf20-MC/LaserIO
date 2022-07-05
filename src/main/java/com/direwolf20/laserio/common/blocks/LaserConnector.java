@@ -146,6 +146,10 @@ public class LaserConnector extends BaseLaserBlock implements EntityBlock, Simpl
     public LaserConnector() {
         super();
         //defaultBlockState(getStateDefinition().any().setValue(FACING, Direction.NORTH));
+
+        registerDefaultState(stateDefinition.any()
+                .setValue(BlockStateProperties.WATERLOGGED, false)
+        );
     }
 
     @Nullable
