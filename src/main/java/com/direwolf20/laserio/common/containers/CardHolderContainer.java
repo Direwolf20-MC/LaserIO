@@ -166,7 +166,10 @@ public class CardHolderContainer extends AbstractContainerMenu {
             //itemstack.setCount(1);
             //If its one of the 20 slots at the top try to move it into your inventory
             if (index < SLOTS) {
-                if (!this.moveItemStackTo(stack.split(1), SLOTS, 36 + SLOTS, true)) {
+                if (playerIn.getInventory().getFreeSlot() != -1) {
+                    // moveItemStackTo() always moves the item, no matter the return value. fixes #87
+                    this.moveItemStackTo(stack.split(1), SLOTS, 36 + SLOTS, true);
+                } else {
                     return ItemStack.EMPTY;
                 }
                 slot.onQuickCraft(stack, itemstack);
