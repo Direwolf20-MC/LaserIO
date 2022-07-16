@@ -1,6 +1,8 @@
 {
   "block.laserio.laser_connector": "Laser Connector",
   "block.laserio.laser_node": "Laser Node",
+  "book.laserio.landing_text": "Can't have DireWire without Wires!",
+  "book.laserio.name": "LaserIO 101",
   "item.laserio.card_energy": "Energy Card",
   "item.laserio.card_fluid": "Fluid Card",
   "item.laserio.card_holder": "Card Holder",
