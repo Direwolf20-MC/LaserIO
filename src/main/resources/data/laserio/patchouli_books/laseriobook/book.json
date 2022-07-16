@@ -1,6 +1,6 @@
 {
-  "name": "LaserIO 101",
-  "landing_text": "Can't have DireWire without Wires!",
+  "name": "book.laserio.name",
+  "landing_text": "book.laserio.landing_text",
   "version": 1,
   "creative_tab": "laserio",
   "getCreatorModId ": "laserio"
