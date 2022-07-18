@@ -389,6 +389,8 @@ public class LaserNodeBE extends BaseLaserBE {
                             //if (updateMyRedstoneOut((byte) direction.ordinal(), redstoneStrength)) ;
                         }
                     }
+                } else if (card.getItem() instanceof CardRedstone && BaseCard.getTransferMode(card) == 0) { //Redstone mode and Output mode
+                    redstoneCardSides.put((byte) direction.ordinal(), true);
                 }
             }
             if (!Objects.equals(myRedstoneOutTemp.get(side), myRedstoneOut.get(side))) {
