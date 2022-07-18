@@ -40,7 +40,7 @@ public class LaserWrench extends Item {
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         ItemStack wrench = player.getItemInHand(hand);
         if (level.isClientSide()) //No client
-            return InteractionResultHolder.pass(wrench);
+            return InteractionResultHolder.success(wrench);
 
         int range = 10; // How far away you can click on blocks from
         BlockHitResult lookingAt = VectorHelper.getLookingAt(player, ClipContext.Fluid.NONE, range);
