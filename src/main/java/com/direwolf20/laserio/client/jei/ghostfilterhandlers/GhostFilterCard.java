@@ -8,6 +8,7 @@ import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.fluids.FluidStack;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +40,7 @@ public class GhostFilterCard implements IGhostIngredientHandler<CardItemScreen> 
                         //RS.NETWORK_HANDLER.sendToServer(new SetFilterSlotMessage(slot.index, (ItemStack) ingredient));
                     }
                 });
-           /*} else if (ingredient instanceof FluidStack && slot instanceof FluidFilterSlot) {
+            } else if (ingredient instanceof FluidStack && (slot instanceof FilterBasicSlot)) {
                 targets.add(new Target<I>() {
                     @Override
                     public Rect2i getArea() {
@@ -48,9 +49,12 @@ public class GhostFilterCard implements IGhostIngredientHandler<CardItemScreen> 
 
                     @Override
                     public void accept(I ingredient) {
-                        RS.NETWORK_HANDLER.sendToServer(new SetFluidFilterSlotMessage(slot.index, StackUtils.copy((FluidStack) ingredient, FluidAttributes.BUCKET_VOLUME)));
+                        ItemStack itemStack = new ItemStack(((FluidStack) ingredient).getFluid().getBucket(), 1);
+                        slot.set(itemStack.copy());
+                        PacketHandler.sendToServer(new PacketGhostSlot(slot.index, itemStack, itemStack.getCount()));
+                        //RS.NETWORK_HANDLER.sendToServer(new SetFluidFilterSlotMessage(slot.index, StackUtils.copy((FluidStack) ingredient, FluidAttributes.BUCKET_VOLUME)));
                     }
-                });*/
+                });
             }
         }
         return targets;
