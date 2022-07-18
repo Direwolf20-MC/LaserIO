@@ -1,0 +1,21 @@
+{
+  "name": "Cartão de Item",
+  "sortnum": 1,
+  "category": "laserio:cards",
+  "icon": "laserio:card_item",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Os Cartões de Item são utilizados para enviar itens entre inventários, como baús e fornalhas.$(br2)Os valores de overclocker estão documentados na página seguinte."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Valores (max) de Itens/T para os Overclockers:$(br2)$(li)0 Overclockers: 8 Itens/20t$(li)1 Overclocker:  16 Itens/15t$(li)2 Overclockers: 32 Itens/10t$(li)3 Overclockers: 48 Itens/5t$(li)4 Overclockers: 64 Itens/1t"
+    },
+    {
+      "type": "patchouli:crafting",
+      "title": "Cartão de Item",
+      "recipe": "laserio:card_item"
+    }
+  ]
+}

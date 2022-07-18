@@ -1,0 +1,12 @@
+{
+  "name": "Canal de Redstone",
+  "sortnum": 11,
+  "category": "laserio:mechanics",
+  "icon": "laserio:textures/gui/buttons/redstoneignore.png",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Os Cartões possuem um 'canal de redstone' separado do canal principal.$(br2)Este é um canal para que um Sinal de Redstone possa afetar um cartão. Veja mais detalhes na seção do $(l:laserio:redstonemode)Modo Redstone$(/l) e no $(l:laserio:card_redstone)Cartão de Redstone$(/l)."
+    }
+  ]
+}

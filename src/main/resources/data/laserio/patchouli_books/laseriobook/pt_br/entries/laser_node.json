@@ -1,0 +1,65 @@
+{
+  "name": "Nó a Laser",
+  "icon": "laserio:laser_node",
+  "sortnum": 0,
+  "category": "laserio:blocks",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "O Nó a Laser é o bloco mais importante do LaserIO pois permite a interação com blocos adjacentes. $(br2)Ao usar cartões como o $(l:laserio:card_item)Cartão de Item$(/l), você pode interagir com o bloco adjacente para transferir Itens, Fluidos, Energia ou Redstone."
+    },
+    {
+      "type": "patchouli:image",
+      "title": "Nó a Laser",
+      "images": [
+        "laserio:textures/book/entries/laser_node1.png"
+      ],
+      "border": true,
+      "text": "Um Nó interagindo com um baú"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Cada lado do Nó tem um inventário no formato de tabela 3x3 que aceita Cartões. Clique com o botão direto em algum lado do Nó para abrir sua interface. $(br2)Use os botões na parte superior para alterar em qual lado você está trabalhando, caso o lado que você deseja modificar não esteja facilmente acessível.$(br2)A captura de tela ao lado mostra um Nó interagindo com um inventário no lado oeste."
+    },
+    {
+      "type": "patchouli:image",
+      "title": "Interface do Nó a Laser",
+      "images": [
+        "laserio:textures/book/entries/laser_node_gui1.png"
+      ],
+      "border": true,
+      "text": "Nó a Laser com um Cartão"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Os Nós podem interagir ao mesmo tempo com multiplos inventários adjacentes."
+    },
+    {
+      "type": "patchouli:image",
+      "title": "Nó a Laser Funcionando",
+      "images": [
+        "laserio:textures/book/entries/laser_node2.png"
+      ],
+      "border": true,
+      "text": "Nó entre 2 baús"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Os Nós podem ser conectados entre si utilizando a $(l:laserio:laser_wrench)Chave a Laser$(/l), permitindo conexões entre inventários distantes. A distância máxima entre as conexões é de 8 blocos.$(br2)Se os Nós estiverem mais distantes, é recomendável usar um $(l:laserio:laser_connector)Conector a Laser$()."
+    },
+    {
+      "type": "patchouli:image",
+      "title": "Nós a Laser Conectados",
+      "images": [
+        "laserio:textures/book/entries/laser_node3.png"
+      ],
+      "border": true,
+      "text": "Dois Nós Conectados"
+    },
+    {
+      "type": "patchouli:crafting",
+      "title": "Nó a Laser",
+      "recipe": "laserio:laser_node"
+    }
+  ]
+}

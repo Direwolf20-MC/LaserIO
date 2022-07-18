@@ -1,0 +1,20 @@
+{
+  "name": "Limite",
+  "sortnum": 10,
+  "category": "laserio:mechanics",
+  "icon": "laserio:card_energy",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "A % de Limite só existe em Cartões de Energia. A % do Limite especifica a porcentagem de Energia Forge(FE) para operar no bloco adjacente que aceite energia.$(br2)Existem duas métricas diferentes, % de Inserção para o modo de Inserção/Estoque, e a % de Extração para o modo de Extração."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Limite de Inserção/Estoque$()$(br2)Por padrão, a % do limite está definida em 100%. Especifica quanto o bloco de energia será preenchido.$(br2)Por exemplo: Se o bloco pode armazenar 1.000.000 FE, e você especificar 50%, o bloco será preenchido até 500.000 FE.$(br2)O padrão (100%) preencherá o bloco por completo."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Limite de Extração$()$(br2)Por padrão, a % do limite está definida em 0%. Especifica quanto de energia restará no bloco de energia.$(br2)Por exemplo: se o bloco pode armazenar 1.000.000 FE, e você especificar 50%, a energia será extraída até restarem apenas 500.000 FE, e nada mais será extraído.$(br2)O padão (0%) extrairá toda a energia."
+    }
+  ]
+}
