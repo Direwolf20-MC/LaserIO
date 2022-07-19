@@ -389,6 +389,8 @@ public class LaserNodeBE extends BaseLaserBE {
                             //if (updateMyRedstoneOut((byte) direction.ordinal(), redstoneStrength)) ;
                         }
                     }
+                } else if (card.getItem() instanceof CardRedstone && BaseCard.getTransferMode(card) == 0) { //Redstone mode and Output mode
+                    redstoneCardSides.put((byte) direction.ordinal(), true);
                 }
             }
             if (!Objects.equals(myRedstoneOutTemp.get(side), myRedstoneOut.get(side))) {
@@ -1547,7 +1549,7 @@ public class LaserNodeBE extends BaseLaserBE {
 
             if (targetState.getBlock() instanceof LaserNode) {
                 targetState = level.getBlockState(fromPos);
-                VoxelShape voxelShape = targetState.getShape(level, toPos);
+                VoxelShape voxelShape = targetState.getShape(level, fromPos);
                 Vector3f extractOffset = findOffset(direction, partData.position, offsets);
                 Vector3f insertOffset = CardRender.shapeOffset(extractOffset, voxelShape, fromPos, toPos, direction, level, targetState);
                 ItemFlowParticleData data = new ItemFlowParticleData(itemStack, toPos.getX() + extractOffset.x(), toPos.getY() + extractOffset.y(), toPos.getZ() + extractOffset.z(), 10);

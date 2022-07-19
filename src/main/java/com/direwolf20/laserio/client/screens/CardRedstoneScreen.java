@@ -66,7 +66,7 @@ public class CardRedstoneScreen extends AbstractContainerScreen<CardRedstoneCont
         }
         Button channelButton = buttons.get("channel");
         if (MiscTools.inBounds(channelButton.x, channelButton.y, channelButton.getWidth(), channelButton.getHeight(), mouseX, mouseY)) {
-            this.renderTooltip(matrixStack, new TextComponent(String.valueOf(currentRedstoneChannel)), mouseX, mouseY);
+            this.renderTooltip(matrixStack, new TranslatableComponent("screen.laserio.redstonechannel").append(String.valueOf(currentRedstoneChannel)), mouseX, mouseY);
         }
     }
 
