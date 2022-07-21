@@ -529,7 +529,7 @@ public class LaserNodeBE extends BaseLaserBE {
     }
 
     public boolean extractForExactItem(ExtractorCardCache extractorCardCache, IItemHandler fromInventory, ItemStack extractStack) {
-        TransferResult extractResults = (ItemHandlerUtil.extractItemWithSlots(this, fromInventory, extractStack, extractStack.getCount(), true, extractorCardCache.isCompareNBT, extractorCardCache)); //Fake Extract
+        TransferResult extractResults = (ItemHandlerUtil.extractItemWithSlots(this, fromInventory, extractStack, extractStack.getCount(), true, true, extractorCardCache)); //Fake Extract
         int amtNeeded = extractorCardCache.extractAmt;
         if (extractResults.getTotalItemCounts() != amtNeeded) //Return if we didn't get what we needed
             return false;
@@ -614,9 +614,9 @@ public class LaserNodeBE extends BaseLaserBE {
             extractStack.setCount(amtFit); //Make a stack of how many can fit in here without doing an itemstack.copy()
             ItemStack extractedStack = ItemStack.EMPTY;
             if (extractorCardCache instanceof StockerCardCache)
-                extractedStack = ItemHandlerUtil.extractItemBackwards(fromInventory, extractStack, extractStack.getCount(), false, extractorCardCache.isCompareNBT).itemStack();
+                extractedStack = ItemHandlerUtil.extractItemBackwards(fromInventory, extractStack, extractStack.getCount(), false, true).itemStack();
             else
-                extractedStack = ItemHandlerUtil.extractItem(fromInventory, extractStack, false, extractorCardCache.isCompareNBT).itemStack();
+                extractedStack = ItemHandlerUtil.extractItem(fromInventory, extractStack, false, true).itemStack();
             if (extractedStack.isEmpty()) return false;
             boolean chestEmpty = extractedStack.getCount() < extractStack.getCount(); //If we didn't find enough, the extract chest is empty, so don't try again later
             amtToExtract -= extractedStack.getCount(); //Reduce how many we have left to extract by the amount we got here
