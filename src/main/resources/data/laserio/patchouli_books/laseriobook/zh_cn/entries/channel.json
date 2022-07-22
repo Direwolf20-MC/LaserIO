@@ -1,0 +1,16 @@
+{
+  "name": "频道",
+  "sortnum": 4,
+  "category": "laserio:mechanics",
+  "icon": "laserio:textures/gui/buttons/blankbutton.png",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "卡只能与处在同一频道上的其他卡交互。这允许玩家在一个网络中设置多套物流逻辑。$(br2)例如，处在橙色频道上的抽取卡只会试图往橙色频道上的输入卡输入，其他卡将被忽略。"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "另一个例子，一个抽取卡的频道设为橙色，过滤设为圆石；另一个抽取卡的频道设为黑色，过滤设为煤炭，将它们放在同一个节点中。$(br2)熔炉上面放置一个橙色频道的输入卡，下面放置黑色频道的输入卡。这样就保证只有圆石会进入上面的格子，而煤炭进入下面的格子。"
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "name": "物品卡",
+  "sortnum": 1,
+  "category": "laserio:cards",
+  "icon": "laserio:card_item",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "物品卡用于在容器之间传输物品，比如箱子和熔炉。$(br2)超频后的数据详见后页。"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "超频后的传输速度：$(br2)$(li)没有超频元件：8 个物品/20t$(li)1 个超频元件：16 个物品/15t$(li)2 个超频元件：32 个物品/10t$(li)3 个超频元件：48 个物品/5t$(li)4 个超频元件：64 个物品/1t"
+    },
+    {
+      "type": "patchouli:crafting",
+      "title": "物品卡",
+      "recipe": "laserio:card_item"
+    }
+  ]
+}

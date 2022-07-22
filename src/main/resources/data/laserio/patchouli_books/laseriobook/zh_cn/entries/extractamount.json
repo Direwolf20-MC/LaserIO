@@ -1,0 +1,20 @@
+{
+  "name": "抽取数量",
+  "sortnum": 7,
+  "category": "laserio:mechanics",
+  "icon": "laserio:textures/gui/buttons/modeextractor.png",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "抽取数量仅在抽取模式和存储模式可用。$(br2)这项设置决定一次操作提取的物品（或者流体/能量）的量。$(br2)例如，如果设置为每 20 刻抽取 8 个物品，抽取卡将一次抽取 8 个物品，每 20 刻进行一次操作。"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "在抽取模式和存储模式下，抽取数量默认为 1，最大为 8，除非安装了$(l:laserio:overclocker_card)卡超频$(/l)。抽取数量上限随安装的超频元件数量变化：$(br)1. 16$(br)2. 32$(br)3. 48$(br)4. 64$(br2)如果你想一次抽取 64 个物品，你需要 4 个超频元件。"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "左键点击使此值加 1，右键减 1。按住 Shift 点击将更改量乘 10，按住 Ctrl 将更改量乘 64。$(br2)同时按住 Shift 和 Ctrl 将使更改量乘 640。$(br2)例如， Shift 右键将使该值减少 10。"
+    }
+  ]
+}

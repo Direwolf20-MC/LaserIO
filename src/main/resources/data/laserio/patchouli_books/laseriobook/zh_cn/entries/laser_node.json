@@ -1,0 +1,65 @@
+{
+  "name": "激光节点",
+  "icon": "laserio:laser_node",
+  "sortnum": 0,
+  "category": "laserio:blocks",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "激光节点是本模组最重要的方块，它能与附近的方块交互。$(br2)使用各种卡，比如$(l:laserio:card_item)物品卡$(/l)，节点可以与相邻的方块传递物品、流体、能量和红石信号。"
+    },
+    {
+      "type": "patchouli:image",
+      "title": "激光节点",
+      "images": [
+        "laserio:textures/book/entries/laser_node1.png"
+      ],
+      "border": true,
+      "text": "与箱子交互的节点"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "节点的每个面都有一个 3*3 的栏位放置卡。右键节点的一个面打开界面。$(br2)当你想要编辑的那一面不便点到的时候，使用顶部的按钮切换面。$(br2)旁边的图片展示了一个与西侧的容器交互的节点。"
+    },
+    {
+      "type": "patchouli:image",
+      "title": "节点界面",
+      "images": [
+        "laserio:textures/book/entries/laser_node_gui1.png"
+      ],
+      "border": true,
+      "text": "带有卡的节点界面"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "节点可以同时与相邻的多个容器交互。"
+    },
+    {
+      "type": "patchouli:image",
+      "title": "节点在工作",
+      "images": [
+        "laserio:textures/book/entries/laser_node2.png"
+      ],
+      "border": true,
+      "text": "两个箱子之间的节点"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "节点可以使用$(l:laserio:laser_wrench)激光扳手$(/l)连接在一起，这样就能连接两个容器。最大连接范围是 8 个方块。$(br2)如果你的节点之间比这还远，建议使用$(l:laserio:laser_connector)激光连接器$()。"
+    },
+    {
+      "type": "patchouli:image",
+      "title": "连接的节点",
+      "images": [
+        "laserio:textures/book/entries/laser_node3.png"
+      ],
+      "border": true,
+      "text": "连接的两个节点"
+    },
+    {
+      "type": "patchouli:crafting",
+      "title": "激光节点",
+      "recipe": "laserio:laser_node"
+    }
+  ]
+}

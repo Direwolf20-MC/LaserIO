@@ -1,0 +1,6 @@
+{
+  "name": "卡",
+  "description": "节点依靠这些卡与附近的方块交互，没有它们的话节点就没有作用！",
+  "sortnum": 1,
+  "icon": "laserio:card_item"
+}
