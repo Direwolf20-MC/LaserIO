@@ -1,0 +1,27 @@
+{
+  "name": "模式",
+  "sortnum": 1,
+  "category": "laserio:mechanics",
+  "icon": "laserio:textures/gui/buttons/modestocker.png",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "模式决定卡的行为。下面的内容描述目前可用的模式。$(br2)每种卡（物品/流体/能量）都支持以下 3 种模式，以物品卡为例。$(br2)红石卡支持的是一套不同的模式。"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "laserio:card_item{channel:0b,exact:0b,inv:{Items:[],Size:2},itemextractamt:1b,itemextractspeed:20,mode:0b,priority:0s,regulate:0b,roundRobin:0,sneaky:-1b}",
+      "text": "输入模式卡是抽取模式卡的有效目标。$(br2)存储模式卡会试图从输入模式卡拉取。"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "laserio:card_item{channel:0b,exact:0b,inv:{Items:[],Size:2},itemextractamt:1b,itemextractspeed:20,mode:1b,priority:0s,regulate:0b,roundRobin:0,sneaky:-1b}",
+      "text": "抽取模式卡试图从相邻的方块提取对象。以物品为例，物品会从箱子被抽取并发送到一个输入卡。"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "laserio:card_item{channel:0b,exact:0b,inv:{Items:[],Size:2},itemextractamt:1b,itemextractspeed:20,mode:2b,priority:0s,regulate:0b,roundRobin:0,sneaky:-1b}",
+      "text": "存储模式卡试图寻找它们过滤器中设定的物品，并从网络中其他输入模式节点拉取物品。$(br2)存储模式卡需要过滤器才能起效。"
+    }
+  ]
+}

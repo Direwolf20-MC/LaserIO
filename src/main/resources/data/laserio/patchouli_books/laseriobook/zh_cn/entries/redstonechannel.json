@@ -1,0 +1,12 @@
+{
+  "name": "红石频道",
+  "sortnum": 11,
+  "category": "laserio:mechanics",
+  "icon": "laserio:textures/gui/buttons/redstoneignore.png",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "各种卡拥有一个与主频道独立的红石频道。$(br2)处于该频道上的红石信号会影响卡。在$(l:laserio:redstonemode)红石模式$(/l)和$(l:laserio:card_redstone)红石卡$(/l)查看详细信息。"
+    }
+  ]
+}

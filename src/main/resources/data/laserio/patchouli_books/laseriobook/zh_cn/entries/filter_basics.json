@@ -1,0 +1,29 @@
+{
+  "name": "基本机制",
+  "icon": "laserio:logic_chip",
+  "sortnum": 0,
+  "category": "laserio:filters",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "右键过滤器打开界面。你也可以打开安装在卡内部的过滤器。$(br2)过滤器允许你决定什么物品可被输入、抽取或存储。$(br2)1. 白名单与黑名单$(br)2. 比较 NBT$(br)3. 过滤器栏位"
+    },
+    {
+      "type": "patchouli:image",
+      "title": "过滤器界面",
+      "images": [
+        "laserio:textures/book/entries/filter_basic.png"
+      ],
+      "border": true,
+      "text": "基础过滤器的界面"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "白名单与黑名单$(br2)白名单模式下，过滤器将允许设定的物品通过。意味着输入卡能够接受圆石，抽取卡能提取圆石。$(br2)在黑名单模式下反之。"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "比较 NBT$(br2)启用比较 NBT 后，过滤器将检查物品的 NBT。例如，一把剑以 NBT 存储它的耐久，启用比较 NBT 后，一把未使用的钻石剑将不同于一把损坏的，也不同于附魔的。$(br2)关闭后，所有钻石剑都会被匹配，不论它们的状态如何。"
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "name": "流体卡",
+  "sortnum": 2,
+  "category": "laserio:cards",
+  "icon": "laserio:card_fluid",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "流体卡用于在容器之间传输流体，比如储罐。$(br2)超频后的数据详见后页。"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "超频后的传输速度：$(br2)$(li)没有超频元件：1,000mb/20t$(li)1 个超频元件：2,000mb/15t$(li)2 个超频元件：4,000mb/10t$(li)3 个超频元件：6,000mb/5t$(li)4 个超频元件：8,000mb/1t"
+    },
+    {
+      "type": "patchouli:crafting",
+      "title": "流体卡",
+      "recipe": "laserio:card_fluid"
+    }
+  ]
+}
