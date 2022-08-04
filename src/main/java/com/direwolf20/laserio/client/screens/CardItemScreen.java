@@ -90,10 +90,11 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
         this.renderTooltip(matrixStack, mouseX, mouseY);
         Button modeButton = buttons.get("mode");
         if (MiscTools.inBounds(modeButton.x, modeButton.y, modeButton.getWidth(), modeButton.getHeight(), mouseX, mouseY)) {
-            TranslatableComponent translatableComponents[] = new TranslatableComponent[3];
+            TranslatableComponent translatableComponents[] = new TranslatableComponent[4];
             translatableComponents[0] = new TranslatableComponent("screen.laserio.insert");
             translatableComponents[1] = new TranslatableComponent("screen.laserio.extract");
             translatableComponents[2] = new TranslatableComponent("screen.laserio.stock");
+            translatableComponents[3] = new TranslatableComponent("screen.laserio.sensor");
             this.renderTooltip(matrixStack, translatableComponents[currentMode], mouseX, mouseY);
         }
         Button channelButton = buttons.get("channel");
@@ -143,13 +144,13 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
         }
         Button exact = buttons.get("exact");
         if (MiscTools.inBounds(exact.x, exact.y, exact.getWidth(), exact.getHeight(), mouseX, mouseY)) {
-            if (showExtractAmt()) { //Exact is the same conditions as ExtractAmt
+            if (showExactAmt()) {
                 this.renderTooltip(matrixStack, new TranslatableComponent("screen.laserio.exact"), mouseX, mouseY);
             }
         }
         Button speedButton = buttons.get("speed");
         if (MiscTools.inBounds(speedButton.x, speedButton.y, speedButton.getWidth(), speedButton.getHeight(), mouseX, mouseY)) {
-            if (showExtractAmt()) {
+            if (showExactAmt()) {
                 this.renderTooltip(matrixStack, new TranslatableComponent("screen.laserio.tickSpeed"), mouseX, mouseY);
             }
         }
@@ -188,10 +189,11 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
     }
 
     public void addModeButton() {
-        ResourceLocation[] modeTextures = new ResourceLocation[3];
+        ResourceLocation[] modeTextures = new ResourceLocation[4];
         modeTextures[0] = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/modeinserter.png");
         modeTextures[1] = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/modeextractor.png");
         modeTextures[2] = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/modestocker.png");
+        modeTextures[3] = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/modesensor.png");
         buttons.put("mode", new ToggleButton(getGuiLeft() + 5, getGuiTop() + 5, 16, 16, modeTextures, currentMode, (button) -> {
             currentMode = BaseCard.nextTransferMode(card);
             ((ToggleButton) button).setTexturePosition(currentMode);
@@ -362,12 +364,22 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
         Button exactButton = buttons.get("exact");
         Button rrButton = buttons.get("roundrobin");
         Button regulateButton = buttons.get("regulate");
+        Button channelButton = buttons.get("channel");
+        Button amountButton = buttons.get("amount");
         if (currentMode == 0) { //insert
+            if (!renderables.contains(channelButton))
+                addRenderableWidget(channelButton);
+            if (!renderables.contains(amountButton))
+                addRenderableWidget(amountButton);
             removeWidget(speedButton);
             removeWidget(exactButton);
             removeWidget(rrButton);
             removeWidget(regulateButton);
         } else if (currentMode == 1) { //extract
+            if (!renderables.contains(channelButton))
+                addRenderableWidget(channelButton);
+            if (!renderables.contains(amountButton))
+                addRenderableWidget(amountButton);
             if (!renderables.contains(speedButton))
                 addRenderableWidget(speedButton);
             if (!renderables.contains(exactButton))
@@ -375,7 +387,11 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
             if (!renderables.contains(rrButton))
                 addRenderableWidget(rrButton);
             removeWidget(regulateButton);
-        } else { //stock
+        } else if (currentMode == 2) { //stock
+            if (!renderables.contains(channelButton))
+                addRenderableWidget(channelButton);
+            if (!renderables.contains(amountButton))
+                addRenderableWidget(amountButton);
             if (!renderables.contains(speedButton))
                 addRenderableWidget(speedButton);
             if (!renderables.contains(exactButton))
@@ -383,6 +399,13 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
             if (!renderables.contains(regulateButton))
                 addRenderableWidget(regulateButton);
             removeWidget(rrButton);
+        } else if (currentMode == 3) { //sensor
+            if (!renderables.contains(speedButton))
+                addRenderableWidget(speedButton);
+            removeWidget(rrButton);
+            removeWidget(regulateButton);
+            removeWidget(channelButton);
+            removeWidget(amountButton);
         }
     }
 
@@ -466,6 +489,10 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
     }
 
     private boolean showExtractAmt() {
+        return card.getItem() instanceof BaseCard && ((BaseCard.getNamedTransferMode(card) != BaseCard.TransferMode.INSERT) && (BaseCard.getNamedTransferMode(card) != BaseCard.TransferMode.SENSOR));
+    }
+
+    private boolean showExactAmt() {
         return card.getItem() instanceof BaseCard && BaseCard.getNamedTransferMode(card) != BaseCard.TransferMode.INSERT;
     }
 

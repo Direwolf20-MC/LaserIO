@@ -33,7 +33,7 @@ public class LaserIOLanguageProvider extends LanguageProvider {
         add(Registration.Overclocker_Node.get(), "Node Overclocker");
 
         add("screen.laserio.extractamt", "Transfer Amount");
-        add("screen.laserio.tickSpeed", "Transfer Speed (Ticks)");
+        add("screen.laserio.tickSpeed", "Speed (Ticks)");
 
         add("screen.laserio.priority", "Priority");
         add("screen.laserio.channel", "Channel: ");
@@ -60,6 +60,7 @@ public class LaserIOLanguageProvider extends LanguageProvider {
         add("screen.laserio.extract", "Extract");
         add("screen.laserio.insert", "Insert");
         add("screen.laserio.stock", "Stock");
+        add("screen.laserio.sensor", "Sensor");
         add("screen.laserio.input", "Input");
         add("screen.laserio.output", "Output");
         add("screen.laserio.weak", "Weak");

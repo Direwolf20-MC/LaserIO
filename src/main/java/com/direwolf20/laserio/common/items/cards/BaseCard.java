@@ -40,7 +40,8 @@ public class BaseCard extends Item {
     public enum TransferMode {
         INSERT,
         EXTRACT,
-        STOCK
+        STOCK,
+        SENSOR
     }
 
     public BaseCard() {
@@ -79,6 +80,8 @@ public class BaseCard extends Item {
                 modeColor = ChatFormatting.GREEN.getColor();
             else if (currentMode.equals("STOCK"))
                 modeColor = ChatFormatting.BLUE.getColor();
+            else if (currentMode.equals("SENSOR"))
+                modeColor = ChatFormatting.YELLOW.getColor();
             toWrite.append(tooltipMaker("laserio.tooltip.item.card.mode." + currentMode, modeColor));
             tooltip.add(toWrite);
 
@@ -165,7 +168,7 @@ public class BaseCard extends Item {
 
     public static byte nextTransferMode(ItemStack card) {
         byte mode = getTransferMode(card);
-        return setTransferMode(card, (byte) (mode == 2 ? 0 : mode + 1));
+        return setTransferMode(card, (byte) (mode == 3 ? 0 : mode + 1));
     }
 
     public static TransferMode getNamedTransferMode(ItemStack card) {
