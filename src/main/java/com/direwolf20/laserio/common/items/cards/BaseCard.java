@@ -340,4 +340,18 @@ public class BaseCard extends Item {
         byte k = getRedstoneChannel(card);
         return setRedstoneChannel(card, (byte) (k == 0 ? 15 : k - 1));
     }
+
+    public static boolean getAnd(ItemStack stack) {
+        CompoundTag compound = stack.getTag();
+        if (compound == null || !compound.contains("and")) return false;
+        return compound.getBoolean("and");
+    }
+
+    public static boolean setAnd(ItemStack stack, boolean and) {
+        if (!and)
+            stack.removeTagKey("and");
+        else
+            stack.getOrCreateTag().putBoolean("and", and);
+        return and;
+    }
 }

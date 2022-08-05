@@ -44,6 +44,8 @@ public class LaserIOLanguageProvider extends LanguageProvider {
         add("screen.laserio.false", "False");
         add("screen.laserio.enforced", "Enforced");
         add("screen.laserio.exact", "Exact");
+        add("screen.laserio.and", "And");
+        add("screen.laserio.or", "Or");
         add("screen.laserio.allowlist", "Allow");
         add("screen.laserio.comparenbt", "NBT");
         add("screen.laserio.lasernode", "Laser Node");
