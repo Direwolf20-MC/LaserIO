@@ -9,6 +9,7 @@ import com.direwolf20.laserio.common.events.ServerTickHandler;
 import com.direwolf20.laserio.common.items.cards.*;
 import com.direwolf20.laserio.common.items.filters.FilterBasic;
 import com.direwolf20.laserio.common.items.filters.FilterCount;
+import com.direwolf20.laserio.common.items.filters.FilterMod;
 import com.direwolf20.laserio.common.items.filters.FilterTag;
 import com.direwolf20.laserio.common.items.upgrades.OverclockerNode;
 import com.direwolf20.laserio.setup.Registration;
@@ -120,6 +121,7 @@ public class LaserNodeBE extends BaseLaserBE {
     /** Redstone Variables **/
     public Byte2ByteMap redstoneNetwork = new Byte2ByteOpenHashMap(); //Channel,Strength
     public Byte2ByteMap myRedstoneIn = new Byte2ByteOpenHashMap();  //Channel,Strength
+    public Byte2ByteMap myRedstoneFromSensors = new Byte2ByteOpenHashMap();  //Channel,Strength
     public Byte2ByteMap myRedstoneOut = new Byte2ByteOpenHashMap();  //Side,Strength
     public Byte2BooleanMap redstoneCardSides = new Byte2BooleanOpenHashMap(); //Side and whether it has a redstone card, for client
     public boolean redstoneChecked = false;
@@ -174,6 +176,9 @@ public class LaserNodeBE extends BaseLaserBE {
                     if (BaseCard.getNamedTransferMode(card).equals(BaseCard.TransferMode.STOCK)) {
                         nodeSideCache.extractorCardCaches.add(new StockerCardCache(direction, card, slot, this));
                     }
+                    if (BaseCard.getNamedTransferMode(card).equals(BaseCard.TransferMode.SENSOR)) {
+                        nodeSideCache.extractorCardCaches.add(new SensorCardCache(direction, card, slot, this));
+                    }
                 }
             }
         }
@@ -197,6 +202,17 @@ public class LaserNodeBE extends BaseLaserBE {
                                 countCardsHandled++;
                         } else if (extractorCardCache.cardType.equals(BaseCard.CardType.ENERGY)) {
                             if (stockEnergy(stockerCardCache))
+                                countCardsHandled++;
+                        }
+                    } else if (extractorCardCache instanceof SensorCardCache sensorCardCache) {
+                        if (extractorCardCache.cardType.equals(BaseCard.CardType.ITEM)) {
+                            if (senseItems(sensorCardCache))
+                                countCardsHandled++;
+                        } else if (extractorCardCache.cardType.equals(BaseCard.CardType.FLUID)) {
+                            if (senseFluids(sensorCardCache))
+                                countCardsHandled++;
+                        } else if (extractorCardCache.cardType.equals(BaseCard.CardType.ENERGY)) {
+                            if (senseEnergy(sensorCardCache))
                                 countCardsHandled++;
                         }
                     } else {
@@ -272,7 +288,11 @@ public class LaserNodeBE extends BaseLaserBE {
                 }
             }
         }
+        for (Map.Entry<Byte, Byte> entry : myRedstoneFromSensors.byte2ByteEntrySet()) { //Update the temp variable with data from any sensors
+            myRedstoneInTemp.put(entry.getKey(), entry.getValue());
+        }
         if (!myRedstoneInTemp.equals(myRedstoneIn)) {
+            System.out.println("Redstone input changed - updating network");
             updated = true;
             myRedstoneIn = new Byte2ByteOpenHashMap(myRedstoneInTemp);
         }
@@ -634,6 +654,77 @@ public class LaserNodeBE extends BaseLaserBE {
         }
 
         return foundAnything;
+    }
+
+    public boolean updateRedstoneFromSensor(boolean filterMatched, byte redstoneChannel) {
+        byte currentRedstoneFromNetwork = myRedstoneFromSensors.get(redstoneChannel);
+        byte newRedstoneStrength = filterMatched ? (byte) 15 : (byte) 0;
+        if (newRedstoneStrength == 0) {
+            myRedstoneFromSensors.remove(redstoneChannel);
+        } else {
+            myRedstoneFromSensors.put(redstoneChannel, newRedstoneStrength);
+        }
+        if (currentRedstoneFromNetwork != newRedstoneStrength) {
+            return true;
+        }
+        return false; //No changes were needed
+    }
+
+    public boolean senseItems(SensorCardCache sensorCardCache) {
+        BlockPos adjacentPos = getBlockPos().relative(sensorCardCache.direction);
+        assert level != null;
+        if (!level.isLoaded(adjacentPos)) return false;
+        ItemStack filter = sensorCardCache.filterCard;
+        IItemHandler adjacentInventory = getAttachedInventory(sensorCardCache.direction, sensorCardCache.sneaky).orElse(EMPTY);
+        ItemHandlerUtil.InventoryCounts inventoryCounts = new ItemHandlerUtil.InventoryCounts(adjacentInventory, sensorCardCache.isCompareNBT);
+        boolean filterMatched = true;
+        if (filter.isEmpty()) { //Needs a filter
+            if (updateRedstoneFromSensor(false, sensorCardCache.redstoneChannel)) {
+                rendersChecked = false;
+                clearCachedInventories();
+                redstoneChecked = false;
+            }
+            return false;
+        }
+        if (filter.getItem() instanceof FilterBasic || filter.getItem() instanceof FilterCount) {
+            List<ItemStack> filteredItemsList = sensorCardCache.getFilteredItems();
+            for (ItemStack itemStack : filteredItemsList) { //Remove all the items from the list that we already have enough of
+                int amtHad = inventoryCounts.getCount(itemStack);
+                if (sensorCardCache.isAllowList) {
+                    if (amtHad < itemStack.getCount() || (sensorCardCache.exact && amtHad > itemStack.getCount())) {
+                        filterMatched = false;
+                        break;
+                    }
+                } else {
+                    if ((sensorCardCache.exact && amtHad != itemStack.getCount()) || amtHad >= itemStack.getCount()) {
+                        filterMatched = false;
+                        break;
+                    }
+                }
+            }
+        } else if (filter.getItem() instanceof FilterTag) {
+            filterMatched = false; //Temp
+        } else if (filter.getItem() instanceof FilterMod) {
+            filterMatched = false; //Temp
+        }
+
+        if (updateRedstoneFromSensor(filterMatched, sensorCardCache.redstoneChannel)) {
+            System.out.println("Redstone network change detected");
+            rendersChecked = false;
+            clearCachedInventories();
+            redstoneChecked = false;
+        }
+        return true;
+    }
+
+    public boolean senseFluids(ExtractorCardCache extractorCardCache) {
+
+        return false;
+    }
+
+    public boolean senseEnergy(ExtractorCardCache extractorCardCache) {
+
+        return false;
     }
 
     /** Extractor Cards call this, and try to find an inserter card to send their items to **/
@@ -1969,7 +2060,7 @@ public class LaserNodeBE extends BaseLaserBE {
                 if (card.getItem() instanceof CardRedstone) redstoneMode = 2;
                 byte redstoneChannel = BaseCard.getRedstoneChannel(card);
                 boolean enabled;
-                if (redstoneMode == 0) {
+                if (redstoneMode == 0 || BaseCard.getNamedTransferMode(card).equals(BaseCard.TransferMode.SENSOR)) { //Sensors are always enabled
                     enabled = true;
                 } else {
                     byte strength = getRedstoneChannelStrength(redstoneChannel);
