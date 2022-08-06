@@ -823,14 +823,22 @@ public class LaserNodeBE extends BaseLaserBE {
         BlockPos adjacentPos = getBlockPos().relative(sensorCardCache.direction);
         assert level != null;
         if (!level.isLoaded(adjacentPos)) return false;
+        NodeSideCache nodeSideCache = nodeSideCaches[sensorCardCache.direction.ordinal()];
         Optional<IFluidHandler> adjacentTankOptional = getAttachedFluidTank(sensorCardCache.direction, sensorCardCache.sneaky).resolve();
-        if (adjacentTankOptional.isEmpty()) return false;
+        if (adjacentTankOptional.isEmpty()) { //Needs a filter
+            if (updateRedstoneFromSensor(false, sensorCardCache.redstoneChannel, nodeSideCache)) {
+                rendersChecked = false;
+                clearCachedInventories();
+                redstoneChecked = false;
+            }
+            return false;
+        }
         IFluidHandler adacentTank = adjacentTankOptional.get();
 
         ItemStack filter = sensorCardCache.filterCard;
         boolean andMode = BaseCard.getAnd(sensorCardCache.cardItem);
         boolean filterMatched = false;
-        NodeSideCache nodeSideCache = nodeSideCaches[sensorCardCache.direction.ordinal()];
+
         if (filter.isEmpty()) { //Needs a filter
             if (updateRedstoneFromSensor(false, sensorCardCache.redstoneChannel, nodeSideCache)) {
                 rendersChecked = false;
@@ -918,8 +926,35 @@ public class LaserNodeBE extends BaseLaserBE {
     }
 
     public boolean senseEnergy(SensorCardCache sensorCardCache) {
-
-        return false;
+        BlockPos adjacentPos = getBlockPos().relative(sensorCardCache.direction);
+        assert level != null;
+        if (!level.isLoaded(adjacentPos)) return false;
+        Optional<IEnergyStorage> adjacentEnergyOptional = getAttachedEnergyTank(sensorCardCache.direction, sensorCardCache.sneaky).resolve();
+        NodeSideCache nodeSideCache = nodeSideCaches[sensorCardCache.direction.ordinal()];
+        if (adjacentEnergyOptional.isEmpty()) { //Needs a filter
+            if (updateRedstoneFromSensor(false, sensorCardCache.redstoneChannel, nodeSideCache)) {
+                rendersChecked = false;
+                clearCachedInventories();
+                redstoneChecked = false;
+            }
+            return false;
+        }
+        IEnergyStorage adjacentEnergy = adjacentEnergyOptional.get();
+        boolean filterMatched = false;
+        int desired = (int) (adjacentEnergy.getMaxEnergyStored() * ((float) sensorCardCache.insertLimit / 100));
+        int amtHad = adjacentEnergy.getEnergyStored();
+        if (amtHad < desired || (sensorCardCache.exact && amtHad > desired)) {
+            filterMatched = false;
+        } else {
+            filterMatched = true;
+        }
+        if (updateRedstoneFromSensor(filterMatched, sensorCardCache.redstoneChannel, nodeSideCache)) {
+            System.out.println("Redstone network change detected");
+            rendersChecked = false;
+            clearCachedInventories();
+            redstoneChecked = false;
+        }
+        return true;
     }
 
     /** Extractor Cards call this, and try to find an inserter card to send their items to **/
