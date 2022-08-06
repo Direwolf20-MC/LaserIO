@@ -127,6 +127,7 @@ public class LaserNodeBE extends BaseLaserBE {
     public Byte2BooleanMap redstoneCardSides = new Byte2BooleanOpenHashMap(); //Side and whether it has a redstone card, for client
     public boolean redstoneChecked = false;
     public boolean redstoneRefreshed = false;
+    public boolean firstTimeNodeLoaded = true; //Redstone needs to be refreshed first time node loads into the world
 
 
     /** Misc Variables **/
@@ -445,7 +446,7 @@ public class LaserNodeBE extends BaseLaserBE {
                     redstoneCardSides.put((byte) direction.ordinal(), true);
                 }
             }
-            if (!Objects.equals(myRedstoneOutTemp.get(side), myRedstoneOut.get(side))) {
+            if (firstTimeNodeLoaded || !Objects.equals(myRedstoneOutTemp.get(side), myRedstoneOut.get(side))) {
                 if (myRedstoneOutTemp.containsKey(side))
                     myRedstoneOut.put(side, myRedstoneOutTemp.get(side));
                 else
@@ -457,6 +458,8 @@ public class LaserNodeBE extends BaseLaserBE {
         }
         BlockState state = this.getBlockState();
         state.updateNeighbourShapes(level, getBlockPos(), UPDATE_ALL);
+        if (firstTimeNodeLoaded)
+            firstTimeNodeLoaded = false;
     }
 
     public void sortInserters() {
