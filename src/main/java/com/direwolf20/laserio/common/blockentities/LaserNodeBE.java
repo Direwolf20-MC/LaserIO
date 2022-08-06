@@ -817,12 +817,104 @@ public class LaserNodeBE extends BaseLaserBE {
         return true;
     }
 
-    public boolean senseFluids(ExtractorCardCache extractorCardCache) {
+    public boolean senseFluids(SensorCardCache sensorCardCache) {
+        BlockPos adjacentPos = getBlockPos().relative(sensorCardCache.direction);
+        assert level != null;
+        if (!level.isLoaded(adjacentPos)) return false;
+        Optional<IFluidHandler> adjacentTankOptional = getAttachedFluidTank(sensorCardCache.direction, sensorCardCache.sneaky).resolve();
+        if (adjacentTankOptional.isEmpty()) return false;
+        IFluidHandler adacentTank = adjacentTankOptional.get();
 
-        return false;
+        ItemStack filter = sensorCardCache.filterCard;
+        boolean andMode = BaseCard.getAnd(sensorCardCache.cardItem);
+        boolean filterMatched = false;
+        if (filter.isEmpty()) { //Needs a filter
+            if (updateRedstoneFromSensor(false, sensorCardCache.redstoneChannel)) {
+                rendersChecked = false;
+                clearCachedInventories();
+                redstoneChecked = false;
+            }
+            return false;
+        }
+        if (filter.getItem() instanceof FilterBasic) {
+            List<FluidStack> filteredFluids = sensorCardCache.getFilteredFluids();
+            List<FluidStack> filteredFluidsOriginal = new ArrayList<>(filteredFluids);
+
+            outloop:
+            for (FluidStack fluidStack : filteredFluidsOriginal) {
+                for (int tank = 0; tank < adacentTank.getTanks(); tank++) { //Loop through all the tanks
+                    FluidStack stackInTank = adacentTank.getFluidInTank(tank);
+                    if (stackInTank.isFluidEqual(fluidStack)) {
+                        filteredFluids.remove(fluidStack);
+                        if (!andMode) {
+                            break outloop;
+                        }
+                    }
+                }
+            }
+            if (andMode)
+                filterMatched = filteredFluids.size() == 0;
+            else
+                filterMatched = filteredFluids.size() < filteredFluidsOriginal.size();
+        } else if (filter.getItem() instanceof FilterCount) {
+            List<FluidStack> filteredFluids = sensorCardCache.getFilteredFluids();
+            List<FluidStack> filteredFluidsOriginal = new ArrayList<>(filteredFluids);
+
+            outloop:
+            for (FluidStack fluidStack : filteredFluidsOriginal) {
+                int desiredAmt = sensorCardCache.getFilterAmt(fluidStack);
+                for (int tank = 0; tank < adacentTank.getTanks(); tank++) { //Loop through all the tanks
+                    FluidStack stackInTank = adacentTank.getFluidInTank(tank);
+                    if (stackInTank.isFluidEqual(fluidStack)) {
+                        int amtHad = stackInTank.getAmount();
+                        if (amtHad < desiredAmt || (sensorCardCache.exact && amtHad > desiredAmt)) {
+                            //noOp
+                        } else {
+                            filteredFluids.remove(fluidStack);
+                            if (!andMode) {
+                                break outloop;
+                            }
+                        }
+                    }
+                }
+            }
+            if (andMode)
+                filterMatched = filteredFluids.size() == 0;
+            else
+                filterMatched = filteredFluids.size() < filteredFluidsOriginal.size();
+        } else if (filter.getItem() instanceof FilterTag) {
+            List<String> tags = sensorCardCache.getFilterTags();
+            int tagsToMatch = tags.size();
+
+            outloop:
+            for (int tank = 0; tank < adacentTank.getTanks(); tank++) { //Loop through all the tanks
+                FluidStack stackInTank = adacentTank.getFluidInTank(tank);
+                for (TagKey tagKey : stackInTank.getFluid().builtInRegistryHolder().tags().toList()) {
+                    String fluidTag = tagKey.location().toString().toLowerCase(Locale.ROOT);
+                    if (tags.contains(fluidTag)) {
+                        tags.remove(fluidTag);
+                        if (!andMode) {
+                            break outloop;
+                        }
+                    }
+                }
+            }
+            //In and mode, the list of tags needs to be empty, in or mode it just has to be 1 smaller.
+            if (andMode)
+                filterMatched = tags.size() == 0;
+            else
+                filterMatched = tags.size() < tagsToMatch;
+        }
+        if (updateRedstoneFromSensor(filterMatched, sensorCardCache.redstoneChannel)) {
+            System.out.println("Redstone network change detected");
+            rendersChecked = false;
+            clearCachedInventories();
+            redstoneChecked = false;
+        }
+        return true;
     }
 
-    public boolean senseEnergy(ExtractorCardCache extractorCardCache) {
+    public boolean senseEnergy(SensorCardCache sensorCardCache) {
 
         return false;
     }
