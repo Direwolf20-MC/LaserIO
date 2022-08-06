@@ -122,7 +122,7 @@ public class LaserNodeBE extends BaseLaserBE {
     /** Redstone Variables **/
     public Byte2ByteMap redstoneNetwork = new Byte2ByteOpenHashMap(); //Channel,Strength
     public Byte2ByteMap myRedstoneIn = new Byte2ByteOpenHashMap();  //Channel,Strength
-    public Byte2ByteMap myRedstoneFromSensors = new Byte2ByteOpenHashMap();  //Channel,Strength
+
     public Byte2ByteMap myRedstoneOut = new Byte2ByteOpenHashMap();  //Side,Strength
     public Byte2BooleanMap redstoneCardSides = new Byte2BooleanOpenHashMap(); //Side and whether it has a redstone card, for client
     public boolean redstoneChecked = false;
@@ -320,10 +320,11 @@ public class LaserNodeBE extends BaseLaserBE {
                     }
                 }
             }
+            for (Map.Entry<Byte, Byte> entry : nodeSideCache.myRedstoneFromSensors.byte2ByteEntrySet()) { //Update the temp variable with data from any sensors
+                myRedstoneInTemp.put(entry.getKey(), entry.getValue());
+            }
         }
-        for (Map.Entry<Byte, Byte> entry : myRedstoneFromSensors.byte2ByteEntrySet()) { //Update the temp variable with data from any sensors
-            myRedstoneInTemp.put(entry.getKey(), entry.getValue());
-        }
+
         if (!myRedstoneInTemp.equals(myRedstoneIn)) {
             System.out.println("Redstone input changed - updating network");
             updated = true;
@@ -691,13 +692,13 @@ public class LaserNodeBE extends BaseLaserBE {
         return foundAnything;
     }
 
-    public boolean updateRedstoneFromSensor(boolean filterMatched, byte redstoneChannel) {
-        byte currentRedstoneFromNetwork = myRedstoneFromSensors.get(redstoneChannel);
+    public boolean updateRedstoneFromSensor(boolean filterMatched, byte redstoneChannel, NodeSideCache nodeSideCache) {
+        byte currentRedstoneFromNetwork = nodeSideCache.myRedstoneFromSensors.get(redstoneChannel);
         byte newRedstoneStrength = filterMatched ? (byte) 15 : (byte) 0;
         if (newRedstoneStrength == 0) {
-            myRedstoneFromSensors.remove(redstoneChannel);
+            nodeSideCache.myRedstoneFromSensors.remove(redstoneChannel);
         } else {
-            myRedstoneFromSensors.put(redstoneChannel, newRedstoneStrength);
+            nodeSideCache.myRedstoneFromSensors.put(redstoneChannel, newRedstoneStrength);
         }
         if (currentRedstoneFromNetwork != newRedstoneStrength) {
             return true;
@@ -712,8 +713,9 @@ public class LaserNodeBE extends BaseLaserBE {
         ItemStack filter = sensorCardCache.filterCard;
         boolean andMode = BaseCard.getAnd(sensorCardCache.cardItem);
         boolean filterMatched = false;
+        NodeSideCache nodeSideCache = nodeSideCaches[sensorCardCache.direction.ordinal()];
         if (filter.isEmpty()) { //Needs a filter
-            if (updateRedstoneFromSensor(false, sensorCardCache.redstoneChannel)) {
+            if (updateRedstoneFromSensor(false, sensorCardCache.redstoneChannel, nodeSideCache)) {
                 rendersChecked = false;
                 clearCachedInventories();
                 redstoneChecked = false;
@@ -808,7 +810,7 @@ public class LaserNodeBE extends BaseLaserBE {
                 filterMatched = tags.size() < tagsToMatch;
         }
 
-        if (updateRedstoneFromSensor(filterMatched, sensorCardCache.redstoneChannel)) {
+        if (updateRedstoneFromSensor(filterMatched, sensorCardCache.redstoneChannel, nodeSideCache)) {
             System.out.println("Redstone network change detected");
             rendersChecked = false;
             clearCachedInventories();
@@ -828,8 +830,9 @@ public class LaserNodeBE extends BaseLaserBE {
         ItemStack filter = sensorCardCache.filterCard;
         boolean andMode = BaseCard.getAnd(sensorCardCache.cardItem);
         boolean filterMatched = false;
+        NodeSideCache nodeSideCache = nodeSideCaches[sensorCardCache.direction.ordinal()];
         if (filter.isEmpty()) { //Needs a filter
-            if (updateRedstoneFromSensor(false, sensorCardCache.redstoneChannel)) {
+            if (updateRedstoneFromSensor(false, sensorCardCache.redstoneChannel, nodeSideCache)) {
                 rendersChecked = false;
                 clearCachedInventories();
                 redstoneChecked = false;
@@ -905,7 +908,7 @@ public class LaserNodeBE extends BaseLaserBE {
             else
                 filterMatched = tags.size() < tagsToMatch;
         }
-        if (updateRedstoneFromSensor(filterMatched, sensorCardCache.redstoneChannel)) {
+        if (updateRedstoneFromSensor(filterMatched, sensorCardCache.redstoneChannel, nodeSideCache)) {
             System.out.println("Redstone network change detected");
             rendersChecked = false;
             clearCachedInventories();
@@ -1945,7 +1948,10 @@ public class LaserNodeBE extends BaseLaserBE {
     /** Called when changes happen - such as a card going into a side, or a card being modified via container **/
     public void updateThisNode() {
         setChanged();
-        myRedstoneFromSensors.clear();
+        for (Direction direction : Direction.values()) {
+            NodeSideCache nodeSideCache = nodeSideCaches[direction.ordinal()];
+            nodeSideCache.myRedstoneFromSensors.clear();
+        }
         redstoneChecked = false;
         //populateThisRedstoneNetwork(false);
         notifyOtherNodesOfChange();
