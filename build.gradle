@@ -222,6 +222,7 @@ dependencies {
     runtimeOnly fg.deobf("curse.maven:applied-energistics-2-223794:3836504")
 
     runtimeOnly fg.deobf("curse.maven:pneumaticcraft-repressurized-281849:3858835")
+    runtimeOnly fg.deobf("curse.maven:modular-routers-250294:3776175")
 
     //MouseTweaks
     //runtimeOnly fg.deobf("curse.maven:mouse-tweaks-60089:3578801")
