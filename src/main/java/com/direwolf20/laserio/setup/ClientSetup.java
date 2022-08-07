@@ -92,22 +92,37 @@ public class ClientSetup {
 
         colors.register((stack, index) -> {
             if (index == 2) {
-                Color color = LaserNodeBERender.colors[BaseCard.getChannel(stack)];
-                return color.getRGB();
+                if (BaseCard.getTransferMode(stack) == (byte) 3) {
+                    Color color = LaserNodeBERender.colors[BaseCard.getRedstoneChannel(stack)];
+                    return color.getRGB();
+                } else {
+                    Color color = LaserNodeBERender.colors[BaseCard.getChannel(stack)];
+                    return color.getRGB();
+                }
             }
             return 0xFFFFFFFF;
         }, Registration.Card_Item.get());
         colors.register((stack, index) -> {
             if (index == 2) {
-                Color color = LaserNodeBERender.colors[BaseCard.getChannel(stack)];
-                return color.getRGB();
+                if (BaseCard.getTransferMode(stack) == (byte) 3) {
+                    Color color = LaserNodeBERender.colors[BaseCard.getRedstoneChannel(stack)];
+                    return color.getRGB();
+                } else {
+                    Color color = LaserNodeBERender.colors[BaseCard.getChannel(stack)];
+                    return color.getRGB();
+                }
             }
             return 0xFFFFFFFF;
         }, Registration.Card_Fluid.get());
         colors.register((stack, index) -> {
             if (index == 2) {
-                Color color = LaserNodeBERender.colors[BaseCard.getChannel(stack)];
-                return color.getRGB();
+                if (BaseCard.getTransferMode(stack) == (byte) 3) {
+                    Color color = LaserNodeBERender.colors[BaseCard.getRedstoneChannel(stack)];
+                    return color.getRGB();
+                } else {
+                    Color color = LaserNodeBERender.colors[BaseCard.getChannel(stack)];
+                    return color.getRGB();
+                }
             }
             return 0xFFFFFFFF;
         }, Registration.Card_Energy.get());
