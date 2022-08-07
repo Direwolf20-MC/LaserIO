@@ -727,7 +727,7 @@ public class LaserNodeBE extends BaseLaserBE {
         ItemHandlerUtil.InventoryCounts inventoryCounts = new ItemHandlerUtil.InventoryCounts(adjacentInventory, sensorCardCache.isCompareNBT);
 
         if (filter.getItem() instanceof FilterMod) {
-            List<ItemStack> filteredItemsListOriginal = sensorCardCache.getFilteredItems();
+            List<ItemStack> filteredItemsListOriginal = sensorCardCache.filteredItems;
             List<ItemStack> filteredItemsList = new ArrayList<>(filteredItemsListOriginal);
             List<ItemStack> itemStacksInChest = inventoryCounts.getItemCounts().values().stream().toList();
             outloop:
@@ -747,7 +747,7 @@ public class LaserNodeBE extends BaseLaserBE {
             else
                 filterMatched = filteredItemsList.size() < filteredItemsListOriginal.size();
         } else if (filter.getItem() instanceof FilterBasic) {
-            List<ItemStack> filteredItemsList = sensorCardCache.getFilteredItems();
+            List<ItemStack> filteredItemsList = sensorCardCache.filteredItems;
             boolean allMatched = true;
             for (ItemStack itemStack : filteredItemsList) { //Remove all the items from the list that we already have enough of
                 int amtHad = inventoryCounts.getCount(itemStack);
@@ -767,7 +767,7 @@ public class LaserNodeBE extends BaseLaserBE {
                 filterMatched = allMatched;
             }
         } else if (filter.getItem() instanceof FilterCount) {
-            List<ItemStack> filteredItemsList = sensorCardCache.getFilteredItems();
+            List<ItemStack> filteredItemsList = sensorCardCache.filteredItems;
             boolean allMatched = true;
             for (ItemStack itemStack : filteredItemsList) { //Remove all the items from the list that we already have enough of
                 int amtHad = inventoryCounts.getCount(itemStack);
@@ -788,7 +788,7 @@ public class LaserNodeBE extends BaseLaserBE {
                 filterMatched = allMatched;
             }
         } else if (filter.getItem() instanceof FilterTag) {
-            List<String> tags = sensorCardCache.getFilterTags();
+            List<String> tags = sensorCardCache.filterTags;
             int tagsToMatch = tags.size();
             List<ItemStack> itemStacksInChest = inventoryCounts.getItemCounts().values().stream().toList();
             outloop:
