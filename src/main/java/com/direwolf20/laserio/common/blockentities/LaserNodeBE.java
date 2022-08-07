@@ -192,6 +192,7 @@ public class LaserNodeBE extends BaseLaserBE {
             NodeSideCache nodeSideCache = nodeSideCaches[direction.ordinal()];
             int countCardsHandled = 0;
             for (ExtractorCardCache extractorCardCache : nodeSideCache.extractorCardCaches) {
+                if (extractorCardCache instanceof SensorCardCache) continue; //Don't try to operate on SensorCards
                 if (extractorCardCache.decrementSleep() == 0) {
                     if (!extractorCardCache.enabled) continue;
                     if (countCardsHandled > nodeSideCache.overClocker) continue;
@@ -206,18 +207,6 @@ public class LaserNodeBE extends BaseLaserBE {
                             if (stockEnergy(stockerCardCache))
                                 countCardsHandled++;
                         }
-                    } else if (extractorCardCache instanceof SensorCardCache sensorCardCache) {
-                        //Moved to its own method -- NO-OP
-                        /*if (extractorCardCache.cardType.equals(BaseCard.CardType.ITEM)) {
-                            if (senseItems(sensorCardCache))
-                                countCardsHandled++;
-                        } else if (extractorCardCache.cardType.equals(BaseCard.CardType.FLUID)) {
-                            if (senseFluids(sensorCardCache))
-                                countCardsHandled++;
-                        } else if (extractorCardCache.cardType.equals(BaseCard.CardType.ENERGY)) {
-                            if (senseEnergy(sensorCardCache))
-                                countCardsHandled++;
-                        }*/
                     } else {
                         if (extractorCardCache.cardType.equals(BaseCard.CardType.ITEM)) {
                             if (sendItems(extractorCardCache))
@@ -244,6 +233,8 @@ public class LaserNodeBE extends BaseLaserBE {
             NodeSideCache nodeSideCache = nodeSideCaches[direction.ordinal()];
             int countCardsHandled = 0;
             for (ExtractorCardCache extractorCardCache : nodeSideCache.extractorCardCaches) {
+                if (!(extractorCardCache instanceof SensorCardCache))
+                    continue; //Don't even try to operate on non-sensor cards
                 if (extractorCardCache.decrementSleep() == 0) {
                     if (!extractorCardCache.enabled) continue;
                     if (countCardsHandled > nodeSideCache.overClocker) continue;
