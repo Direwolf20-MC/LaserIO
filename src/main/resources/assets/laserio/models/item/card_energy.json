@@ -17,6 +17,12 @@
         "laserio:mode": 2
       },
       "model": "laserio:item/card_energy_stock"
+    },
+    {
+      "predicate": {
+        "laserio:mode": 3
+      },
+      "model": "laserio:item/card_energy_sensor"
     }
   ]
 }

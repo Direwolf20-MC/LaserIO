@@ -2,6 +2,8 @@ package com.direwolf20.laserio.util;
 
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import com.direwolf20.laserio.common.containers.customhandler.LaserNodeItemHandler;
+import it.unimi.dsi.fastutil.bytes.Byte2ByteMap;
+import it.unimi.dsi.fastutil.bytes.Byte2ByteOpenHashMap;
 import net.minecraftforge.common.util.LazyOptional;
 
 import java.util.List;
@@ -14,6 +16,7 @@ public class NodeSideCache {
     public final List<ExtractorCardCache> extractorCardCaches = new CopyOnWriteArrayList<>();
     public LazyOptional<LaserNodeBE.LaserEnergyStorage> laserEnergyStorage;
     public LaserNodeBE.LaserEnergyStorage energyStorage;
+    public Byte2ByteMap myRedstoneFromSensors = new Byte2ByteOpenHashMap();  //Channel,Strength
 
     public NodeSideCache() {
 

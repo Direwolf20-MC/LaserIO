@@ -83,7 +83,7 @@ public class BaseCardCache {
     }
 
     public void setEnabled() {
-        if (redstoneMode == 0) {
+        if (redstoneMode == 0 || BaseCard.getNamedTransferMode(cardItem).equals(BaseCard.TransferMode.SENSOR)) { //Sensors are always enabled
             enabled = true;
         } else {
             byte strength = be.getRedstoneChannelStrength(redstoneChannel);
