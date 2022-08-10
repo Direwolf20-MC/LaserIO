@@ -9,6 +9,7 @@ import com.direwolf20.laserio.common.events.ServerTickHandler;
 import com.direwolf20.laserio.common.items.cards.*;
 import com.direwolf20.laserio.common.items.filters.FilterBasic;
 import com.direwolf20.laserio.common.items.filters.FilterCount;
+import com.direwolf20.laserio.common.items.filters.FilterMod;
 import com.direwolf20.laserio.common.items.filters.FilterTag;
 import com.direwolf20.laserio.common.items.upgrades.OverclockerNode;
 import com.direwolf20.laserio.setup.Registration;
@@ -27,6 +28,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -120,10 +122,12 @@ public class LaserNodeBE extends BaseLaserBE {
     /** Redstone Variables **/
     public Byte2ByteMap redstoneNetwork = new Byte2ByteOpenHashMap(); //Channel,Strength
     public Byte2ByteMap myRedstoneIn = new Byte2ByteOpenHashMap();  //Channel,Strength
+
     public Byte2ByteMap myRedstoneOut = new Byte2ByteOpenHashMap();  //Side,Strength
     public Byte2BooleanMap redstoneCardSides = new Byte2BooleanOpenHashMap(); //Side and whether it has a redstone card, for client
     public boolean redstoneChecked = false;
     public boolean redstoneRefreshed = false;
+    public boolean firstTimeNodeLoaded = true; //Redstone needs to be refreshed first time node loads into the world
 
 
     /** Misc Variables **/
@@ -174,6 +178,9 @@ public class LaserNodeBE extends BaseLaserBE {
                     if (BaseCard.getNamedTransferMode(card).equals(BaseCard.TransferMode.STOCK)) {
                         nodeSideCache.extractorCardCaches.add(new StockerCardCache(direction, card, slot, this));
                     }
+                    if (BaseCard.getNamedTransferMode(card).equals(BaseCard.TransferMode.SENSOR)) {
+                        nodeSideCache.extractorCardCaches.add(new SensorCardCache(direction, card, slot, this));
+                    }
                 }
             }
         }
@@ -185,6 +192,7 @@ public class LaserNodeBE extends BaseLaserBE {
             NodeSideCache nodeSideCache = nodeSideCaches[direction.ordinal()];
             int countCardsHandled = 0;
             for (ExtractorCardCache extractorCardCache : nodeSideCache.extractorCardCaches) {
+                if (extractorCardCache instanceof SensorCardCache) continue; //Don't try to operate on SensorCards
                 if (extractorCardCache.decrementSleep() == 0) {
                     if (!extractorCardCache.enabled) continue;
                     if (countCardsHandled > nodeSideCache.overClocker) continue;
@@ -219,6 +227,37 @@ public class LaserNodeBE extends BaseLaserBE {
         }
     }
 
+    /** Loop through all the sensorCards and run the sensing **/
+    public void sense() {
+        for (Direction direction : Direction.values()) {
+            NodeSideCache nodeSideCache = nodeSideCaches[direction.ordinal()];
+            int countCardsHandled = 0;
+            for (ExtractorCardCache extractorCardCache : nodeSideCache.extractorCardCaches) {
+                if (!(extractorCardCache instanceof SensorCardCache))
+                    continue; //Don't even try to operate on non-sensor cards
+                if (extractorCardCache.decrementSleep() == 0) {
+                    if (!extractorCardCache.enabled) continue;
+                    if (countCardsHandled > nodeSideCache.overClocker) continue;
+                    if (extractorCardCache instanceof SensorCardCache sensorCardCache) {
+                        if (extractorCardCache.cardType.equals(BaseCard.CardType.ITEM)) {
+                            if (senseItems(sensorCardCache))
+                                countCardsHandled++;
+                        } else if (extractorCardCache.cardType.equals(BaseCard.CardType.FLUID)) {
+                            if (senseFluids(sensorCardCache))
+                                countCardsHandled++;
+                        } else if (extractorCardCache.cardType.equals(BaseCard.CardType.ENERGY)) {
+                            if (senseEnergy(sensorCardCache))
+                                countCardsHandled++;
+                        }
+                    }
+                    if (extractorCardCache.remainingSleep <= 0) {
+                        extractorCardCache.remainingSleep = extractorCardCache.tickSpeed;
+                    }
+                }
+            }
+        }
+    }
+
     public void tickClient() {
         drawParticlesClient();
         particleRenderData.clear();
@@ -232,6 +271,7 @@ public class LaserNodeBE extends BaseLaserBE {
             updateOverclockers();
             discoveredNodes = true;
         }
+        sense();
         if (!redstoneChecked) {
             populateThisRedstoneNetwork(true);
             redstoneChecked = true;
@@ -271,8 +311,13 @@ public class LaserNodeBE extends BaseLaserBE {
                     }
                 }
             }
+            for (Map.Entry<Byte, Byte> entry : nodeSideCache.myRedstoneFromSensors.byte2ByteEntrySet()) { //Update the temp variable with data from any sensors
+                myRedstoneInTemp.put(entry.getKey(), entry.getValue());
+            }
         }
+
         if (!myRedstoneInTemp.equals(myRedstoneIn)) {
+            System.out.println("Redstone input changed - updating network");
             updated = true;
             myRedstoneIn = new Byte2ByteOpenHashMap(myRedstoneInTemp);
         }
@@ -393,7 +438,7 @@ public class LaserNodeBE extends BaseLaserBE {
                     redstoneCardSides.put((byte) direction.ordinal(), true);
                 }
             }
-            if (!Objects.equals(myRedstoneOutTemp.get(side), myRedstoneOut.get(side))) {
+            if (firstTimeNodeLoaded || !Objects.equals(myRedstoneOutTemp.get(side), myRedstoneOut.get(side))) {
                 if (myRedstoneOutTemp.containsKey(side))
                     myRedstoneOut.put(side, myRedstoneOutTemp.get(side));
                 else
@@ -405,6 +450,8 @@ public class LaserNodeBE extends BaseLaserBE {
         }
         BlockState state = this.getBlockState();
         state.updateNeighbourShapes(level, getBlockPos(), UPDATE_ALL);
+        if (firstTimeNodeLoaded)
+            firstTimeNodeLoaded = false;
     }
 
     public void sortInserters() {
@@ -634,6 +681,271 @@ public class LaserNodeBE extends BaseLaserBE {
         }
 
         return foundAnything;
+    }
+
+    public boolean updateRedstoneFromSensor(boolean filterMatched, byte redstoneChannel, NodeSideCache nodeSideCache) {
+        byte currentRedstoneFromNetwork = nodeSideCache.myRedstoneFromSensors.get(redstoneChannel);
+        byte newRedstoneStrength = filterMatched ? (byte) 15 : (byte) 0;
+        if (newRedstoneStrength == 0) {
+            nodeSideCache.myRedstoneFromSensors.remove(redstoneChannel);
+        } else {
+            nodeSideCache.myRedstoneFromSensors.put(redstoneChannel, newRedstoneStrength);
+        }
+        if (currentRedstoneFromNetwork != newRedstoneStrength) {
+            return true;
+        }
+        return false; //No changes were needed
+    }
+
+    public boolean senseItems(SensorCardCache sensorCardCache) {
+        BlockPos adjacentPos = getBlockPos().relative(sensorCardCache.direction);
+        assert level != null;
+        if (!level.isLoaded(adjacentPos)) return false;
+        ItemStack filter = sensorCardCache.filterCard;
+        boolean andMode = BaseCard.getAnd(sensorCardCache.cardItem);
+        boolean filterMatched = false;
+        NodeSideCache nodeSideCache = nodeSideCaches[sensorCardCache.direction.ordinal()];
+        if (filter.isEmpty()) { //Needs a filter
+            if (updateRedstoneFromSensor(false, sensorCardCache.redstoneChannel, nodeSideCache)) {
+                rendersChecked = false;
+                clearCachedInventories();
+                redstoneChecked = false;
+            }
+            return false;
+        }
+
+        IItemHandler adjacentInventory = getAttachedInventory(sensorCardCache.direction, sensorCardCache.sneaky).orElse(EMPTY);
+        ItemHandlerUtil.InventoryCounts inventoryCounts = new ItemHandlerUtil.InventoryCounts(adjacentInventory, sensorCardCache.isCompareNBT);
+
+        if (filter.getItem() instanceof FilterMod) {
+            List<ItemStack> filteredItemsListOriginal = sensorCardCache.filteredItems;
+            List<ItemStack> filteredItemsList = new ArrayList<>(filteredItemsListOriginal);
+            List<ItemStack> itemStacksInChest = inventoryCounts.getItemCounts().values().stream().toList();
+            outloop:
+            for (ItemStack stack : itemStacksInChest) {
+                for (ItemStack testStack : filteredItemsListOriginal) {
+                    if (stack.getItem().getCreatorModId(stack).equals(testStack.getItem().getCreatorModId(testStack))) {
+                        filteredItemsList.remove(testStack);
+                        if (!andMode) {
+                            break outloop;
+                        }
+                    }
+                }
+            }
+            //In and mode, the list of tags needs to be empty, in or mode it just has to be 1 smaller.
+            if (andMode)
+                filterMatched = filteredItemsList.size() == 0;
+            else
+                filterMatched = filteredItemsList.size() < filteredItemsListOriginal.size();
+        } else if (filter.getItem() instanceof FilterBasic) {
+            List<ItemStack> filteredItemsList = sensorCardCache.filteredItems;
+            boolean allMatched = true;
+            for (ItemStack itemStack : filteredItemsList) { //Remove all the items from the list that we already have enough of
+                int amtHad = inventoryCounts.getCount(itemStack);
+                if (amtHad > 0) {
+                    if (!andMode) {
+                        filterMatched = true;
+                        break;
+                    }
+                } else {
+                    if (andMode) {
+                        allMatched = false;
+                        break;
+                    }
+                }
+            }
+            if (andMode && !filteredItemsList.isEmpty()) {
+                filterMatched = allMatched;
+            }
+        } else if (filter.getItem() instanceof FilterCount) {
+            List<ItemStack> filteredItemsList = sensorCardCache.filteredItems;
+            boolean allMatched = true;
+            for (ItemStack itemStack : filteredItemsList) { //Remove all the items from the list that we already have enough of
+                int amtHad = inventoryCounts.getCount(itemStack);
+                if (amtHad < itemStack.getCount() || (sensorCardCache.exact && amtHad > itemStack.getCount())) {
+                    if (andMode) {
+                        allMatched = false;
+                        break;
+                    }
+
+                } else {
+                    if (!andMode) {
+                        filterMatched = true;
+                        break;
+                    }
+                }
+            }
+            if (andMode && !filteredItemsList.isEmpty()) {
+                filterMatched = allMatched;
+            }
+        } else if (filter.getItem() instanceof FilterTag) {
+            List<String> tags = sensorCardCache.filterTags;
+            int tagsToMatch = tags.size();
+            List<ItemStack> itemStacksInChest = inventoryCounts.getItemCounts().values().stream().toList();
+            outloop:
+            for (ItemStack itemStack : itemStacksInChest) {
+                for (TagKey tagKey : itemStack.getItem().builtInRegistryHolder().tags().toList()) {
+                    String itemTag = tagKey.location().toString().toLowerCase(Locale.ROOT);
+                    if (tags.contains(itemTag)) {
+                        tags.remove(itemTag);
+                        if (!andMode) {
+                            break outloop;
+                        }
+                    }
+                }
+            }
+            //In and mode, the list of tags needs to be empty, in or mode it just has to be 1 smaller.
+            if (andMode)
+                filterMatched = tags.size() == 0;
+            else
+                filterMatched = tags.size() < tagsToMatch;
+        }
+
+        if (updateRedstoneFromSensor(filterMatched, sensorCardCache.redstoneChannel, nodeSideCache)) {
+            System.out.println("Redstone network change detected");
+            rendersChecked = false;
+            clearCachedInventories();
+            redstoneChecked = false;
+        }
+        return true;
+    }
+
+    public boolean senseFluids(SensorCardCache sensorCardCache) {
+        BlockPos adjacentPos = getBlockPos().relative(sensorCardCache.direction);
+        assert level != null;
+        if (!level.isLoaded(adjacentPos)) return false;
+        NodeSideCache nodeSideCache = nodeSideCaches[sensorCardCache.direction.ordinal()];
+        Optional<IFluidHandler> adjacentTankOptional = getAttachedFluidTank(sensorCardCache.direction, sensorCardCache.sneaky).resolve();
+        if (adjacentTankOptional.isEmpty()) { //Needs a filter
+            if (updateRedstoneFromSensor(false, sensorCardCache.redstoneChannel, nodeSideCache)) {
+                rendersChecked = false;
+                clearCachedInventories();
+                redstoneChecked = false;
+            }
+            return false;
+        }
+        IFluidHandler adacentTank = adjacentTankOptional.get();
+
+        ItemStack filter = sensorCardCache.filterCard;
+        boolean andMode = BaseCard.getAnd(sensorCardCache.cardItem);
+        boolean filterMatched = false;
+
+        if (filter.isEmpty()) { //Needs a filter
+            if (updateRedstoneFromSensor(false, sensorCardCache.redstoneChannel, nodeSideCache)) {
+                rendersChecked = false;
+                clearCachedInventories();
+                redstoneChecked = false;
+            }
+            return false;
+        }
+        if (filter.getItem() instanceof FilterBasic) {
+            List<FluidStack> filteredFluids = sensorCardCache.getFilteredFluids();
+            List<FluidStack> filteredFluidsOriginal = new ArrayList<>(filteredFluids);
+
+            outloop:
+            for (FluidStack fluidStack : filteredFluidsOriginal) {
+                for (int tank = 0; tank < adacentTank.getTanks(); tank++) { //Loop through all the tanks
+                    FluidStack stackInTank = adacentTank.getFluidInTank(tank);
+                    if (stackInTank.isFluidEqual(fluidStack)) {
+                        filteredFluids.remove(fluidStack);
+                        if (!andMode) {
+                            break outloop;
+                        }
+                    }
+                }
+            }
+            if (andMode)
+                filterMatched = filteredFluids.size() == 0;
+            else
+                filterMatched = filteredFluids.size() < filteredFluidsOriginal.size();
+        } else if (filter.getItem() instanceof FilterCount) {
+            List<FluidStack> filteredFluids = sensorCardCache.getFilteredFluids();
+            List<FluidStack> filteredFluidsOriginal = new ArrayList<>(filteredFluids);
+
+            outloop:
+            for (FluidStack fluidStack : filteredFluidsOriginal) {
+                int desiredAmt = sensorCardCache.getFilterAmt(fluidStack);
+                for (int tank = 0; tank < adacentTank.getTanks(); tank++) { //Loop through all the tanks
+                    FluidStack stackInTank = adacentTank.getFluidInTank(tank);
+                    if (stackInTank.isFluidEqual(fluidStack)) {
+                        int amtHad = stackInTank.getAmount();
+                        if (amtHad < desiredAmt || (sensorCardCache.exact && amtHad > desiredAmt)) {
+                            //noOp
+                        } else {
+                            filteredFluids.remove(fluidStack);
+                            if (!andMode) {
+                                break outloop;
+                            }
+                        }
+                    }
+                }
+            }
+            if (andMode)
+                filterMatched = filteredFluids.size() == 0;
+            else
+                filterMatched = filteredFluids.size() < filteredFluidsOriginal.size();
+        } else if (filter.getItem() instanceof FilterTag) {
+            List<String> tags = sensorCardCache.getFilterTags();
+            int tagsToMatch = tags.size();
+
+            outloop:
+            for (int tank = 0; tank < adacentTank.getTanks(); tank++) { //Loop through all the tanks
+                FluidStack stackInTank = adacentTank.getFluidInTank(tank);
+                for (TagKey tagKey : stackInTank.getFluid().builtInRegistryHolder().tags().toList()) {
+                    String fluidTag = tagKey.location().toString().toLowerCase(Locale.ROOT);
+                    if (tags.contains(fluidTag)) {
+                        tags.remove(fluidTag);
+                        if (!andMode) {
+                            break outloop;
+                        }
+                    }
+                }
+            }
+            //In and mode, the list of tags needs to be empty, in or mode it just has to be 1 smaller.
+            if (andMode)
+                filterMatched = tags.size() == 0;
+            else
+                filterMatched = tags.size() < tagsToMatch;
+        }
+        if (updateRedstoneFromSensor(filterMatched, sensorCardCache.redstoneChannel, nodeSideCache)) {
+            System.out.println("Redstone network change detected");
+            rendersChecked = false;
+            clearCachedInventories();
+            redstoneChecked = false;
+        }
+        return true;
+    }
+
+    public boolean senseEnergy(SensorCardCache sensorCardCache) {
+        BlockPos adjacentPos = getBlockPos().relative(sensorCardCache.direction);
+        assert level != null;
+        if (!level.isLoaded(adjacentPos)) return false;
+        Optional<IEnergyStorage> adjacentEnergyOptional = getAttachedEnergyTank(sensorCardCache.direction, sensorCardCache.sneaky).resolve();
+        NodeSideCache nodeSideCache = nodeSideCaches[sensorCardCache.direction.ordinal()];
+        if (adjacentEnergyOptional.isEmpty()) { //Needs a filter
+            if (updateRedstoneFromSensor(false, sensorCardCache.redstoneChannel, nodeSideCache)) {
+                rendersChecked = false;
+                clearCachedInventories();
+                redstoneChecked = false;
+            }
+            return false;
+        }
+        IEnergyStorage adjacentEnergy = adjacentEnergyOptional.get();
+        boolean filterMatched = false;
+        int desired = (int) (adjacentEnergy.getMaxEnergyStored() * ((float) sensorCardCache.insertLimit / 100));
+        int amtHad = adjacentEnergy.getEnergyStored();
+        if (amtHad < desired || (sensorCardCache.exact && amtHad > desired)) {
+            filterMatched = false;
+        } else {
+            filterMatched = true;
+        }
+        if (updateRedstoneFromSensor(filterMatched, sensorCardCache.redstoneChannel, nodeSideCache)) {
+            System.out.println("Redstone network change detected");
+            rendersChecked = false;
+            clearCachedInventories();
+            redstoneChecked = false;
+        }
+        return true;
     }
 
     /** Extractor Cards call this, and try to find an inserter card to send their items to **/
@@ -1662,6 +1974,10 @@ public class LaserNodeBE extends BaseLaserBE {
     /** Called when changes happen - such as a card going into a side, or a card being modified via container **/
     public void updateThisNode() {
         setChanged();
+        for (Direction direction : Direction.values()) {
+            NodeSideCache nodeSideCache = nodeSideCaches[direction.ordinal()];
+            nodeSideCache.myRedstoneFromSensors.clear();
+        }
         redstoneChecked = false;
         //populateThisRedstoneNetwork(false);
         notifyOtherNodesOfChange();
@@ -1969,7 +2285,7 @@ public class LaserNodeBE extends BaseLaserBE {
                 if (card.getItem() instanceof CardRedstone) redstoneMode = 2;
                 byte redstoneChannel = BaseCard.getRedstoneChannel(card);
                 boolean enabled;
-                if (redstoneMode == 0) {
+                if (redstoneMode == 0 || BaseCard.getNamedTransferMode(card).equals(BaseCard.TransferMode.SENSOR)) { //Sensors are always enabled
                     enabled = true;
                 } else {
                     byte strength = getRedstoneChannelStrength(redstoneChannel);
