@@ -52,7 +52,6 @@ public class CardEnergyScreen extends AbstractCardScreen<CardEnergyContainer> {
     protected boolean currentRegulate;
     protected int currentExtractLimitPercent;
     protected int currentInsertLimitPercent;
-    protected final ItemStack card;
     protected Map<String, Button> buttons = new HashMap<>();
     protected byte currentRedstoneMode;
 
@@ -69,7 +68,6 @@ public class CardEnergyScreen extends AbstractCardScreen<CardEnergyContainer> {
     public CardEnergyScreen(CardEnergyContainer container, Inventory inv, Component name) {
         super(container, inv, name);
         this.container = container;
-        this.card = container.cardItem;
     }
 
     @Override

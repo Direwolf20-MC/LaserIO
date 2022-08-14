@@ -62,7 +62,6 @@ public class CardItemScreen extends AbstractCardScreen<CardItemContainer> {
     protected boolean showFilter;
     protected boolean showAllow;
     protected boolean showNBT;
-    protected final ItemStack card;
     public ItemStack filter;
     protected Map<String, Button> buttons = new HashMap<>();
     protected byte currentRedstoneMode;
@@ -80,7 +79,6 @@ public class CardItemScreen extends AbstractCardScreen<CardItemContainer> {
     public CardItemScreen(CardItemContainer container, Inventory inv, Component name) {
         super(container, inv, name);
         this.container = container;
-        this.card = container.cardItem;
         filter = container.slots.get(0).getItem();
     }
 

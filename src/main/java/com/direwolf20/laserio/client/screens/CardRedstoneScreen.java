@@ -36,13 +36,11 @@ public class CardRedstoneScreen extends AbstractCardScreen<CardRedstoneContainer
     protected byte currentMode;
     protected byte currentRedstoneChannel;
     protected boolean currentStrong;
-    protected final ItemStack card;
     protected Map<String, Button> buttons = new HashMap<>();
 
     public CardRedstoneScreen(CardRedstoneContainer container, Inventory inv, Component name) {
         super(container, inv, name);
         this.container = container;
-        this.card = container.cardItem;
     }
 
     @Override

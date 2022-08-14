@@ -1,6 +1,7 @@
 package com.direwolf20.laserio.client.screens;
 
 import com.direwolf20.laserio.common.LaserIO;
+import com.direwolf20.laserio.common.containers.AbstractCardContainer;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 
@@ -11,11 +12,11 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.ItemStack;
 
 import java.awt.*;
 
-public abstract class AbstractCardScreen<T extends AbstractContainerMenu> extends AbstractContainerScreen<T>  {
+public abstract class AbstractCardScreen<T extends AbstractCardContainer> extends AbstractContainerScreen<T>  {
 
     public final Color ItemCardColor = new Color(0x80c71f);
     public final Color FluidCardColor = new Color(0x3c44a9);
@@ -27,8 +28,13 @@ public abstract class AbstractCardScreen<T extends AbstractContainerMenu> extend
     private final int HeaderOffset = 20;
     private final int ColorInset = 5;
 
-    public AbstractCardScreen(T pMenu, Inventory pPlayerInventory, Component pTitle) {
-        super(pMenu, pPlayerInventory, pTitle);
+    protected final T baseContainer;
+    protected final ItemStack card;
+
+    public AbstractCardScreen(T container, Inventory pPlayerInventory, Component pTitle) {
+        super(container, pPlayerInventory, pTitle);
+        this.baseContainer = container;
+        card = container.cardItem;
     }
 
     public abstract Color cardColor();
