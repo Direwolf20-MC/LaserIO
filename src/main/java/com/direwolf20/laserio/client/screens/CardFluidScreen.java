@@ -23,8 +23,6 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 
-import java.awt.*;
-
 public class CardFluidScreen extends CardItemScreen {
 
     public int currentFluidExtractAmt;
@@ -135,11 +133,6 @@ public class CardFluidScreen extends CardItemScreen {
     @Override
     public void saveSettings() {
         PacketHandler.sendToServer(new PacketUpdateCard(currentMode, currentChannel, currentFluidExtractAmt, currentPriority, currentSneaky, (short) currentTicks, currentExact, currentRegulate, (byte) currentRoundRobin, 0, 0, currentRedstoneMode, currentRedstoneChannel, currentAndMode));
-    }
-
-    @Override
-    public Color cardColor() {
-        return FluidCardColor;
     }
 
     @Override

@@ -20,7 +20,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
@@ -33,8 +32,6 @@ import net.minecraft.world.item.ItemStack;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import java.awt.*;
 
 public class CardEnergyScreen extends AbstractCardScreen<CardEnergyContainer> {
     private final ResourceLocation GUI = new ResourceLocation(LaserIO.MODID, "textures/gui/energycard.png");
@@ -434,11 +431,6 @@ public class CardEnergyScreen extends AbstractCardScreen<CardEnergyContainer> {
         }
         stack.popPose();*/
         //super.renderLabels(matrixStack, x, y);
-    }
-
-    @Override
-    public Color cardColor() {
-        return EnergyCardColor;
     }
 
     @Override

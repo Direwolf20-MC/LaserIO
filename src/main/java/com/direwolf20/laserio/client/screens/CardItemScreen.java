@@ -3,7 +3,6 @@ package com.direwolf20.laserio.client.screens;
 import com.direwolf20.laserio.client.renderer.LaserIOItemRenderer;
 import com.direwolf20.laserio.client.screens.widgets.ChannelButton;
 import com.direwolf20.laserio.client.screens.widgets.NumberButton;
-import com.direwolf20.laserio.client.screens.widgets.TextButton;
 import com.direwolf20.laserio.client.screens.widgets.ToggleButton;
 import com.direwolf20.laserio.common.LaserIO;
 import com.direwolf20.laserio.common.containers.CardItemContainer;
@@ -23,7 +22,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
@@ -39,8 +37,6 @@ import net.minecraftforge.items.ItemHandlerHelper;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import java.awt.*;
 
 public class CardItemScreen extends AbstractCardScreen<CardItemContainer> {
     private final ResourceLocation GUI = new ResourceLocation(LaserIO.MODID, "textures/gui/itemcard.png");
@@ -578,11 +574,6 @@ public class CardItemScreen extends AbstractCardScreen<CardItemContainer> {
         }
         stack.popPose();*/
         //super.renderLabels(matrixStack, x, y);
-    }
-
-    @Override
-    public Color cardColor() {
-        return ItemCardColor;
     }
 
     @Override
