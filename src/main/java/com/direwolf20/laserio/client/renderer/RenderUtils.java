@@ -25,12 +25,29 @@ import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 
 import java.awt.*;
+import java.util.EnumMap;
 import java.util.Queue;
 import java.util.Set;
 
 import static com.direwolf20.laserio.util.MiscTools.findOffset;
 
 public class RenderUtils {
+    private static EnumMap<BaseCard.CardType, Color> cardTypeColors = new EnumMap<BaseCard.CardType, Color>(BaseCard.CardType.class);
+    
+    static {
+        cardTypeColors.put(BaseCard.CardType.ITEM, new Color(0f, 1f, 0f));
+        cardTypeColors.put(BaseCard.CardType.FLUID, new Color(0f, 0f, 1f));
+        cardTypeColors.put(BaseCard.CardType.ENERGY, new Color(1f, 1f, 0f));
+        cardTypeColors.put(BaseCard.CardType.REDSTONE, new Color(1f, 0f, 0f));
+    }
+
+    public static Color getColor(BaseCard.CardType cardType){
+        Color color = cardTypeColors.get(cardType);
+        if (color == null)
+            return Color.BLACK;
+        return color;
+    }
+
     public static void render(Matrix4f matrix, VertexConsumer builder, BlockPos pos, Color color, float scale) {
         float red = color.getRed() / 255f, green = color.getGreen() / 255f, blue = color.getBlue() / 255f, alpha = .5f;
 

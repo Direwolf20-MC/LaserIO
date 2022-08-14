@@ -1,17 +1,21 @@
 package com.direwolf20.laserio.util;
 
 import com.direwolf20.laserio.client.blockentityrenders.LaserNodeBERender;
+import com.direwolf20.laserio.client.renderer.RenderUtils;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.common.items.cards.CardRedstone;
 import com.mojang.math.Vector3f;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import static com.direwolf20.laserio.util.MiscTools.findOffset;
+
+import java.awt.*;
 
 public class CardRender {
     public Direction direction;
@@ -28,7 +32,7 @@ public class CardRender {
     public Vector3f endLaser;
     public float[] floatcolors;
 
-
+    
     public CardRender(Direction direction, int cardSlot, ItemStack card, BlockPos start, Level level, boolean enabled) {
         this.direction = direction;
         this.cardSlot = cardSlot;
@@ -37,23 +41,14 @@ public class CardRender {
         BlockState targetState = level.getBlockState(endBlock);
         VoxelShape voxelShape = targetState.getShape(level, endBlock);
         //System.out.println(voxelShape + ":" + voxelShape.getFaceShape(direction.getOpposite()));
-        if (((BaseCard) card.getItem()).getCardType() == BaseCard.CardType.ITEM) {
-            r = 0f;
-            g = 1f;
-            b = 0f;
-        } else if (((BaseCard) card.getItem()).getCardType() == BaseCard.CardType.FLUID) {
-            r = 0f;
-            g = 0f;
-            b = 1f;
-        } else if (((BaseCard) card.getItem()).getCardType() == BaseCard.CardType.ENERGY) {
-            r = 1f;
-            g = 1f;
-            b = 0f;
-        } else if (((BaseCard) card.getItem()).getCardType() == BaseCard.CardType.REDSTONE) {
-            r = 1f;
-            g = 0f;
-            b = 0f;
-        }
+        Item cardItem = card.getItem();
+        BaseCard baseCard = cardItem instanceof BaseCard ? (BaseCard) cardItem : null;
+        BaseCard.CardType cardType = baseCard != null ? baseCard.getCardType() : BaseCard.CardType.MISSING;
+        Color color = RenderUtils.getColor(cardType);
+        float[] cmps = color.getColorComponents(new float[3]);
+        r = cmps[0];
+        g = cmps[1];
+        b = cmps[2];
         if (!enabled) {
             r /= 4f;
             g /= 4f;
