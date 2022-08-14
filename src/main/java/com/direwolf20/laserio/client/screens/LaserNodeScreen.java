@@ -31,7 +31,7 @@ public class LaserNodeScreen extends AbstractContainerScreen<LaserNodeContainer>
     private final ResourceLocation GUI = new ResourceLocation(LaserIO.MODID, "textures/gui/laser_node.png");
     protected final LaserNodeContainer container;
     private boolean showCardHolderUI;
-    private final MutableComponent[] sides = {
+    public static final MutableComponent[] sides = {
             Component.translatable("screen.laserio.down"),
             Component.translatable("screen.laserio.up"),
             Component.translatable("screen.laserio.north"),
