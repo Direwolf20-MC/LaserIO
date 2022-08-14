@@ -9,7 +9,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
@@ -23,17 +22,16 @@ import net.minecraftforge.items.wrapper.InvWrapper;
 
 import javax.annotation.Nullable;
 
-public class CardEnergyContainer extends AbstractContainerMenu {
+public class CardEnergyContainer extends AbstractCardContainer {
     public static final int SLOTS = 1;
     public CardItemHandler handler;
-    public ItemStack cardItem;
     public Player playerEntity;
     protected IItemHandler playerInventory;
     public BlockPos sourceContainer = BlockPos.ZERO;
     public byte direction = -1;
 
-    protected CardEnergyContainer(@Nullable MenuType<?> pMenuType, int pContainerId) {
-        super(pMenuType, pContainerId);
+    protected CardEnergyContainer(@Nullable MenuType<?> pMenuType, int pContainerId, ItemStack cardItem) {
+        super(pMenuType, pContainerId, cardItem);
     }
 
     public CardEnergyContainer(int windowId, Inventory playerInventory, Player player, FriendlyByteBuf extraData) {
@@ -42,11 +40,10 @@ public class CardEnergyContainer extends AbstractContainerMenu {
     }
 
     public CardEnergyContainer(int windowId, Inventory playerInventory, Player player, ItemStack cardItem) {
-        super(Registration.CardEnergy_Container.get(), windowId);
+        super(Registration.CardEnergy_Container.get(), windowId, cardItem);
         playerEntity = player;
         this.handler = CardEnergy.getInventory(cardItem);
         this.playerInventory = new InvWrapper(playerInventory);
-        this.cardItem = cardItem;
         if (handler != null) {
             //addSlotRange(handler, 0, 80, 5, 1, 18);
             addSlotRange(handler, 0, 153, 5, 1, 18);

@@ -6,7 +6,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -15,11 +14,10 @@ import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
 
-public class CardRedstoneContainer extends AbstractContainerMenu {
+public class CardRedstoneContainer extends AbstractCardContainer {
     public static final int SLOTS = 0;
     public Player playerEntity;
     private IItemHandler playerInventory;
-    public ItemStack cardItem;
     public BlockPos sourceContainer = BlockPos.ZERO;
     public byte direction = -1;
 
@@ -29,10 +27,9 @@ public class CardRedstoneContainer extends AbstractContainerMenu {
     }
 
     public CardRedstoneContainer(int windowId, Inventory playerInventory, Player player, ItemStack cardItem) {
-        super(Registration.CardRedstone_Container.get(), windowId);
+        super(Registration.CardRedstone_Container.get(), windowId, cardItem);
         playerEntity = player;
         this.playerInventory = new InvWrapper(playerInventory);
-        this.cardItem = cardItem;
         layoutPlayerInventorySlots(8, 84);
     }
 

@@ -16,7 +16,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
@@ -30,19 +29,18 @@ import net.minecraftforge.items.wrapper.InvWrapper;
 
 import javax.annotation.Nullable;
 
-public class CardItemContainer extends AbstractContainerMenu {
+public class CardItemContainer extends AbstractCardContainer {
     public static final int SLOTS = 2;
     public static final int FILTERSLOTS = 15;
     public CardItemHandler handler;
     public FilterBasicHandler filterHandler;
-    public ItemStack cardItem;
     public Player playerEntity;
     protected IItemHandler playerInventory;
     public BlockPos sourceContainer = BlockPos.ZERO;
     public byte direction = -1;
 
-    protected CardItemContainer(@Nullable MenuType<?> pMenuType, int pContainerId) {
-        super(pMenuType, pContainerId);
+    protected CardItemContainer(@Nullable MenuType<?> pMenuType, int pContainerId, ItemStack cardItem) {
+        super(pMenuType, pContainerId, cardItem);
     }
 
     public CardItemContainer(int windowId, Inventory playerInventory, Player player, FriendlyByteBuf extraData) {
@@ -51,11 +49,10 @@ public class CardItemContainer extends AbstractContainerMenu {
     }
 
     public CardItemContainer(int windowId, Inventory playerInventory, Player player, ItemStack cardItem) {
-        super(Registration.CardItem_Container.get(), windowId);
+        super(Registration.CardItem_Container.get(), windowId, cardItem);
         playerEntity = player;
         this.handler = BaseCard.getInventory(cardItem);
         this.playerInventory = new InvWrapper(playerInventory);
-        this.cardItem = cardItem;
         if (handler != null) {
             addSlotRange(handler, 0, 80, 5, 1, 18);
             addSlotRange(handler, 1, 153, 5, 1, 18);

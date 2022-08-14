@@ -18,11 +18,10 @@ public class CardFluidContainer extends CardItemContainer {
     }
 
     public CardFluidContainer(int windowId, Inventory playerInventory, Player player, ItemStack cardItem) {
-        super(Registration.CardFluid_Container.get(), windowId);
+        super(Registration.CardFluid_Container.get(), windowId, cardItem);
         playerEntity = player;
         this.handler = BaseCard.getInventory(cardItem);
         this.playerInventory = new InvWrapper(playerInventory);
-        this.cardItem = cardItem;
         if (handler != null) {
             addSlotRange(handler, 0, 80, 5, 1, 18);
             addSlotRange(handler, 1, 153, 5, 1, 18);
