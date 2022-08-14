@@ -34,7 +34,9 @@ import net.minecraft.world.item.ItemStack;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContainer> {
+import java.awt.*;
+
+public class CardEnergyScreen extends AbstractCardScreen<CardEnergyContainer> {
     private final ResourceLocation GUI = new ResourceLocation(LaserIO.MODID, "textures/gui/energycard.png");
 
     protected final CardEnergyContainer container;
@@ -437,7 +439,18 @@ public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContaine
     }
 
     @Override
+    public Color cardColor() {
+        return EnergyCardColor;
+    }
+
+    @Override
+    public Component cardTypeName(){
+        return new TranslatableComponent("item.laserio.card_energy");
+    }
+
+    @Override
     protected void renderBg(PoseStack matrixStack, float partialTicks, int mouseX, int mouseY) {
+        super.renderBg(matrixStack, partialTicks, mouseX, mouseY);
         RenderSystem.setShaderTexture(0, GUI);
         int relX = (this.width - this.imageWidth) / 2;
         int relY = (this.height - this.imageHeight) / 2;

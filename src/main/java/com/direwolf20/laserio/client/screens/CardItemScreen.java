@@ -3,6 +3,7 @@ package com.direwolf20.laserio.client.screens;
 import com.direwolf20.laserio.client.renderer.LaserIOItemRenderer;
 import com.direwolf20.laserio.client.screens.widgets.ChannelButton;
 import com.direwolf20.laserio.client.screens.widgets.NumberButton;
+import com.direwolf20.laserio.client.screens.widgets.TextButton;
 import com.direwolf20.laserio.client.screens.widgets.ToggleButton;
 import com.direwolf20.laserio.common.LaserIO;
 import com.direwolf20.laserio.common.containers.CardItemContainer;
@@ -39,7 +40,9 @@ import net.minecraftforge.items.ItemHandlerHelper;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
+import java.awt.*;
+
+public class CardItemScreen extends AbstractCardScreen<CardItemContainer> {
     private final ResourceLocation GUI = new ResourceLocation(LaserIO.MODID, "textures/gui/itemcard.png");
 
     protected final CardItemContainer container;
@@ -580,7 +583,18 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
     }
 
     @Override
+    public Color cardColor() {
+        return ItemCardColor;
+    }
+
+    @Override
+    public Component cardTypeName(){
+        return new TranslatableComponent("item.laserio.card_item");
+    }
+
+    @Override
     protected void renderBg(PoseStack matrixStack, float partialTicks, int mouseX, int mouseY) {
+        super.renderBg(matrixStack, partialTicks, mouseX, mouseY);
         RenderSystem.setShaderTexture(0, GUI);
         int relX = (this.width - this.imageWidth) / 2;
         int relY = (this.height - this.imageHeight) / 2;

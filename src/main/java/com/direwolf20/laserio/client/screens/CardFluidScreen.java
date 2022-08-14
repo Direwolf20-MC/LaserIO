@@ -17,10 +17,13 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
+
+import java.awt.*;
 
 public class CardFluidScreen extends CardItemScreen {
 
@@ -132,5 +135,15 @@ public class CardFluidScreen extends CardItemScreen {
     @Override
     public void saveSettings() {
         PacketHandler.sendToServer(new PacketUpdateCard(currentMode, currentChannel, currentFluidExtractAmt, currentPriority, currentSneaky, (short) currentTicks, currentExact, currentRegulate, (byte) currentRoundRobin, 0, 0, currentRedstoneMode, currentRedstoneChannel, currentAndMode));
+    }
+
+    @Override
+    public Color cardColor() {
+        return FluidCardColor;
+    }
+
+    @Override
+    public Component cardTypeName(){
+        return new TranslatableComponent("item.laserio.card_fluid");
     }
 }

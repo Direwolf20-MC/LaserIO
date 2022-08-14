@@ -27,7 +27,9 @@ import net.minecraft.world.item.ItemStack;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CardRedstoneScreen extends AbstractContainerScreen<CardRedstoneContainer> {
+import java.awt.*;
+
+public class CardRedstoneScreen extends AbstractCardScreen<CardRedstoneContainer> {
     private final ResourceLocation GUI = new ResourceLocation(LaserIO.MODID, "textures/gui/redstonecard.png");
 
     protected final CardRedstoneContainer container;
@@ -146,7 +148,18 @@ public class CardRedstoneScreen extends AbstractContainerScreen<CardRedstoneCont
     }
 
     @Override
+    public Color cardColor() {
+        return RedstoneCardColor;
+    }
+
+    @Override
+    public Component cardTypeName(){
+        return new TranslatableComponent("item.laserio.card_redstone");
+    }
+
+    @Override
     protected void renderBg(PoseStack matrixStack, float partialTicks, int mouseX, int mouseY) {
+        super.renderBg(matrixStack, partialTicks, mouseX, mouseY);
         RenderSystem.setShaderTexture(0, GUI);
         int relX = (this.width - this.imageWidth) / 2;
         int relY = (this.height - this.imageHeight) / 2;
