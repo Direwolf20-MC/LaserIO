@@ -20,7 +20,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -28,12 +27,10 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.item.ItemStack;
 
-import java.util.HashMap;
 import java.util.Map;
 
-public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContainer> {
+public class CardEnergyScreen extends AbstractCardScreen<CardEnergyContainer> {
     private final ResourceLocation GUI = new ResourceLocation(LaserIO.MODID, "textures/gui/energycard.png");
 
     protected final CardEnergyContainer container;
@@ -49,8 +46,6 @@ public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContaine
     protected boolean currentRegulate;
     protected int currentExtractLimitPercent;
     protected int currentInsertLimitPercent;
-    protected final ItemStack card;
-    protected Map<String, Button> buttons = new HashMap<>();
     protected byte currentRedstoneMode;
 
     protected final String[] sneakyNames = {
@@ -66,7 +61,6 @@ public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContaine
     public CardEnergyScreen(CardEnergyContainer container, Inventory inv, Component name) {
         super(container, inv, name);
         this.container = container;
-        this.card = container.cardItem;
     }
 
     @Override
@@ -243,6 +237,7 @@ public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContaine
         addModeButton();
         addRedstoneButton();
         addRedstoneChannelButton();
+        addCommonWidgets();
 
         buttons.put("channel", new ChannelButton(getGuiLeft() + 5, getGuiTop() + 65, 16, 16, currentChannel, (button) -> {
             currentChannel = BaseCard.nextChannel(card);
@@ -261,12 +256,6 @@ public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContaine
             currentSneaky = BaseCard.nextSneaky(card);
             ((ToggleButton) button).setTexturePosition(currentSneaky + 1);
         }));
-
-        if (container.direction != -1) {
-            buttons.put("return", new Button(getGuiLeft() - 25, getGuiTop() + 1, 25, 20, Component.literal("<--"), (button) -> {
-                openNode();
-            }));
-        }
 
         for (Map.Entry<String, Button> button : buttons.entrySet()) {
             addRenderableWidget(button.getValue());
@@ -437,6 +426,7 @@ public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContaine
 
     @Override
     protected void renderBg(PoseStack matrixStack, float partialTicks, int mouseX, int mouseY) {
+        super.renderBg(matrixStack, partialTicks, mouseX, mouseY);
         RenderSystem.setShaderTexture(0, GUI);
         int relX = (this.width - this.imageWidth) / 2;
         int relY = (this.height - this.imageHeight) / 2;
@@ -503,6 +493,7 @@ public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContaine
         PacketHandler.sendToServer(new PacketUpdateCard(currentMode, currentChannel, currentEnergyExtractAmt, currentPriority, currentSneaky, (short) currentTicks, currentExact, currentRegulate, (byte) currentRoundRobin, currentExtractLimitPercent, currentInsertLimitPercent, currentRedstoneMode, currentRedstoneChannel, false));
     }
 
+    @Override
     public void openNode() {
         saveSettings();
         PacketHandler.sendToServer(new PacketOpenNode(container.sourceContainer, container.direction));

@@ -14,32 +14,26 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.item.ItemStack;
 
-import java.util.HashMap;
 import java.util.Map;
 
-public class CardRedstoneScreen extends AbstractContainerScreen<CardRedstoneContainer> {
+public class CardRedstoneScreen extends AbstractCardScreen<CardRedstoneContainer> {
     private final ResourceLocation GUI = new ResourceLocation(LaserIO.MODID, "textures/gui/redstonecard.png");
 
     protected final CardRedstoneContainer container;
     protected byte currentMode;
     protected byte currentRedstoneChannel;
     protected boolean currentStrong;
-    protected final ItemStack card;
-    protected Map<String, Button> buttons = new HashMap<>();
 
     public CardRedstoneScreen(CardRedstoneContainer container, Inventory inv, Component name) {
         super(container, inv, name);
         this.container = container;
-        this.card = container.cardItem;
     }
 
     @Override
@@ -106,12 +100,7 @@ public class CardRedstoneScreen extends AbstractContainerScreen<CardRedstoneCont
         addModeButton();
         addChannelButton();
         addStrongButton();
-
-        if (container.direction != -1) {
-            buttons.put("return", new Button(getGuiLeft() - 25, getGuiTop() + 1, 25, 20, Component.literal("<--"), (button) -> {
-                openNode();
-            }));
-        }
+        addCommonWidgets();
 
         for (Map.Entry<String, Button> button : buttons.entrySet()) {
             addRenderableWidget(button.getValue());
@@ -146,6 +135,7 @@ public class CardRedstoneScreen extends AbstractContainerScreen<CardRedstoneCont
 
     @Override
     protected void renderBg(PoseStack matrixStack, float partialTicks, int mouseX, int mouseY) {
+        super.renderBg(matrixStack, partialTicks, mouseX, mouseY);
         RenderSystem.setShaderTexture(0, GUI);
         int relX = (this.width - this.imageWidth) / 2;
         int relY = (this.height - this.imageHeight) / 2;
@@ -193,6 +183,7 @@ public class CardRedstoneScreen extends AbstractContainerScreen<CardRedstoneCont
         PacketHandler.sendToServer(new PacketUpdateRedstoneCard(currentMode, currentRedstoneChannel, currentStrong));
     }
 
+    @Override
     public void openNode() {
         saveSettings();
         PacketHandler.sendToServer(new PacketOpenNode(container.sourceContainer, container.direction));

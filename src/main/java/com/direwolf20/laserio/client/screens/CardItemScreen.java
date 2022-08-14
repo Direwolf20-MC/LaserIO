@@ -22,7 +22,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
@@ -35,10 +34,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 
-import java.util.HashMap;
 import java.util.Map;
 
-public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
+public class CardItemScreen extends AbstractCardScreen<CardItemContainer> {
     private final ResourceLocation GUI = new ResourceLocation(LaserIO.MODID, "textures/gui/itemcard.png");
 
     protected final CardItemContainer container;
@@ -58,9 +56,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
     protected boolean showFilter;
     protected boolean showAllow;
     protected boolean showNBT;
-    protected final ItemStack card;
     public ItemStack filter;
-    protected Map<String, Button> buttons = new HashMap<>();
     protected byte currentRedstoneMode;
 
     protected final String[] sneakyNames = {
@@ -76,7 +72,6 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
     public CardItemScreen(CardItemContainer container, Inventory inv, Component name) {
         super(container, inv, name);
         this.container = container;
-        this.card = container.cardItem;
         filter = container.slots.get(0).getItem();
     }
 
@@ -329,6 +324,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
         addModeButton();
         addRedstoneButton();
         addRedstoneChannelButton();
+        addCommonWidgets();
 
         buttons.put("channel", new ChannelButton(getGuiLeft() + 5, getGuiTop() + 65, 16, 16, currentChannel, (button) -> {
             currentChannel = BaseCard.nextChannel(card);
@@ -347,12 +343,6 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
             currentSneaky = BaseCard.nextSneaky(card);
             ((ToggleButton) button).setTexturePosition(currentSneaky + 1);
         }));
-
-        if (container.direction != -1) {
-            buttons.put("return", new Button(getGuiLeft() - 25, getGuiTop() + 1, 25, 20, Component.literal("<--"), (button) -> {
-                openNode();
-            }));
-        }
 
         for (Map.Entry<String, Button> button : buttons.entrySet()) {
             addRenderableWidget(button.getValue());
@@ -580,6 +570,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
 
     @Override
     protected void renderBg(PoseStack matrixStack, float partialTicks, int mouseX, int mouseY) {
+        super.renderBg(matrixStack, partialTicks, mouseX, mouseY);
         RenderSystem.setShaderTexture(0, GUI);
         int relX = (this.width - this.imageWidth) / 2;
         int relY = (this.height - this.imageHeight) / 2;
@@ -664,6 +655,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
         return true;
     }
 
+    @Override
     public void openNode() {
         saveSettings();
         PacketHandler.sendToServer(new PacketOpenNode(container.sourceContainer, container.direction));
