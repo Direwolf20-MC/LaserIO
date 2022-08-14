@@ -19,7 +19,6 @@ public class CardRedstoneContainer extends AbstractCardContainer {
     public Player playerEntity;
     private IItemHandler playerInventory;
     public BlockPos sourceContainer = BlockPos.ZERO;
-    public byte direction = -1;
 
     public CardRedstoneContainer(int windowId, Inventory playerInventory, Player player, FriendlyByteBuf extraData) {
         this(windowId, playerInventory, player, extraData.readItem());

@@ -22,15 +22,12 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.item.ItemStack;
 
-import java.util.HashMap;
 import java.util.Map;
 
 public class CardEnergyScreen extends AbstractCardScreen<CardEnergyContainer> {
@@ -49,7 +46,6 @@ public class CardEnergyScreen extends AbstractCardScreen<CardEnergyContainer> {
     protected boolean currentRegulate;
     protected int currentExtractLimitPercent;
     protected int currentInsertLimitPercent;
-    protected Map<String, Button> buttons = new HashMap<>();
     protected byte currentRedstoneMode;
 
     protected final String[] sneakyNames = {
@@ -241,6 +237,7 @@ public class CardEnergyScreen extends AbstractCardScreen<CardEnergyContainer> {
         addModeButton();
         addRedstoneButton();
         addRedstoneChannelButton();
+        addBackButton();
 
         buttons.put("channel", new ChannelButton(getGuiLeft() + 5, getGuiTop() + 65, 16, 16, currentChannel, (button) -> {
             currentChannel = BaseCard.nextChannel(card);
@@ -259,12 +256,6 @@ public class CardEnergyScreen extends AbstractCardScreen<CardEnergyContainer> {
             currentSneaky = BaseCard.nextSneaky(card);
             ((ToggleButton) button).setTexturePosition(currentSneaky + 1);
         }));
-
-        if (container.direction != -1) {
-            buttons.put("return", new Button(getGuiLeft() - 25, getGuiTop() + 1, 25, 20, new TextComponent("<--"), (button) -> {
-                openNode();
-            }));
-        }
 
         for (Map.Entry<String, Button> button : buttons.entrySet()) {
             addRenderableWidget(button.getValue());
@@ -507,6 +498,7 @@ public class CardEnergyScreen extends AbstractCardScreen<CardEnergyContainer> {
         PacketHandler.sendToServer(new PacketUpdateCard(currentMode, currentChannel, currentEnergyExtractAmt, currentPriority, currentSneaky, (short) currentTicks, currentExact, currentRegulate, (byte) currentRoundRobin, currentExtractLimitPercent, currentInsertLimitPercent, currentRedstoneMode, currentRedstoneChannel, false));
     }
 
+    @Override
     public void openNode() {
         saveSettings();
         PacketHandler.sendToServer(new PacketOpenNode(container.sourceContainer, container.direction));

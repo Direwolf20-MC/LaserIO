@@ -25,7 +25,6 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
@@ -35,7 +34,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 
-import java.util.HashMap;
 import java.util.Map;
 
 public class CardItemScreen extends AbstractCardScreen<CardItemContainer> {
@@ -59,7 +57,6 @@ public class CardItemScreen extends AbstractCardScreen<CardItemContainer> {
     protected boolean showAllow;
     protected boolean showNBT;
     public ItemStack filter;
-    protected Map<String, Button> buttons = new HashMap<>();
     protected byte currentRedstoneMode;
 
     protected final String[] sneakyNames = {
@@ -327,6 +324,7 @@ public class CardItemScreen extends AbstractCardScreen<CardItemContainer> {
         addModeButton();
         addRedstoneButton();
         addRedstoneChannelButton();
+        addBackButton();
 
         buttons.put("channel", new ChannelButton(getGuiLeft() + 5, getGuiTop() + 65, 16, 16, currentChannel, (button) -> {
             currentChannel = BaseCard.nextChannel(card);
@@ -345,12 +343,6 @@ public class CardItemScreen extends AbstractCardScreen<CardItemContainer> {
             currentSneaky = BaseCard.nextSneaky(card);
             ((ToggleButton) button).setTexturePosition(currentSneaky + 1);
         }));
-
-        if (container.direction != -1) {
-            buttons.put("return", new Button(getGuiLeft() - 25, getGuiTop() + 1, 25, 20, new TextComponent("<--"), (button) -> {
-                openNode();
-            }));
-        }
 
         for (Map.Entry<String, Button> button : buttons.entrySet()) {
             addRenderableWidget(button.getValue());
@@ -668,6 +660,7 @@ public class CardItemScreen extends AbstractCardScreen<CardItemContainer> {
         return true;
     }
 
+    @Override
     public void openNode() {
         saveSettings();
         PacketHandler.sendToServer(new PacketOpenNode(container.sourceContainer, container.direction));

@@ -37,7 +37,6 @@ public class CardItemContainer extends AbstractCardContainer {
     public Player playerEntity;
     protected IItemHandler playerInventory;
     public BlockPos sourceContainer = BlockPos.ZERO;
-    public byte direction = -1;
 
     protected CardItemContainer(@Nullable MenuType<?> pMenuType, int pContainerId, ItemStack cardItem) {
         super(pMenuType, pContainerId, cardItem);

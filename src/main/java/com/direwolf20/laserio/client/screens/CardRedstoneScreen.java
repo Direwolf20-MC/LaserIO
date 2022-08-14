@@ -16,14 +16,11 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.item.ItemStack;
 
-import java.util.HashMap;
 import java.util.Map;
 
 public class CardRedstoneScreen extends AbstractCardScreen<CardRedstoneContainer> {
@@ -33,7 +30,6 @@ public class CardRedstoneScreen extends AbstractCardScreen<CardRedstoneContainer
     protected byte currentMode;
     protected byte currentRedstoneChannel;
     protected boolean currentStrong;
-    protected Map<String, Button> buttons = new HashMap<>();
 
     public CardRedstoneScreen(CardRedstoneContainer container, Inventory inv, Component name) {
         super(container, inv, name);
@@ -104,12 +100,7 @@ public class CardRedstoneScreen extends AbstractCardScreen<CardRedstoneContainer
         addModeButton();
         addChannelButton();
         addStrongButton();
-
-        if (container.direction != -1) {
-            buttons.put("return", new Button(getGuiLeft() - 25, getGuiTop() + 1, 25, 20, new TextComponent("<--"), (button) -> {
-                openNode();
-            }));
-        }
+        addBackButton();
 
         for (Map.Entry<String, Button> button : buttons.entrySet()) {
             addRenderableWidget(button.getValue());
@@ -197,6 +188,7 @@ public class CardRedstoneScreen extends AbstractCardScreen<CardRedstoneContainer
         PacketHandler.sendToServer(new PacketUpdateRedstoneCard(currentMode, currentRedstoneChannel, currentStrong));
     }
 
+    @Override
     public void openNode() {
         saveSettings();
         PacketHandler.sendToServer(new PacketOpenNode(container.sourceContainer, container.direction));

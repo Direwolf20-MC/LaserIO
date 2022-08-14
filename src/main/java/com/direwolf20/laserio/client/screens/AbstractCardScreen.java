@@ -8,9 +8,11 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.entity.player.Inventory;
@@ -18,6 +20,9 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
 import java.awt.*;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public abstract class AbstractCardScreen<T extends AbstractCardContainer> extends AbstractContainerScreen<T>  {
 
@@ -31,6 +36,8 @@ public abstract class AbstractCardScreen<T extends AbstractCardContainer> extend
     protected final T baseContainer;
     protected final ItemStack card;
 
+    protected Map<String, Button> buttons = new HashMap<>();
+
     public AbstractCardScreen(T container, Inventory pPlayerInventory, Component pTitle) {
         super(container, pPlayerInventory, pTitle);
         this.baseContainer = container;
@@ -41,6 +48,16 @@ public abstract class AbstractCardScreen<T extends AbstractCardContainer> extend
     }
 
     public abstract Component cardTypeName();
+
+    public abstract void openNode();
+
+    public void addBackButton() {
+        if (baseContainer.direction == -1)
+            return;
+        buttons.put("return", new Button(getGuiLeft() - 25, getGuiTop() + 1, 25, 20, new TextComponent("<--"), (button) -> {
+            openNode();
+        }));
+    }
 
     @Override
     protected void renderBg(PoseStack matrixStack, float partialTicks, int mouseX, int mouseY) {

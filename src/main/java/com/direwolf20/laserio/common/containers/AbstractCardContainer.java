@@ -8,6 +8,8 @@ public abstract class AbstractCardContainer extends AbstractContainerMenu {
 
     public final ItemStack cardItem;
 
+    public byte direction = -1;
+
     protected AbstractCardContainer(MenuType<?> pMenuType, int pContainerId, ItemStack cardItem) {
         super(pMenuType, pContainerId);
         this.cardItem = cardItem;

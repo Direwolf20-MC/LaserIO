@@ -28,7 +28,6 @@ public class CardEnergyContainer extends AbstractCardContainer {
     public Player playerEntity;
     protected IItemHandler playerInventory;
     public BlockPos sourceContainer = BlockPos.ZERO;
-    public byte direction = -1;
 
     protected CardEnergyContainer(@Nullable MenuType<?> pMenuType, int pContainerId, ItemStack cardItem) {
         super(pMenuType, pContainerId, cardItem);
