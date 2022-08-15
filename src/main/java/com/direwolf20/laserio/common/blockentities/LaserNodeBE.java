@@ -317,7 +317,7 @@ public class LaserNodeBE extends BaseLaserBE {
         }
 
         if (!myRedstoneInTemp.equals(myRedstoneIn)) {
-            System.out.println("Redstone input changed - updating network");
+            //System.out.println("Redstone input changed - updating network");
             updated = true;
             myRedstoneIn = new Byte2ByteOpenHashMap(myRedstoneInTemp);
         }
@@ -802,7 +802,7 @@ public class LaserNodeBE extends BaseLaserBE {
         }
 
         if (updateRedstoneFromSensor(filterMatched, sensorCardCache.redstoneChannel, nodeSideCache)) {
-            System.out.println("Redstone network change detected");
+            //System.out.println("Redstone network change detected");
             rendersChecked = false;
             clearCachedInventories();
             redstoneChecked = false;
@@ -908,7 +908,7 @@ public class LaserNodeBE extends BaseLaserBE {
                 filterMatched = tags.size() < tagsToMatch;
         }
         if (updateRedstoneFromSensor(filterMatched, sensorCardCache.redstoneChannel, nodeSideCache)) {
-            System.out.println("Redstone network change detected");
+            //System.out.println("Redstone network change detected");
             rendersChecked = false;
             clearCachedInventories();
             redstoneChecked = false;
@@ -940,7 +940,7 @@ public class LaserNodeBE extends BaseLaserBE {
             filterMatched = true;
         }
         if (updateRedstoneFromSensor(filterMatched, sensorCardCache.redstoneChannel, nodeSideCache)) {
-            System.out.println("Redstone network change detected");
+            //System.out.println("Redstone network change detected");
             rendersChecked = false;
             clearCachedInventories();
             redstoneChecked = false;
