@@ -324,7 +324,7 @@ public class CardItemScreen extends AbstractCardScreen<CardItemContainer> {
         addModeButton();
         addRedstoneButton();
         addRedstoneChannelButton();
-        addBackButton();
+        addCommonWidgets();
 
         buttons.put("channel", new ChannelButton(getGuiLeft() + 5, getGuiTop() + 65, 16, 16, currentChannel, (button) -> {
             currentChannel = BaseCard.nextChannel(card);

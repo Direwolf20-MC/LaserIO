@@ -100,7 +100,7 @@ public class CardRedstoneScreen extends AbstractCardScreen<CardRedstoneContainer
         addModeButton();
         addChannelButton();
         addStrongButton();
-        addBackButton();
+        addCommonWidgets();
 
         for (Map.Entry<String, Button> button : buttons.entrySet()) {
             addRenderableWidget(button.getValue());

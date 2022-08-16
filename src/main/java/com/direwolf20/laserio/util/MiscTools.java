@@ -1,6 +1,8 @@
 package com.direwolf20.laserio.util;
 
 import com.mojang.math.Vector3f;
+
+import net.minecraft.client.gui.components.Button;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -14,6 +16,12 @@ import java.util.List;
 public class MiscTools {
     public static boolean inBounds(int x, int y, int w, int h, double ox, double oy) {
         return ox >= x && ox <= x + w && oy >= y && oy <= y + h;
+    }
+
+    public static boolean inBounds(Button button, double ox, double oy) {
+        if (button == null)
+            return false;
+        return inBounds(button.x, button.y, button.getWidth(), button.getHeight(), ox, oy);
     }
 
     public static Vector3f findOffset(Direction direction, int slot, Vector3f[] offsets) {
