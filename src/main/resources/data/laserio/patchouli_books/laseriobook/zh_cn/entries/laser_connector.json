@@ -1,0 +1,26 @@
+{
+  "name": "激光连接器",
+  "icon": "laserio:laser_connector",
+  "sortnum": 1,
+  "category": "laserio:blocks",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "多个$(l:laserio:laser_node)激光节点$(/l)可以直接用$(l:laserio:laser_wrench)激光扳手$(/l)互相连接，但是最大范围只有 8 个方块。$(br2)激光连接器可作为节点之间的廉价中继，允许你构建一个容器网络。"
+    },
+    {
+      "type": "patchouli:image",
+      "title": "Laser Node",
+      "images": [
+        "laserio:textures/book/entries/laser_connector1.png"
+      ],
+      "border": true,
+      "text": "两个节点之间的连接器"
+    },
+    {
+      "type": "patchouli:crafting",
+      "title": "激光连接器",
+      "recipe": "laserio:laser_connector"
+    }
+  ]
+}

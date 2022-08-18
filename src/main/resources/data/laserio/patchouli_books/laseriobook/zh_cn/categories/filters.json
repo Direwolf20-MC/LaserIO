@@ -1,0 +1,6 @@
+{
+  "name": "过滤器",
+  "description": "使用过滤器，你可以控制什么东西能或者不能被卡转移。",
+  "sortnum": 3,
+  "icon": "laserio:filter_basic"
+}

@@ -1,0 +1,39 @@
+{
+  "name": "节点超频元件",
+  "icon": "laserio:overclocker_node",
+  "sortnum": 3,
+  "category": "laserio:items",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "节点超频元件是一种更复杂的组件。$(br2)每个$(l:laserio:laser_node)节点$(/l)每个面每刻只能操作一张卡。$(br2)如果一个节点的一个面有三张抽取卡，在一个游戏刻中只有第一张卡生效，只有第一张卡无法做出任何动作的时候，第二张卡才会生效。"
+    },
+    {
+      "type": "patchouli:image",
+      "title": "没有节点超频元件",
+      "images": [
+        "laserio:textures/book/entries/overclocker_node1.png"
+      ],
+      "border": true,
+      "text": "没有节点超频元件被安装"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "一个面上安装的每个节点超频元件允许这个面每刻多运行一张卡。最多能安装 8 个超频元件，允许所有 9 张卡同时运作。$(br2)输入模式的卡$(l)$(#ff0000)不$()需要超频，$(l)只有$()抽取模式和存储模式需要。"
+    },
+    {
+      "type": "patchouli:image",
+      "title": "2 个节点超频元件",
+      "images": [
+        "laserio:textures/book/entries/overclocker_node2.png"
+      ],
+      "border": true,
+      "text": "安装了 2 个节点超频元件"
+    },
+    {
+      "type": "patchouli:crafting",
+      "title": "节点超频元件",
+      "recipe": "laserio:overclocker_node"
+    }
+  ]
+}
