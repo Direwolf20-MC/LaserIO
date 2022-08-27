@@ -575,12 +575,13 @@ public class LaserNodeBE extends BaseLaserBE {
         return lists.get(1);
     }
 
-    public boolean extractForExactItem(ExtractorCardCache extractorCardCache, IItemHandler fromInventory, ItemStack extractStack) {
+    public boolean extractItem(ExtractorCardCache extractorCardCache, IItemHandler fromInventory, ItemStack extractStack) {
         TransferResult extractResults = (ItemHandlerUtil.extractItemWithSlots(this, fromInventory, extractStack, extractStack.getCount(), true, true, extractorCardCache)); //Fake Extract
-        int amtNeeded = extractorCardCache.extractAmt;
-        if (extractResults.getTotalItemCounts() != amtNeeded) //Return if we didn't get what we needed
+        int amtNeeded = extractResults.getTotalItemCounts();
+        boolean exactMode = extractorCardCache.exact;
+        if (amtNeeded != extractorCardCache.extractAmt && exactMode) //Return if we didn't get what we needed and we are in exact mode
             return false;
-
+        extractStack.setCount(amtNeeded);
         TransferResult insertResults = new TransferResult();
 
         List<InserterCardCache> inserterCardCaches = getPossibleInserters(extractorCardCache, extractStack);
@@ -615,72 +616,35 @@ public class LaserNodeBE extends BaseLaserBE {
             extractStack.setCount(amtStillNeeded); //Modify the stack size rather than .copy
         }
 
-        if (amtStillNeeded != 0) return false;
+        if (amtStillNeeded == amtNeeded || (amtStillNeeded != 0 && exactMode))
+            return false; //If we are in exact mode, make sure we fit exactly what we need, otherwise see if we fit anything
         //If we get to this point, it means we can insert all the itemstacks we wanted to, so lets do it for realsies
-        extractStack.setCount(amtNeeded); //Set back to how many we actually need
+        extractStack.setCount(amtNeeded - amtStillNeeded); //Set back to how many we actually need
         for (TransferResult.Result result : insertResults.results) {
             ItemStack tempStack = extractStack.split(result.itemStack.getCount());
+            ItemStack returnedStack = result.insertHandler.insertItem(result.insertSlot, tempStack, true);
+            if (!returnedStack.isEmpty())
+                break; //We tested all these, so this should be empty, unless something weird happened
+            int amtToExtract = tempStack.getCount();
+            ItemStack extractedStack;
+            for (TransferResult.Result extractResult : extractResults.results) {
+                int amtToExtractThis = Math.min(amtToExtract, extractResult.itemStack.getCount());
+                extractedStack = extractResult.extractHandler.extractItem(extractResult.extractSlot, amtToExtractThis, false);
+                if (extractResult.itemStack.getCount() == extractedStack.getCount())
+                    extractResults.results.remove(extractResult); //If the extract result is now empty, remove it
+                else
+                    extractResult.itemStack.split(extractedStack.getCount()); //Otherwise, remove the amount we got from the stack
+                amtToExtract -= extractedStack.getCount();
+                if (amtToExtract == 0) break;
+            }
             result.insertHandler.insertItem(result.insertSlot, tempStack, false);
             if (result.inserterCardCache != null)
                 drawParticles(tempStack, extractorCardCache.direction, this, result.toBE, result.inserterCardCache.direction, extractorCardCache.cardSlot, result.inserterCardCache.cardSlot);
         }
 
-        for (TransferResult.Result result : extractResults.results) {
-            result.extractHandler.extractItem(result.extractSlot, result.itemStack.getCount(), false);
-        }
         if (extractorCardCache.roundRobin != 0) getNextRR(extractorCardCache, inserterCardCaches);
 
         return true;
-    }
-
-    public boolean extractItemStack(ExtractorCardCache extractorCardCache, IItemHandler fromInventory, ItemStack extractStack) {
-        int amtToExtract = extractStack.getCount();
-        List<InserterCardCache> inserterCardCaches = getPossibleInserters(extractorCardCache, extractStack);
-        int roundRobin = -1;
-        boolean foundAnything = false;
-
-        if (extractorCardCache.roundRobin != 0) {
-            roundRobin = getRR(extractorCardCache);
-            inserterCardCaches = applyRR(extractorCardCache, inserterCardCaches, roundRobin);
-        }
-
-        for (InserterCardCache inserterCardCache : inserterCardCaches) {
-            LaserNodeItemHandler laserNodeItemHandler = getLaserNodeHandlerItem(inserterCardCache);
-            if (laserNodeItemHandler == null) continue;
-            TransferResult insertResults = ItemHandlerUtil.insertItemWithSlots(laserNodeItemHandler.be, laserNodeItemHandler.handler, extractStack, 0, true, extractorCardCache.isCompareNBT, true, inserterCardCache);
-            if (insertResults.results.isEmpty()) { //Next inserter if nothing went in -- return false if enforcing round robin
-                if (extractorCardCache.roundRobin == 2) {
-                    return false;
-                }
-                if (extractorCardCache.roundRobin != 0) getNextRR(extractorCardCache, inserterCardCaches);
-                continue;
-            }
-            //If we got here, we can update this
-            foundAnything = true; //We know that we have SOME of this item, and SOME will fit in another chest, so SOMETHING will move!
-            int amtFit = insertResults.getTotalItemCounts(); //How many items fit (Above)
-            extractStack.setCount(amtFit); //Make a stack of how many can fit in here without doing an itemstack.copy()
-            ItemStack extractedStack = ItemStack.EMPTY;
-            if (extractorCardCache instanceof StockerCardCache)
-                extractedStack = ItemHandlerUtil.extractItemBackwards(fromInventory, extractStack, extractStack.getCount(), false, true).itemStack();
-            else
-                extractedStack = ItemHandlerUtil.extractItem(fromInventory, extractStack, false, true).itemStack();
-            if (extractedStack.isEmpty()) return false;
-            boolean chestEmpty = extractedStack.getCount() < extractStack.getCount(); //If we didn't find enough, the extract chest is empty, so don't try again later
-            amtToExtract -= extractedStack.getCount(); //Reduce how many we have left to extract by the amount we got here
-            extractStack.setCount(amtToExtract); //For use in the next loop -- How many items are still needed
-            for (TransferResult.Result result : insertResults.results) {
-                int insertAmt = Math.min(result.itemStack.getCount(), extractedStack.getCount());
-                ItemStack insertStack = extractedStack.split(insertAmt);
-                laserNodeItemHandler.handler.insertItem(result.insertSlot, insertStack, false);
-                drawParticles(insertStack, extractorCardCache.direction, extractorCardCache.be, inserterCardCache.be, inserterCardCache.direction, extractorCardCache.cardSlot, inserterCardCache.cardSlot);
-                if (extractedStack.isEmpty()) break;
-            }
-            if (extractorCardCache.roundRobin != 0) getNextRR(extractorCardCache, inserterCardCaches);
-            if (chestEmpty || extractStack.isEmpty()) //If the chest is empty, or we have no more items to find, we're done here
-                break;
-        }
-
-        return foundAnything;
     }
 
     public boolean updateRedstoneFromSensor(boolean filterMatched, byte redstoneChannel, NodeSideCache nodeSideCache) {
@@ -973,14 +937,8 @@ public class LaserNodeBE extends BaseLaserBE {
                 int amtRemaining = Math.min(extractStack.getCount(), amtAllowedToRemove);
                 extractStack.setCount(amtRemaining);
             }
-
-            if (extractorCardCache.exact) {
-                if (extractForExactItem(extractorCardCache, adjacentInventory, extractStack))
-                    return true;
-            } else {
-                if (extractItemStack(extractorCardCache, adjacentInventory, extractStack))
-                    return true;
-            }
+            if (extractItem(extractorCardCache, adjacentInventory, extractStack))
+                return true;
         }
         return false;
     }
@@ -1361,7 +1319,7 @@ public class LaserNodeBE extends BaseLaserBE {
             if (amtHad > itemStack.getCount()) { //if we have enough, move onto the next stack after removing this one from the list
                 ItemStack extractStack = itemStack.copy();
                 extractStack.setCount(Math.min(amtHad - itemStack.getCount(), stockerCardCache.extractAmt));
-                if (extractItemStack(stockerCardCache, stockerInventory, extractStack))
+                if (extractItem(stockerCardCache, stockerInventory, extractStack))
                     return true;
             }
         }
