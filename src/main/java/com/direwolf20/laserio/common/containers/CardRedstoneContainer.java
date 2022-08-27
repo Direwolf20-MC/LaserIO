@@ -16,13 +16,11 @@ import net.minecraftforge.items.wrapper.InvWrapper;
 
 public class CardRedstoneContainer extends AbstractCardContainer {
     public static final int SLOTS = 0;
-    public Player playerEntity;
-    private IItemHandler playerInventory;
-    public BlockPos sourceContainer = BlockPos.ZERO;
 
     public CardRedstoneContainer(int windowId, Inventory playerInventory, Player player, FriendlyByteBuf extraData) {
         this(windowId, playerInventory, player, extraData.readItem());
         this.direction = extraData.readByte();
+        this.sourceContainer = extraData.readBlockPos();
     }
 
     public CardRedstoneContainer(int windowId, Inventory playerInventory, Player player, ItemStack cardItem) {

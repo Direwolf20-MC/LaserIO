@@ -15,6 +15,7 @@ public class CardFluidContainer extends CardItemContainer {
     public CardFluidContainer(int windowId, Inventory playerInventory, Player player, FriendlyByteBuf extraData) {
         this(windowId, playerInventory, player, extraData.readItem());
         this.direction = extraData.readByte();
+        this.sourceContainer = extraData.readBlockPos();
     }
 
     public CardFluidContainer(int windowId, Inventory playerInventory, Player player, ItemStack cardItem) {

@@ -34,9 +34,6 @@ public class CardItemContainer extends AbstractCardContainer {
     public static final int FILTERSLOTS = 15;
     public CardItemHandler handler;
     public FilterBasicHandler filterHandler;
-    public Player playerEntity;
-    protected IItemHandler playerInventory;
-    public BlockPos sourceContainer = BlockPos.ZERO;
 
     protected CardItemContainer(@Nullable MenuType<?> pMenuType, int pContainerId, ItemStack cardItem) {
         super(pMenuType, pContainerId, cardItem);
@@ -45,6 +42,7 @@ public class CardItemContainer extends AbstractCardContainer {
     public CardItemContainer(int windowId, Inventory playerInventory, Player player, FriendlyByteBuf extraData) {
         this(windowId, playerInventory, player, extraData.readItem());
         this.direction = extraData.readByte();
+        this.sourceContainer = extraData.readBlockPos();
     }
 
     public CardItemContainer(int windowId, Inventory playerInventory, Player player, ItemStack cardItem) {

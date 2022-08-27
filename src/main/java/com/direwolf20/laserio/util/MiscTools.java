@@ -2,7 +2,7 @@ package com.direwolf20.laserio.util;
 
 import com.mojang.math.Vector3f;
 
-import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -18,10 +18,10 @@ public class MiscTools {
         return ox >= x && ox <= x + w && oy >= y && oy <= y + h;
     }
 
-    public static boolean inBounds(Button button, double ox, double oy) {
-        if (button == null)
+    public static boolean inBounds(AbstractWidget widget, double ox, double oy) {
+        if (widget == null)
             return false;
-        return inBounds(button.x, button.y, button.getWidth(), button.getHeight(), ox, oy);
+        return inBounds(widget.x, widget.y, widget.getWidth(), widget.getHeight(), ox, oy);
     }
 
     public static Vector3f findOffset(Direction direction, int slot, Vector3f[] offsets) {

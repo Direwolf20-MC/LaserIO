@@ -25,9 +25,6 @@ import javax.annotation.Nullable;
 public class CardEnergyContainer extends AbstractCardContainer {
     public static final int SLOTS = 1;
     public CardItemHandler handler;
-    public Player playerEntity;
-    protected IItemHandler playerInventory;
-    public BlockPos sourceContainer = BlockPos.ZERO;
 
     protected CardEnergyContainer(@Nullable MenuType<?> pMenuType, int pContainerId, ItemStack cardItem) {
         super(pMenuType, pContainerId, cardItem);
@@ -36,6 +33,7 @@ public class CardEnergyContainer extends AbstractCardContainer {
     public CardEnergyContainer(int windowId, Inventory playerInventory, Player player, FriendlyByteBuf extraData) {
         this(windowId, playerInventory, player, extraData.readItem());
         this.direction = extraData.readByte();
+        this.sourceContainer = extraData.readBlockPos();
     }
 
     public CardEnergyContainer(int windowId, Inventory playerInventory, Player player, ItemStack cardItem) {

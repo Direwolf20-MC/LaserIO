@@ -18,6 +18,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.network.NetworkEvent;
 import net.minecraftforge.network.NetworkHooks;
 
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import static com.direwolf20.laserio.common.items.cards.BaseCard.getInventory;
@@ -63,13 +64,15 @@ public class PacketOpenCard {
                 if (container instanceof LaserNodeContainer laserNodeContainer)
                     sideTemp = laserNodeContainer.side;
                 final byte side = sideTemp;
+                Consumer<FriendlyByteBuf> extraDataWriter = buf -> {
+                    buf.writeItem(itemStack);
+                    buf.writeByte(side);
+                    buf.writeBlockPos(msg.sourcePos);
+                };
                 if (itemStack.getItem() instanceof CardItem) {
                     if (!msg.hasShiftDown) {
                         NetworkHooks.openScreen(sender, new SimpleMenuProvider(
-                                (windowId, playerInventory, playerEntity) -> new CardItemContainer(windowId, playerInventory, sender, msg.sourcePos, itemStack, side), Component.translatable("")), (buf -> {
-                            buf.writeItem(itemStack);
-                            buf.writeByte(side);
-                        }));
+                                (windowId, playerInventory, playerEntity) -> new CardItemContainer(windowId, playerInventory, sender, msg.sourcePos, itemStack, side), Component.translatable("")), extraDataWriter);
                     } else {
                         ItemStack filterItem = handler.getStackInSlot(0);
                         if (filterItem.getItem() instanceof BaseFilter)
@@ -78,10 +81,7 @@ public class PacketOpenCard {
                 } else if (itemStack.getItem() instanceof CardFluid) {
                     if (!msg.hasShiftDown) {
                         NetworkHooks.openScreen(sender, new SimpleMenuProvider(
-                                (windowId, playerInventory, playerEntity) -> new CardFluidContainer(windowId, playerInventory, sender, msg.sourcePos, itemStack, side), Component.translatable("")), (buf -> {
-                            buf.writeItem(itemStack);
-                            buf.writeByte(side);
-                        }));
+                                (windowId, playerInventory, playerEntity) -> new CardFluidContainer(windowId, playerInventory, sender, msg.sourcePos, itemStack, side), Component.translatable("")), extraDataWriter);
                     } else {
                         ItemStack filterItem = handler.getStackInSlot(0);
                         if (filterItem.getItem() instanceof BaseFilter)
@@ -89,18 +89,11 @@ public class PacketOpenCard {
                     }
                 } else if (itemStack.getItem() instanceof CardEnergy) {
                     NetworkHooks.openScreen(sender, new SimpleMenuProvider(
-                            (windowId, playerInventory, playerEntity) -> new CardEnergyContainer(windowId, playerInventory, sender, msg.sourcePos, itemStack, side), Component.translatable("")), (buf -> {
-                        buf.writeItem(itemStack);
-                        buf.writeByte(side);
-                    }));
+                            (windowId, playerInventory, playerEntity) -> new CardEnergyContainer(windowId, playerInventory, sender, msg.sourcePos, itemStack, side), Component.translatable("")), extraDataWriter);
 
                 } else if (itemStack.getItem() instanceof CardRedstone) {
                     NetworkHooks.openScreen(sender, new SimpleMenuProvider(
-                            (windowId, playerInventory, playerEntity) -> new CardRedstoneContainer(windowId, playerInventory, sender, msg.sourcePos, itemStack, side), Component.translatable("")), (buf -> {
-                        buf.writeItem(itemStack);
-                        buf.writeByte(side);
-                    }));
-
+                            (windowId, playerInventory, playerEntity) -> new CardRedstoneContainer(windowId, playerInventory, sender, msg.sourcePos, itemStack, side), Component.translatable("")), extraDataWriter);
                 }
             });
 
