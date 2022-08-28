@@ -17,6 +17,7 @@ plugins {
 }
 apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'org.parchmentmc.librarian.forgegradle'
+//apply from: 'https://raw.githubusercontent.com/SizableShrimp/ForgeUpdatesRemapper/main/remapper.gradle'
 
 version = "${mod_version}"
 group = 'com.direwolf20.laserio' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
@@ -41,7 +42,7 @@ minecraft {
     // Use non-default mappings at your own risk. They may not always work.
     // Simply re-run your setup task after changing the mappings to update your workspace.
     //mappings channel: 'official', version: "${mc_version}"
-    mappings channel: 'parchment', version: "2022.05.22-1.18.2"
+    mappings channel: 'parchment', version: "2022.08.14-1.19.2"
 
     // accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg') // Currently, this location cannot be changed from the default.
 
@@ -190,8 +191,11 @@ dependencies {
     // implementation fg.deobf("blank:coolmod-${mc_version}:${coolmod_version}")
 
     //JEI
-    compileOnly fg.deobf("mezz.jei:jei-${jei_version}:api")
-    implementation fg.deobf("mezz.jei:jei-${jei_version}")
+    // compile against the JEI API but do not include it at runtime
+    compileOnly fg.deobf("mezz.jei:jei-1.19.2-common-api:${jei_version}")
+    compileOnly fg.deobf("mezz.jei:jei-1.19.2-forge-api:${jei_version}")
+    // at runtime, use the full JEI jar for Forge
+    runtimeOnly fg.deobf("mezz.jei:jei-1.19.2-forge:${jei_version}")
 
     //Patchouli
     compileOnly fg.deobf("vazkii.patchouli:Patchouli:${patchouli_version}:api")
@@ -199,7 +203,8 @@ dependencies {
 
     //Other mods for dev environment
     runtimeOnly fg.deobf("mekanism:Mekanism:${mekanism_version}")
-    runtimeOnly fg.deobf("curse.maven:functional-storage-556861:3794763")
+
+    /*runtimeOnly fg.deobf("curse.maven:functional-storage-556861:3794763")
     runtimeOnly fg.deobf("curse.maven:titanium-287342:3819942")
 
     runtimeOnly fg.deobf("curse.maven:mcjtylib-233105:3757792")
@@ -238,7 +243,7 @@ dependencies {
     //Spark
     runtimeOnly fg.deobf("curse.maven:spark-361579:3767286")
 
-    runtimeOnly fg.deobf("curse.maven:refined-storage-243076:3712882")
+    runtimeOnly fg.deobf("curse.maven:refined-storage-243076:3712882")*/
     //runtimeOnly fg.deobf("curse.maven:shetiphiancore-71738:3765383")
     //runtimeOnly fg.deobf("curse.maven:enderchests-363535:3765400")
 

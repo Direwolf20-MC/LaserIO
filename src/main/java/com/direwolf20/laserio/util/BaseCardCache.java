@@ -16,6 +16,7 @@ import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 import net.minecraftforge.items.ItemStackHandler;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.*;
 
@@ -230,7 +231,7 @@ public class BaseCardCache {
         if (filterCacheFluid.containsKey(key)) return filterCacheFluid.get(key);
         if (filterCard.getItem() instanceof FilterMod) {
             for (FluidStack stack : filteredFluids) {
-                if (stack.getFluid().getRegistryName().getNamespace().equals(testStack.getFluid().getRegistryName().getNamespace())) {
+                if (ForgeRegistries.FLUIDS.getKey(stack.getFluid()).getNamespace().equals(ForgeRegistries.FLUIDS.getKey(testStack.getFluid()).getNamespace())) {
                     filterCacheFluid.put(key, isAllowList);
                     return isAllowList;
                 }

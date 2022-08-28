@@ -10,7 +10,6 @@ import com.direwolf20.laserio.common.items.cards.BaseCard;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
@@ -101,7 +100,7 @@ public class LaserNode extends BaseLaserBlock implements EntityBlock {
                         MenuProvider containerProvider = new MenuProvider() {
                             @Override
                             public Component getDisplayName() {
-                                return new TranslatableComponent(SCREEN_LASERNODE);
+                                return Component.translatable(SCREEN_LASERNODE);
                             }
 
                             @Override
@@ -110,7 +109,7 @@ public class LaserNode extends BaseLaserBlock implements EntityBlock {
                             }
                         };
 
-                        NetworkHooks.openGui((ServerPlayer) player, containerProvider, (buf -> {
+                        NetworkHooks.openScreen((ServerPlayer) player, containerProvider, (buf -> {
                             buf.writeBlockPos(pos);
                             buf.writeByte((byte) result.getDirection().ordinal());
                             buf.writeItemStack(cardHolder, false);

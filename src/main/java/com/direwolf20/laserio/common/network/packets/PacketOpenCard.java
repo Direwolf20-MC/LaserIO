@@ -9,7 +9,7 @@ import com.direwolf20.laserio.common.items.cards.CardRedstone;
 import com.direwolf20.laserio.common.items.filters.BaseFilter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -65,8 +65,8 @@ public class PacketOpenCard {
                 final byte side = sideTemp;
                 if (itemStack.getItem() instanceof CardItem) {
                     if (!msg.hasShiftDown) {
-                        NetworkHooks.openGui(sender, new SimpleMenuProvider(
-                                (windowId, playerInventory, playerEntity) -> new CardItemContainer(windowId, playerInventory, sender, msg.sourcePos, itemStack, side), new TranslatableComponent("")), (buf -> {
+                        NetworkHooks.openScreen(sender, new SimpleMenuProvider(
+                                (windowId, playerInventory, playerEntity) -> new CardItemContainer(windowId, playerInventory, sender, msg.sourcePos, itemStack, side), Component.translatable("")), (buf -> {
                             buf.writeItem(itemStack);
                             buf.writeByte(side);
                         }));
@@ -77,8 +77,8 @@ public class PacketOpenCard {
                     }
                 } else if (itemStack.getItem() instanceof CardFluid) {
                     if (!msg.hasShiftDown) {
-                        NetworkHooks.openGui(sender, new SimpleMenuProvider(
-                                (windowId, playerInventory, playerEntity) -> new CardFluidContainer(windowId, playerInventory, sender, msg.sourcePos, itemStack, side), new TranslatableComponent("")), (buf -> {
+                        NetworkHooks.openScreen(sender, new SimpleMenuProvider(
+                                (windowId, playerInventory, playerEntity) -> new CardFluidContainer(windowId, playerInventory, sender, msg.sourcePos, itemStack, side), Component.translatable("")), (buf -> {
                             buf.writeItem(itemStack);
                             buf.writeByte(side);
                         }));
@@ -88,15 +88,15 @@ public class PacketOpenCard {
                             PacketOpenFilter.doOpenFilter(filterItem, itemStack, sender, msg.sourcePos);
                     }
                 } else if (itemStack.getItem() instanceof CardEnergy) {
-                    NetworkHooks.openGui(sender, new SimpleMenuProvider(
-                            (windowId, playerInventory, playerEntity) -> new CardEnergyContainer(windowId, playerInventory, sender, msg.sourcePos, itemStack, side), new TranslatableComponent("")), (buf -> {
+                    NetworkHooks.openScreen(sender, new SimpleMenuProvider(
+                            (windowId, playerInventory, playerEntity) -> new CardEnergyContainer(windowId, playerInventory, sender, msg.sourcePos, itemStack, side), Component.translatable("")), (buf -> {
                         buf.writeItem(itemStack);
                         buf.writeByte(side);
                     }));
 
                 } else if (itemStack.getItem() instanceof CardRedstone) {
-                    NetworkHooks.openGui(sender, new SimpleMenuProvider(
-                            (windowId, playerInventory, playerEntity) -> new CardRedstoneContainer(windowId, playerInventory, sender, msg.sourcePos, itemStack, side), new TranslatableComponent("")), (buf -> {
+                    NetworkHooks.openScreen(sender, new SimpleMenuProvider(
+                            (windowId, playerInventory, playerEntity) -> new CardRedstoneContainer(windowId, playerInventory, sender, msg.sourcePos, itemStack, side), Component.translatable("")), (buf -> {
                         buf.writeItem(itemStack);
                         buf.writeByte(side);
                     }));

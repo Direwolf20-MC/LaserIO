@@ -1,13 +1,10 @@
 package com.direwolf20.laserio.common;
 
-import com.direwolf20.laserio.datagen.customrecipes.CardClearRecipe;
 import com.direwolf20.laserio.setup.ClientSetup;
 import com.direwolf20.laserio.setup.ModSetup;
 import com.direwolf20.laserio.setup.Registration;
 import com.mojang.logging.LogUtils;
-import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
@@ -35,16 +32,16 @@ public class LaserIO {
         //MinecraftForge.EVENT_BUS.register(this);
         // Register 'ModSetup::init' to be called at mod setup time (server and client)
         modbus.addListener(ModSetup::init);
-        modbus.addGenericListener(RecipeSerializer.class, this::registerRecipeSerializers);
+        //modbus.addGenericListener(RecipeSerializer.class, this::registerRecipeSerializers);
         // Register 'ClientSetup::init' to be called at mod setup time (client only)
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> modbus.addListener(ClientSetup::init));
     }
 
-    public void registerRecipeSerializers(RegistryEvent.Register<RecipeSerializer<?>> event) {
+    /*public void registerRecipeSerializers(RegistryEvent.Register<RecipeSerializer<?>> event) {
         event.getRegistry().registerAll(
                 new CardClearRecipe.Serializer().setRegistryName("laserio:cardclear")
         );
-    }
+    }*/
 }
 /*
     private void setup(final FMLCommonSetupEvent event)

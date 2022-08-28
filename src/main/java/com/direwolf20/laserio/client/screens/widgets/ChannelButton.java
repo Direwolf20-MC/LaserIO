@@ -5,7 +5,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
 import java.awt.*;
@@ -33,7 +33,7 @@ public class ChannelButton extends Button {
     };
 
     public ChannelButton(int widthIn, int heightIn, int width, int height, int channel, OnPress onPress) {
-        super(widthIn, heightIn, width, height, TextComponent.EMPTY, onPress);
+        super(widthIn, heightIn, width, height, Component.empty(), onPress);
         this.channel = channel;
     }
 

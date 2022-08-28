@@ -19,7 +19,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
@@ -51,9 +51,9 @@ public class FilterCountScreen extends AbstractContainerScreen<FilterCountContai
         this.renderTooltip(matrixStack, mouseX, mouseY);
         if (MiscTools.inBounds(getGuiLeft() + 5, getGuiTop() + 25, 16, 16, mouseX, mouseY)) {
             if (isCompareNBT)
-                this.renderTooltip(matrixStack, new TranslatableComponent("screen.laserio.nbttrue"), mouseX, mouseY);
+                this.renderTooltip(matrixStack, Component.translatable("screen.laserio.nbttrue"), mouseX, mouseY);
             else
-                this.renderTooltip(matrixStack, new TranslatableComponent("screen.laserio.nbtfalse"), mouseX, mouseY);
+                this.renderTooltip(matrixStack, Component.translatable("screen.laserio.nbtfalse"), mouseX, mouseY);
         }
     }
 
@@ -94,8 +94,8 @@ public class FilterCountScreen extends AbstractContainerScreen<FilterCountContai
 
     @Override
     protected void renderLabels(PoseStack stack, int mouseX, int mouseY) {
-        //font.draw(stack, new TranslatableComponent("screen.laserio.allowlist").getString(), 5, 5, Color.DARK_GRAY.getRGB());
-        //font.draw(stack, new TranslatableComponent("screen.laserio.comparenbt").getString(), 5, 25, Color.DARK_GRAY.getRGB());
+        //font.draw(stack, Component.translatable("screen.laserio.allowlist").getString(), 5, 5, Color.DARK_GRAY.getRGB());
+        //font.draw(stack, Component.translatable("screen.laserio.comparenbt").getString(), 5, 25, Color.DARK_GRAY.getRGB());
         //super.renderLabels(matrixStack, x, y);
     }
 
@@ -188,8 +188,8 @@ public class FilterCountScreen extends AbstractContainerScreen<FilterCountContai
         return true;
     }
 
-    private static TranslatableComponent getTrans(String key, Object... args) {
-        return new TranslatableComponent(LaserIO.MODID + "." + key, args);
+    private static MutableComponent getTrans(String key, Object... args) {
+        return Component.translatable(LaserIO.MODID + "." + key, args);
     }
 
 }

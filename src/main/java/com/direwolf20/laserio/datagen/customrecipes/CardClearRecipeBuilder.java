@@ -103,7 +103,7 @@ public class CardClearRecipeBuilder implements RecipeBuilder {
 
         @Override
         public RecipeSerializer<?> getType() {
-            return CardClearRecipe.SERIALIZER;
+            return RecipeSerializers.CARD_CLEAR_RECIPE_SERIALIZER.get();
         }
 
     }

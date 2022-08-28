@@ -12,7 +12,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.MenuProvider;
@@ -88,7 +87,7 @@ public class PacketOpenNode {
                     MenuProvider containerProvider = new MenuProvider() {
                         @Override
                         public Component getDisplayName() {
-                            return new TranslatableComponent(SCREEN_LASERNODE);
+                            return Component.translatable(SCREEN_LASERNODE);
                         }
 
                         @Override
@@ -96,7 +95,7 @@ public class PacketOpenNode {
                             return new LaserNodeContainer((LaserNodeBE) be, windowId, msg.side, playerInventory, playerEntity, (LaserNodeItemHandler) h, ContainerLevelAccess.create(be.getLevel(), be.getBlockPos()), cardHolder);
                         }
                     };
-                    NetworkHooks.openGui(sender, containerProvider, (buf -> {
+                    NetworkHooks.openScreen(sender, containerProvider, (buf -> {
                         buf.writeBlockPos(sourcePos);
                         buf.writeByte(msg.side);
                         buf.writeItemStack(cardHolder, false);

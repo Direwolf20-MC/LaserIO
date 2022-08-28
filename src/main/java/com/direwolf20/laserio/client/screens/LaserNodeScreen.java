@@ -18,7 +18,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.player.Inventory;
@@ -31,13 +31,13 @@ public class LaserNodeScreen extends AbstractContainerScreen<LaserNodeContainer>
     private final ResourceLocation GUI = new ResourceLocation(LaserIO.MODID, "textures/gui/laser_node.png");
     protected final LaserNodeContainer container;
     private boolean showCardHolderUI;
-    private final TranslatableComponent[] sides = {
-            new TranslatableComponent("screen.laserio.down"),
-            new TranslatableComponent("screen.laserio.up"),
-            new TranslatableComponent("screen.laserio.north"),
-            new TranslatableComponent("screen.laserio.south"),
-            new TranslatableComponent("screen.laserio.west"),
-            new TranslatableComponent("screen.laserio.east"),
+    private final MutableComponent[] sides = {
+            Component.translatable("screen.laserio.down"),
+            Component.translatable("screen.laserio.up"),
+            Component.translatable("screen.laserio.north"),
+            Component.translatable("screen.laserio.south"),
+            Component.translatable("screen.laserio.west"),
+            Component.translatable("screen.laserio.east"),
     };
 
     private final Vec2i[] tabs = {

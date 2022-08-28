@@ -15,9 +15,9 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.MinecraftForgeClient;
-import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.client.event.EntityRenderersEvent;
+import net.minecraftforge.client.event.RegisterClientTooltipComponentFactoriesEvent;
+import net.minecraftforge.client.event.RegisterColorHandlersEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -32,7 +32,7 @@ public class ClientSetup {
         ItemBlockRenderTypes.setRenderLayer(Registration.LaserConnector.get(), RenderType.cutout());
 
         //Register Custom Tooltips
-        MinecraftForgeClient.registerTooltipComponentFactory(EventTooltip.CopyPasteTooltipComponent.Data.class, EventTooltip.CopyPasteTooltipComponent::new);
+        //MinecraftForgeClient.registerTooltipComponentFactory(EventTooltip.CopyPasteTooltipComponent.Data.class, EventTooltip.CopyPasteTooltipComponent::new);
 
         //Register our Render Events Class
         MinecraftForge.EVENT_BUS.register(ClientEvents.class);
@@ -85,9 +85,15 @@ public class ClientSetup {
         event.registerBlockEntityRenderer(Registration.LaserNode_BE.get(), LaserNodeBERender::new);
     }
 
+    @SubscribeEvent
+    public static void registerTooltipFactory(RegisterClientTooltipComponentFactoriesEvent event) {
+        //LOGGER.debug("Registering custom tooltip component factories for {}", Reference.MODID);
+        event.register(EventTooltip.CopyPasteTooltipComponent.Data.class, EventTooltip.CopyPasteTooltipComponent::new);
+    }
+
     //For giving the cards their channel color on the itemstack
     @SubscribeEvent
-    static void itemColors(ColorHandlerEvent.Item event) {
+    static void itemColors(RegisterColorHandlersEvent.Item event) {
         final ItemColors colors = event.getItemColors();
 
         colors.register((stack, index) -> {
