@@ -49,12 +49,37 @@ public class LaserNodeScreen extends AbstractContainerScreen<LaserNodeContainer>
             new Vec2i(146, 4)
     };
 
+    private ItemStack facedBlockItemStack;
+    private Component facedBlockName;
+
+    private Component facing = Component.translatable("screen.laserio.facing");
+    private int xcr; // Center of column to right of inventory
+    private int xFaced; // X position of faced block
+    private int yFaced; // Y position of faced block
+
     public LaserNodeScreen(LaserNodeContainer container, Inventory inv, Component name) {
         super(container, inv, name);
         this.container = container;
         this.imageHeight = 181;
         showCardHolderUI = container.cardHolder.isEmpty();
         //this.imageWidth = 202;
+
+        //var sideCmp = LaserNodeScreen.sides[container.side];
+        //sideName = sideCmp.getString();
+        var stateFaced = container.getBlockStateFaced();
+        if (stateFaced != null){
+            var blockFaced = stateFaced.getBlock();
+            if (blockFaced != null){
+                facedBlockName = blockFaced.getName();
+                var blockItem = blockFaced.asItem();
+                if (blockItem != null)
+                facedBlockItemStack = new ItemStack(blockItem);
+            }
+        }
+        var invSize = 3 * 18;
+        xcr = imageWidth - (imageWidth - invSize)/4;
+        xFaced = xcr - 8;
+        yFaced = 36;
     }
 
     @Override
@@ -75,6 +100,8 @@ public class LaserNodeScreen extends AbstractContainerScreen<LaserNodeContainer>
         this.renderBackground(matrixStack);
         super.render(matrixStack, mouseX, mouseY, partialTicks);
         this.renderTooltip(matrixStack, mouseX, mouseY);
+        if (MiscTools.inBounds(getGuiLeft() + xFaced, getGuiTop() + yFaced, 16, 16, mouseX, mouseY))
+            renderTooltip(matrixStack, facedBlockName, mouseX, mouseY);
     }
 
     @Override
@@ -83,13 +110,27 @@ public class LaserNodeScreen extends AbstractContainerScreen<LaserNodeContainer>
         fill(matrixStack, tabs[container.side].x, tabs[container.side].y + 11, tabs[container.side].x + 2, tabs[container.side].y + 12, 0xFFFFFFFF);
         fill(matrixStack, tabs[container.side].x + 22, tabs[container.side].y + 11, tabs[container.side].x + 24, tabs[container.side].y + 12, 0xFFFFFFFF);
         matrixStack.pushPose();
-        font.draw(matrixStack, sides[container.side].getString(), imageWidth / 2 - font.width(sides[container.side].getString()) / 2, 20, Color.DARK_GRAY.getRGB());
+        int sideSize = font.width(sides[container.side].getString());
+        int sideX = imageWidth / 2 - sideSize / 2, sideY = 20;
+        font.draw(matrixStack, sides[container.side].getString(), sideX, sideY, Color.DARK_GRAY.getRGB());
         font.draw(matrixStack, "U", 15, 7, Color.DARK_GRAY.getRGB());
         font.draw(matrixStack, "D", 43, 7, Color.DARK_GRAY.getRGB());
         font.draw(matrixStack, "N", 71, 7, Color.DARK_GRAY.getRGB());
         font.draw(matrixStack, "S", 99, 7, Color.DARK_GRAY.getRGB());
         font.draw(matrixStack, "W", 128, 7, Color.DARK_GRAY.getRGB());
         font.draw(matrixStack, "E", 155, 7, Color.DARK_GRAY.getRGB());
+        if (this.facedBlockItemStack != null){
+            var isEmpty = facedBlockItemStack.isEmpty();
+            var textSize = font.width(facing);
+            font.draw(matrixStack, facing, xcr - textSize/2, 24, Color.DARK_GRAY.getRGB());
+            if (isEmpty){
+                var blockName = facedBlockName;
+                var nameSize = font.width(blockName);
+                font.draw(matrixStack, blockName, xcr - nameSize/2, yFaced, Color.DARK_GRAY.getRGB());
+            } else {
+                this.itemRenderer.renderAndDecorateFakeItem(this.facedBlockItemStack, xFaced, yFaced);    
+            }
+        }
         matrixStack.popPose();
     }
 

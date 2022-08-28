@@ -24,15 +24,6 @@ public abstract class AbstractCardContainer extends AbstractContainerMenu {
     public Player playerEntity;
     protected IItemHandler playerInventory;
 
-    public static final Direction[] DIRS = {
-        Direction.DOWN,
-        Direction.UP,
-        Direction.NORTH,
-        Direction.SOUTH,
-        Direction.WEST,
-        Direction.EAST,
-    };
-
     protected AbstractCardContainer(MenuType<?> pMenuType, int pContainerId, ItemStack cardItem) {
         super(pMenuType, pContainerId);
         this.cardItem = cardItem;
@@ -41,7 +32,7 @@ public abstract class AbstractCardContainer extends AbstractContainerMenu {
     public Direction getDirection(){
         if (direction == -1)
             return null;
-        return DIRS[direction];
+        return LaserNodeContainer.DIRS[direction];
     }
     
     public BlockEntity getBlockFaced(){

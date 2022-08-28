@@ -8,6 +8,8 @@ import com.direwolf20.laserio.common.items.CardHolder;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.common.items.upgrades.OverclockerNode;
 import com.direwolf20.laserio.setup.Registration;
+
+import net.minecraft.core.Direction;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -16,6 +18,7 @@ import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
@@ -39,6 +42,15 @@ public class LaserNodeContainer extends AbstractContainerMenu {
     // Tile can be null and shouldn't be used for accessing any data that needs to be up to date on both sides
     public LaserNodeBE tile;
     public byte side;
+
+    public static final Direction[] DIRS = {
+        Direction.DOWN,
+        Direction.UP,
+        Direction.NORTH,
+        Direction.SOUTH,
+        Direction.WEST,
+        Direction.EAST,
+    };
 
     public LaserNodeContainer(int windowId, Inventory playerInventory, Player player, FriendlyByteBuf extraData) {
         this((LaserNodeBE) playerInventory.player.level.getBlockEntity(extraData.readBlockPos()), windowId, extraData.readByte(), playerInventory, player, new LaserNodeItemHandler(SLOTS), ContainerLevelAccess.NULL, extraData.readItem());
@@ -323,5 +335,21 @@ public class LaserNodeContainer extends AbstractContainerMenu {
         // Hotbar
         topRow += 58;
         addSlotRange(playerInventory, 0, leftCol, topRow, 9, 18);
+    }
+
+    public Direction getDirection(){
+        if (side == -1)
+            return null;
+        return DIRS[side];
+    }
+
+    public BlockState getBlockStateFaced(){
+        if (tile == null)
+            return null;
+        var dir = getDirection();
+        if (dir == null)
+            return null;
+        var world = playerEntity.getLevel();
+        return world.getBlockState(tile.getBlockPos().relative(dir));
     }
 }
