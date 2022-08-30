@@ -12,7 +12,6 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -68,7 +67,7 @@ public class BaseCard extends Item {
         boolean sneakPressed = Screen.hasShiftDown();
 
         if (!sneakPressed) {
-            tooltip.add(new TranslatableComponent("laserio.tooltip.item.show_settings")
+            tooltip.add(Component.translatable("laserio.tooltip.item.show_settings")
                     .withStyle(ChatFormatting.GRAY));
         } else {
             String currentMode = getNamedTransferMode(stack).toString();
@@ -127,7 +126,7 @@ public class BaseCard extends Item {
      * @return True if this item has a 'container'
      */
     @Override
-    public boolean hasContainerItem(ItemStack stack) {
+    public boolean hasCraftingRemainingItem(ItemStack stack) {
         return !(getInventory(stack).getStackInSlot(0).equals(ItemStack.EMPTY) && getInventory(stack).getStackInSlot(1).equals(ItemStack.EMPTY));
     }
 

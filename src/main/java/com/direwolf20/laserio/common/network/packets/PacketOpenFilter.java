@@ -10,7 +10,7 @@ import com.direwolf20.laserio.common.items.filters.FilterCount;
 import com.direwolf20.laserio.common.items.filters.FilterTag;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -41,23 +41,23 @@ public class PacketOpenFilter {
     public static void doOpenFilter(ItemStack filterItem, ItemStack cardItem, ServerPlayer sender, BlockPos sourcePos) {
         if (filterItem.getItem() instanceof FilterBasic) {
             FilterBasicHandler handler = FilterBasic.getInventory(filterItem);
-            NetworkHooks.openGui(sender, new SimpleMenuProvider(
-                    (windowId, playerInventory, playerEntity) -> new FilterBasicContainer(windowId, playerInventory, sender, handler, sourcePos, filterItem, cardItem), new TranslatableComponent("")), (buf -> {
+            NetworkHooks.openScreen(sender, new SimpleMenuProvider(
+                    (windowId, playerInventory, playerEntity) -> new FilterBasicContainer(windowId, playerInventory, sender, handler, sourcePos, filterItem, cardItem), Component.translatable("")), (buf -> {
                 buf.writeItem(filterItem);
                 buf.writeItem(cardItem);
             }));
         }
         if (filterItem.getItem() instanceof FilterCount) {
-            NetworkHooks.openGui(sender, new SimpleMenuProvider(
-                    (windowId, playerInventory, playerEntity) -> new FilterCountContainer(windowId, playerInventory, sender, sourcePos, filterItem, cardItem), new TranslatableComponent("")), (buf -> {
+            NetworkHooks.openScreen(sender, new SimpleMenuProvider(
+                    (windowId, playerInventory, playerEntity) -> new FilterCountContainer(windowId, playerInventory, sender, sourcePos, filterItem, cardItem), Component.translatable("")), (buf -> {
                 buf.writeItem(filterItem);
                 buf.writeItem(cardItem);
             }));
         }
         if (filterItem.getItem() instanceof FilterTag) {
             FilterBasicHandler handler = FilterBasic.getInventory(filterItem);
-            NetworkHooks.openGui(sender, new SimpleMenuProvider(
-                    (windowId, playerInventory, playerEntity) -> new FilterTagContainer(windowId, playerInventory, sender, handler, sourcePos, filterItem, cardItem), new TranslatableComponent("")), (buf -> {
+            NetworkHooks.openScreen(sender, new SimpleMenuProvider(
+                    (windowId, playerInventory, playerEntity) -> new FilterTagContainer(windowId, playerInventory, sender, handler, sourcePos, filterItem, cardItem), Component.translatable("")), (buf -> {
                 buf.writeItem(filterItem);
                 buf.writeItem(ItemStack.EMPTY);
             }));

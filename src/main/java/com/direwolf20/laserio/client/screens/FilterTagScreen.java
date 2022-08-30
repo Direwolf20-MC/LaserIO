@@ -23,8 +23,7 @@ import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.tags.ItemTags;
@@ -81,9 +80,9 @@ public class FilterTagScreen extends AbstractContainerScreen<FilterTagContainer>
         this.renderTooltip(matrixStack, mouseX, mouseY);
         if (MiscTools.inBounds(getGuiLeft() + 5, getGuiTop() + 10, 16, 16, mouseX, mouseY)) {
             if (isAllowList)
-                this.renderTooltip(matrixStack, new TranslatableComponent("screen.laserio.allowlist"), mouseX, mouseY);
+                this.renderTooltip(matrixStack, Component.translatable("screen.laserio.allowlist"), mouseX, mouseY);
             else
-                this.renderTooltip(matrixStack, new TranslatableComponent("screen.laserio.denylist"), mouseX, mouseY);
+                this.renderTooltip(matrixStack, Component.translatable("screen.laserio.denylist"), mouseX, mouseY);
         }
         cycleRenders++;
         int availableItemsstartX = getGuiLeft() + 7;
@@ -296,7 +295,7 @@ public class FilterTagScreen extends AbstractContainerScreen<FilterTagContainer>
         });
         leftWidgets.add(pageDown);
 
-        tagField = new EditBox(font, getGuiLeft() + 7, getGuiTop() + 25, 160, 15, TextComponent.EMPTY);
+        tagField = new EditBox(font, getGuiLeft() + 7, getGuiTop() + 25, 160, 15, Component.empty());
         leftWidgets.add(tagField);
 
 
@@ -309,8 +308,8 @@ public class FilterTagScreen extends AbstractContainerScreen<FilterTagContainer>
 
     @Override
     protected void renderLabels(PoseStack stack, int mouseX, int mouseY) {
-        //font.draw(stack, new TranslatableComponent("screen.laserio.allowlist").getString(), 5, 5, Color.DARK_GRAY.getRGB());
-        //font.draw(stack, new TranslatableComponent("screen.laserio.comparenbt").getString(), 7, 35, Color.DARK_GRAY.getRGB());
+        //font.draw(stack, Component.translatable("screen.laserio.allowlist").getString(), 5, 5, Color.DARK_GRAY.getRGB());
+        //font.draw(stack, Component.translatable("screen.laserio.comparenbt").getString(), 7, 35, Color.DARK_GRAY.getRGB());
         //super.renderLabels(matrixStack, x, y);
     }
 
@@ -424,7 +423,7 @@ public class FilterTagScreen extends AbstractContainerScreen<FilterTagContainer>
         return super.mouseScrolled(mouseX, mouseY, delta);
     }
 
-    private static TranslatableComponent getTrans(String key, Object... args) {
-        return new TranslatableComponent(LaserIO.MODID + "." + key, args);
+    private static MutableComponent getTrans(String key, Object... args) {
+        return Component.translatable(LaserIO.MODID + "." + key, args);
     }
 }

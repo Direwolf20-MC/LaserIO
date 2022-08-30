@@ -3,9 +3,8 @@ package com.direwolf20.laserio.client.particles;
 import com.direwolf20.laserio.client.particles.fluidparticle.FluidFlowParticle;
 import com.direwolf20.laserio.client.particles.itemparticle.ItemFlowParticle;
 import com.direwolf20.laserio.common.LaserIO;
-import net.minecraft.client.Minecraft;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.ParticleFactoryRegisterEvent;
+import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -14,8 +13,8 @@ import net.minecraftforge.fml.common.Mod;
 public class ParticleRenderDispatcher {
 
     @SubscribeEvent
-    public static void registerFactories(ParticleFactoryRegisterEvent evt) {
-        Minecraft.getInstance().particleEngine.register(ModParticles.ITEMFLOWPARTICLE, ItemFlowParticle.FACTORY);
-        Minecraft.getInstance().particleEngine.register(ModParticles.FLUIDFLOWPARTICLE, FluidFlowParticle.FACTORY);
+    public static void registerProviders(RegisterParticleProvidersEvent evt) {
+        evt.register(ModParticles.ITEMFLOWPARTICLE.get(), ItemFlowParticle.FACTORY);
+        evt.register(ModParticles.FLUIDFLOWPARTICLE.get(), FluidFlowParticle.FACTORY);
     }
 }

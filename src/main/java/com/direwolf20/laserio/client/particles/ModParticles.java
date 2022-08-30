@@ -6,25 +6,12 @@ import com.direwolf20.laserio.client.particles.itemparticle.ItemFlowParticleData
 import com.direwolf20.laserio.client.particles.itemparticle.ItemFlowParticleType;
 import com.direwolf20.laserio.common.LaserIO;
 import net.minecraft.core.particles.ParticleType;
-import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.registries.ObjectHolder;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegistryObject;
 
-@Mod.EventBusSubscriber(modid = LaserIO.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
-@ObjectHolder(LaserIO.MODID)
 public class ModParticles {
-    @ObjectHolder("itemflowparticle")
-    public static ParticleType<ItemFlowParticleData> ITEMFLOWPARTICLE;
-
-    @ObjectHolder("fluidflowparticle")
-    public static ParticleType<FluidFlowParticleData> FLUIDFLOWPARTICLE;
-
-    @SubscribeEvent
-    public static void registerParticles(RegistryEvent.Register<ParticleType<?>> evt) {
-        evt.getRegistry().registerAll(
-                new ItemFlowParticleType().setRegistryName("itemflowparticle"),
-                new FluidFlowParticleType().setRegistryName("fluidflowparticle")
-        );
-    }
+    public static final DeferredRegister<ParticleType<?>> PARTICLE_TYPES = DeferredRegister.create(ForgeRegistries.PARTICLE_TYPES, LaserIO.MODID);
+    public static final RegistryObject<ParticleType<ItemFlowParticleData>> ITEMFLOWPARTICLE = PARTICLE_TYPES.register("itemflowparticle", ItemFlowParticleType::new);
+    public static final RegistryObject<ParticleType<FluidFlowParticleData>> FLUIDFLOWPARTICLE = PARTICLE_TYPES.register("fluidflowparticle", FluidFlowParticleType::new);
 }

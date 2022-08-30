@@ -5,7 +5,7 @@ import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.setup.ModSetup;
 import com.direwolf20.laserio.util.ItemStackHandlerProvider;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -45,8 +45,8 @@ public class CardHolder extends Item {
         }
 
         itemstack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null).ifPresent(h -> {
-            NetworkHooks.openGui((ServerPlayer) player, new SimpleMenuProvider(
-                    (windowId, playerInventory, playerEntity) -> new CardHolderContainer(windowId, playerInventory, player, itemstack, h), new TranslatableComponent("")), (buf -> {
+            NetworkHooks.openScreen((ServerPlayer) player, new SimpleMenuProvider(
+                    (windowId, playerInventory, playerEntity) -> new CardHolderContainer(windowId, playerInventory, player, itemstack, h), Component.translatable("")), (buf -> {
                 buf.writeItem(itemstack);
             }));
         });

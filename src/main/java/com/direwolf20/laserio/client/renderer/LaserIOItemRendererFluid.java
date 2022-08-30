@@ -24,8 +24,8 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
+import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.capability.IFluidHandler;
@@ -51,8 +51,8 @@ public class LaserIOItemRendererFluid extends ItemRenderer {
         p_115153_.vertex((double) (p_115154_ + 0), (double) (p_115155_ + p_115157_), 0.0D).color(p_115158_, p_115159_, p_115160_, p_115161_).endVertex();
         p_115153_.vertex((double) (p_115154_ + p_115156_), (double) (p_115155_ + p_115157_), 0.0D).color(p_115158_, p_115159_, p_115160_, p_115161_).endVertex();
         p_115153_.vertex((double) (p_115154_ + p_115156_), (double) (p_115155_ + 0), 0.0D).color(p_115158_, p_115159_, p_115160_, p_115161_).endVertex();
-        p_115153_.end();
-        BufferUploader.end(p_115153_);
+        //p_115153_.end();
+        BufferUploader.drawWithShader(p_115153_.end());
     }
 
     @Override
@@ -231,7 +231,7 @@ public class LaserIOItemRendererFluid extends ItemRenderer {
         if (fluid == null) {
             return reverseBounds;
         }
-        ResourceLocation fluidStill = fluid.getAttributes().getStillTexture();
+        ResourceLocation fluidStill = IClientFluidTypeExtensions.of(fluid).getStillTexture();
         TextureAtlasSprite fluidStillSprite = null;
         if (fluidStill != null) {
             fluidStillSprite = Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(fluidStill);
@@ -245,10 +245,9 @@ public class LaserIOItemRendererFluid extends ItemRenderer {
 
     public void renderFluid(FluidStack fluidStack, int pX, int pY, int size) {
         Fluid fluid = fluidStack.getFluid();
-        ResourceLocation fluidStill = fluid.getAttributes().getStillTexture();
-        FluidAttributes attributes = fluid.getAttributes();
+        ResourceLocation fluidStill = IClientFluidTypeExtensions.of(fluid).getStillTexture();
         TextureAtlasSprite fluidStillSprite = Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(fluidStill);
-        int fluidColor = attributes.getColor(fluidStack);
+        int fluidColor = IClientFluidTypeExtensions.of(fluid).getTintColor(fluidStack);
 
         float red = (float) (fluidColor >> 16 & 255) / 255.0F;
         float green = (float) (fluidColor >> 8 & 255) / 255.0F;
@@ -293,10 +292,9 @@ public class LaserIOItemRendererFluid extends ItemRenderer {
                 break;
         }
         Fluid fluid = fluidStack.getFluid();
-        ResourceLocation fluidStill = fluid.getAttributes().getStillTexture();
-        FluidAttributes attributes = fluid.getAttributes();
+        ResourceLocation fluidStill = IClientFluidTypeExtensions.of(fluid).getStillTexture();
         TextureAtlasSprite fluidStillSprite = Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(fluidStill);
-        int fluidColor = attributes.getColor(fluidStack);
+        int fluidColor = IClientFluidTypeExtensions.of(fluid).getTintColor(fluidStack);
 
         float red = (float) (fluidColor >> 16 & 255) / 255.0F;
         float green = (float) (fluidColor >> 8 & 255) / 255.0F;

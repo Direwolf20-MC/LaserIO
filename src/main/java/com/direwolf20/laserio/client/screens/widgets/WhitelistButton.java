@@ -5,7 +5,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
 public class WhitelistButton extends Button {
@@ -14,7 +14,7 @@ public class WhitelistButton extends Button {
     private ResourceLocation block = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/allowlistfalse.png");
 
     public WhitelistButton(int widthIn, int heightIn, int width, int height, boolean isWhitelist, OnPress onPress) {
-        super(widthIn, heightIn, width, height, TextComponent.EMPTY, onPress);
+        super(widthIn, heightIn, width, height, Component.empty(), onPress);
         this.isWhitelist = isWhitelist;
     }
 

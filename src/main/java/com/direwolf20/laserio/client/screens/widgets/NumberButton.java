@@ -6,7 +6,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 
 import java.awt.*;
@@ -16,12 +15,12 @@ public class NumberButton extends Button {
     private int value;
 
     public NumberButton(int x, int y, int width, int height, int value, OnPress onPress) {
-        super(x, y, width, height, TextComponent.EMPTY, onPress);
+        super(x, y, width, height, net.minecraft.network.chat.Component.empty(), onPress);
         this.value = value;
     }
 
     public NumberButton(int x, int y, int width, int height, int value, OnPress onPress, OnTooltip onTooltip) {
-        super(x, y, width, height, TextComponent.EMPTY, onPress, onTooltip);
+        super(x, y, width, height, net.minecraft.network.chat.Component.empty(), onPress, onTooltip);
         this.value = value;
     }
 
