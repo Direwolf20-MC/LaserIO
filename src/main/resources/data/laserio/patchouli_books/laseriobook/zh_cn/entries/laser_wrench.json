@@ -1,0 +1,26 @@
+{
+  "name": "激光扳手",
+  "icon": "laserio:laser_wrench",
+  "sortnum": 1,
+  "category": "laserio:items",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "激光扳手主要用于连接多个方块。通过 Shift 右键选择方块，再右键另一个方块来形成连接，这样就能连接$(br2)$(l:laserio:laser_node)节点$(/l)和$(l:laserio:laser_connector)连接器$(/l)。$(br2)最大连接范围是 8 个方块。"
+    },
+    {
+      "type": "patchouli:image",
+      "title": "激光扳手",
+      "images": [
+        "laserio:textures/book/entries/laser_wrench.png"
+      ],
+      "border": true,
+      "text": "已选择的方块会被绿色标记。"
+    },
+    {
+      "type": "patchouli:crafting",
+      "title": "激光扳手",
+      "recipe": "laserio:laser_wrench"
+    }
+  ]
+}

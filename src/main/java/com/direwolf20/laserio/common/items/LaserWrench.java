@@ -7,7 +7,7 @@ import com.direwolf20.laserio.util.VectorHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
@@ -74,7 +74,7 @@ public class LaserWrench extends Item {
             }
             //If we're too far away - send an error to the client
             if (!targetPos.closerThan(sourcePos, maxDistance)) {
-                player.displayClientMessage(new TranslatableComponent("message.laserio.wrenchrange", maxDistance), true);
+                player.displayClientMessage(Component.translatable("message.laserio.wrenchrange", maxDistance), true);
                 return InteractionResultHolder.pass(wrench);
             }
             //Connect or disconnect the nodes, depending on current state

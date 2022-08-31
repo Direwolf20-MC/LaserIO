@@ -16,7 +16,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
@@ -46,16 +46,16 @@ public class FilterBasicScreen extends AbstractContainerScreen<FilterBasicContai
         this.renderTooltip(matrixStack, mouseX, mouseY);
         if (MiscTools.inBounds(getGuiLeft() + 5, getGuiTop() + 10, 16, 16, mouseX, mouseY)) {
             if (isAllowList)
-                this.renderTooltip(matrixStack, new TranslatableComponent("screen.laserio.allowlist"), mouseX, mouseY);
+                this.renderTooltip(matrixStack, Component.translatable("screen.laserio.allowlist"), mouseX, mouseY);
             else
-                this.renderTooltip(matrixStack, new TranslatableComponent("screen.laserio.denylist"), mouseX, mouseY);
+                this.renderTooltip(matrixStack, Component.translatable("screen.laserio.denylist"), mouseX, mouseY);
         }
         if (!(filter.getItem() instanceof FilterMod)) {
             if (MiscTools.inBounds(getGuiLeft() + 5, getGuiTop() + 25, 16, 16, mouseX, mouseY)) {
                 if (isCompareNBT)
-                    this.renderTooltip(matrixStack, new TranslatableComponent("screen.laserio.nbttrue"), mouseX, mouseY);
+                    this.renderTooltip(matrixStack, Component.translatable("screen.laserio.nbttrue"), mouseX, mouseY);
                 else
-                    this.renderTooltip(matrixStack, new TranslatableComponent("screen.laserio.nbtfalse"), mouseX, mouseY);
+                    this.renderTooltip(matrixStack, Component.translatable("screen.laserio.nbtfalse"), mouseX, mouseY);
             }
         }
     }
@@ -97,8 +97,8 @@ public class FilterBasicScreen extends AbstractContainerScreen<FilterBasicContai
 
     @Override
     protected void renderLabels(PoseStack stack, int mouseX, int mouseY) {
-        //font.draw(stack, new TranslatableComponent("screen.laserio.allowlist").getString(), 5, 5, Color.DARK_GRAY.getRGB());
-        //font.draw(stack, new TranslatableComponent("screen.laserio.comparenbt").getString(), 7, 35, Color.DARK_GRAY.getRGB());
+        //font.draw(stack, Component.translatable("screen.laserio.allowlist").getString(), 5, 5, Color.DARK_GRAY.getRGB());
+        //font.draw(stack, Component.translatable("screen.laserio.comparenbt").getString(), 7, 35, Color.DARK_GRAY.getRGB());
         //super.renderLabels(matrixStack, x, y);
     }
 
@@ -157,8 +157,8 @@ public class FilterBasicScreen extends AbstractContainerScreen<FilterBasicContai
         return super.mouseScrolled(mouseX, mouseY, delta);
     }
 
-    private static TranslatableComponent getTrans(String key, Object... args) {
-        return new TranslatableComponent(LaserIO.MODID + "." + key, args);
+    private static MutableComponent getTrans(String key, Object... args) {
+        return Component.translatable(LaserIO.MODID + "." + key, args);
     }
 
 }

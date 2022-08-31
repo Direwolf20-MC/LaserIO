@@ -1,0 +1,16 @@
+{
+  "name": "红石模式",
+  "sortnum": 11,
+  "category": "laserio:mechanics",
+  "icon": "laserio:textures/gui/buttons/redstonehigh.png",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "红石模式决定$(l:laserio:redstonechannel)红石频道$(/l)上的红石信号对卡的效果。$(br2)默认设为$(bold)忽略$()，意味着卡将一直工作，不受红石信号影响。"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(br2)如果设定为低，卡只会在对应的红石频道$(bold)没有$()信号的时候工作（红石频道按钮在红石模式按钮右边）。$(br2)在高红石信号模式下，卡只会在对应红石频道$(bold)有$()信号的时候工作。"
+    }
+  ]
+}

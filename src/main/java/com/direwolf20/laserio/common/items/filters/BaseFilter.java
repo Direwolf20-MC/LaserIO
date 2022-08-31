@@ -8,7 +8,6 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -42,7 +41,7 @@ public class BaseFilter extends Item {
         boolean sneakPressed = Screen.hasShiftDown();
 
         if (!sneakPressed) {
-            tooltip.add(new TranslatableComponent("laserio.tooltip.item.show_settings")
+            tooltip.add(Component.translatable("laserio.tooltip.item.show_settings")
                     .withStyle(ChatFormatting.GRAY));
         } else {
             MutableComponent toWrite = tooltipMaker("laserio.tooltip.item.filter.type", ChatFormatting.GRAY.getColor());

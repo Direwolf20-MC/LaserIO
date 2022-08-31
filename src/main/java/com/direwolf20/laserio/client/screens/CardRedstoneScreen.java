@@ -16,6 +16,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
@@ -43,23 +44,23 @@ public class CardRedstoneScreen extends AbstractCardScreen<CardRedstoneContainer
         this.renderTooltip(matrixStack, mouseX, mouseY);
         Button modeButton = buttons.get("mode");
         if (MiscTools.inBounds(modeButton.x, modeButton.y, modeButton.getWidth(), modeButton.getHeight(), mouseX, mouseY)) {
-            TranslatableComponent translatableComponents[] = new TranslatableComponent[3];
-            translatableComponents[0] = new TranslatableComponent("screen.laserio.input");
-            translatableComponents[1] = new TranslatableComponent("screen.laserio.output");
+            MutableComponent translatableComponents[] = new MutableComponent[3];
+            translatableComponents[0] = Component.translatable("screen.laserio.input");
+            translatableComponents[1] = Component.translatable("screen.laserio.output");
             this.renderTooltip(matrixStack, translatableComponents[currentMode], mouseX, mouseY);
         }
         if (currentMode == 1) {
             Button strongButton = buttons.get("strong");
             if (MiscTools.inBounds(strongButton.x, strongButton.y, strongButton.getWidth(), strongButton.getHeight(), mouseX, mouseY)) {
-                TranslatableComponent translatableComponents[] = new TranslatableComponent[2];
-                translatableComponents[0] = new TranslatableComponent("screen.laserio.weak");
-                translatableComponents[1] = new TranslatableComponent("screen.laserio.strong");
+                MutableComponent translatableComponents[] = new MutableComponent[2];
+                translatableComponents[0] = Component.translatable("screen.laserio.weak");
+                translatableComponents[1] = Component.translatable("screen.laserio.strong");
                 this.renderTooltip(matrixStack, translatableComponents[currentStrong ? 1 : 0], mouseX, mouseY);
             }
         }
         Button channelButton = buttons.get("channel");
         if (MiscTools.inBounds(channelButton.x, channelButton.y, channelButton.getWidth(), channelButton.getHeight(), mouseX, mouseY)) {
-            this.renderTooltip(matrixStack, new TranslatableComponent("screen.laserio.redstonechannel").append(String.valueOf(currentRedstoneChannel)), mouseX, mouseY);
+            this.renderTooltip(matrixStack, Component.translatable("screen.laserio.redstonechannel").append(String.valueOf(currentRedstoneChannel)), mouseX, mouseY);
         }
     }
 
@@ -124,10 +125,10 @@ public class CardRedstoneScreen extends AbstractCardScreen<CardRedstoneContainer
         /*stack.pushPose();
         stack.scale(0.5f, 0.5f, 0.5f);
         if (showExtractAmt()) {
-            font.draw(stack, new TranslatableComponent("screen.laserio.extractamt").getString() + ":", 5*2, 45*2, Color.DARK_GRAY.getRGB());
+            font.draw(stack, Component.translatable("screen.laserio.extractamt").getString() + ":", 5*2, 45*2, Color.DARK_GRAY.getRGB());
         }
         if (showPriority()) {
-            font.draw(stack, new TranslatableComponent("screen.laserio.priority").getString() + ":", 5*2, 50*2, Color.DARK_GRAY.getRGB());
+            font.draw(stack, Component.translatable("screen.laserio.priority").getString() + ":", 5*2, 50*2, Color.DARK_GRAY.getRGB());
         }
         stack.popPose();*/
         //super.renderLabels(matrixStack, x, y);
@@ -180,8 +181,8 @@ public class CardRedstoneScreen extends AbstractCardScreen<CardRedstoneContainer
         return super.mouseScrolled(mouseX, mouseY, delta);
     }
 
-    private static TranslatableComponent getTrans(String key, Object... args) {
-        return new TranslatableComponent(LaserIO.MODID + "." + key, args);
+    private static MutableComponent getTrans(String key, Object... args) {
+        return Component.translatable(LaserIO.MODID + "." + key, args);
     }
 
     public void saveSettings() {

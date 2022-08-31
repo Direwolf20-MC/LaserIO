@@ -22,7 +22,7 @@
     },
     {
       "type": "patchouli:text",
-      "text": "Nota Técnica: O sistema Energia Forge (Forge Energy/FE) suporta armazenar energia até MAXINT o que é aproximadamente 2.14 bilhões de Fluxo de Redstone (Redstone Flux/RF). Se você está utilizando um mod como o Draconic Evolution ou Mekanism, as células de energia deles podem armazenar além dessa quantidade 'hackeando' como a Energia Forge funciona. Como resultado, o indicador de % não funcionará em células de armazenamento maiores que 2.14 bilhões de RF. Desculpa! :)"
+      "text": "Nota Técnica: O sistema Energia Forge (Forge Energy/FE) suporta armazenar energia até MAX_INT o que é aproximadamente 2.14 bilhões de FE. Se você está utilizando um mod como o Draconic Evolution ou Mekanism, as células de energia deles podem armazenar além dessa quantidade 'hackeando' como a Energia Forge funciona. Como resultado, o indicador de % não funcionará em células de armazenamento maiores que 2.14 bilhões de FE. Desculpa! :)"
     },
     {
       "type": "patchouli:crafting",

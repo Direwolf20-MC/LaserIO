@@ -59,7 +59,7 @@ public abstract class AbstractCardScreen<T extends AbstractCardContainer> extend
 
         if (baseContainer.direction == -1)
             return;
-        buttons.put(ReturnButton, new Button(getGuiLeft() - 25, getGuiTop() + 1, 25, 20, new TextComponent("<--"), (button) -> {
+        buttons.put(ReturnButton, new Button(getGuiLeft() - 25, getGuiTop() + 1, 25, 20, Component.literal("<--"), (button) -> {
             openNode();
         }));
     }

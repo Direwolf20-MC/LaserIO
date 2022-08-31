@@ -10,7 +10,6 @@ import com.direwolf20.laserio.common.items.cards.BaseCard;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
@@ -35,9 +34,9 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.network.NetworkHooks;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class LaserNode extends BaseLaserBlock implements EntityBlock {
@@ -91,7 +90,7 @@ public class LaserNode extends BaseLaserBlock implements EntityBlock {
                 if (heldItem.getItem() instanceof BaseCard) {
                     LazyOptional<IItemHandler> itemHandler = be.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, result.getDirection());
                     itemHandler.ifPresent(h -> {
-                        ItemStack remainingStack = ItemHandlerHelper.insertItem(h, heldItem, false);
+                        ItemStack remainingStack = insertItemToNode(h, heldItem, false);
                         player.setItemInHand(InteractionHand.MAIN_HAND, remainingStack);
                     });
                 } else {
@@ -101,7 +100,7 @@ public class LaserNode extends BaseLaserBlock implements EntityBlock {
                         MenuProvider containerProvider = new MenuProvider() {
                             @Override
                             public Component getDisplayName() {
-                                return new TranslatableComponent(SCREEN_LASERNODE);
+                                return Component.translatable(SCREEN_LASERNODE);
                             }
 
                             @Override
@@ -110,7 +109,7 @@ public class LaserNode extends BaseLaserBlock implements EntityBlock {
                             }
                         };
 
-                        NetworkHooks.openGui((ServerPlayer) player, containerProvider, (buf -> {
+                        NetworkHooks.openScreen((ServerPlayer) player, containerProvider, (buf -> {
                             buf.writeBlockPos(pos);
                             buf.writeByte((byte) result.getDirection().ordinal());
                             buf.writeItemStack(cardHolder, false);
@@ -123,6 +122,21 @@ public class LaserNode extends BaseLaserBlock implements EntityBlock {
 
         }
         return InteractionResult.SUCCESS;
+    }
+
+    /** Custom Implementation of ItemHandlerHelper.insertItem for right clicking nodes with **/
+    public static ItemStack insertItemToNode(IItemHandler dest, @Nonnull ItemStack stack, boolean simulate) {
+        if (dest == null || stack.isEmpty())
+            return stack;
+
+        for (int i = 0; i < LaserNodeContainer.CARDSLOTS; i++) {
+            stack = dest.insertItem(i, stack, simulate);
+            if (stack.isEmpty()) {
+                return ItemStack.EMPTY;
+            }
+        }
+
+        return stack;
     }
 
     public static ItemStack findCardHolders(Player player) {

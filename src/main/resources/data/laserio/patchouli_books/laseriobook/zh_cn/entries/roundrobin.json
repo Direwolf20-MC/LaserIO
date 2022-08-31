@@ -1,0 +1,20 @@
+{
+  "name": "轮询调度",
+  "sortnum": 5,
+  "category": "laserio:mechanics",
+  "icon": "laserio:textures/gui/buttons/roundrobintrue.png",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "轮询调度只在抽取模式可用。$(br2)轮询调度将使抽取卡在多个输入卡之间平均分配物品。$(br2)有三种模式：$(br)1. 关闭$(br)2. 启用$(br)3. 强制"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "设定为$(l)关闭$()后，轮询调度被禁用，遵循$(l:laserio:priority)优先级$(/l)规则。在第一个容器完全装满之前不会往第二个容器发送对象。$(br2)设定为$(l)启用$()后，物品会被按照优先级发送，并平均分配。$(br2)如果网络中有三个箱子，第一批物品会送往第一个箱子，第二批送往第二个，依此类推。"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "设定为$(l)强制$()后，遵循和“启用”相同的规则。但是，如果第一个容器满了，将停止工作直到此容器又有空间为止。$(br2)注意：区块卸载会导致轮询机制变化，尤其是某些节点被卸载而另一些没有的时候。"
+    }
+  ]
+}

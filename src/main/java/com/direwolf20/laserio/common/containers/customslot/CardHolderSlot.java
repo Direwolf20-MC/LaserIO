@@ -9,6 +9,7 @@ import javax.annotation.Nonnull;
 
 public class CardHolderSlot extends SlotItemHandler {
     protected boolean enabled = true;
+
     public CardHolderSlot(IItemHandler itemHandler, int index, int xPosition, int yPosition) {
         super(itemHandler, index, xPosition, yPosition);
     }

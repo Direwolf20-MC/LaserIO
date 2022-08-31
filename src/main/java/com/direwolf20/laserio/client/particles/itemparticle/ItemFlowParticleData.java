@@ -4,6 +4,7 @@ import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.commands.arguments.item.ItemInput;
 import net.minecraft.commands.arguments.item.ItemParser;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
@@ -33,7 +34,7 @@ public class ItemFlowParticleData implements ParticleOptions {
     @Nonnull
     @Override
     public ParticleType<ItemFlowParticleData> getType() {
-        return com.direwolf20.laserio.client.particles.ModParticles.ITEMFLOWPARTICLE;
+        return com.direwolf20.laserio.client.particles.ModParticles.ITEMFLOWPARTICLE.get();
     }
 
     @Override
@@ -49,11 +50,11 @@ public class ItemFlowParticleData implements ParticleOptions {
     @Override
     public String writeToString() {
         return String.format(Locale.ROOT, "%s %.2f %.2f %.2f %.2f %.2f %s",
-                this.getType().getRegistryName(), this.targetX, this.targetY, this.targetZ, this.ticksPerBlock);
+                this.getType(), this.targetX, this.targetY, this.targetZ, this.ticksPerBlock);
     }
 
     public String getParameters() {
-        return Registry.PARTICLE_TYPE.getKey(this.getType()) + " " + (new ItemInput(this.itemStack.getItem(), this.itemStack.getTag())).serialize();
+        return Registry.PARTICLE_TYPE.getKey(this.getType()) + " " + (new ItemInput(this.itemStack.getItem().builtInRegistryHolder(), this.itemStack.getTag())).serialize();
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -66,8 +67,11 @@ public class ItemFlowParticleData implements ParticleOptions {
         @Override
         public ItemFlowParticleData fromCommand(ParticleType<ItemFlowParticleData> particleTypeIn, StringReader reader) throws CommandSyntaxException {
             reader.expect(' ');
-            ItemParser itemparser = (new ItemParser(reader, false)).parse();
-            ItemStack itemstack = (new ItemInput(itemparser.getItem(), itemparser.getNbt())).createItemStack(1, false);
+            //ItemParser itemparser = (new ItemParser(reader, false)).parse();
+            //ItemStack itemstack = (new ItemInput(itemparser.getItem(), itemparser.getNbt())).createItemStack(1, false);
+            ItemParser.ItemResult itemparser$itemresult = ItemParser.parseForItem(HolderLookup.forRegistry(Registry.ITEM), reader);
+            ItemStack itemstack = (new ItemInput(itemparser$itemresult.item(), itemparser$itemresult.nbt())).createItemStack(1, false);
+
             reader.expect(' ');
             double tx = reader.readDouble();
             reader.expect(' ');

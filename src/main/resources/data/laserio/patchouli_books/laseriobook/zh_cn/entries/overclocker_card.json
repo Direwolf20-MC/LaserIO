@@ -1,0 +1,17 @@
+{
+  "name": "卡超频元件",
+  "icon": "laserio:overclocker_card",
+  "sortnum": 2,
+  "category": "laserio:items",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "卡超频元件允许一张卡更快运作。$(br2)例如，物品卡每 20 刻（1 秒）只能抽取 8 个物品。安装 4 个超频元件后每刻就能抽取 64 个物品！$(br2)查看关于卡的条目获取每种卡超频后的详细数据。"
+    },
+    {
+      "type": "patchouli:crafting",
+      "title": "卡超频元件",
+      "recipe": "laserio:overclocker_card"
+    }
+  ]
+}

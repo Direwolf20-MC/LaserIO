@@ -6,7 +6,7 @@ import com.direwolf20.laserio.util.MiscTools;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -31,8 +31,8 @@ public class FilterTag extends BaseFilter {
         if (level.isClientSide()) return new InteractionResultHolder<>(InteractionResult.PASS, itemstack);
 
         FilterBasicHandler handler = getInventory(itemstack);
-        NetworkHooks.openGui((ServerPlayer) player, new SimpleMenuProvider(
-                (windowId, playerInventory, playerEntity) -> new FilterTagContainer(windowId, playerInventory, player, handler, itemstack), new TranslatableComponent("")), (buf -> {
+        NetworkHooks.openScreen((ServerPlayer) player, new SimpleMenuProvider(
+                (windowId, playerInventory, playerEntity) -> new FilterTagContainer(windowId, playerInventory, player, handler, itemstack), Component.translatable("")), (buf -> {
             buf.writeItem(itemstack);
             buf.writeItem(ItemStack.EMPTY);
         }));

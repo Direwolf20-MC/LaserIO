@@ -5,7 +5,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
 public class ToggleButton extends Button {
@@ -13,14 +13,14 @@ public class ToggleButton extends Button {
     private int texturePosition;
 
     public ToggleButton(int x, int y, int width, int height, ResourceLocation[] textures, int texturePosition, OnPress onPress) {
-        super(x, y, width, height, TextComponent.EMPTY, onPress);
+        super(x, y, width, height, Component.empty(), onPress);
 
         this.textures = textures;
         setTexturePosition(texturePosition);
     }
 
     public ToggleButton(int x, int y, int width, int height, ResourceLocation[] textures, int texturePosition, OnPress onPress, OnTooltip onTooltip) {
-        super(x, y, width, height, TextComponent.EMPTY, onPress, onTooltip);
+        super(x, y, width, height, Component.empty(), onPress, onTooltip);
 
         this.textures = textures;
         setTexturePosition(texturePosition);

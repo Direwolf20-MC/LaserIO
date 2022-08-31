@@ -22,6 +22,11 @@
       "type": "patchouli:spotlight",
       "item": "laserio:card_item{channel:0b,exact:0b,inv:{Items:[],Size:2},itemextractamt:1b,itemextractspeed:20,mode:2b,priority:0s,regulate:0b,roundRobin:0,sneaky:-1b}",
       "text": "Os Cartões no Modo de Estoque tentam encontrar os itens designados em seu filtro e os extraem de outros Nós de Inserção na mesma rede.$(br2)Os Cartões no Modo de Estoque exigem um filtro definido como Permitir."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "laserio:card_item{channel:0b,exact:0b,inv:{Items:[],Size:2},itemextractamt:1b,itemextractspeed:20,mode:3b,priority:0s,regulate:0b,roundRobin:0,sneaky:-1b}",
+      "text": "Os Cartões no Modo de Sensor não movem objetos por ai, ao invés disso eles procuram nos inventários adjacentes, e emitem um sinal de redstone no canal de redstone se o filtro for verdadeiro.$(br)Os Cartões no Modo de Sensor precisam de um filtro."
     }
   ]
 }
