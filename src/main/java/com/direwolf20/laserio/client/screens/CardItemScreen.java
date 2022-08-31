@@ -25,7 +25,6 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
@@ -571,7 +570,7 @@ public class CardItemScreen extends AbstractCardScreen<CardItemContainer> {
 
     @Override
     public Component cardTypeName(){
-        return new TranslatableComponent("item.laserio.card_item");
+        return Component.translatable("item.laserio.card_item");
     }
 
     @Override

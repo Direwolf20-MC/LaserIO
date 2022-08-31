@@ -16,8 +16,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.player.Inventory;
@@ -136,7 +135,7 @@ public class CardRedstoneScreen extends AbstractCardScreen<CardRedstoneContainer
 
     @Override
     public Component cardTypeName(){
-        return new TranslatableComponent("item.laserio.card_redstone");
+        return Component.translatable("item.laserio.card_redstone");
     }
 
     @Override
@@ -181,7 +180,7 @@ public class CardRedstoneScreen extends AbstractCardScreen<CardRedstoneContainer
         return super.mouseScrolled(mouseX, mouseY, delta);
     }
 
-    private static MutableComponent getTrans(String key, Object... args) {
+    private static Component getTrans(String key, Object... args) {
         return Component.translatable(LaserIO.MODID + "." + key, args);
     }
 

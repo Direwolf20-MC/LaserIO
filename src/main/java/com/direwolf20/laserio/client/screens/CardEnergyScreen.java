@@ -22,7 +22,6 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
@@ -427,7 +426,7 @@ public class CardEnergyScreen extends AbstractCardScreen<CardEnergyContainer> {
 
     @Override
     public Component cardTypeName(){
-        return new TranslatableComponent("item.laserio.card_energy");
+        return Component.translatable("item.laserio.card_energy");
     }
 
     @Override

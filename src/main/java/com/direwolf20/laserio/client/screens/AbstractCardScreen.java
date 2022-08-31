@@ -12,8 +12,6 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Widget;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -68,7 +66,7 @@ public abstract class AbstractCardScreen<T extends AbstractCardContainer> extend
         super.renderTooltip(pPoseStack, mouseX, mouseY);
         Button returnButton = buttons.get(ReturnButton);
         if (MiscTools.inBounds(returnButton, mouseX, mouseY)) {
-            this.renderTooltip(pPoseStack, new TranslatableComponent(LaserNode.SCREEN_LASERNODE), mouseX, mouseY);
+            this.renderTooltip(pPoseStack, Component.translatable(LaserNode.SCREEN_LASERNODE), mouseX, mouseY);
         }
     }
 

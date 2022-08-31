@@ -17,7 +17,6 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.player.Inventory;
@@ -137,6 +136,6 @@ public class CardFluidScreen extends CardItemScreen {
 
     @Override
     public Component cardTypeName(){
-        return new TranslatableComponent("item.laserio.card_fluid");
+        return Component.translatable("item.laserio.card_fluid");
     }
 }
