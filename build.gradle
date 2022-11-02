@@ -226,6 +226,9 @@ dependencies {
 
     runtimeOnly fg.deobf("curse.maven:industrial-foregoing-266515:3848558")
 
+    runtimeOnly fg.deobf("curse.maven:alchemistry-293425:4052941")
+    runtimeOnly fg.deobf("curse.maven:chemlib-340666:4046903")
+
     //MouseTweaks
     //runtimeOnly fg.deobf("curse.maven:mouse-tweaks-60089:3578801")
 
