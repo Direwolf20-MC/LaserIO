@@ -602,8 +602,6 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
 
     @Override
     public void onClose() {
-        if (showFilter)
-            PacketHandler.sendToServer(new PacketUpdateFilter(isAllowList == 1, isCompareNBT == 1));
         saveSettings();
         super.onClose();
     }
@@ -644,6 +642,8 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
     }
 
     public void saveSettings() {
+        if (showFilter)
+            PacketHandler.sendToServer(new PacketUpdateFilter(isAllowList == 1, isCompareNBT == 1));
         PacketHandler.sendToServer(new PacketUpdateCard(currentMode, currentChannel, currentItemExtractAmt, currentPriority, currentSneaky, (short) currentTicks, currentExact, currentRegulate, (byte) currentRoundRobin, 0, 0, currentRedstoneMode, currentRedstoneChannel, currentAndMode));
     }
 
