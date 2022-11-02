@@ -1,5 +1,6 @@
 package com.direwolf20.laserio.datagen.customrecipes;
 
+import com.direwolf20.laserio.setup.Registration;
 import com.google.common.collect.Lists;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementRewards;
@@ -103,7 +104,7 @@ public class CardClearRecipeBuilder implements RecipeBuilder {
 
         @Override
         public RecipeSerializer<?> getType() {
-            return RecipeSerializers.CARD_CLEAR_RECIPE_SERIALIZER.get();
+            return Registration.CARD_CLEAR_RECIPE_SERIALIZER.get();
         }
 
     }

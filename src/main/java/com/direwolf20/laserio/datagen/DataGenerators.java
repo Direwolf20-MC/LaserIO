@@ -16,6 +16,8 @@ public class DataGenerators {
         generator.addProvider(event.includeServer(), new LaserIOLootTables(generator));
         LaserIOBlockTags blockTags = new LaserIOBlockTags(generator, event.getExistingFileHelper());
         generator.addProvider(event.includeServer(), blockTags);
+        LaserIOItemTags itemTags = new LaserIOItemTags(generator, blockTags, event.getExistingFileHelper());
+        generator.addProvider(event.includeServer(), itemTags);
         //generator.addProvider(new LaserIOItemTags(generator, blockTags, event.getExistingFileHelper()));
         //}
         //if (event.includeClient()) {

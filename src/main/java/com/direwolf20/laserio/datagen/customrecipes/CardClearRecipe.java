@@ -1,6 +1,7 @@
 package com.direwolf20.laserio.datagen.customrecipes;
 
 import com.direwolf20.laserio.common.items.cards.BaseCard;
+import com.direwolf20.laserio.setup.Registration;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import net.minecraft.core.NonNullList;
@@ -38,7 +39,7 @@ public class CardClearRecipe extends ShapelessRecipe {
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return RecipeSerializers.CARD_CLEAR_RECIPE_SERIALIZER.get();
+        return Registration.CARD_CLEAR_RECIPE_SERIALIZER.get();
     }
 
     //@ObjectHolder("laserio:cardclear")

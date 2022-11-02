@@ -1,25 +1,25 @@
 {
   "type": "minecraft:crafting_shaped",
   "group": "laserio",
+  "key": {
+    "g": {
+      "tag": "forge:nuggets/gold"
+    },
+    "p": {
+      "item": "laserio:logic_chip"
+    },
+    "q": {
+      "tag": "forge:gems/quartz"
+    },
+    "r": {
+      "tag": "forge:dusts/redstone"
+    }
+  },
   "pattern": [
     "rrr",
     "qpq",
     "ggg"
   ],
-  "key": {
-    "r": {
-      "tag": "forge:dusts/redstone"
-    },
-    "p": {
-      "item": "laserio:logic_chip"
-    },
-    "g": {
-      "tag": "forge:nuggets/gold"
-    },
-    "q": {
-      "tag": "forge:gems/quartz"
-    }
-  },
   "result": {
     "item": "laserio:card_redstone"
   }

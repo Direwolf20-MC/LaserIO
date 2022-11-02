@@ -1,22 +1,22 @@
 {
   "type": "minecraft:crafting_shaped",
   "group": "laserio",
+  "key": {
+    "g": {
+      "tag": "forge:ingots/gold"
+    },
+    "p": {
+      "item": "laserio:logic_chip"
+    },
+    "r": {
+      "tag": "forge:dusts/redstone"
+    }
+  },
   "pattern": [
     " g ",
     "rpr",
     "ggg"
   ],
-  "key": {
-    "r": {
-      "tag": "forge:dusts/redstone"
-    },
-    "p": {
-      "item": "laserio:logic_chip"
-    },
-    "g": {
-      "tag": "forge:ingots/gold"
-    }
-  },
   "result": {
     "item": "laserio:overclocker_card"
   }
