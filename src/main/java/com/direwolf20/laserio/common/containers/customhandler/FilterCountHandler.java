@@ -34,8 +34,8 @@ public class FilterCountHandler extends FilterBasicHandler {
         } else {
             this.setStackInSlot(slot, stack);
             FilterCount.setSlotCount(this.stack, slot, stack.getCount());
-            if (stack.isEmpty())
-                FilterCount.setInventory(this.stack, this);
+            //if (stack.isEmpty())
+            FilterCount.setInventory(this.stack, this);
         }
     }
 
