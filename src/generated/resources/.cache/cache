@@ -11,6 +11,8 @@ f078ab97fe0309dbc315d95974a60e441f37515c assets/laserio/models/item/laser_wrench
 e1e7cda56571876f5f38f190311be8346a122bf4 assets/laserio/models/item/logic_chip_raw.json
 f0a6f3c6387d669d27040cab69453995d7c19224 assets/laserio/models/item/overclocker_card.json
 29b1fdfcfa5dccd723ba9146e18ac774f75079a9 assets/laserio/models/item/overclocker_node.json
+5254bce2a52ccf754b27b912ae079d682bd90f8d data/forge/tags/items/tools/wrench.json
+5254bce2a52ccf754b27b912ae079d682bd90f8d data/forge/tags/items/wrenches.json
 3e686c002ab4d0e89fabc1b09d891fd34d8d0078 data/laserio/advancements/recipes/laserio/card_energy.json
 8beafc75eee288d4bbe1b25532f949ea986b53e1 data/laserio/advancements/recipes/laserio/card_energy_nbtclear.json
 397bdffd6aea40cd57c9055c127a3555e9e8158e data/laserio/advancements/recipes/laserio/card_fluid.json
