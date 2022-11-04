@@ -1145,7 +1145,9 @@ public class LaserNodeBE extends BaseLaserBE {
         for (InserterCardCache inserterCardCache : inserterCardCaches) {
             LaserNodeEnergyHandler laserNodeEnergyHandler = getLaserNodeHandlerEnergy(inserterCardCache);
             if (laserNodeEnergyHandler == null) continue;
-            if (laserNodeEnergyHandler.be instanceof LaserNodeBE) continue; //Don't let nodes 'push' energy into other nodes, it causes infinite loops.
+            BlockEntity targetBE = level.getBlockEntity(laserNodeEnergyHandler.be.getBlockPos().relative(inserterCardCache.direction));
+            if (targetBE instanceof LaserNodeBE)
+                continue; //Don't let laser nodes insert into other laser nodes in this way.
             IEnergyStorage energyStorage = laserNodeEnergyHandler.handler;
             int desired;
             if (inserterCardCache.insertLimit != 100)
