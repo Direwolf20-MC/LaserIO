@@ -43,6 +43,12 @@ public class BaseCard extends Item {
         SENSOR
     }
 
+    public enum SensorMode {
+        GREATER_THAN,
+        EQUAL_TO,
+        LESS_THAN
+    }
+
     public BaseCard() {
         super(new Item.Properties().tab(ModSetup.ITEM_GROUP)
                 .stacksTo(1));
@@ -172,6 +178,29 @@ public class BaseCard extends Item {
 
     public static TransferMode getNamedTransferMode(ItemStack card) {
         return TransferMode.values()[getTransferMode(card)];
+    }
+
+    public static byte setSensorMode(ItemStack card, byte sensormode) {
+        if (sensormode == 0)
+            card.removeTagKey("sensormode");
+        else
+            card.getOrCreateTag().putByte("sensormode", sensormode);
+        return sensormode;
+    }
+
+    public static SensorMode getNamedSensorMode(ItemStack card) {
+        return SensorMode.values()[getSensorMode(card)];
+    }
+
+    public static byte getSensorMode(ItemStack card) {
+        CompoundTag compound = card.getTag();
+        if (compound == null || !compound.contains("sensormode")) return (byte) 0;
+        return compound.getByte("sensormode");
+    }
+
+    public static byte nextSensorMode(ItemStack card) {
+        byte mode = getSensorMode(card);
+        return setSensorMode(card, (byte) (mode == 2 ? 0 : mode + 1));
     }
 
     public static byte setChannel(ItemStack card, byte channel) {
