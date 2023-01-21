@@ -74,5 +74,8 @@
   "screen.laserio.true": "True",
   "screen.laserio.up": "Up",
   "screen.laserio.weak": "Weak",
-  "screen.laserio.west": "West"
+  "screen.laserio.west": "West",
+  "screen.laserio.lessthan": "Less Than",
+  "screen.laserio.greaterthan": "Greater Than",
+  "screen.laserio.equalto": "Equal To"
 }
