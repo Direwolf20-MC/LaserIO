@@ -463,6 +463,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
             removeWidget(channelButton);
             removeWidget(amountButton);
             removeWidget(redstoneModeButton);
+            removeWidget(exactButton);
             if (filter.getItem() instanceof FilterCount) {
                 if (!renderables.contains(sensorModeButton))
                     addRenderableWidget(sensorModeButton);
@@ -503,7 +504,6 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
     public void toggleFilterSlots() {
         filter = container.slots.get(0).getItem();
         showFilter = !filter.isEmpty() && !(filter.getItem() instanceof FilterTag);
-        Button exactButton = buttons.get("exact");
         Button sensorModeButton = buttons.get("sensorMode");
         if (showFilter) { //If the filter isn't empty, and the allowList is set to -1, it means we don't have a real value for allow list yet so get it
             if (filter.getItem() instanceof FilterMod) {
@@ -555,7 +555,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
             showAllow = false;
             showNBT = false;
             if (BaseCard.getNamedTransferMode(card) == BaseCard.TransferMode.SENSOR) {
-                removeWidget(exactButton);
+                removeWidget(sensorModeButton);
             }
         }
         for (int i = container.SLOTS; i < container.SLOTS + container.FILTERSLOTS; i++) {
