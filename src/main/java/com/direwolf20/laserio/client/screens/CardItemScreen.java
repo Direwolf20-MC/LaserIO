@@ -53,7 +53,6 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
     protected int currentRoundRobin;
     protected boolean currentRegulate;
     protected boolean currentAndMode;
-    protected byte currentSensorMode;
     protected int isAllowList = -1;
     protected int isCompareNBT = -1;
     protected boolean showFilter;
@@ -63,6 +62,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
     public ItemStack filter;
     protected Map<String, Button> buttons = new HashMap<>();
     protected byte currentRedstoneMode;
+    protected byte currentSensorMode;
 
     protected final String[] sneakyNames = {
             "screen.laserio.default",
@@ -667,7 +667,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
     public void saveSettings() {
         if (showFilter)
             PacketHandler.sendToServer(new PacketUpdateFilter(isAllowList == 1, isCompareNBT == 1));
-        PacketHandler.sendToServer(new PacketUpdateCard(currentMode, currentChannel, currentItemExtractAmt, currentPriority, currentSneaky, (short) currentTicks, currentExact, currentRegulate, (byte) currentRoundRobin, 0, 0, currentRedstoneMode, currentRedstoneChannel, currentAndMode));
+        PacketHandler.sendToServer(new PacketUpdateCard(currentMode, currentChannel, currentItemExtractAmt, currentPriority, currentSneaky, (short) currentTicks, currentExact, currentRegulate, (byte) currentRoundRobin, 0, 0, currentRedstoneMode, currentRedstoneChannel, currentAndMode, currentSensorMode));
     }
 
     public boolean filterSlot(int btn) {

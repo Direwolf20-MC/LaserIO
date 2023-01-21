@@ -29,8 +29,9 @@ public class PacketUpdateCard {
     byte redstoneMode;
     byte redstoneChannel;
     boolean andMode;
+    byte sensorMode;
 
-    public PacketUpdateCard(byte mode, byte channel, int extractAmt, short priority, byte sneaky, short ticks, boolean exact, boolean regulate, byte roundRobin, int extractLimit, int insertLimit, byte redstoneMode, byte redstoneChannel, boolean andMode) {
+    public PacketUpdateCard(byte mode, byte channel, int extractAmt, short priority, byte sneaky, short ticks, boolean exact, boolean regulate, byte roundRobin, int extractLimit, int insertLimit, byte redstoneMode, byte redstoneChannel, boolean andMode, byte sensorMode) {
         this.mode = mode;
         this.channel = channel;
         this.extractAmt = extractAmt;
@@ -45,6 +46,7 @@ public class PacketUpdateCard {
         this.redstoneMode = redstoneMode;
         this.redstoneChannel = redstoneChannel;
         this.andMode = andMode;
+        this.sensorMode = sensorMode;
     }
 
     public static void encode(PacketUpdateCard msg, FriendlyByteBuf buffer) {
@@ -65,7 +67,7 @@ public class PacketUpdateCard {
     }
 
     public static PacketUpdateCard decode(FriendlyByteBuf buffer) {
-        return new PacketUpdateCard(buffer.readByte(), buffer.readByte(), buffer.readInt(), buffer.readShort(), buffer.readByte(), buffer.readShort(), buffer.readBoolean(), buffer.readBoolean(), buffer.readByte(), buffer.readInt(), buffer.readInt(), buffer.readByte(), buffer.readByte(), buffer.readBoolean());
+        return new PacketUpdateCard(buffer.readByte(), buffer.readByte(), buffer.readInt(), buffer.readShort(), buffer.readByte(), buffer.readShort(), buffer.readBoolean(), buffer.readBoolean(), buffer.readByte(), buffer.readInt(), buffer.readInt(), buffer.readByte(), buffer.readByte(), buffer.readBoolean(), buffer.readByte());
     }
 
     public static class Handler {
@@ -145,6 +147,7 @@ public class PacketUpdateCard {
                     BaseCard.setRedstoneMode(stack, msg.redstoneMode);
                     BaseCard.setRedstoneChannel(stack, msg.redstoneChannel);
                     BaseCard.setAnd(stack, msg.andMode);
+                    BaseCard.setSensorMode(stack, msg.sensorMode);
                 }
             });
 
