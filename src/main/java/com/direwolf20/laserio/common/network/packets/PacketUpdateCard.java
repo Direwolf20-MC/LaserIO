@@ -64,6 +64,7 @@ public class PacketUpdateCard {
         buffer.writeByte(msg.redstoneMode);
         buffer.writeByte(msg.redstoneChannel);
         buffer.writeBoolean(msg.andMode);
+        buffer.writeByte(msg.sensorMode);
     }
 
     public static PacketUpdateCard decode(FriendlyByteBuf buffer) {
