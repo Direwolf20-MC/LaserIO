@@ -726,7 +726,9 @@ public class LaserNodeBE extends BaseLaserBE {
             boolean allMatched = true;
             for (ItemStack itemStack : filteredItemsList) { //Remove all the items from the list that we already have enough of
                 int amtHad = inventoryCounts.getCount(itemStack);
-                if (amtHad < itemStack.getCount() || (sensorCardCache.exact && amtHad > itemStack.getCount())) {
+                if ((amtHad >= itemStack.getCount() && (sensorCardCache.sensorMode == BaseCard.SensorMode.LESS_THAN)) ||
+                        (amtHad <= itemStack.getCount() && (sensorCardCache.sensorMode == BaseCard.SensorMode.GREATER_THAN)) ||
+                        ((sensorCardCache.exact || sensorCardCache.sensorMode == BaseCard.SensorMode.EQUAL_TO) && amtHad != itemStack.getCount())) {
                     if (andMode) {
                         allMatched = false;
                         break;
