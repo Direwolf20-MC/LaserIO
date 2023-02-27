@@ -29,6 +29,7 @@ public class LaserIOLanguageProvider extends LanguageProvider {
         add(Registration.Filter_Mod.get(), "Mod Filter");
         add(Registration.Logic_Chip.get(), "Logic Chip");
         add(Registration.Logic_Chip_Raw.get(), "Raw Logic Chip");
+        add(Registration.Overclocker_Channel.get(), "Channel Overclocker");
         add(Registration.Overclocker_Card.get(), "Card Overclocker");
         add(Registration.Overclocker_Node.get(), "Node Overclocker");
 

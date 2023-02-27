@@ -3,6 +3,7 @@ package com.direwolf20.laserio.common.items.cards;
 import com.direwolf20.laserio.client.blockentityrenders.LaserNodeBERender;
 import com.direwolf20.laserio.common.containers.CardItemContainer;
 import com.direwolf20.laserio.common.containers.customhandler.CardItemHandler;
+import com.direwolf20.laserio.common.items.upgrades.OverclockerChannel;
 import com.direwolf20.laserio.setup.ModSetup;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -18,6 +19,7 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import vazkii.patchouli.client.book.template.variable.ItemStackArrayVariableSerializer;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -85,8 +87,8 @@ public class BaseCard extends Item {
             tooltip.add(toWrite);
 
             toWrite = tooltipMaker("laserio.tooltip.item.card.channel", ChatFormatting.GRAY.getColor());
-            int channel = getChannel(stack);
-            toWrite.append(tooltipMaker(String.valueOf(channel), LaserNodeBERender.colors[channel].getRGB()));
+            int channel = getChannelAsUInt(stack);
+            toWrite.append(tooltipMaker(String.valueOf(channel), LaserNodeBERender.colors[channel % 16].getRGB()));
             tooltip.add(toWrite);
 
             int sneakyMode = getSneaky(stack);
@@ -112,10 +114,10 @@ public class BaseCard extends Item {
      * @return The resulting ItemStack
      */
     public NonNullList<ItemStack> getContainerItems(ItemStack itemStack) {
-        NonNullList<ItemStack> nonnulllist = NonNullList.withSize(2, ItemStack.EMPTY);
+        NonNullList<ItemStack> nonnulllist = NonNullList.withSize(3, ItemStack.EMPTY);
         nonnulllist.set(0, getInventory(itemStack).getStackInSlot(0));
         nonnulllist.set(1, getInventory(itemStack).getStackInSlot(1));
-
+        nonnulllist.set(2, getInventory(itemStack).getStackInSlot(2));
         return nonnulllist;
     }
 
@@ -127,7 +129,7 @@ public class BaseCard extends Item {
      */
     @Override
     public boolean hasCraftingRemainingItem(ItemStack stack) {
-        return !(getInventory(stack).getStackInSlot(0).equals(ItemStack.EMPTY) && getInventory(stack).getStackInSlot(1).equals(ItemStack.EMPTY));
+        return !(getInventory(stack).getStackInSlot(0).equals(ItemStack.EMPTY) && getInventory(stack).getStackInSlot(1).equals(ItemStack.EMPTY) && getInventory(stack).getStackInSlot(2).equals(ItemStack.EMPTY));
     }
 
     public static CardItemHandler getInventory(ItemStack stack) {
@@ -190,11 +192,17 @@ public class BaseCard extends Item {
 
     public static byte nextChannel(ItemStack card) {
         byte k = getChannel(card);
+        if(hasChannelOverclocker(card)){
+        	return setChannel(card, (byte) (k == 255 ? 0 : k + 1));	
+        }
         return setChannel(card, (byte) (k == 15 ? 0 : k + 1));
     }
 
     public static byte previousChannel(ItemStack card) {
         byte k = getChannel(card);
+        if(hasChannelOverclocker(card)){
+        	return setChannel(card, (byte) (k == 0 ? 255 : k - 1));
+        }
         return setChannel(card, (byte) (k == 0 ? 15 : k - 1));
     }
 
@@ -353,4 +361,29 @@ public class BaseCard extends Item {
             stack.getOrCreateTag().putBoolean("and", and);
         return and;
     }
+    
+    public static boolean hasChannelOverclocker(ItemStack card) {
+    	CardItemHandler inv = getInventory(card);
+    	return inv.getStackInSlot(2).getItem() instanceof OverclockerChannel;
+    }
+    
+    public static void updateChannel(ItemStack card, ItemStack overclocker) {
+    	int k = getChannelAsUInt(card);
+    	if(!overclocker.isEmpty())
+    	{
+    		byte kD = OverclockerChannel.getChannel(overclocker);
+    		if(k < 16) {
+    			if( kD == 0) return;
+    			setChannel(card, (byte) (k + OverclockerChannel.getChannelOffset(overclocker)));
+    		}
+    	}else{
+    		if(k > 15)
+    		setChannel(card, (byte) (k % 16));
+    	}
+    }
+    
+    public static int getChannelAsUInt(ItemStack card) {
+    	return Byte.toUnsignedInt(getChannel(card));
+    }
+    
 }

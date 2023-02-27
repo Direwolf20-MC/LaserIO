@@ -29,7 +29,7 @@ public class CardItem extends BaseCard {
             buf.writeItem(itemstack);
             buf.writeByte(-1);
         }));
-
+        
         //System.out.println(itemstack.getItem().getRegistryName()+""+itemstack.getTag());
         return new InteractionResultHolder<>(InteractionResult.PASS, itemstack);
     }

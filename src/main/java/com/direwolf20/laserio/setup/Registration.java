@@ -18,6 +18,7 @@ import com.direwolf20.laserio.common.items.filters.FilterBasic;
 import com.direwolf20.laserio.common.items.filters.FilterCount;
 import com.direwolf20.laserio.common.items.filters.FilterMod;
 import com.direwolf20.laserio.common.items.filters.FilterTag;
+import com.direwolf20.laserio.common.items.upgrades.OverclockerChannel;
 import com.direwolf20.laserio.common.items.upgrades.OverclockerCard;
 import com.direwolf20.laserio.common.items.upgrades.OverclockerNode;
 import com.direwolf20.laserio.datagen.customrecipes.CardClearRecipe;
@@ -45,6 +46,7 @@ public class Registration {
     private static final DeferredRegister<MenuType<?>> CONTAINERS = DeferredRegister.create(ForgeRegistries.MENU_TYPES, MODID);
     public static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZERS = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, LaserIO.MODID);
     public static final RegistryObject<CardClearRecipe.Serializer> CARD_CLEAR_RECIPE_SERIALIZER = RECIPE_SERIALIZERS.register("cardclear", CardClearRecipe.Serializer::new);
+    
     public static void init() {
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
         BLOCKS.register(bus);
@@ -83,12 +85,13 @@ public class Registration {
     public static final RegistryObject<Item> Filter_Count = ITEMS.register("filter_count", FilterCount::new);
     public static final RegistryObject<Item> Filter_Tag = ITEMS.register("filter_tag", FilterTag::new);
     public static final RegistryObject<Item> Filter_Mod = ITEMS.register("filter_mod", FilterMod::new);
-
+    
     //Misc
     public static final RegistryObject<Item> Logic_Chip_Raw = ITEMS.register("logic_chip_raw", LogicChipRaw::new);
     public static final RegistryObject<Item> Logic_Chip = ITEMS.register("logic_chip", LogicChip::new);
     public static final RegistryObject<Item> Overclocker_Card = ITEMS.register("overclocker_card", OverclockerCard::new);
-    public static final RegistryObject<Item> Overclocker_Node = ITEMS.register("overclocker_node", OverclockerNode::new);
+    public static final RegistryObject<Item> Overclocker_Node = ITEMS.register("overclocker_node", OverclockerNode::new); 
+    public static final RegistryObject<Item> Overclocker_Channel = ITEMS.register("overclocker_channel", OverclockerChannel::new);
 
     //Containers
     public static final RegistryObject<MenuType<LaserNodeContainer>> LaserNode_Container = CONTAINERS.register("lasernode",

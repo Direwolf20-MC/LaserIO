@@ -31,6 +31,9 @@ public class PacketHandler {
         HANDLER.registerMessage(id++, PacketUpdateCard.class, PacketUpdateCard::encode, PacketUpdateCard::decode, PacketUpdateCard.Handler::handle);
         HANDLER.registerMessage(id++, PacketUpdateRedstoneCard.class, PacketUpdateRedstoneCard::encode, PacketUpdateRedstoneCard::decode, PacketUpdateRedstoneCard.Handler::handle);
         HANDLER.registerMessage(id++, PacketUpdateFilter.class, PacketUpdateFilter::encode, PacketUpdateFilter::decode, PacketUpdateFilter.Handler::handle);
+        HANDLER.registerMessage(id++, PacketUpdateOverclockerChannel.class, PacketUpdateOverclockerChannel::encode, PacketUpdateOverclockerChannel::decode, PacketUpdateOverclockerChannel.Handler::handle);
+        HANDLER.registerMessage(id++, PacketUpdateCardChannel.class, PacketUpdateCardChannel::encode, PacketUpdateCardChannel::decode, PacketUpdateCardChannel.Handler::handle);
+        HANDLER.registerMessage(id++, PacketUpdateRedstoneChannel.class, PacketUpdateRedstoneChannel::encode, PacketUpdateRedstoneChannel::decode, PacketUpdateRedstoneChannel.Handler::handle);
         HANDLER.registerMessage(id++, PacketOpenCard.class, PacketOpenCard::encode, PacketOpenCard::decode, PacketOpenCard.Handler::handle);
         HANDLER.registerMessage(id++, PacketOpenFilter.class, PacketOpenFilter::encode, PacketOpenFilter::decode, PacketOpenFilter.Handler::handle);
         HANDLER.registerMessage(id++, PacketGhostSlot.class, PacketGhostSlot::encode, PacketGhostSlot::decode, PacketGhostSlot.Handler::handle);

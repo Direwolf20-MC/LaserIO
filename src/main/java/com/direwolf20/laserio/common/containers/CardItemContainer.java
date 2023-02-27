@@ -1,9 +1,11 @@
 package com.direwolf20.laserio.common.containers;
 
+import com.direwolf20.laserio.client.screens.CardItemScreen;
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import com.direwolf20.laserio.common.containers.customhandler.CardItemHandler;
 import com.direwolf20.laserio.common.containers.customhandler.FilterBasicHandler;
 import com.direwolf20.laserio.common.containers.customhandler.FilterCountHandler;
+import com.direwolf20.laserio.common.containers.customslot.CardChannelSlot;
 import com.direwolf20.laserio.common.containers.customslot.CardItemSlot;
 import com.direwolf20.laserio.common.containers.customslot.CardOverclockSlot;
 import com.direwolf20.laserio.common.containers.customslot.FilterBasicSlot;
@@ -11,6 +13,7 @@ import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.common.items.filters.BaseFilter;
 import com.direwolf20.laserio.common.items.filters.FilterBasic;
 import com.direwolf20.laserio.common.items.filters.FilterCount;
+import com.direwolf20.laserio.common.items.upgrades.OverclockerChannel;
 import com.direwolf20.laserio.setup.Registration;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
@@ -31,7 +34,7 @@ import net.minecraftforge.items.wrapper.InvWrapper;
 import javax.annotation.Nullable;
 
 public class CardItemContainer extends AbstractContainerMenu {
-    public static final int SLOTS = 2;
+    public static final int SLOTS = 3;
     public static final int FILTERSLOTS = 15;
     public CardItemHandler handler;
     public FilterBasicHandler filterHandler;
@@ -40,11 +43,12 @@ public class CardItemContainer extends AbstractContainerMenu {
     protected IItemHandler playerInventory;
     public BlockPos sourceContainer = BlockPos.ZERO;
     public byte direction = -1;
+    public CardItemScreen currentScreen;
 
     protected CardItemContainer(@Nullable MenuType<?> pMenuType, int pContainerId) {
         super(pMenuType, pContainerId);
     }
-
+    
     public CardItemContainer(int windowId, Inventory playerInventory, Player player, FriendlyByteBuf extraData) {
         this(windowId, playerInventory, player, extraData.readItem());
         this.direction = extraData.readByte();
@@ -59,10 +63,13 @@ public class CardItemContainer extends AbstractContainerMenu {
         if (handler != null) {
             addSlotRange(handler, 0, 80, 5, 1, 18);
             addSlotRange(handler, 1, 153, 5, 1, 18);
+            addSlotRange(handler, 2, 20, 65, 1, 18);
             addSlotBox(filterHandler, 0, 44, 25, 5, 18, 3, 18);
             toggleFilterSlots();
         }
-
+       
+        
+        
         layoutPlayerInventorySlots(8, 84);
     }
 
@@ -112,6 +119,7 @@ public class CardItemContainer extends AbstractContainerMenu {
 
     @Override
     public ItemStack quickMoveStack(Player playerIn, int index) {
+    	
         if (cardItem.getCount() > 1) return ItemStack.EMPTY; // Don't let quickMove happen in multistack cards
         ItemStack itemstack = ItemStack.EMPTY;
         Slot slot = this.slots.get(index);
@@ -129,7 +137,7 @@ public class CardItemContainer extends AbstractContainerMenu {
                 //No-Op
             } else { //From player inventory TO something
                 ItemStack currentStack = slot.getItem().copy();
-                if (slots.get(0).mayPlace(currentStack) || slots.get(1).mayPlace(currentStack)) {
+                if (slots.get(0).mayPlace(currentStack) || slots.get(1).mayPlace(currentStack) || slots.get(2).mayPlace(currentStack)) {
                     if (!this.moveItemStackTo(stack, 0, SLOTS, false)) {
                         return ItemStack.EMPTY;
                     }
@@ -160,7 +168,8 @@ public class CardItemContainer extends AbstractContainerMenu {
             if (stack.getCount() == itemstack.getCount()) {
                 return ItemStack.EMPTY;
             }
-
+            
+            
             slot.onTake(playerIn, stack);
         }
 
@@ -192,6 +201,8 @@ public class CardItemContainer extends AbstractContainerMenu {
                 addSlot(new CardItemSlot(handler, this, index, x, y));
             else if (handler instanceof CardItemHandler && index == 1)
                 addSlot(new CardOverclockSlot(handler, index, x, y));
+            else if (handler instanceof CardItemHandler && index == 2)
+                addSlot(new CardChannelSlot(handler, this, index, x, y));
             else if (handler instanceof FilterBasicHandler)
                 addSlot(new FilterBasicSlot(handler, index, x, y, slots.get(0).getItem().getItem() instanceof FilterCount));
             else
@@ -223,13 +234,24 @@ public class CardItemContainer extends AbstractContainerMenu {
     public void removed(Player playerIn) {
         Level world = playerIn.getLevel();
         if (!world.isClientSide) {
+        	
             BaseCard.setInventory(cardItem, handler);
+              
             if (!sourceContainer.equals(BlockPos.ZERO)) {
                 BlockEntity blockEntity = world.getBlockEntity(sourceContainer);
                 if (blockEntity instanceof LaserNodeBE)
                     ((LaserNodeBE) blockEntity).updateThisNode();
             }
-        }
+        }      
         super.removed(playerIn);
+    }
+    
+    public boolean hasChannelOverclockerAnywhere()
+    {
+    	for(int i = 0; i < playerInventory.getSlots(); i++)
+    	if( playerInventory.getStackInSlot(i).getItem() instanceof OverclockerChannel ) return true;
+    	if( handler != null) if(handler.getStackInSlot(2).getItem() instanceof OverclockerChannel) return true;
+    	if( getCarried().getItem() instanceof OverclockerChannel) return true;
+    	return false;
     }
 }

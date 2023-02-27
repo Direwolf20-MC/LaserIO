@@ -2,6 +2,8 @@ package com.direwolf20.laserio.common.items.cards;
 
 import com.direwolf20.laserio.common.containers.CardEnergyContainer;
 import com.direwolf20.laserio.common.containers.customhandler.CardItemHandler;
+import com.direwolf20.laserio.common.items.upgrades.OverclockerChannel;
+
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -110,5 +112,10 @@ public class CardEnergy extends BaseCard {
         CompoundTag compound = card.getTag();
         if (compound == null || !compound.contains("limitextractpercent")) return 0;
         return compound.getInt("limitextractpercent");
+    }
+    
+    public static boolean hasChannelOverclocker(ItemStack card) {
+    	CardItemHandler inv = getInventory(card);
+    	return inv.getStackInSlot(1).getItem() instanceof OverclockerChannel;
     }
 }

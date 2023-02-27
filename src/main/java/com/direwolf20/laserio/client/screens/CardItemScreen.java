@@ -6,6 +6,7 @@ import com.direwolf20.laserio.client.screens.widgets.NumberButton;
 import com.direwolf20.laserio.client.screens.widgets.ToggleButton;
 import com.direwolf20.laserio.common.LaserIO;
 import com.direwolf20.laserio.common.containers.CardItemContainer;
+import com.direwolf20.laserio.common.containers.customslot.CardChannelSlot;
 import com.direwolf20.laserio.common.containers.customslot.CardItemSlot;
 import com.direwolf20.laserio.common.containers.customslot.CardOverclockSlot;
 import com.direwolf20.laserio.common.containers.customslot.FilterBasicSlot;
@@ -13,8 +14,10 @@ import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.common.items.cards.CardItem;
 import com.direwolf20.laserio.common.items.cards.CardRedstone;
 import com.direwolf20.laserio.common.items.filters.*;
+import com.direwolf20.laserio.common.items.upgrades.OverclockerChannel;
 import com.direwolf20.laserio.common.network.PacketHandler;
 import com.direwolf20.laserio.common.network.packets.*;
+import com.direwolf20.laserio.setup.Registration;
 import com.direwolf20.laserio.util.MiscTools;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -30,8 +33,18 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.client.event.ContainerScreenEvent;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.item.ItemEvent;
+import net.minecraftforge.event.entity.item.ItemTossEvent;
+import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
+import net.minecraftforge.event.entity.player.PlayerContainerEvent;
+import net.minecraftforge.event.entity.player.PlayerDestroyItemEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent.ItemPickupEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 
@@ -43,7 +56,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
 
     protected final CardItemContainer container;
     protected byte currentMode;
-    protected byte currentChannel;
+    protected int currentChannel;
     protected byte currentRedstoneChannel;
     protected byte currentItemExtractAmt;
     protected short currentPriority;
@@ -58,6 +71,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
     protected boolean showFilter;
     protected boolean showAllow;
     protected boolean showNBT;
+    protected boolean showChannelSlot;
     protected final ItemStack card;
     public ItemStack filter;
     protected Map<String, Button> buttons = new HashMap<>();
@@ -78,12 +92,14 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
         this.container = container;
         this.card = container.cardItem;
         filter = container.slots.get(0).getItem();
+        container.currentScreen = this;
     }
-
+    
     @Override
     public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         this.renderBackground(matrixStack);
         toggleFilterSlots();
+        toggleChannelSlot();
         if (showFilter)
             updateItemCounts();
         super.render(matrixStack, mouseX, mouseY, partialTicks);
@@ -98,7 +114,11 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
             this.renderTooltip(matrixStack, translatableComponents[currentMode], mouseX, mouseY);
         }
         Button channelButton = buttons.get("channel");
-        if (MiscTools.inBounds(channelButton.x, channelButton.y, channelButton.getWidth(), channelButton.getHeight(), mouseX, mouseY)) {
+        if (MiscTools.inBounds(channelButton.x, channelButton.y, channelButton.getWidth()-3, channelButton.getHeight(), mouseX, mouseY)) {
+            this.renderTooltip(matrixStack, Component.translatable("screen.laserio.channel").append(String.valueOf(currentChannel)), mouseX, mouseY);
+        }
+        Button channelNumberButton = buttons.get("channel_number");
+        if (MiscTools.inBounds(channelNumberButton.x, channelNumberButton.y, channelNumberButton.getWidth(), channelNumberButton.getHeight(), mouseX, mouseY)) {
             this.renderTooltip(matrixStack, Component.translatable("screen.laserio.channel").append(String.valueOf(currentChannel)), mouseX, mouseY);
         }
         Button redstoneChannelButton = buttons.get("redstoneChannel");
@@ -197,6 +217,12 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
         }));
     }
 
+    public void addChannelNumberButton() {
+    	 buttons.put("channel_number", new NumberButton(getGuiLeft() + 7, getGuiTop() + 53, 27, 12, currentChannel, (button) -> {
+             changeAmount(-1);
+         }));
+    }
+    
     public void addModeButton() {
         ResourceLocation[] modeTextures = new ResourceLocation[4];
         modeTextures[0] = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/modeinserter.png");
@@ -236,7 +262,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
         BlockEntityWithoutLevelRenderer blockentitywithoutlevelrenderer = new BlockEntityWithoutLevelRenderer(minecraft.getBlockEntityRenderDispatcher(), minecraft.getEntityModels());
         this.itemRenderer = new LaserIOItemRenderer(minecraft.getTextureManager(), minecraft.getModelManager(), minecraft.getItemColors(), blockentitywithoutlevelrenderer);
         currentMode = BaseCard.getTransferMode(card);
-        currentChannel = BaseCard.getChannel(card);
+        currentChannel = BaseCard.getChannelAsUInt(card);
         currentItemExtractAmt = CardItem.getItemExtractAmt(card);
         currentPriority = BaseCard.getPriority(card);
         currentSneaky = BaseCard.getSneaky(card);
@@ -247,7 +273,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
         currentRedstoneMode = BaseCard.getRedstoneMode(card);
         currentRedstoneChannel = BaseCard.getRedstoneChannel(card);
         currentAndMode = BaseCard.getAnd(card);
-
+        
         showFilter = !(filter == null) && !filter.isEmpty() && !(filter.getItem() instanceof FilterTag);
         if (showFilter) {
             isAllowList = BaseFilter.getAllowList(filter) ? 1 : 0;
@@ -331,7 +357,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
         addRedstoneChannelButton();
 
         buttons.put("channel", new ChannelButton(getGuiLeft() + 5, getGuiTop() + 65, 16, 16, currentChannel, (button) -> {
-            currentChannel = BaseCard.nextChannel(card);
+            currentChannel = BaseCard.getChannelAsUInt(card);
             ((ChannelButton) button).setChannel(currentChannel);
         }));
 
@@ -353,7 +379,9 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
                 openNode();
             }));
         }
-
+        
+        addChannelNumberButton();
+        
         for (Map.Entry<String, Button> button : buttons.entrySet()) {
             addRenderableWidget(button.getValue());
         }
@@ -369,16 +397,56 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
                     cardItemSlot.setEnabled(false);
                 if (slot instanceof CardOverclockSlot cardOverclockSlot)
                     cardOverclockSlot.setEnabled(false);
+                if (slot instanceof CardChannelSlot cardChannelSlot)
+                	cardChannelSlot.setEnabled(false);
             }
         }
-
+  
         modeChange();
         /*if (currentMode == 0) removeWidget(buttons.get("speed"));
         if (currentMode == 0) removeWidget();
         if (currentMode == 0 || currentMode == 1) removeWidget(buttons.get("roundrobin"));
         if (currentMode == 0 || currentMode == 2) removeWidget(buttons.get("regulate"));*/
     }
-
+    
+    public void renderChannelNumberButton() {
+    	Button channelNumberButton = buttons.get("channel_number");
+    	if(currentMode!=3) {
+    		if(!container.handler.getStackInSlot(2).isEmpty())
+    		{
+    			if(!renderables.contains(channelNumberButton))
+    				addRenderableWidget(channelNumberButton);
+    		}else removeWidget(channelNumberButton);
+    	} else {
+    		removeWidget(channelNumberButton);
+    	}
+    }
+    
+    public void updateChannelComponents() {
+    	NumberButton channelNumberButton = (NumberButton) buttons.get("channel_number");
+    	channelNumberButton.setValue(currentChannel);
+    	
+    	ChannelButton channelButton = ((ChannelButton) buttons.get("channel"));
+    	channelButton.setChannel(currentChannel);
+    	
+    	if(!container.handler.getStackInSlot(2).isEmpty()) {
+    		byte overclockerChannel =  (byte)(currentChannel / 16);
+    		OverclockerChannel.setChannel(container.handler.getStackInSlot(2), overclockerChannel);
+    		OverclockerChannel.setChannelVisible(container.handler.getStackInSlot(2), true);
+    		PacketHandler.sendToServer(new PacketUpdateOverclockerChannel(overclockerChannel, true));
+    	}
+    	
+    	PacketHandler.sendToServer(new PacketUpdateCardChannel((byte) currentChannel));
+    }
+    
+    public void updateChannel(){
+    	BaseCard.updateChannel(card, container.handler.getStackInSlot(2));
+    	currentChannel = BaseCard.getChannelAsUInt(card);
+		renderChannelNumberButton();
+		updateChannelComponents();
+		
+    }
+    
     public void modeChange() {
         Button speedButton = buttons.get("speed");
         Button exactButton = buttons.get("exact");
@@ -388,6 +456,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
         Button amountButton = buttons.get("amount");
         Button andButton = buttons.get("and");
         Button redstoneModeButton = buttons.get("redstoneMode");
+        
         if (currentMode == 0) { //insert
             if (!renderables.contains(channelButton))
                 addRenderableWidget(channelButton);
@@ -477,6 +546,24 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
         }
     }
 
+    public void changeChannel(int change)
+    {
+    	if (Screen.hasShiftDown()) change *= 4;
+        if (Screen.hasControlDown()) change *= 16;
+        if(change < 0) {
+        	currentChannel = Math.max(currentChannel + change, 0);
+        } else {
+        	currentChannel = Math.min(currentChannel + change, 255);
+        }
+        BaseCard.setChannel(card, (byte) currentChannel);
+    }
+    
+    public void toggleChannelSlot() {
+    	showChannelSlot = container.hasChannelOverclockerAnywhere() && currentMode!=3;
+        ((CardChannelSlot) container.getSlot(2)).setEnabled(showChannelSlot);
+        renderChannelNumberButton();
+    }
+    
     public void toggleFilterSlots() {
         filter = container.slots.get(0).getItem();
         showFilter = !filter.isEmpty() && !(filter.getItem() instanceof FilterTag);
@@ -585,12 +672,16 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
         int relY = (this.height - this.imageHeight) / 2;
         this.blit(matrixStack, relX, relY, 0, 0, this.imageWidth, this.imageHeight);
         filter = container.slots.get(0).getItem();
+        //channelOverclocker = container.handler.getStackInSlot(2);
         if (showFilter) {
             int slotsWidth = 90;
             int slotsHeight = 54;
-            relX = relX + 43;
-            relY = relY + 24;
-            blit(matrixStack, relX, relY, 0, 167, slotsWidth, slotsHeight);
+            int f_relX = relX + 43;
+            int f_relY = relY + 24;
+            blit(matrixStack, f_relX, f_relY, 0, 167, slotsWidth, slotsHeight);
+        }
+        if (showChannelSlot) {
+        	blit(matrixStack, relX + 21, relY + 66, 0, 222, 16, 16);
         }
     }
 
@@ -643,7 +734,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
     public void saveSettings() {
         if (showFilter)
             PacketHandler.sendToServer(new PacketUpdateFilter(isAllowList == 1, isCompareNBT == 1));
-        PacketHandler.sendToServer(new PacketUpdateCard(currentMode, currentChannel, currentItemExtractAmt, currentPriority, currentSneaky, (short) currentTicks, currentExact, currentRegulate, (byte) currentRoundRobin, 0, 0, currentRedstoneMode, currentRedstoneChannel, currentAndMode));
+        PacketHandler.sendToServer(new PacketUpdateCard(currentMode, (byte) currentChannel, currentItemExtractAmt, currentPriority, currentSneaky, (short) currentTicks, currentExact, currentRegulate, (byte) currentRoundRobin, 0, 0, currentRedstoneMode, currentRedstoneChannel, currentAndMode));
     }
 
     public boolean filterSlot(int btn) {
@@ -669,17 +760,18 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
         PacketHandler.sendToServer(new PacketOpenNode(container.sourceContainer, container.direction));
         Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
     }
-
+    
     @Override
     public boolean mouseClicked(double x, double y, int btn) {
         ChannelButton channelButton = ((ChannelButton) buttons.get("channel"));
-        if (MiscTools.inBounds(channelButton.x, channelButton.y, channelButton.getWidth(), channelButton.getHeight(), x, y)) {
+        if (MiscTools.inBounds(channelButton.x, channelButton.y, channelButton.getWidth()-2, channelButton.getHeight(), x, y)) {
             if (btn == 0)
-                currentChannel = BaseCard.nextChannel(card);
+                currentChannel = Byte.toUnsignedInt(BaseCard.nextChannel(card));
             else if (btn == 1)
-                currentChannel = BaseCard.previousChannel(card);
-            channelButton.setChannel(currentChannel);
+                currentChannel = Byte.toUnsignedInt(BaseCard.previousChannel(card));
+            updateChannelComponents();
             channelButton.playDownSound(Minecraft.getInstance().getSoundManager());
+          
             return true;
         }
         ChannelButton redstoneChannelButton = ((ChannelButton) buttons.get("redstoneChannel"));
@@ -720,6 +812,18 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
             speedButton.playDownSound(Minecraft.getInstance().getSoundManager());
             return true;
         }
+        
+        NumberButton channelNumberButton = ((NumberButton) buttons.get("channel_number"));
+        if (MiscTools.inBounds(channelNumberButton.x, channelNumberButton.y, channelNumberButton.getWidth(), channelNumberButton.getHeight(), x, y)) {
+            if (btn == 0)
+                changeChannel(1);
+            else if (btn == 1)
+                changeChannel(-1);
+            updateChannelComponents();
+            channelNumberButton.playDownSound(Minecraft.getInstance().getSoundManager());
+            return true;
+        }
+        
         if (hoveredSlot == null)
             return super.mouseClicked(x, y, btn);
 
@@ -769,6 +873,9 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
                 return true;
             }
         }
+
         return super.mouseClicked(x, y, btn);
     }
+    
+
 }

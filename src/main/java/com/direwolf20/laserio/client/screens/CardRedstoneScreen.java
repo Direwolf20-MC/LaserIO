@@ -8,6 +8,7 @@ import com.direwolf20.laserio.common.items.cards.CardRedstone;
 import com.direwolf20.laserio.common.network.PacketHandler;
 import com.direwolf20.laserio.common.network.packets.PacketOpenNode;
 import com.direwolf20.laserio.common.network.packets.PacketUpdateRedstoneCard;
+import com.direwolf20.laserio.common.network.packets.PacketUpdateRedstoneChannel;
 import com.direwolf20.laserio.util.MiscTools;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -208,6 +209,7 @@ public class CardRedstoneScreen extends AbstractContainerScreen<CardRedstoneCont
             else if (btn == 1)
                 currentRedstoneChannel = CardRedstone.previousRedstoneChannel(card);
             channelButton.setChannel(currentRedstoneChannel);
+            PacketHandler.sendToServer(new PacketUpdateRedstoneChannel(currentRedstoneChannel));
             channelButton.playDownSound(Minecraft.getInstance().getSoundManager());
             return true;
         }

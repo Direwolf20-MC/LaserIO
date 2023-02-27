@@ -23,7 +23,7 @@ public class CardClearRecipe extends ShapelessRecipe {
 
     @Override
     public NonNullList<ItemStack> getRemainingItems(CraftingContainer inv) {
-        NonNullList<ItemStack> nonnulllist = NonNullList.withSize(inv.getContainerSize(), ItemStack.EMPTY); //2 spots - one for filters, one for Overclockers
+        NonNullList<ItemStack> nonnulllist = NonNullList.withSize(inv.getContainerSize(), ItemStack.EMPTY); //3 spots - one for filters, two for Overclockers
 
         for (int i = 0; i < inv.getContainerSize(); i++) {
             ItemStack itemStack = inv.getItem(i);
@@ -32,6 +32,7 @@ public class CardClearRecipe extends ShapelessRecipe {
                 List<ItemStack> containedItems = ((BaseCard) item).getContainerItems(itemStack);
                 nonnulllist.set(0, containedItems.get(0));
                 nonnulllist.set(1, containedItems.get(1));
+                nonnulllist.set(2, containedItems.get(2));
             }
         }
         return nonnulllist;
@@ -46,7 +47,6 @@ public class CardClearRecipe extends ShapelessRecipe {
     //public static CardClearRecipe.Serializer SERIALIZER;
 
     public static class Serializer extends ShapelessRecipe.Serializer {
-        private static final ResourceLocation NAME = new ResourceLocation("laserio", "cardclear");
 
         public CardClearRecipe fromJson(ResourceLocation resourceLocation, JsonObject jsonObject) {
             ShapelessRecipe vanilla = super.fromJson(resourceLocation, jsonObject);

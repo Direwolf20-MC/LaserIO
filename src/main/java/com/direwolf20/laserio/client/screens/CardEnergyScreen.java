@@ -5,14 +5,18 @@ import com.direwolf20.laserio.client.screens.widgets.NumberButton;
 import com.direwolf20.laserio.client.screens.widgets.ToggleButton;
 import com.direwolf20.laserio.common.LaserIO;
 import com.direwolf20.laserio.common.containers.CardEnergyContainer;
+import com.direwolf20.laserio.common.containers.customslot.CardChannelSlot;
 import com.direwolf20.laserio.common.containers.customslot.CardItemSlot;
 import com.direwolf20.laserio.common.containers.customslot.CardOverclockSlot;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.common.items.cards.CardEnergy;
 import com.direwolf20.laserio.common.items.cards.CardRedstone;
+import com.direwolf20.laserio.common.items.upgrades.OverclockerChannel;
 import com.direwolf20.laserio.common.network.PacketHandler;
 import com.direwolf20.laserio.common.network.packets.PacketOpenNode;
 import com.direwolf20.laserio.common.network.packets.PacketUpdateCard;
+import com.direwolf20.laserio.common.network.packets.PacketUpdateCardChannel;
+import com.direwolf20.laserio.common.network.packets.PacketUpdateOverclockerChannel;
 import com.direwolf20.laserio.util.MiscTools;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -38,7 +42,7 @@ public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContaine
 
     protected final CardEnergyContainer container;
     protected byte currentMode;
-    protected byte currentChannel;
+    protected int currentChannel;
     protected byte currentRedstoneChannel;
     protected int currentEnergyExtractAmt;
     protected short currentPriority;
@@ -49,6 +53,7 @@ public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContaine
     protected boolean currentRegulate;
     protected int currentExtractLimitPercent;
     protected int currentInsertLimitPercent;
+    protected boolean showChannelSlot;
     protected final ItemStack card;
     protected Map<String, Button> buttons = new HashMap<>();
     protected byte currentRedstoneMode;
@@ -67,11 +72,13 @@ public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContaine
         super(container, inv, name);
         this.container = container;
         this.card = container.cardItem;
+        container.currentScreen = this;
     }
 
     @Override
     public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         this.renderBackground(matrixStack);
+        toggleChannelSlot();
         super.render(matrixStack, mouseX, mouseY, partialTicks);
         this.renderTooltip(matrixStack, mouseX, mouseY);
         Button modeButton = buttons.get("mode");
@@ -84,7 +91,11 @@ public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContaine
             this.renderTooltip(matrixStack, translatableComponents[currentMode], mouseX, mouseY);
         }
         Button channelButton = buttons.get("channel");
-        if (MiscTools.inBounds(channelButton.x, channelButton.y, channelButton.getWidth(), channelButton.getHeight(), mouseX, mouseY)) {
+        if (MiscTools.inBounds(channelButton.x, channelButton.y, channelButton.getWidth()-3, channelButton.getHeight(), mouseX, mouseY)) {
+            this.renderTooltip(matrixStack, Component.translatable("screen.laserio.channel").append(String.valueOf(currentChannel)), mouseX, mouseY);
+        }
+        Button channelNumberButton = buttons.get("channel_number");
+        if (MiscTools.inBounds(channelNumberButton.x, channelNumberButton.y, channelNumberButton.getWidth(), channelNumberButton.getHeight(), mouseX, mouseY)) {
             this.renderTooltip(matrixStack, Component.translatable("screen.laserio.channel").append(String.valueOf(currentChannel)), mouseX, mouseY);
         }
         Button redstoneChannelButton = buttons.get("redstoneChannel");
@@ -184,6 +195,12 @@ public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContaine
         }));
     }
 
+    public void addChannelNumberButton() {
+   	 buttons.put("channel_number", new NumberButton(getGuiLeft() + 7, getGuiTop() + 53, 27, 12, currentChannel, (button) -> {
+            changeAmount(-1);
+        }));
+   }
+    
     public void addRedstoneChannelButton() {
         buttons.put("redstoneChannel", new ChannelButton(getGuiLeft() + 125, getGuiTop() + 5, 16, 16, currentRedstoneChannel, (button) -> {
             currentRedstoneChannel = CardRedstone.nextRedstoneChannel(card);
@@ -243,6 +260,7 @@ public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContaine
         addModeButton();
         addRedstoneButton();
         addRedstoneChannelButton();
+        addChannelNumberButton();
 
         buttons.put("channel", new ChannelButton(getGuiLeft() + 5, getGuiTop() + 65, 16, 16, currentChannel, (button) -> {
             currentChannel = BaseCard.nextChannel(card);
@@ -285,6 +303,50 @@ public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContaine
         modeChange();
     }
 
+    public void renderChannelNumberButton() {
+    	Button channelNumberButton = buttons.get("channel_number");
+    	if(currentMode!=3) {
+    		if(!container.handler.getStackInSlot(1).isEmpty())
+    		{
+    			if(!renderables.contains(channelNumberButton))
+    				addRenderableWidget(channelNumberButton);
+    		}else removeWidget(channelNumberButton);
+    	} else {
+    		removeWidget(channelNumberButton);
+    	}
+    }
+    
+    public void updateChannelComponents() {
+    	NumberButton channelNumberButton = (NumberButton) buttons.get("channel_number");
+    	channelNumberButton.setValue(currentChannel);
+    	
+    	ChannelButton channelButton = ((ChannelButton) buttons.get("channel"));
+    	channelButton.setChannel(currentChannel);
+    	
+    	if(!container.handler.getStackInSlot(1).isEmpty()) {
+    		byte overclockerChannel =  (byte)(currentChannel / 16);
+    		OverclockerChannel.setChannel(container.handler.getStackInSlot(1), overclockerChannel);
+    		OverclockerChannel.setChannelVisible(container.handler.getStackInSlot(1), true);
+    		PacketHandler.sendToServer(new PacketUpdateOverclockerChannel(overclockerChannel, true));
+    	}
+    	
+    	PacketHandler.sendToServer(new PacketUpdateCardChannel((byte) currentChannel));
+    }
+    
+    public void updateChannel(){
+    	BaseCard.updateChannel(card, container.handler.getStackInSlot(1));
+    	currentChannel = BaseCard.getChannelAsUInt(card);
+		renderChannelNumberButton();
+		updateChannelComponents();
+		
+    }
+    
+    public void toggleChannelSlot() {
+    	showChannelSlot = container.hasChannelOverclockerAnywhere() && currentMode!=3;
+        ((CardChannelSlot) container.getSlot(1)).setEnabled(showChannelSlot);
+        renderChannelNumberButton();
+    }
+    
     public void modeChange() {
         Button speedButton = buttons.get("speed");
         Button exactButton = buttons.get("exact");
@@ -397,6 +459,18 @@ public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContaine
         }
     }
 
+    public void changeChannel(int change)
+    {
+    	if (Screen.hasShiftDown()) change *= 4;
+        if (Screen.hasControlDown()) change *= 16;
+        if(change < 0) {
+        	currentChannel = Math.max(currentChannel + change, 0);
+        } else {
+        	currentChannel = Math.min(currentChannel + change, 255);
+        }
+        BaseCard.setChannel(card, (byte) currentChannel);
+    }
+    
     private boolean showExtractAmt() {
         return card.getItem() instanceof BaseCard && BaseCard.getNamedTransferMode(card) != BaseCard.TransferMode.INSERT;
     }
@@ -441,6 +515,9 @@ public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContaine
         int relX = (this.width - this.imageWidth) / 2;
         int relY = (this.height - this.imageHeight) / 2;
         this.blit(matrixStack, relX, relY, 0, 0, this.imageWidth, this.imageHeight);
+        if (showChannelSlot) {
+        	blit(matrixStack, relX + 21, relY + 66, 0, 167, 16, 16);
+        }
     }
 
     @Override
@@ -500,7 +577,7 @@ public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContaine
     }
 
     public void saveSettings() {
-        PacketHandler.sendToServer(new PacketUpdateCard(currentMode, currentChannel, currentEnergyExtractAmt, currentPriority, currentSneaky, (short) currentTicks, currentExact, currentRegulate, (byte) currentRoundRobin, currentExtractLimitPercent, currentInsertLimitPercent, currentRedstoneMode, currentRedstoneChannel, false));
+        PacketHandler.sendToServer(new PacketUpdateCard(currentMode, (byte) currentChannel, currentEnergyExtractAmt, currentPriority, currentSneaky, (short) currentTicks, currentExact, currentRegulate, (byte) currentRoundRobin, currentExtractLimitPercent, currentInsertLimitPercent, currentRedstoneMode, currentRedstoneChannel, false));
     }
 
     public void openNode() {
@@ -517,7 +594,7 @@ public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContaine
                 currentChannel = BaseCard.nextChannel(card);
             else if (btn == 1)
                 currentChannel = BaseCard.previousChannel(card);
-            channelButton.setChannel(currentChannel);
+            updateChannelComponents();
             channelButton.playDownSound(Minecraft.getInstance().getSoundManager());
             return true;
         }
@@ -565,6 +642,17 @@ public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContaine
             return true;
         }
 
+        NumberButton channelNumberButton = ((NumberButton) buttons.get("channel_number"));
+        if (MiscTools.inBounds(channelNumberButton.x, channelNumberButton.y, channelNumberButton.getWidth(), channelNumberButton.getHeight(), x, y)) {
+            if (btn == 0)
+                changeChannel(1);
+            else if (btn == 1)
+                changeChannel(-1);
+            updateChannelComponents();
+            channelNumberButton.playDownSound(Minecraft.getInstance().getSoundManager());
+            return true;
+        }
+        
         return super.mouseClicked(x, y, btn);
     }
 }

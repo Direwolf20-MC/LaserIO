@@ -284,7 +284,7 @@ public class RenderUtils {
                         if (((BaseCard) card.getItem()).getCardType() == BaseCard.CardType.ITEM) {
                             if (be.getAttachedInventoryNoCache(direction, (byte) -1).equals(LazyOptional.empty()))
                                 continue;
-                            float[] floatcolors = LaserNodeBERender.colors[BaseCard.getChannel(card)].getColorComponents(new float[3]);
+                            float[] floatcolors = LaserNodeBERender.colors[BaseCard.getChannelAsUInt(card) % 16].getColorComponents(new float[3]);
                             boolean reverse = !direction.equals(Direction.DOWN);
                             if (BaseCard.getNamedTransferMode(card) != BaseCard.TransferMode.EXTRACT)
                                 reverse = !reverse;
@@ -382,7 +382,7 @@ public class RenderUtils {
                     if (((BaseCard) card.getItem()).getCardType() == BaseCard.CardType.ITEM) {
                         if (be.getAttachedInventoryNoCache(direction, (byte) -1).equals(LazyOptional.empty()))
                             continue;
-                        float[] floatcolors = LaserNodeBERender.colors[BaseCard.getChannel(card)].getColorComponents(new float[3]);
+                        float[] floatcolors = LaserNodeBERender.colors[BaseCard.getChannelAsUInt(card) % 16].getColorComponents(new float[3]);
                         boolean reverse = direction.equals(Direction.DOWN) ? false : true;
                         if (BaseCard.getNamedTransferMode(card) != BaseCard.TransferMode.EXTRACT)
                             reverse = !reverse;

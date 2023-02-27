@@ -4,6 +4,8 @@ import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.common.items.cards.CardEnergy;
 import com.direwolf20.laserio.common.items.filters.BaseFilter;
 import com.direwolf20.laserio.common.items.upgrades.OverclockerCard;
+import com.direwolf20.laserio.common.items.upgrades.OverclockerChannel;
+
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.ItemStackHandler;
@@ -21,24 +23,27 @@ public class CardItemHandler extends ItemStackHandler {
     @Override
     protected void onContentsChanged(int slot) {
         if (!stack.isEmpty())
-            BaseCard.setInventory(stack, this);
-
+        {
+            BaseCard.setInventory(stack, this);      
+        }
     }
 
     @Override
     public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
         if (this.stack.getItem() instanceof CardEnergy)
-            return stack.getItem() instanceof OverclockerCard;
+            return slot == 0 ? stack.getItem() instanceof OverclockerCard : stack.getItem() instanceof OverclockerChannel;
         if (slot == 0)
             return stack.getItem() instanceof BaseFilter;
+        if (slot == 2)
+        	return stack.getItem() instanceof OverclockerChannel;
         return stack.getItem() instanceof OverclockerCard;
     }
 
     @Override
     public int getSlotLimit(int slot) {
         if (this.stack.getItem() instanceof CardEnergy)
-            return 4;
-        if (slot == 0)
+            return slot == 0 ? 4 : 1;
+        if (slot == 0 || slot == 2)
             return 1;
         return 4;
     }

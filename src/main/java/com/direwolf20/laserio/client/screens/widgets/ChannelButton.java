@@ -44,7 +44,7 @@ public class ChannelButton extends Button {
         RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
         RenderSystem.setShaderTexture(0, resourceLocation);
         blit(stack, this.x, this.y, 0, 0, width, height, width, height);
-        fill(stack, this.x + 4, this.y + 4, this.x + this.width - 4, this.y + this.height - 4, colors[channel].getRGB());
+        fill(stack, this.x + 4, this.y + 4, this.x + this.width - 4, this.y + this.height - 4, colors[channel%16].getRGB());
     }
 
     public void setChannel(int channel) {

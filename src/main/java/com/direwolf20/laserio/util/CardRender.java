@@ -76,7 +76,7 @@ public class CardRender {
         if (card.getItem() instanceof CardRedstone || BaseCard.getNamedTransferMode(card) == BaseCard.TransferMode.SENSOR)
             floatcolors = LaserNodeBERender.colors[BaseCard.getRedstoneChannel(card)].getColorComponents(new float[3]);
         else
-            floatcolors = LaserNodeBERender.colors[BaseCard.getChannel(card)].getColorComponents(new float[3]);
+            floatcolors = LaserNodeBERender.colors[BaseCard.getChannelAsUInt(card) % 16].getColorComponents(new float[3]);
         if (reverse) {
             endLaser = new Vector3f(offset.x(), offset.y(), offset.z());
             startLaser = new Vector3f(diffX, diffY, diffZ);

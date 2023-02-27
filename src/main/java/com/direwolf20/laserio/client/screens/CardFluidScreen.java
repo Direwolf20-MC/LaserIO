@@ -134,6 +134,6 @@ public class CardFluidScreen extends CardItemScreen {
     public void saveSettings() {
         if (showFilter)
             PacketHandler.sendToServer(new PacketUpdateFilter(isAllowList == 1, isCompareNBT == 1));
-        PacketHandler.sendToServer(new PacketUpdateCard(currentMode, currentChannel, currentFluidExtractAmt, currentPriority, currentSneaky, (short) currentTicks, currentExact, currentRegulate, (byte) currentRoundRobin, 0, 0, currentRedstoneMode, currentRedstoneChannel, currentAndMode));
+        PacketHandler.sendToServer(new PacketUpdateCard(currentMode,(byte) currentChannel, currentFluidExtractAmt, currentPriority, currentSneaky, (short) currentTicks, currentExact, currentRegulate, (byte) currentRoundRobin, 0, 0, currentRedstoneMode, currentRedstoneChannel, currentAndMode));
     }
 }

@@ -161,8 +161,18 @@ public class LaserIORecipes extends RecipeProvider {
                 .group("laserio")
                 .unlockedBy("has_filter_basic", InventoryChangeTrigger.TriggerInstance.hasItems(Registration.Filter_Basic.get()))
                 .save(consumer);
-
+        
         //Upgrades
+        ShapedRecipeBuilder.shaped(Registration.Overclocker_Channel.get(), 2)
+        		.pattern(" i ")
+        		.pattern("rqr")
+        		.pattern("iii")
+        		.define('i', Tags.Items.INGOTS_IRON)
+        		.define('q', Registration.Logic_Chip.get())
+        		.define('r', Tags.Items.DUSTS_REDSTONE)
+        		.group("laserio")
+        		.unlockedBy("has_logic_chip", InventoryChangeTrigger.TriggerInstance.hasItems(Registration.Logic_Chip.get()))
+        		.save(consumer);
         ShapedRecipeBuilder.shaped(Registration.Overclocker_Card.get(), 1)
                 .pattern(" g ")
                 .pattern("rpr")
@@ -225,6 +235,10 @@ public class LaserIORecipes extends RecipeProvider {
                 .group("laserio")
                 .unlockedBy("has_filter_mod", InventoryChangeTrigger.TriggerInstance.hasItems(Registration.Filter_Mod.get()))
                 .save(consumer, Registration.Filter_Mod.getId() + "_nbtclear");
-
+        ShapelessRecipeBuilder.shapeless(Registration.Overclocker_Channel.get())
+        		.requires(Registration.Overclocker_Channel.get())
+        		.group("laserio")
+        		.unlockedBy("has_overclocker_channel", InventoryChangeTrigger.TriggerInstance.hasItems(Registration.Overclocker_Channel.get()))
+        		.save(consumer, Registration.Overclocker_Channel.getId() + "_nbtclear");
     }
 }

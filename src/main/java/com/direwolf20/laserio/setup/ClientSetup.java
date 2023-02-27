@@ -7,7 +7,10 @@ import com.direwolf20.laserio.client.events.EventTooltip;
 import com.direwolf20.laserio.client.screens.*;
 import com.direwolf20.laserio.common.LaserIO;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
+import com.direwolf20.laserio.common.items.cards.CardEnergy;
 import com.direwolf20.laserio.common.items.cards.CardRedstone;
+import com.direwolf20.laserio.common.items.upgrades.OverclockerChannel;
+
 import net.minecraft.client.color.item.ItemColors;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
@@ -37,6 +40,7 @@ public class ClientSetup {
         //Register our Render Events Class
         MinecraftForge.EVENT_BUS.register(ClientEvents.class);
         MinecraftForge.EVENT_BUS.register(EventTooltip.class);
+       
 
         //Screens
         event.enqueueWork(() -> {
@@ -76,6 +80,12 @@ public class ClientSetup {
                         return (int) CardRedstone.getTransferMode(stack);
                     });
         });
+        event.enqueueWork(() -> {
+            ItemProperties.register(Registration.Overclocker_Channel.get(),
+                    new ResourceLocation(LaserIO.MODID, "mode"), (stack, level, living, id) -> {
+                        return OverclockerChannel.isChannelVisible(stack) ? 0 : 1;
+                    });
+        });
     }
 
     @SubscribeEvent
@@ -92,7 +102,8 @@ public class ClientSetup {
     }
 
     //For giving the cards their channel color on the itemstack
-    @SubscribeEvent
+    @SuppressWarnings("deprecation")
+	@SubscribeEvent
     static void itemColors(RegisterColorHandlersEvent.Item event) {
         final ItemColors colors = event.getItemColors();
 
@@ -102,7 +113,21 @@ public class ClientSetup {
                     Color color = LaserNodeBERender.colors[BaseCard.getRedstoneChannel(stack)];
                     return color.getRGB();
                 } else {
-                    Color color = LaserNodeBERender.colors[BaseCard.getChannel(stack)];
+                    Color color = LaserNodeBERender.colors[BaseCard.getChannelAsUInt(stack) % 16];
+                    return color.getRGB();
+                }
+            }
+            if (index == 3)
+            {
+            	if (BaseCard.getTransferMode(stack) == (byte) 3) {
+                    Color color = LaserNodeBERender.colors[BaseCard.getRedstoneChannel(stack)];
+                    return color.getRGB();
+                } else {
+                    Color color;
+                    if(!BaseCard.hasChannelOverclocker(stack))
+                    	color = LaserNodeBERender.colors[BaseCard.getChannelAsUInt(stack) % 16];
+                    else
+                    	color = LaserNodeBERender.colors[BaseCard.getChannelAsUInt(stack) / 16];
                     return color.getRGB();
                 }
             }
@@ -114,7 +139,21 @@ public class ClientSetup {
                     Color color = LaserNodeBERender.colors[BaseCard.getRedstoneChannel(stack)];
                     return color.getRGB();
                 } else {
-                    Color color = LaserNodeBERender.colors[BaseCard.getChannel(stack)];
+                    Color color = LaserNodeBERender.colors[BaseCard.getChannelAsUInt(stack) % 16];
+                    return color.getRGB();
+                }
+            }
+            if (index == 3)
+            {
+            	if (BaseCard.getTransferMode(stack) == (byte) 3) {
+                    Color color = LaserNodeBERender.colors[BaseCard.getRedstoneChannel(stack)];
+                    return color.getRGB();
+                } else {
+                    Color color;
+                    if(!BaseCard.hasChannelOverclocker(stack))
+                    	color = LaserNodeBERender.colors[BaseCard.getChannelAsUInt(stack) % 16];
+                    else
+                    	color = LaserNodeBERender.colors[BaseCard.getChannelAsUInt(stack) / 16];
                     return color.getRGB();
                 }
             }
@@ -126,7 +165,21 @@ public class ClientSetup {
                     Color color = LaserNodeBERender.colors[BaseCard.getRedstoneChannel(stack)];
                     return color.getRGB();
                 } else {
-                    Color color = LaserNodeBERender.colors[BaseCard.getChannel(stack)];
+                    Color color = LaserNodeBERender.colors[BaseCard.getChannelAsUInt(stack) % 16];
+                    return color.getRGB();
+                }
+            }
+            if (index == 3)
+            {
+            	if (BaseCard.getTransferMode(stack) == (byte) 3) {
+                    Color color = LaserNodeBERender.colors[BaseCard.getRedstoneChannel(stack)];
+                    return color.getRGB();
+                } else {
+                    Color color;
+                    if(!CardEnergy.hasChannelOverclocker(stack))
+                    	color = LaserNodeBERender.colors[BaseCard.getChannelAsUInt(stack) % 16];
+                    else
+                    	color = LaserNodeBERender.colors[BaseCard.getChannelAsUInt(stack) / 16];
                     return color.getRGB();
                 }
             }
@@ -139,6 +192,13 @@ public class ClientSetup {
             }
             return 0xFFFFFFFF;
         }, Registration.Card_Redstone.get());
+        colors.register((stack, index) -> {
+            if (index == 1) {
+                Color color = LaserNodeBERender.colors[OverclockerChannel.getChannel(stack)];
+                return OverclockerChannel.isChannelVisible(stack) ? color.getRGB() : 0xFFFFFFFF;
+            }
+            return 0xFFFFFFFF;
+        }, Registration.Overclocker_Channel.get());
     }
 
 

@@ -26,6 +26,7 @@ public class CardFluidContainer extends CardItemContainer {
         if (handler != null) {
             addSlotRange(handler, 0, 80, 5, 1, 18);
             addSlotRange(handler, 1, 153, 5, 1, 18);
+            addSlotRange(handler, 2, 20, 65, 1, 18);
             addSlotBox(filterHandler, 0, 44, 25, 5, 18, 3, 18);
             toggleFilterSlots();
         }
