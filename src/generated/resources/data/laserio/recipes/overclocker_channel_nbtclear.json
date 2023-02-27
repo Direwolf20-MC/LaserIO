@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "group": "laserio",
+  "ingredients": [
+    {
+      "item": "laserio:overclocker_channel"
+    }
+  ],
+  "result": {
+    "item": "laserio:overclocker_channel"
+  }
+}

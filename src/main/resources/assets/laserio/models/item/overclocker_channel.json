@@ -1,0 +1,15 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "laserio:item/overclocker_channel",
+    "layer1": "laserio:item/channel_layer"
+  },
+   "overrides": [
+    {
+      "predicate": {
+        "laserio:mode": 1
+      },
+      "model": "laserio:item/overclocker_nochannel"
+    }
+   ]
+}

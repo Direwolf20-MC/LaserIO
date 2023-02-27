@@ -3,7 +3,8 @@
   "textures": {
     "layer0": "laserio:item/card_fluid",
     "layer1": "laserio:item/cardlayers/insert",
-    "layer2": "laserio:item/cardlayers/channel"
+    "layer2": "laserio:item/cardlayers/channel",
+    "layer3": "laserio:item/cardlayers/channel_2"
   },
   "overrides": [
     {

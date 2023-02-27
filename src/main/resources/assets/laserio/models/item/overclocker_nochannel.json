@@ -1,0 +1,6 @@
+{
+  "parent": "laserio:item/overclocker_channel",
+  "textures": {
+    "layer1": "laserio:item/channel_nolayer"
+  }
+}
