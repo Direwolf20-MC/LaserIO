@@ -1,0 +1,17 @@
+{
+  "name": "Channel Overclocker",
+  "icon": "laserio:overclocker_channel",
+  "sortnum": 4,
+  "category": "laserio:items",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Channel Overclockers allow individual cards to have more than 16 Channels.$(br2)With a Channel Overclocker installed you can use up to 256 Channels (0-255). You can also now use a Number Button to change Channels!$(br2)The Channel Slot only appears if you have an Overclocker in your Inventory."
+    },
+    {
+      "type": "patchouli:crafting",
+      "title": "Channel Overclocker",
+      "recipe": "laserio:overclocker_channel"
+    }
+  ]
+}

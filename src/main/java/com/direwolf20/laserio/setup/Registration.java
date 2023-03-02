@@ -112,6 +112,8 @@ public class Registration {
             () -> IForgeMenuType.create((windowId, inv, data) -> new FilterCountContainer(windowId, inv, inv.player, data)));
     public static final RegistryObject<MenuType<FilterTagContainer>> FilterTag_Container = CONTAINERS.register("filtertag",
             () -> IForgeMenuType.create((windowId, inv, data) -> new FilterTagContainer(windowId, inv, inv.player, data)));
+    public static final RegistryObject<MenuType<OverclockerChannelContainer>> OverclockerChannel_Container = CONTAINERS.register("overclockerchannel",
+            () -> IForgeMenuType.create((windowId, inv, data) -> new OverclockerChannelContainer(windowId, inv, inv.player, data)));
 
     // Conveniance function: Take a RegistryObject<Block> and make a corresponding RegistryObject<Item> from it
     public static <B extends Block> RegistryObject<Item> fromBlock(RegistryObject<B> block) {

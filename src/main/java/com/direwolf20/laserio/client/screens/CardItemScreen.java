@@ -17,7 +17,6 @@ import com.direwolf20.laserio.common.items.filters.*;
 import com.direwolf20.laserio.common.items.upgrades.OverclockerChannel;
 import com.direwolf20.laserio.common.network.PacketHandler;
 import com.direwolf20.laserio.common.network.packets.*;
-import com.direwolf20.laserio.setup.Registration;
 import com.direwolf20.laserio.util.MiscTools;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -33,18 +32,8 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.client.event.ContainerScreenEvent;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.entity.item.ItemEvent;
-import net.minecraftforge.event.entity.item.ItemTossEvent;
-import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
-import net.minecraftforge.event.entity.player.PlayerContainerEvent;
-import net.minecraftforge.event.entity.player.PlayerDestroyItemEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent.ItemPickupEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 
@@ -118,7 +107,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
             this.renderTooltip(matrixStack, Component.translatable("screen.laserio.channel").append(String.valueOf(currentChannel)), mouseX, mouseY);
         }
         Button channelNumberButton = buttons.get("channel_number");
-        if (MiscTools.inBounds(channelNumberButton.x, channelNumberButton.y, channelNumberButton.getWidth(), channelNumberButton.getHeight(), mouseX, mouseY)) {
+        if (MiscTools.inBounds(channelNumberButton.x, channelNumberButton.y-1, channelNumberButton.getWidth(), channelNumberButton.getHeight()-2, mouseX, mouseY)) {
             this.renderTooltip(matrixStack, Component.translatable("screen.laserio.channel").append(String.valueOf(currentChannel)), mouseX, mouseY);
         }
         Button redstoneChannelButton = buttons.get("redstoneChannel");
@@ -412,7 +401,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
     public void renderChannelNumberButton() {
     	Button channelNumberButton = buttons.get("channel_number");
     	if(currentMode!=3) {
-    		if(!container.handler.getStackInSlot(2).isEmpty())
+    		if(container.handler.hasChannelOverclocker())
     		{
     			if(!renderables.contains(channelNumberButton))
     				addRenderableWidget(channelNumberButton);
@@ -429,10 +418,10 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
     	ChannelButton channelButton = ((ChannelButton) buttons.get("channel"));
     	channelButton.setChannel(currentChannel);
     	
-    	if(!container.handler.getStackInSlot(2).isEmpty()) {
+    	if(container.handler.hasChannelOverclocker()) {
     		byte overclockerChannel =  (byte)(currentChannel / 16);
-    		OverclockerChannel.setChannel(container.handler.getStackInSlot(2), overclockerChannel);
-    		OverclockerChannel.setChannelVisible(container.handler.getStackInSlot(2), true);
+    		OverclockerChannel.setChannel(container.handler.getChannelOverclocker(), overclockerChannel);
+    		OverclockerChannel.setChannelVisible(container.handler.getChannelOverclocker(), true);
     		PacketHandler.sendToServer(new PacketUpdateOverclockerChannel(overclockerChannel, true));
     	}
     	
@@ -440,7 +429,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
     }
     
     public void updateChannel(){
-    	BaseCard.updateChannel(card, container.handler.getStackInSlot(2));
+    	BaseCard.updateChannel(card, container.handler.getChannelOverclocker());
     	currentChannel = BaseCard.getChannelAsUInt(card);
 		renderChannelNumberButton();
 		updateChannelComponents();
@@ -877,5 +866,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
         return super.mouseClicked(x, y, btn);
     }
     
-
+    public int getChannel() {
+    	return this.currentChannel;
+    }
 }

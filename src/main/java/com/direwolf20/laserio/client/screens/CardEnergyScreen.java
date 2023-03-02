@@ -91,11 +91,11 @@ public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContaine
             this.renderTooltip(matrixStack, translatableComponents[currentMode], mouseX, mouseY);
         }
         Button channelButton = buttons.get("channel");
-        if (MiscTools.inBounds(channelButton.x, channelButton.y, channelButton.getWidth()-3, channelButton.getHeight(), mouseX, mouseY)) {
+        if (MiscTools.inBounds(channelButton.x, channelButton.y-1, channelButton.getWidth()-3, channelButton.getHeight(), mouseX, mouseY)) {
             this.renderTooltip(matrixStack, Component.translatable("screen.laserio.channel").append(String.valueOf(currentChannel)), mouseX, mouseY);
         }
         Button channelNumberButton = buttons.get("channel_number");
-        if (MiscTools.inBounds(channelNumberButton.x, channelNumberButton.y, channelNumberButton.getWidth(), channelNumberButton.getHeight(), mouseX, mouseY)) {
+        if (MiscTools.inBounds(channelNumberButton.x, channelNumberButton.y, channelNumberButton.getWidth(), channelNumberButton.getHeight()-2, mouseX, mouseY)) {
             this.renderTooltip(matrixStack, Component.translatable("screen.laserio.channel").append(String.valueOf(currentChannel)), mouseX, mouseY);
         }
         Button redstoneChannelButton = buttons.get("redstoneChannel");
@@ -306,7 +306,7 @@ public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContaine
     public void renderChannelNumberButton() {
     	Button channelNumberButton = buttons.get("channel_number");
     	if(currentMode!=3) {
-    		if(!container.handler.getStackInSlot(1).isEmpty())
+    		if(container.handler.hasChannelOverclocker())
     		{
     			if(!renderables.contains(channelNumberButton))
     				addRenderableWidget(channelNumberButton);
@@ -323,10 +323,10 @@ public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContaine
     	ChannelButton channelButton = ((ChannelButton) buttons.get("channel"));
     	channelButton.setChannel(currentChannel);
     	
-    	if(!container.handler.getStackInSlot(1).isEmpty()) {
+    	if(container.handler.hasChannelOverclocker()) {
     		byte overclockerChannel =  (byte)(currentChannel / 16);
-    		OverclockerChannel.setChannel(container.handler.getStackInSlot(1), overclockerChannel);
-    		OverclockerChannel.setChannelVisible(container.handler.getStackInSlot(1), true);
+    		OverclockerChannel.setChannel(container.handler.getChannelOverclocker(), overclockerChannel);
+    		OverclockerChannel.setChannelVisible(container.handler.getChannelOverclocker(), true);
     		PacketHandler.sendToServer(new PacketUpdateOverclockerChannel(overclockerChannel, true));
     	}
     	
@@ -334,7 +334,7 @@ public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContaine
     }
     
     public void updateChannel(){
-    	BaseCard.updateChannel(card, container.handler.getStackInSlot(1));
+    	BaseCard.updateChannel(card, container.handler.getChannelOverclocker());
     	currentChannel = BaseCard.getChannelAsUInt(card);
 		renderChannelNumberButton();
 		updateChannelComponents();
@@ -654,5 +654,9 @@ public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContaine
         }
         
         return super.mouseClicked(x, y, btn);
+    }
+    
+    public int getChannel() {
+    	return this.currentChannel;
     }
 }

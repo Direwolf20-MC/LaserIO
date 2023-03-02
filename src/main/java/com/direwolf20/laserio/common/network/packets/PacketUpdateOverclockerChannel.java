@@ -4,11 +4,13 @@ import java.util.function.Supplier;
 
 import com.direwolf20.laserio.common.containers.CardEnergyContainer;
 import com.direwolf20.laserio.common.containers.CardItemContainer;
+import com.direwolf20.laserio.common.containers.OverclockerChannelContainer;
 import com.direwolf20.laserio.common.containers.customhandler.CardItemHandler;
 import com.direwolf20.laserio.common.items.upgrades.OverclockerChannel;
 
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.network.NetworkEvent;
@@ -56,7 +58,13 @@ public class PacketUpdateOverclockerChannel {
                     
                     OverclockerChannel.setChannel(serverItem , msg.channel);
                     OverclockerChannel.setChannelVisible(serverItem, msg.visible);
-                    
+                    return;
+                }
+                if (container instanceof OverclockerChannelContainer) {
+                	ItemStack serverItem = ((OverclockerChannelContainer)container).overclockerItem;
+                	
+                	OverclockerChannel.setChannel(serverItem , msg.channel);
+                    OverclockerChannel.setChannelVisible(serverItem, msg.visible);                        
                 }
             });
             ctx.get().setPacketHandled(true);

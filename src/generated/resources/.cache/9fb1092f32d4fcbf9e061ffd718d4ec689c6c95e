@@ -1,4 +1,4 @@
-// 1.19.2	2022-11-02T12:05:12.7883562	Recipes
+// 1.19.2	2023-03-01T21:13:14.3704437	Recipes
 67f09c7d9c8507d0f0e08ef71cc366df311c9ce2 data/laserio/advancements/recipes/laserio/card_energy.json
 6a30e954766e536a8b870de8e4d6406425cf04ec data/laserio/advancements/recipes/laserio/card_energy_nbtclear.json
 400d6ce358d629bde6790afb35aaec49fd21f87a data/laserio/advancements/recipes/laserio/card_fluid.json
@@ -22,6 +22,8 @@ f57c458fb8136097504fc1f26a4e74f0337c10ce data/laserio/advancements/recipes/laser
 684e6ec7bf8004a3ad3baa5b654c9a48cbc49a44 data/laserio/advancements/recipes/laserio/logic_chip.json
 5a25ea7aa77c2af93b0b6cc77bcb2ee7e6c8051b data/laserio/advancements/recipes/laserio/logic_chip_raw.json
 8abd676abfd1b4b41ac6b8e3e4778ea9f24c9dd6 data/laserio/advancements/recipes/laserio/overclocker_card.json
+eb77feceddd01eb7738e748051a6232b1f9a02db data/laserio/advancements/recipes/laserio/overclocker_channel.json
+0b028a0dcb7d59ee014a2a4e42a04523c59f9a0d data/laserio/advancements/recipes/laserio/overclocker_channel_nbtclear.json
 4faa1d9a867610944b186592eeec20e631d00943 data/laserio/advancements/recipes/laserio/overclocker_node.json
 a84b1113ab16b6c8d832089122236a90a03cf324 data/laserio/recipes/card_energy.json
 816217e90f636085bd321fe0bd7cb5252cf40540 data/laserio/recipes/card_energy_nbtclear.json
@@ -46,4 +48,6 @@ d75415994588a52ec167819fbea19d6e0e75afd3 data/laserio/recipes/laser_wrench.json
 2518c1cfc1690e31196a942f1be2991084b0c367 data/laserio/recipes/logic_chip.json
 b8341f13d8afc47cd7a6ef64ea390e759fcedc7a data/laserio/recipes/logic_chip_raw.json
 a703d1f46f0c89198783e77eaac69876d379f196 data/laserio/recipes/overclocker_card.json
+95da9f8a34d17c866ffcda077004ea18ac13495a data/laserio/recipes/overclocker_channel.json
+0ce142371ee2757913b4eef57f60cadd31c97f79 data/laserio/recipes/overclocker_channel_nbtclear.json
 eafd196a4762bfb005c7d4feb41d1a1a638d0067 data/laserio/recipes/overclocker_node.json

@@ -53,6 +53,7 @@ public class ClientSetup {
             MenuScreens.register(Registration.FilterBasic_Container.get(), FilterBasicScreen::new);           // Attach our container to the screen
             MenuScreens.register(Registration.FilterCount_Container.get(), FilterCountScreen::new);           // Attach our container to the screen
             MenuScreens.register(Registration.FilterTag_Container.get(), FilterTagScreen::new);           // Attach our container to the screen
+            MenuScreens.register(Registration.OverclockerChannel_Container.get(), OverclockerChannelScreen::new);           // Attach our container to the screen
         });
 
         //Item Properties -- For giving the Cards an Insert/Extract on the itemstack

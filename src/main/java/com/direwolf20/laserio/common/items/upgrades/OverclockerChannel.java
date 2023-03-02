@@ -1,14 +1,34 @@
 package com.direwolf20.laserio.common.items.upgrades;
 
+import static com.direwolf20.laserio.util.MiscTools.tooltipMaker;
+
+import java.util.List;
+
+import javax.annotation.Nullable;
+
+import com.direwolf20.laserio.client.blockentityrenders.LaserNodeBERender;
+import com.direwolf20.laserio.common.containers.OverclockerChannelContainer;
 import com.direwolf20.laserio.setup.ModSetup;
 
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.network.NetworkHooks;
 
 public class OverclockerChannel extends Item{
 	public OverclockerChannel() {
@@ -59,8 +79,50 @@ public class OverclockerChannel extends Item{
     }
     
     @Override
-    public InteractionResultHolder<ItemStack> use(Level pLevel, Player pPlayer, InteractionHand pUsedHand) {
-    	System.out.println(getChannel(pPlayer.getItemInHand(pUsedHand)));
-    	return super.use(pLevel, pPlayer, pUsedHand);
+    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+    	ItemStack itemstack = player.getItemInHand(hand);
+        if (level.isClientSide()) return new InteractionResultHolder<>(InteractionResult.PASS, itemstack);
+
+        NetworkHooks.openScreen((ServerPlayer) player, new SimpleMenuProvider(
+                (windowId, playerInventory, playerEntity) -> new OverclockerChannelContainer(windowId, playerInventory, player, itemstack), Component.translatable("")), (buf -> {
+            buf.writeItem(itemstack);
+        }));
+        
+        //System.out.println(itemstack.getItem().getRegistryName()+""+itemstack.getTag());
+        return new InteractionResultHolder<>(InteractionResult.PASS, itemstack);
+    }
+    
+    @Override
+    public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged) {
+        return false;
+    }
+    
+    @OnlyIn(Dist.CLIENT)
+    @Override
+    public void appendHoverText(ItemStack stack, @Nullable Level world, List<Component> tooltip, TooltipFlag flag) {
+        super.appendHoverText(stack, world, tooltip, flag);
+
+        Minecraft mc = Minecraft.getInstance();
+
+        if (world == null || mc.player == null) {
+            return;
+        }
+         
+        if(!isChannelVisible(stack)) return;
+       
+        boolean sneakPressed = Screen.hasShiftDown();
+
+        if (!sneakPressed) {
+            tooltip.add(Component.translatable("laserio.tooltip.item.show_settings")
+                    .withStyle(ChatFormatting.GRAY));
+        } else {
+
+            MutableComponent toWrite = tooltipMaker("laserio.tooltip.item.card.channel", ChatFormatting.GRAY.getColor());
+            
+            toWrite.append(tooltipMaker("+" + String.valueOf(getChannelOffset(stack)), LaserNodeBERender.colors[getChannel(stack)].getRGB()));
+            tooltip.add(toWrite);
+
+        }
+        
     }
 }

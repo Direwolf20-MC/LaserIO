@@ -2,6 +2,7 @@ package com.direwolf20.laserio.common.containers.customhandler;
 
 import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.common.items.cards.CardEnergy;
+import com.direwolf20.laserio.common.items.cards.CardItem;
 import com.direwolf20.laserio.common.items.filters.BaseFilter;
 import com.direwolf20.laserio.common.items.upgrades.OverclockerCard;
 import com.direwolf20.laserio.common.items.upgrades.OverclockerChannel;
@@ -53,5 +54,16 @@ public class CardItemHandler extends ItemStackHandler {
         for (int i = 0; i < stacks.size(); i++)
             newStacks.set(i, stacks.get(i));
         stacks = newStacks;
+    }
+    
+    public ItemStack getChannelOverclocker() {
+    	if(this.stack.getItem() instanceof CardEnergy) 
+    		return this.getStackInSlot(1);
+    	else
+    		return this.getStackInSlot(2);
+    }
+    
+    public boolean hasChannelOverclocker() {
+    	return getChannelOverclocker().getItem() instanceof OverclockerChannel;
     }
 }
