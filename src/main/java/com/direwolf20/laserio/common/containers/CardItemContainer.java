@@ -249,8 +249,8 @@ public class CardItemContainer extends AbstractContainerMenu {
     {
     	for(int i = 0; i < playerInventory.getSlots(); i++)
     	if( playerInventory.getStackInSlot(i).getItem() instanceof OverclockerChannel ) return true;
-    	if( handler != null) return handler.hasChannelOverclocker();
     	if( getCarried().getItem() instanceof OverclockerChannel) return true;
+    	if( handler != null) return handler.hasChannelOverclocker();
     	return false;
     }
 }

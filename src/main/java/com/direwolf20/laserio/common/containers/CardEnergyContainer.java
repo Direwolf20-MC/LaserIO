@@ -219,8 +219,8 @@ public class CardEnergyContainer extends AbstractContainerMenu {
     {
     	for(int i = 0; i < playerInventory.getSlots(); i++)
     	if( playerInventory.getStackInSlot(i).getItem() instanceof OverclockerChannel ) return true;
-    	if( handler != null) if(handler.getStackInSlot(1).getItem() instanceof OverclockerChannel) return true;
     	if( getCarried().getItem() instanceof OverclockerChannel) return true;
+    	if( handler != null) return handler.hasChannelOverclocker();
     	return false;
     }
 }
