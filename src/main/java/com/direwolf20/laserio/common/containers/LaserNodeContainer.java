@@ -16,7 +16,7 @@ import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.SlotItemHandler;
@@ -41,7 +41,7 @@ public class LaserNodeContainer extends AbstractContainerMenu {
     public byte side;
 
     public LaserNodeContainer(int windowId, Inventory playerInventory, Player player, FriendlyByteBuf extraData) {
-        this((LaserNodeBE) playerInventory.player.level.getBlockEntity(extraData.readBlockPos()), windowId, extraData.readByte(), playerInventory, player, new LaserNodeItemHandler(SLOTS), ContainerLevelAccess.NULL, extraData.readItem());
+        this((LaserNodeBE) playerInventory.player.level().getBlockEntity(extraData.readBlockPos()), windowId, extraData.readByte(), playerInventory, player, new LaserNodeItemHandler(SLOTS), ContainerLevelAccess.NULL, extraData.readItem());
     }
 
     public LaserNodeContainer(@Nullable LaserNodeBE tile, int windowId, byte side, Inventory playerInventory, Player player, LaserNodeItemHandler handler, ContainerLevelAccess containerLevelAccess, ItemStack cardHolder) {
@@ -57,7 +57,7 @@ public class LaserNodeContainer extends AbstractContainerMenu {
         }
         this.cardHolder = cardHolder;
         //if (!cardHolder.equals(ItemStack.EMPTY)) {
-        this.cardHolderHandler = cardHolder.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null).orElse(new ItemStackHandler(CardHolderContainer.SLOTS));
+        this.cardHolderHandler = cardHolder.getCapability(ForgeCapabilities.ITEM_HANDLER, null).orElse(new ItemStackHandler(CardHolderContainer.SLOTS));
         addSlotBox(cardHolderHandler, 0, -42, 32, 5, 18, 3, 18);
         cardHolderUUID = CardHolder.getUUID(cardHolder);
         //}
@@ -212,19 +212,19 @@ public class LaserNodeContainer extends AbstractContainerMenu {
         } else if (index < CARDSLOTS) { //If its a node CARD slot
             if (!cardHolder.isEmpty()) { //Do the below set of logic if we have a card holder, otherwise just try to move to inventory
                 if (this.moveItemStackTo(stack, CARDSLOTS + 1, SLOTS, false)) { //Move to card holder
-                    if (!playerIn.level.isClientSide() && !(tile == null)) {
+                    if (!playerIn.level().isClientSide() && !(tile == null)) {
                         tile.updateThisNode();
                     }
                     return ItemStack.EMPTY;
                 } else if (super.moveItemStackTo(stack, SLOTS, 36 + SLOTS, true)) { //Move to inventory
-                    if (!playerIn.level.isClientSide() && !(tile == null)) {
+                    if (!playerIn.level().isClientSide() && !(tile == null)) {
                         tile.updateThisNode();
                     }
                     return ItemStack.EMPTY;
                 }
             } else {
                 if (super.moveItemStackTo(stack, SLOTS, 36 + SLOTS, true)) { //Move to inventory
-                    if (!playerIn.level.isClientSide() && !(tile == null)) {
+                    if (!playerIn.level().isClientSide() && !(tile == null)) {
                         tile.updateThisNode();
                     }
                     return ItemStack.EMPTY;
@@ -244,7 +244,7 @@ public class LaserNodeContainer extends AbstractContainerMenu {
                         if (!super.moveItemStackTo(stack, 0, SLOTS - CARDHOLDERSLOTS, false)) {
                             return ItemStack.EMPTY;
                         }
-                        if (!playerIn.level.isClientSide() && !(tile == null)) {
+                        if (!playerIn.level().isClientSide() && !(tile == null)) {
                             tile.updateThisNode();
                         }
                     }
@@ -258,7 +258,7 @@ public class LaserNodeContainer extends AbstractContainerMenu {
                         if (!super.moveItemStackTo(stack, 0, SLOTS - CARDHOLDERSLOTS, false)) {
                             return ItemStack.EMPTY;
                         }
-                        if (!playerIn.level.isClientSide() && !(tile == null)) {
+                        if (!playerIn.level().isClientSide() && !(tile == null)) {
                             tile.updateThisNode();
                         }
                     }

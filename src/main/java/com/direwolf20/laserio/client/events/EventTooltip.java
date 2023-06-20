@@ -8,6 +8,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
@@ -48,7 +49,7 @@ public class EventTooltip {
         }
 
         @Override
-        public void renderImage(Font font, int x, int y, PoseStack poseStack, ItemRenderer itemRenderer, int p_194053_) {
+        public void renderImage(Font font, int x, int y, GuiGraphics guiGraphics) {
             if (this.tooltipData.stack == null)
                 return;
 
@@ -70,7 +71,7 @@ public class EventTooltip {
                     int xx = bx + (j % STACKS_PER_LINE) * 9;
                     int yy = by + (j / STACKS_PER_LINE) * 10;
                     String tag = tooltipData.tags.get(i);
-                    if (!tag.isEmpty()) renderTagStack(poseStack, itemRenderer, tag, xx, yy);
+                    if (!tag.isEmpty()) renderTagStack(guiGraphics.pose(), Minecraft.getInstance().getItemRenderer(), tag, xx, yy);
                     j++;
                 }
             } else {
@@ -78,7 +79,7 @@ public class EventTooltip {
                     int xx = bx + (j % STACKS_PER_LINE) * 9;
                     int yy = by + (j / STACKS_PER_LINE) * 10;
                     ItemStack filterStack = tooltipData.filterData.getStackInSlot(i);
-                    if (!filterStack.isEmpty()) renderFilterStack(poseStack, itemRenderer, filterStack, xx, yy);
+                    if (!filterStack.isEmpty()) renderFilterStack(guiGraphics.pose(), Minecraft.getInstance().getItemRenderer(), filterStack, xx, yy);
                     j++;
                 }
             }
@@ -136,28 +137,30 @@ public class EventTooltip {
     private static void renderFilterStack(PoseStack matrices, ItemRenderer itemRenderer, ItemStack itemStack, int x, int y) {
         Minecraft mc = Minecraft.getInstance();
         BlockEntityWithoutLevelRenderer blockentitywithoutlevelrenderer = new BlockEntityWithoutLevelRenderer(mc.getBlockEntityRenderDispatcher(), mc.getEntityModels());
-        LaserIOItemRenderer tooltipItemRenderer = new LaserIOItemRenderer(mc.getTextureManager(), mc.getModelManager(), mc.getItemColors(), blockentitywithoutlevelrenderer);
+        LaserIOItemRenderer tooltipItemRenderer = new LaserIOItemRenderer(mc, mc.getTextureManager(), mc.getModelManager(), mc.getItemColors(), blockentitywithoutlevelrenderer);
 
         String s1 = Integer.toString(itemStack.getCount());
         int w1 = mc.font.width(s1);
 
         matrices.pushPose();
         matrices.scale(.5f, .5f, 0);
-        tooltipItemRenderer.renderGuiItem(8f, itemStack, x, y, itemRenderer.getModel(itemStack, null, null, 0));
-        tooltipItemRenderer.renderGuiItemDecorations(mc.font, itemStack, x, y, null, 0.5f);
+        //TODO Reimplement
+        //tooltipItemRenderer.renderGuiItem(8f, itemStack, x, y, itemRenderer.getModel(itemStack, null, null, 0));
+        //tooltipItemRenderer.renderGuiItemDecorations(mc.font, itemStack, x, y, null, 0.5f);
         matrices.popPose();
     }
 
     private static void renderTagStack(PoseStack matrices, ItemRenderer itemRenderer, String tag, int x, int y) {
         Minecraft mc = Minecraft.getInstance();
         BlockEntityWithoutLevelRenderer blockentitywithoutlevelrenderer = new BlockEntityWithoutLevelRenderer(mc.getBlockEntityRenderDispatcher(), mc.getEntityModels());
-        LaserIOItemRenderer tooltipItemRenderer = new LaserIOItemRenderer(mc.getTextureManager(), mc.getModelManager(), mc.getItemColors(), blockentitywithoutlevelrenderer);
+        LaserIOItemRenderer tooltipItemRenderer = new LaserIOItemRenderer(mc, mc.getTextureManager(), mc.getModelManager(), mc.getItemColors(), blockentitywithoutlevelrenderer);
 
         List<Item> tagItems = ForgeRegistries.ITEMS.tags().getTag(ItemTags.create(new ResourceLocation(tag))).stream().toList();
         if (tagItems.size() > 0) {
             ItemStack drawStack = new ItemStack(tagItems.get((int) (mc.level.getGameTime() / 20) % tagItems.size()));
             matrices.pushPose();
-            tooltipItemRenderer.renderGuiItem(8f, drawStack, x, y, itemRenderer.getModel(drawStack, null, null, 0));
+            //TODO Reimplement
+            //tooltipItemRenderer.renderGuiItem(8f, drawStack, x, y, itemRenderer.getModel(drawStack, null, null, 0));
             matrices.popPose();
         }
 
@@ -167,8 +170,9 @@ public class EventTooltip {
             matrices.pushPose();
             if (!drawFluidStack.isEmpty()) {
                 ItemStack bucketStack = new ItemStack(drawFluidStack.getFluid().getBucket(), 1);
-                if (!bucketStack.isEmpty())
-                    tooltipItemRenderer.renderGuiItem(8f, bucketStack, x, y, itemRenderer.getModel(bucketStack, null, null, 0));
+                //if (!bucketStack.isEmpty())
+                    //TODO Reimplement
+                    //tooltipItemRenderer.renderGuiItem(8f, bucketStack, x, y, itemRenderer.getModel(bucketStack, null, null, 0));
             }
             matrices.popPose();
         }

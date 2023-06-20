@@ -14,7 +14,7 @@ public class ParticleRenderDispatcher {
 
     @SubscribeEvent
     public static void registerProviders(RegisterParticleProvidersEvent evt) {
-        evt.register(ModParticles.ITEMFLOWPARTICLE.get(), ItemFlowParticle.FACTORY);
-        evt.register(ModParticles.FLUIDFLOWPARTICLE.get(), FluidFlowParticle.FACTORY);
+        evt.registerSpecial(ModParticles.ITEMFLOWPARTICLE.get(), ItemFlowParticle.FACTORY);
+        evt.registerSpecial(ModParticles.FLUIDFLOWPARTICLE.get(), FluidFlowParticle.FACTORY);
     }
 }

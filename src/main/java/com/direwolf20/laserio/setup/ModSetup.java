@@ -12,12 +12,12 @@ public class ModSetup {
         PacketHandler.register();
         MinecraftForge.EVENT_BUS.register(ServerTickHandler.class);
     }
-
+    //TODO Creative Mode Tab?
     public static final String TAB_NAME = "laserio";
-    public static final CreativeModeTab ITEM_GROUP = new CreativeModeTab(TAB_NAME) {
+    /*public static final CreativeModeTab ITEM_GROUP = new CreativeModeTab(TAB_NAME) {
         @Override
         public ItemStack makeIcon() {
             return new ItemStack(Registration.Laser_Wrench.get());
         }
-    };
+    };*/
 }

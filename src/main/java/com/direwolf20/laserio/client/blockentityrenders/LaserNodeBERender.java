@@ -4,9 +4,9 @@ import com.direwolf20.laserio.client.blockentityrenders.baseberender.BaseLaserBE
 import com.direwolf20.laserio.client.renderer.DelayedRenderer;
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Vector3f;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import org.joml.Vector3f;
 
 import java.awt.*;
 

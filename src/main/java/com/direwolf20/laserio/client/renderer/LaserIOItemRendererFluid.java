@@ -38,8 +38,8 @@ public class LaserIOItemRendererFluid extends ItemRenderer {
     private final TextureManager textureManager;
     protected final AbstractContainerScreen screen;
 
-    public LaserIOItemRendererFluid(TextureManager textureManager, ModelManager modelManager, ItemColors itemColors, BlockEntityWithoutLevelRenderer blockEntityWithoutLevelRenderer, AbstractContainerScreen screen) {
-        super(textureManager, modelManager, itemColors, blockEntityWithoutLevelRenderer);
+    public LaserIOItemRendererFluid(Minecraft minecraft, TextureManager textureManager, ModelManager modelManager, ItemColors itemColors, BlockEntityWithoutLevelRenderer blockEntityWithoutLevelRenderer, AbstractContainerScreen screen) {
+        super(minecraft, textureManager, modelManager, itemColors, blockEntityWithoutLevelRenderer);
         this.textureManager = textureManager;
         this.screen = screen;
     }
@@ -55,7 +55,7 @@ public class LaserIOItemRendererFluid extends ItemRenderer {
         BufferUploader.drawWithShader(p_115153_.end());
     }
 
-    @Override
+    /*@Override
     public void renderGuiItemDecorations(Font font, ItemStack itemstack, int x, int y, @Nullable String altText) {
         if (shouldRenderFluid(itemstack, x, y, true, false)) {
             CardFluidScreen cardFluidScreen = (CardFluidScreen) screen;
@@ -194,7 +194,7 @@ public class LaserIOItemRendererFluid extends ItemRenderer {
             }
 
         }
-    }
+    }*/
 
     public boolean shouldRenderFluid(ItemStack pStack, int pX, int pY, boolean includeCarried, boolean reverseBounds) {
         if (!(screen instanceof CardFluidScreen)) {
@@ -277,7 +277,7 @@ public class LaserIOItemRendererFluid extends ItemRenderer {
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
     }
 
-    @Override
+    /*@Override
     public void renderGuiItem(ItemStack pStack, int pX, int pY, BakedModel pBakedmodel) {
         if (!shouldRenderFluid(pStack, pX, pY, true, false)) {
             super.renderGuiItem(pStack, pX, pY, pBakedmodel);
@@ -322,5 +322,5 @@ public class LaserIOItemRendererFluid extends ItemRenderer {
         posestack.popPose();
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.applyModelViewMatrix();
-    }
+    }*/
 }

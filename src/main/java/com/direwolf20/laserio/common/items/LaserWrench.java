@@ -3,6 +3,7 @@ package com.direwolf20.laserio.common.items;
 import com.direwolf20.laserio.common.blockentities.basebe.BaseLaserBE;
 import com.direwolf20.laserio.common.blocks.baseblocks.BaseLaserBlock;
 import com.direwolf20.laserio.setup.ModSetup;
+import com.direwolf20.laserio.setup.Registration;
 import com.direwolf20.laserio.util.VectorHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -22,7 +23,7 @@ public class LaserWrench extends Item {
     public static int maxDistance = 8;
 
     public LaserWrench() {
-        super(new Item.Properties().tab(ModSetup.ITEM_GROUP)
+        super(new Item.Properties()
                 .stacksTo(1));
     }
 

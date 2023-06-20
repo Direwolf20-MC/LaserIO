@@ -5,6 +5,6 @@ import net.minecraft.world.item.Item;
 
 public class OverclockerCard extends Item {
     public OverclockerCard() {
-        super(new Item.Properties().tab(ModSetup.ITEM_GROUP));
+        super(new Item.Properties());
     }
 }

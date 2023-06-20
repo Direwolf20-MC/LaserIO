@@ -1,5 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
+  "category": "misc",
   "group": "laserio",
   "key": {
     "b": {
@@ -22,5 +23,6 @@
   ],
   "result": {
     "item": "laserio:laser_connector"
-  }
+  },
+  "show_notification": true
 }

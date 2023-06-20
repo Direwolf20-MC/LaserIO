@@ -24,7 +24,7 @@ import static com.direwolf20.laserio.util.MiscTools.tooltipMaker;
 
 public class BaseFilter extends Item {
     public BaseFilter() {
-        super(new Item.Properties().tab(ModSetup.ITEM_GROUP));
+        super(new Item.Properties());
     }
 
     @OnlyIn(Dist.CLIENT)

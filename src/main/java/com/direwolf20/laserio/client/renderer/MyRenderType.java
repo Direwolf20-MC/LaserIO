@@ -94,7 +94,7 @@ public class MyRenderType extends RenderType {
                     .setWriteMaskState(COLOR_WRITE)
                     .createCompositeState(false));
 
-    public static final RenderType RenderBlock = create("MiningLaserRenderBlock",
+    /*public static final RenderType RenderBlock = create("MiningLaserRenderBlock",
             DefaultVertexFormat.BLOCK, VertexFormat.Mode.QUADS, 256, false, false,
             RenderType.CompositeState.builder()
 //                    .setShaderState(SMOOTH_SHADE)
@@ -106,5 +106,5 @@ public class MyRenderType extends RenderType {
                     .setDepthTestState(LEQUAL_DEPTH_TEST)
                     .setCullState(CULL)
                     .setWriteMaskState(COLOR_WRITE)
-                    .createCompositeState(false));
+                    .createCompositeState(false));*/
 }

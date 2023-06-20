@@ -16,8 +16,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.network.NetworkHooks;
@@ -30,7 +30,7 @@ import java.util.UUID;
 
 public class CardHolder extends Item {
     public CardHolder() {
-        super(new Item.Properties().tab(ModSetup.ITEM_GROUP)
+        super(new Item.Properties()
                 .stacksTo(1));
     }
 
@@ -44,7 +44,7 @@ public class CardHolder extends Item {
             return new InteractionResultHolder<>(InteractionResult.PASS, itemstack);
         }
 
-        itemstack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null).ifPresent(h -> {
+        itemstack.getCapability(ForgeCapabilities.ITEM_HANDLER, null).ifPresent(h -> {
             NetworkHooks.openScreen((ServerPlayer) player, new SimpleMenuProvider(
                     (windowId, playerInventory, playerEntity) -> new CardHolderContainer(windowId, playerInventory, player, itemstack, h), Component.translatable("")), (buf -> {
                 buf.writeItem(itemstack);
@@ -78,7 +78,7 @@ public class CardHolder extends Item {
     }
 
     public static ItemStack addCardToInventory(ItemStack cardHolder, ItemStack card) {
-        IItemHandler handler = cardHolder.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null).orElse(new ItemStackHandler(CardHolderContainer.SLOTS));
+        IItemHandler handler = cardHolder.getCapability(ForgeCapabilities.ITEM_HANDLER, null).orElse(new ItemStackHandler(CardHolderContainer.SLOTS));
         List<Integer> emptySlots = new ArrayList<>();
         for (int i = 0; i < handler.getSlots(); i++) {
             ItemStack stackInSlot = handler.getStackInSlot(i);

@@ -3,12 +3,13 @@ package com.direwolf20.laserio.datagen;
 import com.direwolf20.laserio.common.LaserIO;
 import com.direwolf20.laserio.setup.Registration;
 import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.minecraftforge.client.model.generators.ItemModelProvider;
 import net.minecraftforge.common.data.ExistingFileHelper;
 
 public class LaserIOItemModels extends ItemModelProvider {
-    public LaserIOItemModels(DataGenerator generator, ExistingFileHelper existingFileHelper) {
-        super(generator, LaserIO.MODID, existingFileHelper);
+    public LaserIOItemModels(PackOutput output, ExistingFileHelper existingFileHelper) {
+        super(output, LaserIO.MODID, existingFileHelper);
     }
 
     @Override

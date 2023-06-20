@@ -25,8 +25,8 @@ import javax.annotation.Nullable;
 
 /** This class is used to make the numbers on items in the FilterCountContainer smaller when greater than 100 **/
 public class LaserIOItemRenderer extends ItemRenderer {
-    public LaserIOItemRenderer(TextureManager textureManager, ModelManager modelManager, ItemColors itemColors, BlockEntityWithoutLevelRenderer blockEntityWithoutLevelRenderer) {
-        super(textureManager, modelManager, itemColors, blockEntityWithoutLevelRenderer);
+    public LaserIOItemRenderer(Minecraft minecraft, TextureManager textureManager, ModelManager modelManager, ItemColors itemColors, BlockEntityWithoutLevelRenderer blockEntityWithoutLevelRenderer) {
+        super(minecraft, textureManager, modelManager, itemColors, blockEntityWithoutLevelRenderer);
     }
 
     private void fillRect(BufferBuilder p_115153_, int p_115154_, int p_115155_, int p_115156_, int p_115157_, int p_115158_, int p_115159_, int p_115160_, int p_115161_) {
@@ -40,7 +40,7 @@ public class LaserIOItemRenderer extends ItemRenderer {
         BufferUploader.drawWithShader(p_115153_.end());
     }
 
-    @Override
+    /*@Override
     public void renderGuiItemDecorations(Font font, ItemStack itemstack, int x, int y, @Nullable String altText) {
         if (!itemstack.isEmpty()) {
             PoseStack posestack = new PoseStack();
@@ -168,5 +168,5 @@ public class LaserIOItemRenderer extends ItemRenderer {
 
         posestack.popPose();
         RenderSystem.applyModelViewMatrix();
-    }
+    }*/
 }

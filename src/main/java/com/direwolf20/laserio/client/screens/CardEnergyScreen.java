@@ -18,6 +18,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -29,6 +30,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.client.gui.widget.ExtendedButton;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -70,79 +72,79 @@ public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContaine
     }
 
     @Override
-    public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-        this.renderBackground(matrixStack);
-        super.render(matrixStack, mouseX, mouseY, partialTicks);
-        this.renderTooltip(matrixStack, mouseX, mouseY);
+    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+        this.renderBackground(guiGraphics);
+        super.render(guiGraphics, mouseX, mouseY, partialTicks);
+        this.renderTooltip(guiGraphics, mouseX, mouseY);
         Button modeButton = buttons.get("mode");
-        if (MiscTools.inBounds(modeButton.x, modeButton.y, modeButton.getWidth(), modeButton.getHeight(), mouseX, mouseY)) {
+        if (MiscTools.inBounds(modeButton.getX(), modeButton.getY(), modeButton.getWidth(), modeButton.getHeight(), mouseX, mouseY)) {
             MutableComponent translatableComponents[] = new MutableComponent[4];
             translatableComponents[0] = Component.translatable("screen.laserio.insert");
             translatableComponents[1] = Component.translatable("screen.laserio.extract");
             translatableComponents[2] = Component.translatable("screen.laserio.stock");
             translatableComponents[3] = Component.translatable("screen.laserio.sensor");
-            this.renderTooltip(matrixStack, translatableComponents[currentMode], mouseX, mouseY);
+            guiGraphics.renderTooltip(font, translatableComponents[currentMode], mouseX, mouseY);
         }
         Button channelButton = buttons.get("channel");
-        if (MiscTools.inBounds(channelButton.x, channelButton.y, channelButton.getWidth(), channelButton.getHeight(), mouseX, mouseY)) {
-            this.renderTooltip(matrixStack, Component.translatable("screen.laserio.channel").append(String.valueOf(currentChannel)), mouseX, mouseY);
+        if (MiscTools.inBounds(channelButton.getX(), channelButton.getY(), channelButton.getWidth(), channelButton.getHeight(), mouseX, mouseY)) {
+            guiGraphics.renderTooltip(font, Component.translatable("screen.laserio.channel").append(String.valueOf(currentChannel)), mouseX, mouseY);
         }
         Button redstoneChannelButton = buttons.get("redstoneChannel");
-        if (MiscTools.inBounds(redstoneChannelButton.x, redstoneChannelButton.y, redstoneChannelButton.getWidth(), redstoneChannelButton.getHeight(), mouseX, mouseY)) {
-            this.renderTooltip(matrixStack, Component.translatable("screen.laserio.redstonechannel").append(String.valueOf(currentRedstoneChannel)), mouseX, mouseY);
+        if (MiscTools.inBounds(redstoneChannelButton.getX(), redstoneChannelButton.getY(), redstoneChannelButton.getWidth(), redstoneChannelButton.getHeight(), mouseX, mouseY)) {
+            guiGraphics.renderTooltip(font, Component.translatable("screen.laserio.redstonechannel").append(String.valueOf(currentRedstoneChannel)), mouseX, mouseY);
         }
         Button sneakyButton = buttons.get("sneaky");
-        if (MiscTools.inBounds(sneakyButton.x, sneakyButton.y, sneakyButton.getWidth(), sneakyButton.getHeight(), mouseX, mouseY)) {
-            this.renderTooltip(matrixStack, Component.translatable(String.valueOf(sneakyNames[currentSneaky + 1])), mouseX, mouseY);
+        if (MiscTools.inBounds(sneakyButton.getX(), sneakyButton.getY(), sneakyButton.getWidth(), sneakyButton.getHeight(), mouseX, mouseY)) {
+            guiGraphics.renderTooltip(font, Component.translatable(String.valueOf(sneakyNames[currentSneaky + 1])), mouseX, mouseY);
         }
         Button amountButton = buttons.get("amount");
-        if (MiscTools.inBounds(amountButton.x, amountButton.y, amountButton.getWidth(), amountButton.getHeight(), mouseX, mouseY)) {
+        if (MiscTools.inBounds(amountButton.getX(), amountButton.getY(), amountButton.getWidth(), amountButton.getHeight(), mouseX, mouseY)) {
             if (showExtractAmt()) {
-                this.renderTooltip(matrixStack, Component.translatable("screen.laserio.extractamt"), mouseX, mouseY);
+                guiGraphics.renderTooltip(font, Component.translatable("screen.laserio.extractamt"), mouseX, mouseY);
             }
             if (showPriority()) {
-                this.renderTooltip(matrixStack, Component.translatable("screen.laserio.priority"), mouseX, mouseY);
+                guiGraphics.renderTooltip(font, Component.translatable("screen.laserio.priority"), mouseX, mouseY);
             }
         }
         Button regulate = buttons.get("regulate");
-        if (MiscTools.inBounds(regulate.x, regulate.y, regulate.getWidth(), regulate.getHeight(), mouseX, mouseY)) {
+        if (MiscTools.inBounds(regulate.getX(), regulate.getY(), regulate.getWidth(), regulate.getHeight(), mouseX, mouseY)) {
             if (showRegulate()) {
-                this.renderTooltip(matrixStack, Component.translatable("screen.laserio.regulate"), mouseX, mouseY);
+                guiGraphics.renderTooltip(font, Component.translatable("screen.laserio.regulate"), mouseX, mouseY);
             }
         }
         Button roundrobin = buttons.get("roundrobin");
-        if (MiscTools.inBounds(roundrobin.x, roundrobin.y, roundrobin.getWidth(), roundrobin.getHeight(), mouseX, mouseY)) {
+        if (MiscTools.inBounds(roundrobin.getX(), roundrobin.getY(), roundrobin.getWidth(), roundrobin.getHeight(), mouseX, mouseY)) {
             if (showRoundRobin()) {
                 MutableComponent translatableComponents[] = new MutableComponent[3];
                 translatableComponents[0] = Component.translatable("screen.laserio.false");
                 translatableComponents[1] = Component.translatable("screen.laserio.true");
                 translatableComponents[2] = Component.translatable("screen.laserio.enforced");
-                this.renderTooltip(matrixStack, Component.translatable("screen.laserio.roundrobin").append(translatableComponents[currentRoundRobin]), mouseX, mouseY);
+                guiGraphics.renderTooltip(font, Component.translatable("screen.laserio.roundrobin").append(translatableComponents[currentRoundRobin]), mouseX, mouseY);
             }
         }
         Button redstoneMode = buttons.get("redstoneMode");
-        if (MiscTools.inBounds(redstoneMode.x, redstoneMode.y, redstoneMode.getWidth(), redstoneMode.getHeight(), mouseX, mouseY)) {
+        if (MiscTools.inBounds(redstoneMode.getX(), redstoneMode.getY(), redstoneMode.getWidth(), redstoneMode.getHeight(), mouseX, mouseY)) {
             MutableComponent translatableComponents[] = new MutableComponent[3];
             translatableComponents[0] = Component.translatable("screen.laserio.ignored");
             translatableComponents[1] = Component.translatable("screen.laserio.low");
             translatableComponents[2] = Component.translatable("screen.laserio.high");
-            this.renderTooltip(matrixStack, Component.translatable("screen.laserio.redstoneMode").append(translatableComponents[currentRedstoneMode]), mouseX, mouseY);
+            guiGraphics.renderTooltip(font, Component.translatable("screen.laserio.redstoneMode").append(translatableComponents[currentRedstoneMode]), mouseX, mouseY);
         }
         Button exact = buttons.get("exact");
-        if (MiscTools.inBounds(exact.x, exact.y, exact.getWidth(), exact.getHeight(), mouseX, mouseY)) {
+        if (MiscTools.inBounds(exact.getX(), exact.getY(), exact.getWidth(), exact.getHeight(), mouseX, mouseY)) {
             if (showExactAmt()) { //Exact is the same conditions as ExtractAmt
-                this.renderTooltip(matrixStack, Component.translatable("screen.laserio.exact"), mouseX, mouseY);
+                guiGraphics.renderTooltip(font, Component.translatable("screen.laserio.exact"), mouseX, mouseY);
             }
         }
         Button speedButton = buttons.get("speed");
-        if (MiscTools.inBounds(speedButton.x, speedButton.y, speedButton.getWidth(), speedButton.getHeight(), mouseX, mouseY)) {
+        if (MiscTools.inBounds(speedButton.getX(), speedButton.getY(), speedButton.getWidth(), speedButton.getHeight(), mouseX, mouseY)) {
             if (showExactAmt()) {
-                this.renderTooltip(matrixStack, Component.translatable("screen.laserio.tickSpeed"), mouseX, mouseY);
+                guiGraphics.renderTooltip(font, Component.translatable("screen.laserio.tickSpeed"), mouseX, mouseY);
             }
         }
         Button limitButton = buttons.get("limit");
-        if (MiscTools.inBounds(limitButton.x, limitButton.y, limitButton.getWidth(), limitButton.getHeight(), mouseX, mouseY)) {
-            this.renderTooltip(matrixStack, Component.translatable("screen.laserio.energylimit"), mouseX, mouseY);
+        if (MiscTools.inBounds(limitButton.getX(), limitButton.getY(), limitButton.getWidth(), limitButton.getHeight(), mouseX, mouseY)) {
+            guiGraphics.renderTooltip(font, Component.translatable("screen.laserio.energylimit"), mouseX, mouseY);
         }
     }
 
@@ -263,7 +265,7 @@ public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContaine
         }));
 
         if (container.direction != -1) {
-            buttons.put("return", new Button(getGuiLeft() - 25, getGuiTop() + 1, 25, 20, Component.literal("<--"), (button) -> {
+            buttons.put("return", new ExtendedButton(getGuiLeft() - 25, getGuiTop() + 1, 25, 20, Component.literal("<--"), (button) -> {
                 openNode();
             }));
         }
@@ -422,25 +424,11 @@ public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContaine
     }
 
     @Override
-    protected void renderLabels(PoseStack stack, int mouseX, int mouseY) {
-        /*stack.pushPose();
-        stack.scale(0.5f, 0.5f, 0.5f);
-        if (showExtractAmt()) {
-            font.draw(stack, Component.translatable("screen.laserio.extractamt").getString() + ":", 5*2, 45*2, Color.DARK_GRAY.getRGB());
-        }
-        if (showPriority()) {
-            font.draw(stack, Component.translatable("screen.laserio.priority").getString() + ":", 5*2, 50*2, Color.DARK_GRAY.getRGB());
-        }
-        stack.popPose();*/
-        //super.renderLabels(matrixStack, x, y);
-    }
-
-    @Override
-    protected void renderBg(PoseStack matrixStack, float partialTicks, int mouseX, int mouseY) {
+    protected void renderBg(GuiGraphics guiGraphics, float partialTicks, int mouseX, int mouseY) {
         RenderSystem.setShaderTexture(0, GUI);
         int relX = (this.width - this.imageWidth) / 2;
         int relY = (this.height - this.imageHeight) / 2;
-        this.blit(matrixStack, relX, relY, 0, 0, this.imageWidth, this.imageHeight);
+        guiGraphics.blit(GUI, relX, relY, 0, 0, this.imageWidth, this.imageHeight);
     }
 
     @Override
@@ -512,7 +500,7 @@ public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContaine
     @Override
     public boolean mouseClicked(double x, double y, int btn) {
         ChannelButton channelButton = ((ChannelButton) buttons.get("channel"));
-        if (MiscTools.inBounds(channelButton.x, channelButton.y, channelButton.getWidth(), channelButton.getHeight(), x, y)) {
+        if (MiscTools.inBounds(channelButton.getX(), channelButton.getY(), channelButton.getWidth(), channelButton.getHeight(), x, y)) {
             if (btn == 0)
                 currentChannel = BaseCard.nextChannel(card);
             else if (btn == 1)
@@ -522,7 +510,7 @@ public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContaine
             return true;
         }
         ToggleButton sneakyButton = ((ToggleButton) buttons.get("sneaky"));
-        if (MiscTools.inBounds(sneakyButton.x, sneakyButton.y, sneakyButton.getWidth(), sneakyButton.getHeight(), x, y)) {
+        if (MiscTools.inBounds(sneakyButton.getX(), sneakyButton.getY(), sneakyButton.getWidth(), sneakyButton.getHeight(), x, y)) {
             if (btn == 0) {
                 currentSneaky = BaseCard.nextSneaky(card);
                 sneakyButton.setTexturePosition(currentSneaky + 1);
@@ -534,7 +522,7 @@ public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContaine
             return true;
         }
         ChannelButton redstoneChannelButton = ((ChannelButton) buttons.get("redstoneChannel"));
-        if (MiscTools.inBounds(redstoneChannelButton.x, redstoneChannelButton.y, redstoneChannelButton.getWidth(), redstoneChannelButton.getHeight(), x, y)) {
+        if (MiscTools.inBounds(redstoneChannelButton.getX(), redstoneChannelButton.getY(), redstoneChannelButton.getWidth(), redstoneChannelButton.getHeight(), x, y)) {
             if (btn == 0)
                 currentRedstoneChannel = BaseCard.nextRedstoneChannel(card);
             else if (btn == 1)
@@ -544,18 +532,18 @@ public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContaine
             return true;
         }
         NumberButton amountButton = ((NumberButton) buttons.get("amount"));
-        if (MiscTools.inBounds(amountButton.x, amountButton.y, amountButton.getWidth(), amountButton.getHeight(), x, y)) {
+        if (MiscTools.inBounds(amountButton.getX(), amountButton.getY(), amountButton.getWidth(), amountButton.getHeight(), x, y)) {
             setExtract(amountButton, btn);
             return true;
         }
         NumberButton limitButton = ((NumberButton) buttons.get("limit"));
-        if (MiscTools.inBounds(limitButton.x, limitButton.y, limitButton.getWidth(), limitButton.getHeight(), x, y)) {
+        if (MiscTools.inBounds(limitButton.getX(), limitButton.getY(), limitButton.getWidth(), limitButton.getHeight(), x, y)) {
             setLimitExtract(limitButton, btn);
             return true;
         }
 
         NumberButton speedButton = ((NumberButton) buttons.get("speed"));
-        if (MiscTools.inBounds(speedButton.x, speedButton.y, speedButton.getWidth(), speedButton.getHeight(), x, y)) {
+        if (MiscTools.inBounds(speedButton.getX(), speedButton.getY(), speedButton.getWidth(), speedButton.getHeight(), x, y)) {
             if (btn == 0)
                 changeTick(1);
             else if (btn == 1)

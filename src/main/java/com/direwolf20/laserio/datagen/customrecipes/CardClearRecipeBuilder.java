@@ -13,6 +13,7 @@ import net.minecraft.data.recipes.ShapelessRecipeBuilder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.ItemLike;
@@ -87,7 +88,8 @@ public class CardClearRecipeBuilder implements RecipeBuilder {
     public void save(Consumer<FinishedRecipe> p_126205_, ResourceLocation p_126206_) {
         this.ensureValid(p_126206_);
         this.advancement.parent(new ResourceLocation("recipes/root")).addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(p_126206_)).rewards(AdvancementRewards.Builder.recipe(p_126206_)).requirements(RequirementsStrategy.OR);
-        p_126205_.accept(new CardClearRecipeBuilder.Result(p_126206_, this.result, this.count, this.group == null ? "" : this.group, this.ingredients, this.advancement, new ResourceLocation(p_126206_.getNamespace(), "recipes/" + this.result.getItemCategory().getRecipeFolderName() + "/" + p_126206_.getPath())));
+        String folder = ""; //Todo Check this?
+        p_126205_.accept(new CardClearRecipeBuilder.Result(p_126206_, this.result, this.count, this.group == null ? "" : this.group, this.ingredients, this.advancement, new ResourceLocation(p_126206_.getNamespace(), "recipes/" + folder + "/" + p_126206_.getPath())));
     }
 
     private void ensureValid(ResourceLocation p_126208_) {
@@ -99,7 +101,7 @@ public class CardClearRecipeBuilder implements RecipeBuilder {
     public static class Result extends ShapelessRecipeBuilder.Result {
 
         public Result(ResourceLocation resourceLocation, Item result, int count, String group, List<Ingredient> ingredients, Advancement.Builder advancement, ResourceLocation advancementId) {
-            super(resourceLocation, result, count, group, ingredients, advancement, advancementId);
+            super(resourceLocation, result, count, group, CraftingBookCategory.MISC, ingredients, advancement, advancementId);
         }
 
         @Override
