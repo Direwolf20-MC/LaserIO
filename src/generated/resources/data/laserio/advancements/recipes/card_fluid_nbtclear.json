@@ -1,0 +1,35 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_card_fluid": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "laserio:card_fluid"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "laserio:card_fluid_nbtclear"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_card_fluid",
+      "has_the_recipe"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "laserio:card_fluid_nbtclear"
+    ]
+  },
+  "sends_telemetry_event": true
+}
