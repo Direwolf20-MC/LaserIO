@@ -149,18 +149,16 @@ public class FilterTagScreen extends AbstractContainerScreen<FilterTagContainer>
 
         int slot = 0;
         overSlot = -1;
-        ItemRenderer itemRenderer = this.minecraft.getItemRenderer();
-
+        LaserGuiGraphics laserGuiGraphics = new LaserGuiGraphics(minecraft, guiGraphics.bufferSource());
         for (String tag : displayTags) {
             List<Item> tagItems = ForgeRegistries.ITEMS.tags().getTag(ItemTags.create(new ResourceLocation(tag))).stream().toList();
             ItemStack drawStack = ItemStack.EMPTY;
             if (tagItems.size() > 0) {
                 drawStack = new ItemStack(tagItems.get((cycleRenders / 120) % tagItems.size()));
                 matrixStack.pushPose();
-                //TODO Reimplement
-                //if (!drawStack.isEmpty())
-                //    tagItemRenderer.renderGuiItem(8f, drawStack, (availableItemsstartX) - 4, (tagStartY) - 5, itemRenderer.getModel(drawStack, null, null, 0));
-                matrixStack.popPose();
+                if (!drawStack.isEmpty())
+                    laserGuiGraphics.renderItemScale(8f, drawStack, (availableItemsstartX) - 4, (tagStartY) - 5);
+               matrixStack.popPose();
             }
 
             List<Fluid> tagFluids = ForgeRegistries.FLUIDS.tags().getTag(FluidTags.create(new ResourceLocation(tag))).stream().toList();
@@ -171,9 +169,8 @@ public class FilterTagScreen extends AbstractContainerScreen<FilterTagContainer>
                 matrixStack.pushPose();
                 if (!drawFluidStack.isEmpty()) {
                     bucketStack = new ItemStack(drawFluidStack.getFluid().getBucket(), 1);
-                    //TODO Reimplement
-                    //if (!bucketStack.isEmpty())
-                    //    tagItemRenderer.renderGuiItem(8f, bucketStack, (availableItemsstartX) - 4, (tagStartY) - 5, itemRenderer.getModel(bucketStack, null, null, 0));
+                    if (!bucketStack.isEmpty())
+                        laserGuiGraphics.renderItemScale(8f, bucketStack, (availableItemsstartX) - 4, (tagStartY) - 5);
                 }
                 matrixStack.popPose();
             }
@@ -320,7 +317,7 @@ public class FilterTagScreen extends AbstractContainerScreen<FilterTagContainer>
     @Override
     protected void renderBg(GuiGraphics guiGraphics, float partialTicks, int mouseX, int mouseY) {
         RenderSystem.setShaderTexture(0, GUI);
-        guiGraphics.blit(GUI, getGuiLeft(), getGuiTop(), 0, 0, this.imageWidth, this.imageHeight);
+        guiGraphics.blit(GUI, 220, getGuiTop(), 0, 0, this.imageWidth, this.imageHeight, this.imageWidth, this.imageHeight);
     }
 
     @Override
