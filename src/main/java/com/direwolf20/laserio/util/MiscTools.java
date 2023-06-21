@@ -36,19 +36,19 @@ public class MiscTools {
             }
             //case NORTH -> offsetVector;
             case EAST -> {
-                Quaternionf quaternionf = Axis.XP.rotationDegrees(-90);
+                Quaternionf quaternionf = Axis.YP.rotationDegrees(-90);
                 offsetVector = quaternionf.transform(offsetVector);
                 //offsetVector.transform(Vector3f.YP.rotationDegrees(-90));
                 offsetVector.add(1, 0, 0);
             }
             case SOUTH -> {
-                Quaternionf quaternionf = Axis.XP.rotationDegrees(-180);
+                Quaternionf quaternionf = Axis.YP.rotationDegrees(-180);
                 offsetVector = quaternionf.transform(offsetVector);
                 //offsetVector.transform(Vector3f.YP.rotationDegrees(-180));
                 offsetVector.add(1, 0, 1);
             }
             case WEST -> {
-                Quaternionf quaternionf = Axis.XP.rotationDegrees(-270);
+                Quaternionf quaternionf = Axis.YP.rotationDegrees(-270);
                 offsetVector = quaternionf.transform(offsetVector);
                 //offsetVector.transform(Vector3f.YP.rotationDegrees(-270));
                 offsetVector.add(0, 0, 1);

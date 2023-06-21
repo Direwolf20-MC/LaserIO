@@ -132,8 +132,8 @@ public class CardRedstoneScreen extends AbstractContainerScreen<CardRedstoneCont
         }
     }
 
-    //@Override
-    //protected void renderLabels(PoseStack stack, int mouseX, int mouseY) {
+    @Override
+    protected void renderLabels(GuiGraphics guiGraphics, int mouseX, int mouseY) {
         /*stack.pushPose();
         stack.scale(0.5f, 0.5f, 0.5f);
         if (showExtractAmt()) {
@@ -144,7 +144,7 @@ public class CardRedstoneScreen extends AbstractContainerScreen<CardRedstoneCont
         }
         stack.popPose();*/
         //super.renderLabels(matrixStack, x, y);
-    //}
+    }
 
     @Override
     protected void renderBg(GuiGraphics guiGraphics, float partialTicks, int mouseX, int mouseY) {

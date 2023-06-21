@@ -15,6 +15,10 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 public class ClientEvents {
     @SubscribeEvent
     static void renderWorldLastEvent(RenderLevelStageEvent evt) {
+        if (evt.getStage() != RenderLevelStageEvent.Stage.AFTER_TRANSLUCENT_BLOCKS) {
+            return;
+        }
+
         Player myplayer = Minecraft.getInstance().player;
 
         ItemStack myItem = getWrench(myplayer);
