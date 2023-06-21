@@ -70,11 +70,9 @@ public class LaserGuiGraphicsFluid extends GuiGraphics {
             if (count != 0 || mbAmt != 0) {
                 String textToDraw;
                 textToDraw = count + "b";
-                //MultiBufferSource.BufferSource multibuffersource$buffersource = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
                 posestack.pushPose();
-                posestack.translate(x, y, 300);
+                posestack.translate(x, y, 200);
                 posestack.scale(0.5f, 0.5f, 0.5f);
-                //mbAmt +=999;
                 if (mbAmt == 0) {
                     this.drawString(font, textToDraw, (float) (17 - font.width(textToDraw) * 0.5f), (float) (24), 16777215, true);
                 } else {
@@ -83,15 +81,13 @@ public class LaserGuiGraphicsFluid extends GuiGraphics {
                     this.drawString(font, textToDraw2, (float) (17 - font.width(textToDraw2) * 0.5f), (float) (24), 16777215, true);
                 }
                 posestack.popPose();
-
-                //multibuffersource$buffersource.endBatch();
             }
         } else {
             if (!itemstack.isEmpty()) {
                 PoseStack posestack = pose();
                 if (itemstack.getCount() != 1 || altText != null) {
                     String textToDraw = altText == null ? String.valueOf(itemstack.getCount()) : altText;
-                    posestack.translate(0.0D, 0.0D, (double) (300.0F));
+                    posestack.translate(0.0D, 0.0D, (double) (200.0F));
                     //MultiBufferSource.BufferSource multibuffersource$buffersource = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
                     if (itemstack.getCount() > 99) {
                         posestack.pushPose();
@@ -305,7 +301,7 @@ public class LaserGuiGraphicsFluid extends GuiGraphics {
         PoseStack posestack = pose();
         posestack.pushPose();
         RenderSystem.setShaderColor(red, green, blue, 1.0f);
-        int zLevel = 300;
+        int zLevel = 100;
         float uMin = fluidStillSprite.getU0();
         float uMax = fluidStillSprite.getU1();
         float vMin = fluidStillSprite.getV0();

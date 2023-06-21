@@ -137,8 +137,7 @@ public class FilterTagScreen extends AbstractContainerScreen<FilterTagContainer>
         maxPages = Math.max((int) Math.ceil((double) tempTags.size() / tagsPerPage) - 1, 0);
         if (page > maxPages) page = maxPages;
         String pagesLabel = MagicHelpers.withSuffix(page + 1) + " / " + MagicHelpers.withSuffix(maxPages + 1);
-        guiGraphics.drawString(font, pagesLabel, (availableItemsstartX - 2) / 2 + (availableItemsstartX + 162) / 2 - font.width(pagesLabel) / 2, getGuiTop() + 160, Color.DARK_GRAY.getRGB());
-        //font.draw(matrixStack, pagesLabel, (availableItemsstartX - 2) / 2 + (availableItemsstartX + 162) / 2 - font.width(pagesLabel) / 2, getGuiTop() + 160, Color.DARK_GRAY.getRGB());
+        guiGraphics.drawString(font, pagesLabel, (availableItemsstartX - 2) / 2 + (availableItemsstartX + 162) / 2 - font.width(pagesLabel) / 2, getGuiTop() + 160, Color.DARK_GRAY.getRGB(), false);
 
         int itemStackMin = (page * tagsPerPage);
         int itemStackMax = Math.min((page * tagsPerPage) + tagsPerPage, tempTags.size());

@@ -83,15 +83,13 @@ public class LaserNodeScreen extends AbstractContainerScreen<LaserNodeContainer>
         guiGraphics.fill(tabs[container.side].x + 2, tabs[container.side].y + 2, tabs[container.side].x + 22, tabs[container.side].y + 14, 0xFFC6C6C6);
         guiGraphics.fill(tabs[container.side].x, tabs[container.side].y + 11, tabs[container.side].x + 2, tabs[container.side].y + 12, 0xFFFFFFFF);
         guiGraphics.fill(tabs[container.side].x + 22, tabs[container.side].y + 11, tabs[container.side].x + 24, tabs[container.side].y + 12, 0xFFFFFFFF);
-        //matrixStack.pushPose();
-        guiGraphics.drawString(font, sides[container.side].getString(), imageWidth / 2 - font.width(sides[container.side].getString()) / 2, 20, Color.DARK_GRAY.getRGB());
-        guiGraphics.drawString(font, "U", 15, 7, Color.DARK_GRAY.getRGB());
-        guiGraphics.drawString(font, "D", 43, 7, Color.DARK_GRAY.getRGB());
-        guiGraphics.drawString(font, "N", 71, 7, Color.DARK_GRAY.getRGB());
-        guiGraphics.drawString(font, "S", 99, 7, Color.DARK_GRAY.getRGB());
-        guiGraphics.drawString(font, "W", 128, 7, Color.DARK_GRAY.getRGB());
-        guiGraphics.drawString(font, "E", 155, 7, Color.DARK_GRAY.getRGB());
-        //matrixStack.popPose();
+        guiGraphics.drawString(font, sides[container.side].getString(), imageWidth / 2 - font.width(sides[container.side].getString()) / 2, 20, Color.DARK_GRAY.getRGB(), false);
+        guiGraphics.drawString(font, "U", 15, 7, Color.DARK_GRAY.getRGB(), false);
+        guiGraphics.drawString(font, "D", 43, 7, Color.DARK_GRAY.getRGB(), false);
+        guiGraphics.drawString(font, "N", 71, 7, Color.DARK_GRAY.getRGB(), false);
+        guiGraphics.drawString(font, "S", 99, 7, Color.DARK_GRAY.getRGB(), false);
+        guiGraphics.drawString(font, "W", 128, 7, Color.DARK_GRAY.getRGB(), false);
+        guiGraphics.drawString(font, "E", 155, 7, Color.DARK_GRAY.getRGB(), false);
     }
 
     @Override
