@@ -1,6 +1,5 @@
 package com.direwolf20.laserio.common;
 
-import com.direwolf20.laserio.datagen.DataGenerators;
 import com.direwolf20.laserio.setup.ClientSetup;
 import com.direwolf20.laserio.setup.ModSetup;
 import com.direwolf20.laserio.setup.Registration;
@@ -34,7 +33,7 @@ public class LaserIO {
         // Register 'ModSetup::init' to be called at mod setup time (server and client)
         modbus.addListener(ModSetup::init);
         modbus.addListener(Registration::addCreative);
-        //modbus.addListener(DataGenerators::gatherData);
+        ModSetup.TABS.register(modbus);
         //modbus.addGenericListener(RecipeSerializer.class, this::registerRecipeSerializers);
         // Register 'ClientSetup::init' to be called at mod setup time (client only)
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> modbus.addListener(ClientSetup::init));
