@@ -64,6 +64,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
     public ItemStack filter;
     protected Map<String, Button> buttons = new HashMap<>();
     protected byte currentRedstoneMode;
+    protected boolean renderFluids = false;
 
     protected final String[] sneakyNames = {
             "screen.laserio.default",
@@ -86,7 +87,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
         this.renderBackground(guiGraphics);
         toggleFilterSlots();
-        guiGraphics = new LaserGuiGraphics(Minecraft.getInstance(), guiGraphics.bufferSource());
+        guiGraphics = renderFluids ? new LaserGuiGraphicsFluid(Minecraft.getInstance(), guiGraphics.bufferSource(), this) : new LaserGuiGraphics(Minecraft.getInstance(), guiGraphics.bufferSource());
         if (showFilter)
             updateItemCounts();
         super.render(guiGraphics, mouseX, mouseY, partialTicks);
