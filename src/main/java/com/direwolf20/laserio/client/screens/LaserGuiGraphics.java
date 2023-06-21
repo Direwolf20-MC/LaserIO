@@ -1,5 +1,8 @@
 package com.direwolf20.laserio.client.screens;
 
+import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.platform.Lighting;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -7,7 +10,12 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.util.Mth;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
@@ -57,5 +65,27 @@ public class LaserGuiGraphics extends GuiGraphics {
             pose.popPose();
             net.minecraftforge.client.ItemDecoratorHandler.of(itemStack).render(this, font, itemStack, x, y);
         }
+    }
+
+    public void renderItemScale(float scale, ItemStack itemStack, int x, int y) {
+        PoseStack posestack = pose();
+        posestack.pushPose();
+        posestack.translate(x, y, 500);
+        posestack.translate(8.0D, 8.0D, 0.0D);
+        posestack.scale(1.0F, -1.0F, 1.0F);
+        posestack.scale(scale, scale, scale);
+
+        BakedModel bakedmodel = Minecraft.getInstance().getItemRenderer().getModel(itemStack, null, null, 0);
+        boolean flag = !bakedmodel.usesBlockLight();
+        if (flag) {
+            Lighting.setupForFlatItems();
+        }
+
+        this.minecraft.getItemRenderer().render(itemStack, ItemDisplayContext.GUI, false, pose(), this.bufferSource(), 15728880, OverlayTexture.NO_OVERLAY, bakedmodel);
+        this.flush();
+        if (flag) {
+            Lighting.setupFor3DItems();
+        }
+        posestack.popPose();
     }
 }
