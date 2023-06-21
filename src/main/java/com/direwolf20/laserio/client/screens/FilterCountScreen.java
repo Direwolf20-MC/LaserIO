@@ -48,6 +48,7 @@ public class FilterCountScreen extends AbstractContainerScreen<FilterCountContai
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
         this.renderBackground(guiGraphics);
+        guiGraphics = new LaserGuiGraphics(Minecraft.getInstance(), guiGraphics.bufferSource());
         updateItemCounts();
         super.render(guiGraphics, mouseX, mouseY, partialTicks);
         this.renderTooltip(guiGraphics, mouseX, mouseY);
@@ -72,8 +73,6 @@ public class FilterCountScreen extends AbstractContainerScreen<FilterCountContai
         super.init();
         Minecraft minecraft = Minecraft.getInstance();
         BlockEntityWithoutLevelRenderer blockentitywithoutlevelrenderer = new BlockEntityWithoutLevelRenderer(minecraft.getBlockEntityRenderDispatcher(), minecraft.getEntityModels());
-        //TODO Fix Custom Render for Count
-        //this.itemRenderer = new LaserIOItemRenderer(minecraft.getTextureManager(), minecraft.getModelManager(), minecraft.getItemColors(), blockentitywithoutlevelrenderer);
         List<AbstractWidget> leftWidgets = new ArrayList<>();
 
         this.isAllowList = FilterCount.getAllowList(filter);

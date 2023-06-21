@@ -86,6 +86,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
         this.renderBackground(guiGraphics);
         toggleFilterSlots();
+        guiGraphics = new LaserGuiGraphics(Minecraft.getInstance(), guiGraphics.bufferSource());
         if (showFilter)
             updateItemCounts();
         super.render(guiGraphics, mouseX, mouseY, partialTicks);
@@ -236,8 +237,6 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
         super.init();
         Minecraft minecraft = Minecraft.getInstance();
         BlockEntityWithoutLevelRenderer blockentitywithoutlevelrenderer = new BlockEntityWithoutLevelRenderer(minecraft.getBlockEntityRenderDispatcher(), minecraft.getEntityModels());
-        //TODO Fix Item Renderers
-        //this.itemRenderer = new LaserIOItemRenderer(minecraft.getTextureManager(), minecraft.getModelManager(), minecraft.getItemColors(), blockentitywithoutlevelrenderer);
         currentMode = BaseCard.getTransferMode(card);
         currentChannel = BaseCard.getChannel(card);
         currentItemExtractAmt = CardItem.getItemExtractAmt(card);
