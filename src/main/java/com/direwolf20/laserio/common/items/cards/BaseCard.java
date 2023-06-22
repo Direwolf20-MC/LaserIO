@@ -44,7 +44,7 @@ public class BaseCard extends Item {
     }
 
     public BaseCard() {
-        super(new Item.Properties().tab(ModSetup.ITEM_GROUP)
+        super(new Item.Properties()
                 .stacksTo(1));
 
     }

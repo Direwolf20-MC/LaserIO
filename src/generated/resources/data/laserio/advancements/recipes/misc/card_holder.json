@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "laserio:card_item"
+        "recipe": "laserio:card_holder"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -28,7 +28,8 @@
   ],
   "rewards": {
     "recipes": [
-      "laserio:card_item"
+      "laserio:card_holder"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

@@ -144,7 +144,7 @@ public class CardItemContainer extends AbstractContainerMenu {
                         return ItemStack.EMPTY;
                     }
                 }
-                if (!playerIn.level.isClientSide())
+                if (!playerIn.level().isClientSide())
                     BaseCard.setInventory(cardItem, handler);
                 if (filterHandler instanceof FilterCountHandler) {
                     ((FilterCountHandler) filterHandler).syncSlots();
@@ -221,7 +221,7 @@ public class CardItemContainer extends AbstractContainerMenu {
 
     @Override
     public void removed(Player playerIn) {
-        Level world = playerIn.getLevel();
+        Level world = playerIn.level();
         if (!world.isClientSide) {
             BaseCard.setInventory(cardItem, handler);
             if (!sourceContainer.equals(BlockPos.ZERO)) {

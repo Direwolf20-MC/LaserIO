@@ -1,12 +1,12 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_logic_chip": {
+    "has_filter_tag": {
       "conditions": {
         "items": [
           {
             "items": [
-              "laserio:logic_chip"
+              "laserio:filter_tag"
             ]
           }
         ]
@@ -15,20 +15,21 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "laserio:card_redstone"
+        "recipe": "laserio:filter_tag_nbtclear"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
   },
   "requirements": [
     [
-      "has_logic_chip",
+      "has_filter_tag",
       "has_the_recipe"
     ]
   ],
   "rewards": {
     "recipes": [
-      "laserio:card_redstone"
+      "laserio:filter_tag_nbtclear"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

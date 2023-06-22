@@ -9,18 +9,22 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.client.event.RenderLevelLastEvent;
+import net.minecraftforge.client.event.RenderLevelStageEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 public class ClientEvents {
     @SubscribeEvent
-    static void renderWorldLastEvent(RenderLevelLastEvent evt) {
+    static void renderWorldLastEvent(RenderLevelStageEvent evt) {
+        if (evt.getStage() != RenderLevelStageEvent.Stage.AFTER_TRANSLUCENT_BLOCKS) {
+            return;
+        }
+
         Player myplayer = Minecraft.getInstance().player;
 
         ItemStack myItem = getWrench(myplayer);
         if (myItem.getItem() instanceof LaserWrench) {
             BlockPos selectedPos = LaserWrench.getConnectionPos(myItem);
-            BlockEntity be = myplayer.level.getBlockEntity(selectedPos);
+            BlockEntity be = myplayer.level().getBlockEntity(selectedPos);
             if (!selectedPos.equals(BlockPos.ZERO) && (be instanceof BaseLaserBE))
                 BlockOverlayRender.renderSelectedBlock(evt, selectedPos, (BaseLaserBE) be);
         }

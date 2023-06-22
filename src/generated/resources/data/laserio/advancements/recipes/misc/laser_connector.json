@@ -30,5 +30,6 @@
     "recipes": [
       "laserio:laser_connector"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

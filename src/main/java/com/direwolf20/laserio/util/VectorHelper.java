@@ -17,7 +17,7 @@ public class VectorHelper {
     }
 
     public static BlockHitResult getLookingAt(Player player, ClipContext.Fluid rayTraceFluid, int range) {
-        Level level = player.level;
+        Level level = player.level();
 
         Vec3 look = player.getLookAngle();
         Vec3 start = new Vec3(player.getX(), player.getY() + player.getEyeHeight(), player.getZ());
@@ -28,7 +28,7 @@ public class VectorHelper {
     }
 
     public static BlockHitResult getLookingAt(Player player, ClipContext.Fluid rayTraceFluid, int range, Vec3 start) {
-        Level level = player.level;
+        Level level = player.level();
 
         Vec3 look = player.getLookAngle();
 

@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "laserio:card_holder"
+        "recipe": "laserio:overclocker_card"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -28,7 +28,8 @@
   ],
   "rewards": {
     "recipes": [
-      "laserio:card_holder"
+      "laserio:overclocker_card"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

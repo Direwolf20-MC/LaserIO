@@ -1,12 +1,12 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_filter_count": {
+    "has_logic_chip": {
       "conditions": {
         "items": [
           {
             "items": [
-              "laserio:filter_count"
+              "laserio:logic_chip"
             ]
           }
         ]
@@ -15,20 +15,21 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "laserio:filter_count_nbtclear"
+        "recipe": "laserio:overclocker_node"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
   },
   "requirements": [
     [
-      "has_filter_count",
+      "has_logic_chip",
       "has_the_recipe"
     ]
   ],
   "rewards": {
     "recipes": [
-      "laserio:filter_count_nbtclear"
+      "laserio:overclocker_node"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

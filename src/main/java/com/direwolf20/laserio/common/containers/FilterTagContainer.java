@@ -120,7 +120,7 @@ public class FilterTagContainer extends AbstractContainerMenu {
 
     @Override
     public void removed(Player playerIn) { //Todo see if we can send the player back to their last container screen?
-        Level world = playerIn.getLevel();
+        Level world = playerIn.level();
         if (!world.isClientSide) {
             handler.setStackInSlot(0, ItemStack.EMPTY); //Clear the current slot
             if (!sourceCard.equals(ItemStack.EMPTY)) { //Workaround to the card not always saving...

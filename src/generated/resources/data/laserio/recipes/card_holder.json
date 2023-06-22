@@ -1,5 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
+  "category": "misc",
   "group": "laserio",
   "key": {
     "b": {
@@ -19,5 +20,6 @@
   ],
   "result": {
     "item": "laserio:card_holder"
-  }
+  },
+  "show_notification": true
 }

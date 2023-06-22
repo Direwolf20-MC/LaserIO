@@ -1,12 +1,12 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_card_fluid": {
+    "has_filter_count": {
       "conditions": {
         "items": [
           {
             "items": [
-              "laserio:card_fluid"
+              "laserio:filter_count"
             ]
           }
         ]
@@ -15,20 +15,21 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "laserio:card_fluid_nbtclear"
+        "recipe": "laserio:filter_count_nbtclear"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
   },
   "requirements": [
     [
-      "has_card_fluid",
+      "has_filter_count",
       "has_the_recipe"
     ]
   ],
   "rewards": {
     "recipes": [
-      "laserio:card_fluid_nbtclear"
+      "laserio:filter_count_nbtclear"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

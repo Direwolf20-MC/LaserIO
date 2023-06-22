@@ -1,12 +1,12 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_card_redstone": {
+    "has_quartz": {
       "conditions": {
         "items": [
           {
             "items": [
-              "laserio:card_redstone"
+              "minecraft:quartz_block"
             ]
           }
         ]
@@ -15,20 +15,21 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "laserio:card_redstone_nbtclear"
+        "recipe": "laserio:logic_chip_raw"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
   },
   "requirements": [
     [
-      "has_card_redstone",
+      "has_quartz",
       "has_the_recipe"
     ]
   ],
   "rewards": {
     "recipes": [
-      "laserio:card_redstone_nbtclear"
+      "laserio:logic_chip_raw"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

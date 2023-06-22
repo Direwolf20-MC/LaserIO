@@ -1,12 +1,12 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_filter_mod": {
+    "has_filter_basic": {
       "conditions": {
         "items": [
           {
             "items": [
-              "laserio:filter_mod"
+              "laserio:filter_basic"
             ]
           }
         ]
@@ -15,20 +15,21 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "laserio:filter_mod_nbtclear"
+        "recipe": "laserio:filter_count"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
   },
   "requirements": [
     [
-      "has_filter_mod",
+      "has_filter_basic",
       "has_the_recipe"
     ]
   ],
   "rewards": {
     "recipes": [
-      "laserio:filter_mod_nbtclear"
+      "laserio:filter_count"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

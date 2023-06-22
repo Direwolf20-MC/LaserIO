@@ -6,6 +6,6 @@ import net.minecraft.world.item.Item;
 public class LogicChipRaw extends Item {
 
     public LogicChipRaw() {
-        super(new Item.Properties().tab(ModSetup.ITEM_GROUP));
+        super(new Item.Properties());
     }
 }

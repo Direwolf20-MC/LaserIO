@@ -1,5 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
+  "category": "misc",
   "group": "laserio",
   "key": {
     "g": {
@@ -20,5 +21,6 @@
   "result": {
     "count": 4,
     "item": "laserio:filter_basic"
-  }
+  },
+  "show_notification": true
 }

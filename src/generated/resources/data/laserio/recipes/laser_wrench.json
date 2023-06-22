@@ -1,5 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
+  "category": "misc",
   "group": "laserio",
   "key": {
     "b": {
@@ -16,5 +17,6 @@
   ],
   "result": {
     "item": "laserio:laser_wrench"
-  }
+  },
+  "show_notification": true
 }

@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "laserio:overclocker_node"
+        "recipe": "laserio:filter_basic"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -28,7 +28,8 @@
   ],
   "rewards": {
     "recipes": [
-      "laserio:overclocker_node"
+      "laserio:filter_basic"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

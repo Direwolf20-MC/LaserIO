@@ -1,12 +1,12 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_logic_chip": {
+    "has_card_item": {
       "conditions": {
         "items": [
           {
             "items": [
-              "laserio:logic_chip"
+              "laserio:card_item"
             ]
           }
         ]
@@ -15,20 +15,21 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "laserio:laser_wrench"
+        "recipe": "laserio:card_item_nbtclear"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
   },
   "requirements": [
     [
-      "has_logic_chip",
+      "has_card_item",
       "has_the_recipe"
     ]
   ],
   "rewards": {
     "recipes": [
-      "laserio:laser_wrench"
+      "laserio:card_item_nbtclear"
     ]
-  }
+  },
+  "sends_telemetry_event": true
 }

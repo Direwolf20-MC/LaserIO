@@ -1,12 +1,12 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_filter_basic": {
+    "has_logic_chip": {
       "conditions": {
         "items": [
           {
             "items": [
-              "laserio:filter_basic"
+              "laserio:logic_chip"
             ]
           }
         ]
@@ -15,20 +15,21 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "laserio:filter_mod"
+        "recipe": "laserio:card_energy"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
   },
   "requirements": [
     [
-      "has_filter_basic",
+      "has_logic_chip",
       "has_the_recipe"
     ]
   ],
   "rewards": {
     "recipes": [
-      "laserio:filter_mod"
+      "laserio:card_energy"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

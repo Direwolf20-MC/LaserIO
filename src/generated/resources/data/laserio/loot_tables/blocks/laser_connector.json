@@ -3,14 +3,19 @@
   "pools": [
     {
       "bonus_rolls": 0.0,
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ],
       "entries": [
         {
           "type": "minecraft:item",
           "name": "laserio:laser_connector"
         }
       ],
-      "name": "laserconnector",
       "rolls": 1.0
     }
-  ]
+  ],
+  "random_sequence": "laserio:blocks/laser_connector"
 }
