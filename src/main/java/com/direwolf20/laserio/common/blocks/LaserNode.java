@@ -94,7 +94,12 @@ public class LaserNode extends BaseLaserBlock implements EntityBlock {
                         player.setItemInHand(InteractionHand.MAIN_HAND, remainingStack);
                     });
                 } else {
-                    be.getCapability(ForgeCapabilities.ITEM_HANDLER, result.getDirection()).ifPresent(h -> {
+                    Direction direction;
+                    if (player.isShiftKeyDown())
+                        direction = result.getDirection().getOpposite();
+                    else
+                        direction = result.getDirection();
+                    be.getCapability(ForgeCapabilities.ITEM_HANDLER, direction).ifPresent(h -> {
                         ItemStack cardHolder = findCardHolders(player);
                         if (!cardHolder.isEmpty()) CardHolder.getUUID(cardHolder);
                         MenuProvider containerProvider = new MenuProvider() {
@@ -105,13 +110,13 @@ public class LaserNode extends BaseLaserBlock implements EntityBlock {
 
                             @Override
                             public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player playerEntity) {
-                                return new LaserNodeContainer((LaserNodeBE) be, windowId, (byte) result.getDirection().ordinal(), playerInventory, playerEntity, (LaserNodeItemHandler) h, ContainerLevelAccess.create(be.getLevel(), be.getBlockPos()), cardHolder);
+                                return new LaserNodeContainer((LaserNodeBE) be, windowId, (byte) direction.ordinal(), playerInventory, playerEntity, (LaserNodeItemHandler) h, ContainerLevelAccess.create(be.getLevel(), be.getBlockPos()), cardHolder);
                             }
                         };
 
                         NetworkHooks.openScreen((ServerPlayer) player, containerProvider, (buf -> {
                             buf.writeBlockPos(pos);
-                            buf.writeByte((byte) result.getDirection().ordinal());
+                            buf.writeByte((byte) direction.ordinal());
                             buf.writeItemStack(cardHolder, false);
                         }));
                     });

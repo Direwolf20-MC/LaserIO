@@ -18,6 +18,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
+import net.minecraft.core.Direction;
+import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -25,6 +27,8 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.state.BlockState;
 
 import java.awt.*;
 
@@ -90,9 +94,24 @@ public class LaserNodeScreen extends AbstractContainerScreen<LaserNodeContainer>
         guiGraphics.drawString(font, "S", 99, 7, Color.DARK_GRAY.getRGB(), false);
         guiGraphics.drawString(font, "W", 128, 7, Color.DARK_GRAY.getRGB(), false);
         guiGraphics.drawString(font, "E", 155, 7, Color.DARK_GRAY.getRGB(), false);
+        for (Direction direction : Direction.values()) {
+            ItemStack itemStack = getAdjacentBlock(direction);
+            if (!itemStack.isEmpty()) {
+                guiGraphics.renderItem(itemStack, tabs[direction.ordinal()].x + 4, tabs[direction.ordinal()].y - 14, 0);
+                if (MiscTools.inBounds(getGuiLeft() + tabs[direction.ordinal()].x+4, getGuiTop() + tabs[direction.ordinal()].y-14, 16, 16, mouseX, mouseY)) {
+                    guiGraphics.renderTooltip(font, itemStack, mouseX-getGuiLeft(), mouseY-getGuiTop());
+                }
+            }
+        }
     }
 
-    @Override
+    protected ItemStack getAdjacentBlock(Direction direction) {
+        BlockState blockState = container.playerEntity.level().getBlockState(this.container.tile.getBlockPos().relative(direction));
+        ItemStack itemStack = blockState.getBlock().asItem().getDefaultInstance();
+        return itemStack;
+    }
+
+                                         @Override
     protected void renderBg(GuiGraphics guiGraphics, float partialTicks, int mouseX, int mouseY) {
         RenderSystem.setShaderTexture(0, GUI);
         int relX = (this.width - this.imageWidth) / 2;
