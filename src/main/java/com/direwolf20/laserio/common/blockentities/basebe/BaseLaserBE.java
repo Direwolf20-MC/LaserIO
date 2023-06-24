@@ -26,7 +26,7 @@ import static com.direwolf20.laserio.common.items.LaserWrench.maxDistance;
 public class BaseLaserBE extends BlockEntity {
     protected final Set<BlockPos> connections = new CopyOnWriteArraySet<>();
     protected final Set<BlockPos> renderedConnections = new CopyOnWriteArraySet<>();
-    protected Color laserColor;
+    protected Color laserColor = new Color(1f, 0f, 0f, 0.33f);
     protected final Color defaultColor = new Color(1f, 0f, 0f, 0.33f);
 
     public BaseLaserBE(BlockEntityType<?> type, BlockPos pos, BlockState state) {
@@ -257,7 +257,8 @@ public class BaseLaserBE extends BlockEntity {
         BlockPos originalPos = NbtUtils.readBlockPos(tag.getCompound("myWorldPos"));
         if (!originalPos.equals(getBlockPos()) && !originalPos.equals(BlockPos.ZERO))
             validateConnections(originalPos);
-        setColor(new Color(tag.getInt("laserColorR"),tag.getInt("laserColorG"),tag.getInt("laserColorB"),tag.getInt("laserColorA")));
+        if (tag.contains("laserColorR"))
+            setColor(new Color(tag.getInt("laserColorR"),tag.getInt("laserColorG"),tag.getInt("laserColorB"),tag.getInt("laserColorA")));
     }
 
     @Override
