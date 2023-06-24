@@ -27,15 +27,24 @@ public class CardClearRecipe extends ShapelessRecipe {
     public NonNullList<ItemStack> getRemainingItems(CraftingContainer inv) {
         NonNullList<ItemStack> nonnulllist = NonNullList.withSize(inv.getContainerSize(), ItemStack.EMPTY); //2 spots - one for filters, one for Overclockers
 
+        int position = 0;
+
         for (int i = 0; i < inv.getContainerSize(); i++) {
             ItemStack itemStack = inv.getItem(i);
             Item item = itemStack.getItem();
             if (item instanceof BaseCard) {
                 List<ItemStack> containedItems = ((BaseCard) item).getContainerItems(itemStack);
-                nonnulllist.set(0, containedItems.get(0));
-                nonnulllist.set(1, containedItems.get(1));
+                nonnulllist.set(position, containedItems.get(0));
+                nonnulllist.set(position + 1, containedItems.get(1));
+                position = position + 2;
+            } else {
+                if (itemStack.hasCraftingRemainingItem()) {
+                    nonnulllist.set(position, itemStack.getCraftingRemainingItem());
+                    position++;
+                }
             }
         }
+
         return nonnulllist;
     }
 
