@@ -145,11 +145,12 @@ public class RenderUtils {
             Vector3f startLaser = new Vector3f(0.5f, .5f, 0.5f);
             for (BlockPos target : be.getRenderedConnections()) {
                 BlockPos endBlock = be.getWorldPos(target);
+                Color color = be.getColor();
                 float diffX = endBlock.getX() + .5f - startBlock.getX();
                 float diffY = endBlock.getY() + .5f - startBlock.getY();
                 float diffZ = endBlock.getZ() + .5f - startBlock.getZ();
                 Vector3f endLaser = new Vector3f(diffX, diffY, diffZ);
-                drawLaser(builder, positionMatrix, endLaser, startLaser, 1, 0, 0, 0.33f, 0.025f, v, v + diffY * 1.5, be);
+                drawLaser(builder, positionMatrix, endLaser, startLaser, color.getRed()/255f, color.getGreen()/255f, color.getBlue()/255f, color.getAlpha()/255f, 0.025f, v, v + diffY * 1.5, be);
             }
             matrixStackIn.popPose();
         }

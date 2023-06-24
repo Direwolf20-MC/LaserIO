@@ -1,10 +1,15 @@
 package com.direwolf20.laserio.common.blocks;
 
 import com.direwolf20.laserio.common.blockentities.LaserConnectorBE;
+import com.direwolf20.laserio.common.blockentities.basebe.BaseLaserBE;
 import com.direwolf20.laserio.common.blocks.baseblocks.BaseLaserBlock;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -12,12 +17,15 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import javax.annotation.Nullable;
+import java.awt.*;
+import java.util.Random;
 import java.util.stream.Stream;
 
 public class LaserConnector extends BaseLaserBlock implements EntityBlock {
@@ -143,6 +151,25 @@ public class LaserConnector extends BaseLaserBlock implements EntityBlock {
     public LaserConnector() {
         super();
         //defaultBlockState(getStateDefinition().any().setValue(FACING, Direction.NORTH));
+    }
+    //Temp Code for testing
+    @SuppressWarnings("deprecation")
+    @Override
+    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult result) {
+        if (!world.isClientSide) {
+            BlockEntity blockEntity = world.getBlockEntity(pos);
+            if (blockEntity instanceof BaseLaserBE baseLaserBE) {
+                Random rand = new Random();
+                Color color = new Color(rand.nextFloat(), rand.nextFloat(), rand.nextFloat(), rand.nextFloat());
+                System.out.println("New color is: " + color);
+                baseLaserBE.setColor(color);
+                baseLaserBE.discoverAllNodes();
+                //System.out.println("Connections: " + ((BaseLaserBE) blockEntity).getConnections());
+                //System.out.println("RenderedConnections: " + ((BaseLaserBE) blockEntity).getRenderedConnections());
+            }
+            return InteractionResult.SUCCESS;
+        }
+        return super.use(state, world, pos, player, hand, result);
     }
 
     @Nullable
