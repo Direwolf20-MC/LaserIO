@@ -45,8 +45,6 @@ public class BaseLaserBE extends BlockEntity {
     }
 
     public Color getColor() {
-        if (laserColor == null)
-            laserColor = defaultColor;
         return laserColor;
     }
 
