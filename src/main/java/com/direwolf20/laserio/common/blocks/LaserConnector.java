@@ -152,25 +152,6 @@ public class LaserConnector extends BaseLaserBlock implements EntityBlock {
         super();
         //defaultBlockState(getStateDefinition().any().setValue(FACING, Direction.NORTH));
     }
-    //Temp Code for testing
-    @SuppressWarnings("deprecation")
-    @Override
-    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult result) {
-        if (!world.isClientSide) {
-            BlockEntity blockEntity = world.getBlockEntity(pos);
-            if (blockEntity instanceof BaseLaserBE baseLaserBE) {
-                Random rand = new Random();
-                Color color = new Color(rand.nextFloat(), rand.nextFloat(), rand.nextFloat(), rand.nextFloat());
-                System.out.println("New color is: " + color);
-                baseLaserBE.setColor(color);
-                baseLaserBE.discoverAllNodes();
-                //System.out.println("Connections: " + ((BaseLaserBE) blockEntity).getConnections());
-                //System.out.println("RenderedConnections: " + ((BaseLaserBE) blockEntity).getRenderedConnections());
-            }
-            return InteractionResult.SUCCESS;
-        }
-        return super.use(state, world, pos, player, hand, result);
-    }
 
     @Nullable
     @Override

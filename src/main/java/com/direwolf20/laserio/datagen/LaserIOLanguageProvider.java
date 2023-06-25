@@ -59,6 +59,12 @@ public class LaserIOLanguageProvider extends LanguageProvider {
         add("screen.laserio.south", "South");
         add("screen.laserio.west", "West");
         add("screen.laserio.east", "East");
+        add("screen.laserio.settings", "Settings");
+        add("screen.laserio.apply", "Apply");
+        add("screen.laserio.red", "Red");
+        add("screen.laserio.green", "Green");
+        add("screen.laserio.blue", "Blue");
+        add("screen.laserio.alpha", "Alpha");
 
         add("screen.laserio.extract", "Extract");
         add("screen.laserio.insert", "Insert");

@@ -48,6 +48,10 @@ public class BaseLaserBE extends BlockEntity {
         return laserColor;
     }
 
+    public Color getDefaultColor() {
+        return defaultColor;
+    }
+
     /**
      * Resets all the cached node data and rediscovers the network by depth first searching (I think).
      * Share what we've learned with all the InventoryNodes we found
@@ -142,6 +146,12 @@ public class BaseLaserBE extends BlockEntity {
     public void addConnection(BlockPos connectingPos, BaseLaserBE be) {
         addNode(connectingPos); // Add that node to this one
         be.addNode(getBlockPos()); // Add this node to that one
+        if (getColor().equals(getDefaultColor()) && !(be.getColor().equals(be.getDefaultColor())))
+            setColor(be.getColor());
+        else if (be.getColor().equals(be.getDefaultColor()) && !(getColor().equals(getDefaultColor())))
+            be.setColor(getColor());
+        else
+            setColor(be.getColor());
         addRenderNode(connectingPos); // Add the render on this node only
         discoverAllNodes(); //Re discover this new network
     }
