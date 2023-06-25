@@ -42,6 +42,8 @@ public class BaseLaserBE extends BlockEntity {
 
     public void setColor(Color color) {
         laserColor = color;
+        if (level != null)
+            level.sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), 8);
     }
 
     public Color getColor() {
