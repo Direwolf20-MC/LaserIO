@@ -14,6 +14,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 
 import javax.annotation.Nonnull;
+import java.awt.*;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Queue;
@@ -25,6 +26,8 @@ import static com.direwolf20.laserio.common.items.LaserWrench.maxDistance;
 public class BaseLaserBE extends BlockEntity {
     protected final Set<BlockPos> connections = new CopyOnWriteArraySet<>();
     protected final Set<BlockPos> renderedConnections = new CopyOnWriteArraySet<>();
+    protected Color laserColor = new Color(1f, 0f, 0f, 0.33f);
+    protected final Color defaultColor = new Color(1f, 0f, 0f, 0.33f);
 
     public BaseLaserBE(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
@@ -35,6 +38,20 @@ public class BaseLaserBE extends BlockEntity {
         BlockEntity be = level.getBlockEntity(pos);
         if (be instanceof LaserNodeBE) return (LaserNodeBE) be;
         return null;
+    }
+
+    public void setColor(Color color) {
+        laserColor = color;
+        if (level != null)
+            level.sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), 8);
+    }
+
+    public Color getColor() {
+        return laserColor;
+    }
+
+    public Color getDefaultColor() {
+        return defaultColor;
     }
 
     /**
@@ -54,9 +71,11 @@ public class BaseLaserBE extends BlockEntity {
             if (!checkedNodes.add(posToCheck))
                 continue; //Don't check nodes we've checked before
             BlockEntity be = level.getBlockEntity(posToCheck);
-            if (be instanceof BaseLaserBE) {
-                Set<BlockPos> connectedNodes = ((BaseLaserBE) be).getWorldConnections(); //Get all the nodes this node is connected to
+            if (be instanceof BaseLaserBE baseLaserBE) {
+                Set<BlockPos> connectedNodes = baseLaserBE.getWorldConnections(); //Get all the nodes this node is connected to
                 nodesToCheck.addAll(connectedNodes); //Add them to the list to check
+                baseLaserBE.setColor(getColor());
+                baseLaserBE.markDirtyClient();
                 if (be instanceof LaserNodeBE)
                     otherNodesInNetwork.add(posToCheck);
             }
@@ -129,6 +148,12 @@ public class BaseLaserBE extends BlockEntity {
     public void addConnection(BlockPos connectingPos, BaseLaserBE be) {
         addNode(connectingPos); // Add that node to this one
         be.addNode(getBlockPos()); // Add this node to that one
+        if (getColor().equals(getDefaultColor()) && !(be.getColor().equals(be.getDefaultColor())))
+            setColor(be.getColor());
+        else if (be.getColor().equals(be.getDefaultColor()) && !(getColor().equals(getDefaultColor())))
+            be.setColor(getColor());
+        else
+            setColor(be.getColor());
         addRenderNode(connectingPos); // Add the render on this node only
         discoverAllNodes(); //Re discover this new network
     }
@@ -242,6 +267,8 @@ public class BaseLaserBE extends BlockEntity {
         BlockPos originalPos = NbtUtils.readBlockPos(tag.getCompound("myWorldPos"));
         if (!originalPos.equals(getBlockPos()) && !originalPos.equals(BlockPos.ZERO))
             validateConnections(originalPos);
+        if (tag.contains("laserColorR"))
+            setColor(new Color(tag.getInt("laserColorR"),tag.getInt("laserColorG"),tag.getInt("laserColorB"),tag.getInt("laserColorA")));
     }
 
     @Override
@@ -262,6 +289,11 @@ public class BaseLaserBE extends BlockEntity {
         }
         tag.put("renderedConnections", renderedConnections);
         tag.put("myWorldPos", NbtUtils.writeBlockPos(getBlockPos()));
+        Color color = getColor();
+        tag.putInt("laserColorR", color.getRed());
+        tag.putInt("laserColorG", color.getGreen());
+        tag.putInt("laserColorB", color.getBlue());
+        tag.putInt("laserColorA", color.getAlpha());
     }
 
     @Nonnull

@@ -6,14 +6,17 @@ import com.direwolf20.laserio.client.events.ClientEvents;
 import com.direwolf20.laserio.client.events.EventTooltip;
 import com.direwolf20.laserio.client.screens.*;
 import com.direwolf20.laserio.common.LaserIO;
+import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.common.items.cards.CardRedstone;
 import net.minecraft.client.color.item.ItemColors;
 import net.minecraft.client.gui.screens.MenuScreens;
+import net.minecraft.client.renderer.BiomeColors;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FastColor;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.RegisterClientTooltipComponentFactoriesEvent;
@@ -22,6 +25,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.minecraftforge.registries.RegistryObject;
 
 import java.awt.*;
 
@@ -139,7 +143,28 @@ public class ClientSetup {
             }
             return 0xFFFFFFFF;
         }, Registration.Card_Redstone.get());
+        colors.register((stack, index) -> {
+            if (index == 1) {
+                Color color = new Color(255, 0,0,255);
+                return color.getRGB();
+            }
+            return 0xFFFFFFFF;
+        }, Registration.LaserNode_ITEM.get());
     }
 
-
+    @SubscribeEvent
+    public static void blockColors(RegisterColorHandlersEvent.Block event)
+    {
+        event.register(
+                (state, env, pos, index) -> {
+                    assert env != null;
+                    assert pos != null;
+                    if (env.getBlockEntity(pos) instanceof LaserNodeBE laserNodeBE) {
+                        Color color = laserNodeBE.getColor();
+                        return FastColor.ARGB32.color(color.getAlpha(), color.getRed(), color.getGreen(), color.getBlue());
+                    }
+                    return FastColor.ARGB32.color(255, 255, 0, 0);},
+                Registration.LaserNode.get()
+        );
+    }
 }
