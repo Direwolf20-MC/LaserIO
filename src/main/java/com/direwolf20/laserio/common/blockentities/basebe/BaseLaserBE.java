@@ -267,8 +267,8 @@ public class BaseLaserBE extends BlockEntity {
         BlockPos originalPos = NbtUtils.readBlockPos(tag.getCompound("myWorldPos"));
         if (!originalPos.equals(getBlockPos()) && !originalPos.equals(BlockPos.ZERO))
             validateConnections(originalPos);
-        if (tag.contains("laserColorR"))
-            setColor(new Color(tag.getInt("laserColorR"),tag.getInt("laserColorG"),tag.getInt("laserColorB"),tag.getInt("laserColorA")));
+        if (tag.contains("laserColor"))
+            setColor(new Color(tag.getInt("laserColor"), true));
     }
 
     @Override
@@ -290,10 +290,7 @@ public class BaseLaserBE extends BlockEntity {
         tag.put("renderedConnections", renderedConnections);
         tag.put("myWorldPos", NbtUtils.writeBlockPos(getBlockPos()));
         Color color = getColor();
-        tag.putInt("laserColorR", color.getRed());
-        tag.putInt("laserColorG", color.getGreen());
-        tag.putInt("laserColorB", color.getBlue());
-        tag.putInt("laserColorA", color.getAlpha());
+        tag.putInt("laserColor", color.getRGB());
     }
 
     @Nonnull
