@@ -30,19 +30,22 @@ import static com.direwolf20.laserio.common.items.cards.BaseCard.getInventory;
 public class PacketChangeColor {
     private BlockPos sourcePos;
     private int color;
+    private int wrenchAlpha;
 
-    public PacketChangeColor(BlockPos pos, int color) {
+    public PacketChangeColor(BlockPos pos, int color, int wrenchAlpha) {
         this.sourcePos = pos;
         this.color = color;
+        this.wrenchAlpha = wrenchAlpha;
     }
 
     public static void encode(PacketChangeColor msg, FriendlyByteBuf buffer) {
         buffer.writeBlockPos(msg.sourcePos);
         buffer.writeInt(msg.color);
+        buffer.writeInt(msg.wrenchAlpha);
     }
 
     public static PacketChangeColor decode(FriendlyByteBuf buffer) {
-        return new PacketChangeColor(buffer.readBlockPos(), buffer.readInt());
+        return new PacketChangeColor(buffer.readBlockPos(), buffer.readInt(), buffer.readInt());
 
     }
 
@@ -55,7 +58,7 @@ public class PacketChangeColor {
 
                 BlockEntity blockEntity = sender.level().getBlockEntity(msg.sourcePos);
                 if (blockEntity instanceof LaserNodeBE laserNodeBE) {
-                    laserNodeBE.setColor(new Color(msg.color, true));
+                    laserNodeBE.setColor(new Color(msg.color, true), msg.wrenchAlpha);
                     laserNodeBE.discoverAllNodes();
                 }
             });

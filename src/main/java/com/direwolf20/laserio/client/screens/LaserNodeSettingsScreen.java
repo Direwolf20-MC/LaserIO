@@ -52,10 +52,12 @@ public class LaserNodeSettingsScreen extends Screen {
     private int laserGreen;
     private int laserBlue;
     private int laserAlpha;
+    private int wrenchAlpha;
     private ForgeSlider sliderRed;
     private ForgeSlider sliderGreen;
     private ForgeSlider sliderBlue;
     private ForgeSlider sliderAlpha;
+    private ForgeSlider sliderWrenchAlpha;
     private final MutableComponent[] sides = {
             Component.translatable("screen.laserio.down"),
             Component.translatable("screen.laserio.up"),
@@ -85,6 +87,7 @@ public class LaserNodeSettingsScreen extends Screen {
         laserGreen = color.getGreen();
         laserBlue = color.getBlue();
         laserAlpha = color.getAlpha();
+        wrenchAlpha = container.tile.getWrenchAlpha();
     }
 
     @Override
@@ -118,38 +121,47 @@ public class LaserNodeSettingsScreen extends Screen {
             sliderBlue.setValue(laserBlue);
             laserAlpha = defaultColor.getAlpha();
             sliderAlpha.setValue(laserAlpha);
+            wrenchAlpha = 0;
+            sliderWrenchAlpha.setValue(0);
             syncColors();
         });
         leftWidgets.add(defaultButton);
 
-        sliderRed = new ForgeSlider(getGuiLeft() + 15, getGuiTop() + 35, 150, 20, Component.translatable("screen.laserio.red").append(": "), Component.empty(), 0, 255, this.laserRed, true) {
+        sliderRed = new ForgeSlider(getGuiLeft() + 15, getGuiTop() + 30, 150, 20, Component.translatable("screen.laserio.red").append(": "), Component.empty(), 0, 255, this.laserRed, true) {
             @Override
             protected void applyValue() {
                 laserRed = this.getValueInt();
             }
         };
         leftWidgets.add(sliderRed);
-        sliderGreen = new ForgeSlider(getGuiLeft() + 15, getGuiTop() + 60, 150, 20, Component.translatable("screen.laserio.green").append(": "), Component.empty(), 0, 255, this.laserGreen, true) {
+        sliderGreen = new ForgeSlider(getGuiLeft() + 15, getGuiTop() + 54, 150, 20, Component.translatable("screen.laserio.green").append(": "), Component.empty(), 0, 255, this.laserGreen, true) {
             @Override
             protected void applyValue() {
                 laserGreen = this.getValueInt();
             }
         };
         leftWidgets.add(sliderGreen);
-        sliderBlue = new ForgeSlider(getGuiLeft() + 15, getGuiTop() + 85, 150, 20, Component.translatable("screen.laserio.blue").append(": "), Component.empty(), 0, 255, this.laserBlue, true) {
+        sliderBlue = new ForgeSlider(getGuiLeft() + 15, getGuiTop() + 78, 150, 20, Component.translatable("screen.laserio.blue").append(": "), Component.empty(), 0, 255, this.laserBlue, true) {
             @Override
             protected void applyValue() {
                 laserBlue = this.getValueInt();
             }
         };
         leftWidgets.add(sliderBlue);
-        sliderAlpha = new ForgeSlider(getGuiLeft() + 15, getGuiTop() + 110, 150, 20, Component.translatable("screen.laserio.alpha").append(": "), Component.empty(), 0, 255, this.laserAlpha, true) {
+        sliderAlpha = new ForgeSlider(getGuiLeft() + 15, getGuiTop() + 102, 150, 20, Component.translatable("screen.laserio.alpha").append(": "), Component.empty(), 0, 255, this.laserAlpha, true) {
             @Override
             protected void applyValue() {
                 laserAlpha = this.getValueInt();
             }
         };
         leftWidgets.add(sliderAlpha);
+        sliderWrenchAlpha = new ForgeSlider(getGuiLeft() + 15, getGuiTop() + 126, 150, 20, Component.translatable("screen.laserio.wrench").append(": "), Component.empty(), 0, 255, this.wrenchAlpha, true) {
+            @Override
+            protected void applyValue() {
+                wrenchAlpha = this.getValueInt();
+            }
+        };
+        leftWidgets.add(sliderWrenchAlpha);
 
         for (int i = 0; i < leftWidgets.size(); i++) {
             addRenderableWidget(leftWidgets.get(i));
@@ -160,7 +172,8 @@ public class LaserNodeSettingsScreen extends Screen {
                 sliderRed, (a) -> laserRed = a,
                 sliderGreen, (a) -> laserGreen = a,
                 sliderBlue, (a) -> laserBlue = a,
-                sliderAlpha, (a) -> laserAlpha = a
+                sliderAlpha, (a) -> laserAlpha = a,
+                sliderWrenchAlpha, (a) -> wrenchAlpha = a
         );
     }
 
@@ -185,7 +198,7 @@ public class LaserNodeSettingsScreen extends Screen {
     }
 
     private void syncColors() {
-        PacketHandler.sendToServer(new PacketChangeColor(container.tile.getBlockPos(), new Color(laserRed, laserGreen, laserBlue, laserAlpha).getRGB()));
+        PacketHandler.sendToServer(new PacketChangeColor(container.tile.getBlockPos(), new Color(laserRed, laserGreen, laserBlue, laserAlpha).getRGB(), wrenchAlpha));
     }
 
     protected void renderLabels(GuiGraphics guiGraphics, int mouseX, int mouseY) {

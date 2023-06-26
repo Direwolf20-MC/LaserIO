@@ -3,6 +3,7 @@ package com.direwolf20.laserio.client.renderer;
 import com.direwolf20.laserio.client.blockentityrenders.LaserNodeBERender;
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import com.direwolf20.laserio.common.blockentities.basebe.BaseLaserBE;
+import com.direwolf20.laserio.common.items.LaserWrench;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.util.CardRender;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -28,6 +29,7 @@ import java.awt.*;
 import java.util.Queue;
 import java.util.Set;
 
+import static com.direwolf20.laserio.client.events.ClientEvents.getWrench;
 import static com.direwolf20.laserio.util.MiscTools.findOffset;
 
 public class RenderUtils {
@@ -146,11 +148,14 @@ public class RenderUtils {
             for (BlockPos target : be.getRenderedConnections()) {
                 BlockPos endBlock = be.getWorldPos(target);
                 Color color = be.getColor();
+                Player myplayer = Minecraft.getInstance().player;
+                ItemStack myItem = getWrench(myplayer);
+                int alpha = (myItem.getItem() instanceof LaserWrench) ? Math.min(color.getAlpha() + be.getWrenchAlpha(), 255) : color.getAlpha();
                 float diffX = endBlock.getX() + .5f - startBlock.getX();
                 float diffY = endBlock.getY() + .5f - startBlock.getY();
                 float diffZ = endBlock.getZ() + .5f - startBlock.getZ();
                 Vector3f endLaser = new Vector3f(diffX, diffY, diffZ);
-                drawLaser(builder, positionMatrix, endLaser, startLaser, color.getRed()/255f, color.getGreen()/255f, color.getBlue()/255f, color.getAlpha()/255f, 0.025f, v, v + diffY * 1.5, be);
+                drawLaser(builder, positionMatrix, endLaser, startLaser, color.getRed()/255f, color.getGreen()/255f, color.getBlue()/255f, alpha/255f, 0.025f, v, v + diffY * 1.5, be);
             }
             matrixStackIn.popPose();
         }

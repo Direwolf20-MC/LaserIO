@@ -27,6 +27,7 @@ public class BaseLaserBE extends BlockEntity {
     protected final Set<BlockPos> connections = new CopyOnWriteArraySet<>();
     protected final Set<BlockPos> renderedConnections = new CopyOnWriteArraySet<>();
     protected Color laserColor = new Color(1f, 0f, 0f, 0.33f);
+    protected int wrenchAlpha = 0;
     protected final Color defaultColor = new Color(1f, 0f, 0f, 0.33f);
 
     public BaseLaserBE(BlockEntityType<?> type, BlockPos pos, BlockState state) {
@@ -40,14 +41,19 @@ public class BaseLaserBE extends BlockEntity {
         return null;
     }
 
-    public void setColor(Color color) {
+    public void setColor(Color color, int wrenchAlpha) {
         laserColor = color;
+        this.wrenchAlpha = wrenchAlpha;
         if (level != null)
             level.sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), 8);
     }
 
     public Color getColor() {
         return laserColor;
+    }
+
+    public int getWrenchAlpha() {
+        return wrenchAlpha;
     }
 
     public Color getDefaultColor() {
@@ -74,7 +80,7 @@ public class BaseLaserBE extends BlockEntity {
             if (be instanceof BaseLaserBE baseLaserBE) {
                 Set<BlockPos> connectedNodes = baseLaserBE.getWorldConnections(); //Get all the nodes this node is connected to
                 nodesToCheck.addAll(connectedNodes); //Add them to the list to check
-                baseLaserBE.setColor(getColor());
+                baseLaserBE.setColor(getColor(), getWrenchAlpha());
                 baseLaserBE.markDirtyClient();
                 if (be instanceof LaserNodeBE)
                     otherNodesInNetwork.add(posToCheck);
@@ -149,11 +155,11 @@ public class BaseLaserBE extends BlockEntity {
         addNode(connectingPos); // Add that node to this one
         be.addNode(getBlockPos()); // Add this node to that one
         if (getColor().equals(getDefaultColor()) && !(be.getColor().equals(be.getDefaultColor())))
-            setColor(be.getColor());
+            setColor(be.getColor(), getWrenchAlpha());
         else if (be.getColor().equals(be.getDefaultColor()) && !(getColor().equals(getDefaultColor())))
-            be.setColor(getColor());
+            be.setColor(getColor(), getWrenchAlpha());
         else
-            setColor(be.getColor());
+            setColor(be.getColor(), getWrenchAlpha());
         addRenderNode(connectingPos); // Add the render on this node only
         discoverAllNodes(); //Re discover this new network
     }
@@ -267,8 +273,10 @@ public class BaseLaserBE extends BlockEntity {
         BlockPos originalPos = NbtUtils.readBlockPos(tag.getCompound("myWorldPos"));
         if (!originalPos.equals(getBlockPos()) && !originalPos.equals(BlockPos.ZERO))
             validateConnections(originalPos);
-        if (tag.contains("laserColor"))
-            setColor(new Color(tag.getInt("laserColor"), true));
+        if (tag.contains("laserColor")) {
+            int wrenchA = tag.contains("wrenchAlpha") ? tag.getInt("wrenchAlpha") : 0;
+            setColor(new Color(tag.getInt("laserColor"), true), wrenchA);
+        }
     }
 
     @Override
@@ -290,7 +298,8 @@ public class BaseLaserBE extends BlockEntity {
         tag.put("renderedConnections", renderedConnections);
         tag.put("myWorldPos", NbtUtils.writeBlockPos(getBlockPos()));
         Color color = getColor();
-        tag.putInt("laserColor", color.getRGB());
+        tag.putInt("laserColor", getColor().getRGB());
+        tag.putInt("wrenchAlpha", getWrenchAlpha());
     }
 
     @Nonnull
