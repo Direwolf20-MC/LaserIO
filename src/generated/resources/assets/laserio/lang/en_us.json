@@ -1,5 +1,6 @@
 {
   "block.laserio.laser_connector": "Laser Connector",
+  "block.laserio.laser_connector_advanced": "Advanced Laser Connector",
   "block.laserio.laser_node": "Laser Node",
   "item.laserio.card_energy": "Energy Card",
   "item.laserio.card_fluid": "Fluid Card",

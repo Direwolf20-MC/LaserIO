@@ -1,5 +1,6 @@
 package com.direwolf20.laserio.setup;
 
+import com.direwolf20.laserio.client.blockentityrenders.LaserConnectorAdvBERender;
 import com.direwolf20.laserio.client.blockentityrenders.LaserConnectorBERender;
 import com.direwolf20.laserio.client.blockentityrenders.LaserNodeBERender;
 import com.direwolf20.laserio.client.events.ClientEvents;
@@ -87,6 +88,7 @@ public class ClientSetup {
         //Register Block Entity Renders
         event.registerBlockEntityRenderer(Registration.LaserConnector_BE.get(), LaserConnectorBERender::new);
         event.registerBlockEntityRenderer(Registration.LaserNode_BE.get(), LaserNodeBERender::new);
+        event.registerBlockEntityRenderer(Registration.LaserConnectorAdv_BE.get(), LaserConnectorAdvBERender::new);
     }
 
     @SubscribeEvent

@@ -22,7 +22,8 @@ public class LaserIOBlockTags extends BlockTagsProvider {
     protected void addTags(HolderLookup.Provider provider) {
         tag(BlockTags.MINEABLE_WITH_PICKAXE)
                 .add(Registration.LaserNode.get())
-                .add(Registration.LaserConnector.get());
+                .add(Registration.LaserConnector.get())
+                .add(Registration.LaserConnectorAdv.get());
     }
 
     @Override
