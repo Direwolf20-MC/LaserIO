@@ -1,5 +1,6 @@
 package com.direwolf20.laserio.common.blockentities.basebe;
 
+import com.direwolf20.laserio.common.blockentities.LaserConnectorAdvBE;
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -79,6 +80,8 @@ public class BaseLaserBE extends BlockEntity {
             BlockEntity be = level.getBlockEntity(posToCheck);
             if (be instanceof BaseLaserBE baseLaserBE) {
                 Set<BlockPos> connectedNodes = baseLaserBE.getWorldConnections(); //Get all the nodes this node is connected to
+                if (be instanceof LaserConnectorAdvBE laserConnectorAdvBE && (laserConnectorAdvBE.getPartnerBlockPos() != null))
+                    connectedNodes.add(laserConnectorAdvBE.getPartnerBlockPos());
                 nodesToCheck.addAll(connectedNodes); //Add them to the list to check
                 baseLaserBE.setColor(getColor(), getWrenchAlpha());
                 baseLaserBE.markDirtyClient();

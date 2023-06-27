@@ -1,9 +1,8 @@
 package com.direwolf20.laserio.common.items;
 
+import com.direwolf20.laserio.common.blockentities.LaserConnectorAdvBE;
 import com.direwolf20.laserio.common.blockentities.basebe.BaseLaserBE;
 import com.direwolf20.laserio.common.blocks.baseblocks.BaseLaserBlock;
-import com.direwolf20.laserio.setup.ModSetup;
-import com.direwolf20.laserio.setup.Registration;
 import com.direwolf20.laserio.util.VectorHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -72,6 +71,11 @@ public class LaserWrench extends Item {
             if (!(sourceBE instanceof BaseLaserBE)) {
                 storeConnectionPos(wrench, BlockPos.ZERO);
                 return InteractionResultHolder.pass(wrench);
+            }
+            //If both nodes are Advanced, we can connect them despite distance, so skip that check and connect now
+            if (targetBE instanceof LaserConnectorAdvBE targetAdv && sourceBE instanceof LaserConnectorAdvBE sourceAdv) {
+                targetAdv.handleAdvancedConnection(sourceAdv);
+                return InteractionResultHolder.success(wrench);
             }
             //If we're too far away - send an error to the client
             if (!targetPos.closerThan(sourcePos, maxDistance)) {

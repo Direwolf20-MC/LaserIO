@@ -1,5 +1,6 @@
 package com.direwolf20.laserio.client.renderer;
 
+import com.direwolf20.laserio.common.blockentities.LaserConnectorAdvBE;
 import com.direwolf20.laserio.common.blockentities.LaserConnectorBE;
 import com.direwolf20.laserio.common.blockentities.basebe.BaseLaserBE;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -21,7 +22,7 @@ public class BlockOverlayRender {
 
         MultiBufferSource.BufferSource buffer = Minecraft.getInstance().renderBuffers().bufferSource();
 
-        float scale = (be instanceof LaserConnectorBE) ? 0.375f : 0.625f;
+        float scale = (be instanceof LaserConnectorBE || be instanceof LaserConnectorAdvBE) ? 0.375f : 0.625f;
 
 
         Vec3 view = mc.gameRenderer.getMainCamera().getPosition();
