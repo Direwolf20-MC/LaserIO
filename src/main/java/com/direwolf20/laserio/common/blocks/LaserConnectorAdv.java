@@ -1,6 +1,7 @@
 package com.direwolf20.laserio.common.blocks;
 
 import com.direwolf20.laserio.common.blockentities.LaserConnectorAdvBE;
+import com.direwolf20.laserio.util.DimBlockPos;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -32,7 +33,11 @@ public class LaserConnectorAdv extends LaserConnector implements EntityBlock {
         if (!world.isClientSide) {
             BlockEntity blockEntity = world.getBlockEntity(pos);
             if (blockEntity instanceof LaserConnectorAdvBE baseLaserBE) {
-                System.out.println("Partner Is: " + baseLaserBE.getPartnerBlockPos());
+                DimBlockPos dimBlockPos = baseLaserBE.getPartnerDimBlockPos();
+                if (dimBlockPos == null)
+                    System.out.println("Partner Is: null");
+                else
+                    System.out.println("Partner Is: " + dimBlockPos.getLevel(world.getServer()).dimension().toString() + ":" + dimBlockPos.blockPos);
             }
             return InteractionResult.SUCCESS;
         }

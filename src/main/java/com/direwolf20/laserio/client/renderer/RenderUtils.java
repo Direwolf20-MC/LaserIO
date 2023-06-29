@@ -160,7 +160,7 @@ public class RenderUtils {
                 drawLaser(builder, positionMatrix, endLaser, startLaser, color.getRed()/255f, color.getGreen()/255f, color.getBlue()/255f, alpha/255f, 0.025f, v, v + diffY * 1.5, be);
             }
 
-            if (be instanceof LaserConnectorAdvBE laserConnectorAdvBE && laserConnectorAdvBE.getPartnerBlockPos() != null) {
+            if (be instanceof LaserConnectorAdvBE laserConnectorAdvBE && laserConnectorAdvBE.getPartnerDimBlockPos() != null) {
                 BlockPos endBlock = laserConnectorAdvBE.getBlockPos().relative(Direction.UP);
                 Color color = be.getColor();
                 Player myplayer = Minecraft.getInstance().player;

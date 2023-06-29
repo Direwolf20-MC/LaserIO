@@ -14,7 +14,7 @@ public class LaserConnectorAdvBERender extends BaseLaserBERender<LaserConnectorA
 
     @Override
     public void render(LaserConnectorAdvBE blockentity, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightsIn, int combinedOverlayIn) {
-        if (blockentity.getPartnerBlockPos() != null)
+        if (blockentity.getPartnerDimBlockPos() != null)
             DelayedRenderer.add(blockentity);
         else
             super.render(blockentity, partialTicks, matrixStackIn, bufferIn, combinedLightsIn, combinedOverlayIn);
