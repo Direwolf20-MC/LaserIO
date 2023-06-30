@@ -18,6 +18,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -162,17 +163,13 @@ public class RenderUtils {
                 drawLaser(builder, positionMatrix, endLaser, startLaser, color.getRed()/255f, color.getGreen()/255f, color.getBlue()/255f, alpha/255f, 0.025f, v, v + diffY * 1.5, be);
             }
 
-            if (be instanceof LaserConnectorAdvBE laserConnectorAdvBE && laserConnectorAdvBE.getPartnerDimBlockPos() != null) {
+            if (be instanceof LaserConnectorAdvBE laserConnectorAdvBE && laserConnectorAdvBE.getPartnerDimBlockPos() != null && !level.getBlockState(be.getBlockPos()).isAir()) {
                 Direction facing = level.getBlockState(be.getBlockPos()).getValue(BlockStateProperties.FACING).getOpposite();
                 BlockPos endBlock = laserConnectorAdvBE.getBlockPos().relative(facing);
                 Color color = be.getColor();
                 Player myplayer = Minecraft.getInstance().player;
                 ItemStack myItem = getWrench(myplayer);
                 int alpha = (myItem.getItem() instanceof LaserWrench) ? Math.min(color.getAlpha() + be.getWrenchAlpha(), 255) : color.getAlpha();
-                /*float diffX = endBlock.getX() + .5f - startBlock.getX();
-                float diffY = endBlock.getY() - 0.25f - startBlock.getY();
-                float diffZ = endBlock.getZ() + .5f - startBlock.getZ();
-                Vector3f endLaser = new Vector3f(diffX, diffY, diffZ);*/
                 Vector3f endLaser = calculateEndAdvConnector(startBlock, endBlock, facing);
                 drawLaser(builder, positionMatrix, endLaser, startLaser, color.getRed()/255f, color.getGreen()/255f, color.getBlue()/255f, alpha/255f, 0.025f, v, v + endLaser.y() * 1.5, be);
             }
