@@ -127,35 +127,35 @@ public class LaserNodeSettingsScreen extends Screen {
         });
         leftWidgets.add(defaultButton);
 
-        sliderRed = new ForgeSlider(getGuiLeft() + 15, getGuiTop() + 30, 150, 20, Component.translatable("screen.laserio.red").append(": "), Component.empty(), 0, 255, this.laserRed, true) {
+        sliderRed = new ForgeSlider(getGuiLeft() + 15, getGuiTop() + 45, 150, 15, Component.translatable("screen.laserio.red").append(": "), Component.empty(), 0, 255, this.laserRed, true) {
             @Override
             protected void applyValue() {
                 laserRed = this.getValueInt();
             }
         };
         leftWidgets.add(sliderRed);
-        sliderGreen = new ForgeSlider(getGuiLeft() + 15, getGuiTop() + 54, 150, 20, Component.translatable("screen.laserio.green").append(": "), Component.empty(), 0, 255, this.laserGreen, true) {
+        sliderGreen = new ForgeSlider(getGuiLeft() + 15, getGuiTop() + 65, 150, 15, Component.translatable("screen.laserio.green").append(": "), Component.empty(), 0, 255, this.laserGreen, true) {
             @Override
             protected void applyValue() {
                 laserGreen = this.getValueInt();
             }
         };
         leftWidgets.add(sliderGreen);
-        sliderBlue = new ForgeSlider(getGuiLeft() + 15, getGuiTop() + 78, 150, 20, Component.translatable("screen.laserio.blue").append(": "), Component.empty(), 0, 255, this.laserBlue, true) {
+        sliderBlue = new ForgeSlider(getGuiLeft() + 15, getGuiTop() + 85, 150, 15, Component.translatable("screen.laserio.blue").append(": "), Component.empty(), 0, 255, this.laserBlue, true) {
             @Override
             protected void applyValue() {
                 laserBlue = this.getValueInt();
             }
         };
         leftWidgets.add(sliderBlue);
-        sliderAlpha = new ForgeSlider(getGuiLeft() + 15, getGuiTop() + 102, 150, 20, Component.translatable("screen.laserio.alpha").append(": "), Component.empty(), 0, 255, this.laserAlpha, true) {
+        sliderAlpha = new ForgeSlider(getGuiLeft() + 15, getGuiTop() + 105, 150, 15, Component.translatable("screen.laserio.alpha").append(": "), Component.empty(), 0, 255, this.laserAlpha, true) {
             @Override
             protected void applyValue() {
                 laserAlpha = this.getValueInt();
             }
         };
         leftWidgets.add(sliderAlpha);
-        sliderWrenchAlpha = new ForgeSlider(getGuiLeft() + 15, getGuiTop() + 126, 150, 20, Component.translatable("screen.laserio.wrench").append(": "), Component.empty(), 0, 255, this.wrenchAlpha, true) {
+        sliderWrenchAlpha = new ForgeSlider(getGuiLeft() + 15, getGuiTop() + 125, 150, 15, Component.translatable("screen.laserio.wrench").append(": "), Component.empty(), 0, 255, this.wrenchAlpha, true) {
             @Override
             protected void applyValue() {
                 wrenchAlpha = this.getValueInt();
@@ -223,6 +223,10 @@ public class LaserNodeSettingsScreen extends Screen {
                 }
             }
         }
+        guiGraphics.pose().translate(0,0,100);
+        int startX = 15;
+        int startY = 30;
+        guiGraphics.fill(startX, startY, startX+150, startY+10, new Color(laserRed, laserGreen, laserBlue, laserAlpha).getRGB());
         guiGraphics.pose().popPose();
     }
 
