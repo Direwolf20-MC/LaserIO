@@ -5,7 +5,6 @@ import com.direwolf20.laserio.client.renderer.DelayedRenderer;
 import com.direwolf20.laserio.common.blockentities.LaserConnectorAdvBE;
 import com.direwolf20.laserio.common.blockentities.basebe.BaseLaserBE;
 import com.direwolf20.laserio.common.blocks.LaserConnectorAdv;
-import com.direwolf20.laserio.common.blocks.baseblocks.BaseLaserBlock;
 import com.direwolf20.laserio.common.items.LaserWrench;
 import com.direwolf20.laserio.util.DimBlockPos;
 import com.direwolf20.laserio.util.VectorHelper;
@@ -22,8 +21,6 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.client.event.CustomizeGuiOverlayEvent;
 import net.minecraftforge.client.event.RenderLevelStageEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-
-import java.awt.*;
 
 import static com.direwolf20.laserio.client.events.RenderGUIOverlay.renderLocation;
 

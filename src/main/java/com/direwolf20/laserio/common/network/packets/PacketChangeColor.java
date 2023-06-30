@@ -1,30 +1,14 @@
 package com.direwolf20.laserio.common.network.packets;
 
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
-import com.direwolf20.laserio.common.blocks.LaserNode;
-import com.direwolf20.laserio.common.containers.*;
-import com.direwolf20.laserio.common.containers.customhandler.CardItemHandler;
-import com.direwolf20.laserio.common.items.cards.CardEnergy;
-import com.direwolf20.laserio.common.items.cards.CardFluid;
-import com.direwolf20.laserio.common.items.cards.CardItem;
-import com.direwolf20.laserio.common.items.cards.CardRedstone;
-import com.direwolf20.laserio.common.items.filters.BaseFilter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.SimpleMenuProvider;
-import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.network.NetworkEvent;
-import net.minecraftforge.network.NetworkHooks;
 
 import java.awt.*;
 import java.util.function.Supplier;
-
-import static com.direwolf20.laserio.common.items.cards.BaseCard.getInventory;
 
 
 public class PacketChangeColor {

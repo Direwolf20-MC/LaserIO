@@ -1,6 +1,5 @@
 package com.direwolf20.laserio.util;
 
-import net.minecraft.core.BlockPos;
 import net.minecraftforge.fluids.FluidStack;
 
 public class ParticleDataFluid {

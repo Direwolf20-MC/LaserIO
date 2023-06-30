@@ -4,7 +4,6 @@ import com.direwolf20.laserio.client.blockentityrenders.LaserNodeBERender;
 import com.direwolf20.laserio.common.blockentities.LaserConnectorAdvBE;
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import com.direwolf20.laserio.common.blockentities.basebe.BaseLaserBE;
-import com.direwolf20.laserio.common.blocks.LaserConnectorAdv;
 import com.direwolf20.laserio.common.items.LaserWrench;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.util.CardRender;
@@ -18,9 +17,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
@@ -160,7 +157,7 @@ public class RenderUtils {
                 float diffY = endBlock.getY() + .5f - startBlock.getY();
                 float diffZ = endBlock.getZ() + .5f - startBlock.getZ();
                 Vector3f endLaser = new Vector3f(diffX, diffY, diffZ);
-                drawLaser(builder, positionMatrix, endLaser, startLaser, color.getRed()/255f, color.getGreen()/255f, color.getBlue()/255f, alpha/255f, 0.025f, v, v + diffY * 1.5, be);
+                drawLaser(builder, positionMatrix, endLaser, startLaser, color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, alpha / 255f, 0.025f, v, v + diffY * 1.5, be);
             }
 
             if (be instanceof LaserConnectorAdvBE laserConnectorAdvBE && laserConnectorAdvBE.getPartnerDimBlockPos() != null && !level.getBlockState(be.getBlockPos()).isAir()) {
@@ -171,7 +168,7 @@ public class RenderUtils {
                 ItemStack myItem = getWrench(myplayer);
                 int alpha = (myItem.getItem() instanceof LaserWrench) ? Math.min(color.getAlpha() + be.getWrenchAlpha(), 255) : color.getAlpha();
                 Vector3f endLaser = calculateEndAdvConnector(startBlock, endBlock, facing);
-                drawLaser(builder, positionMatrix, endLaser, startLaser, color.getRed()/255f, color.getGreen()/255f, color.getBlue()/255f, alpha/255f, 0.025f, v, v + endLaser.y() * 1.5, be);
+                drawLaser(builder, positionMatrix, endLaser, startLaser, color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, alpha / 255f, 0.025f, v, v + endLaser.y() * 1.5, be);
             }
             matrixStackIn.popPose();
         }

@@ -23,7 +23,6 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
-import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -157,7 +156,7 @@ public class FilterTagScreen extends AbstractContainerScreen<FilterTagContainer>
                 matrixStack.pushPose();
                 if (!drawStack.isEmpty())
                     laserGuiGraphics.renderItemScale(8f, drawStack, (availableItemsstartX) - 4, (tagStartY) - 5);
-               matrixStack.popPose();
+                matrixStack.popPose();
             }
 
             List<Fluid> tagFluids = ForgeRegistries.FLUIDS.tags().getTag(FluidTags.create(new ResourceLocation(tag))).stream().toList();
@@ -207,7 +206,7 @@ public class FilterTagScreen extends AbstractContainerScreen<FilterTagContainer>
                 int x1 = availableItemsstartX + 160;
                 int y1 = tagStartY + 10;
                 guiGraphics.hLine(availableItemsstartX - 2, x1 - 0, tagStartY - 2, color);
-                guiGraphics.hLine( availableItemsstartX - 2, x1 - 0, y1 - 3, color);
+                guiGraphics.hLine(availableItemsstartX - 2, x1 - 0, y1 - 3, color);
                 guiGraphics.vLine(availableItemsstartX - 2, tagStartY - 2, y1 - 2, color);
                 guiGraphics.vLine(x1 - 0, tagStartY - 2, y1 - 2, color);
 

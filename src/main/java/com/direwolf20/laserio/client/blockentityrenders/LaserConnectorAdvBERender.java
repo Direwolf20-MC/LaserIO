@@ -25,8 +25,7 @@ public class LaserConnectorAdvBERender extends BaseLaserBERender<LaserConnectorA
             Matrix4f matrix4f = matrixStackIn.last().pose();
             this.renderCube(blockentity, matrix4f, bufferIn.getBuffer(this.renderType()), gameTime, partialTicks);
             DelayedRenderer.add(blockentity);
-        }
-        else
+        } else
             super.render(blockentity, partialTicks, matrixStackIn, bufferIn, combinedLightsIn, combinedOverlayIn);
     }
 
@@ -37,73 +36,73 @@ public class LaserConnectorAdvBERender extends BaseLaserBERender<LaserConnectorA
         float oneBig = 0.5625f;
         float zeroBig = 0.4375f;
         int ticks = 80;
-        float f1 = (float)Math.floorMod(gameTime, ticks) + partialTicks;
-        float lerp = f1/ticks;
+        float f1 = (float) Math.floorMod(gameTime, ticks) + partialTicks;
+        float lerp = f1 / ticks;
         float zero;
         float one;
-        if (f1 < ticks/2f) {
+        if (f1 < ticks / 2f) {
             zero = Mth.lerp(lerp, zeroSmall, zeroBig);
             one = Mth.lerp(lerp, oneSmall, oneBig);
         } else {
             zero = Mth.lerp(lerp, zeroBig, zeroSmall);
             one = Mth.lerp(lerp, oneBig, oneSmall);
         }
-        float diff = one-zero;
+        float diff = one - zero;
         float f;
         switch (direction) {
             case UP:
                 f = 0.5f + 0.25f; //Center of cube up 1/4 block
-                this.renderFace(matrixStack, vertexConsumer, zero, one, f, f+diff, one, one, one, one); //South
-                this.renderFace(matrixStack, vertexConsumer, zero, one, f+diff, f, zero, zero, zero, zero); //North
-                this.renderFace(matrixStack, vertexConsumer, one, one, f+diff, f, zero, one, one, zero); //East
-                this.renderFace(matrixStack, vertexConsumer, zero, zero, f, f+diff, zero, one, one, zero); //West
+                this.renderFace(matrixStack, vertexConsumer, zero, one, f, f + diff, one, one, one, one); //South
+                this.renderFace(matrixStack, vertexConsumer, zero, one, f + diff, f, zero, zero, zero, zero); //North
+                this.renderFace(matrixStack, vertexConsumer, one, one, f + diff, f, zero, one, one, zero); //East
+                this.renderFace(matrixStack, vertexConsumer, zero, zero, f, f + diff, zero, one, one, zero); //West
                 this.renderFace(matrixStack, vertexConsumer, zero, one, f, f, zero, zero, one, one); //Down
-                this.renderFace(matrixStack, vertexConsumer, zero, one, f+diff, f+diff, one, one, zero, zero); //Up
+                this.renderFace(matrixStack, vertexConsumer, zero, one, f + diff, f + diff, one, one, zero, zero); //Up
                 break;
             case DOWN:
                 f = 0.5f - 0.25f; //Center of cube down 1/4 block
-                this.renderFace(matrixStack, vertexConsumer, zero, one, f, f-diff, one, one, one, one); //South
-                this.renderFace(matrixStack, vertexConsumer, zero, one, f-diff, f, zero, zero, zero, zero); //North
-                this.renderFace(matrixStack, vertexConsumer, one, one, f-diff, f, zero, one, one, zero); //East
-                this.renderFace(matrixStack, vertexConsumer, zero, zero, f, f-diff, zero, one, one, zero); //West
+                this.renderFace(matrixStack, vertexConsumer, zero, one, f, f - diff, one, one, one, one); //South
+                this.renderFace(matrixStack, vertexConsumer, zero, one, f - diff, f, zero, zero, zero, zero); //North
+                this.renderFace(matrixStack, vertexConsumer, one, one, f - diff, f, zero, one, one, zero); //East
+                this.renderFace(matrixStack, vertexConsumer, zero, zero, f, f - diff, zero, one, one, zero); //West
                 this.renderFace(matrixStack, vertexConsumer, zero, one, f, f, zero, zero, one, one); //Down
-                this.renderFace(matrixStack, vertexConsumer, zero, one, f-diff, f-diff, one, one, zero, zero); //Up
+                this.renderFace(matrixStack, vertexConsumer, zero, one, f - diff, f - diff, one, one, zero, zero); //Up
                 break;
             case NORTH:
                 f = 0.5f - 0.25f; //Center of cube up 1/4 block
-                this.renderFace(matrixStack, vertexConsumer, zero, one, zero, one, f,f, f,f); //South
-                this.renderFace(matrixStack, vertexConsumer, zero, one, one, zero, f-diff,f-diff,f-diff,f-diff); //North
-                this.renderFace(matrixStack, vertexConsumer, one, one, one,zero, f-diff, f, f, f-diff); //East
-                this.renderFace(matrixStack, vertexConsumer, zero, zero, zero, one, f-diff, f, f, f-diff); //West
-                this.renderFace(matrixStack, vertexConsumer, zero, one, zero, zero, f-diff, f-diff, f, f); //Down
-                this.renderFace(matrixStack, vertexConsumer, zero, one, one, one, f, f, f-diff, f-diff); //Up
+                this.renderFace(matrixStack, vertexConsumer, zero, one, zero, one, f, f, f, f); //South
+                this.renderFace(matrixStack, vertexConsumer, zero, one, one, zero, f - diff, f - diff, f - diff, f - diff); //North
+                this.renderFace(matrixStack, vertexConsumer, one, one, one, zero, f - diff, f, f, f - diff); //East
+                this.renderFace(matrixStack, vertexConsumer, zero, zero, zero, one, f - diff, f, f, f - diff); //West
+                this.renderFace(matrixStack, vertexConsumer, zero, one, zero, zero, f - diff, f - diff, f, f); //Down
+                this.renderFace(matrixStack, vertexConsumer, zero, one, one, one, f, f, f - diff, f - diff); //Up
                 break;
             case SOUTH:
                 f = 0.5f + 0.25f; //Center of cube down 1/4 block
-                this.renderFace(matrixStack, vertexConsumer, zero, one, zero, one, f,f, f,f); //South
-                this.renderFace(matrixStack, vertexConsumer, zero, one, one, zero, f+diff,f+diff, f+diff,f+diff); //North
-                this.renderFace(matrixStack, vertexConsumer, zero, zero, zero, one, f+diff, f, f, f+diff); //East
-                this.renderFace(matrixStack, vertexConsumer, one, one, one, zero, f+diff, f, f, f+diff); //West
-                this.renderFace(matrixStack, vertexConsumer, zero, one, one, one, f, f, f+diff, f+diff); //Down
-                this.renderFace(matrixStack, vertexConsumer, zero, one, zero, zero, f+diff, f+diff, f, f); //Up
+                this.renderFace(matrixStack, vertexConsumer, zero, one, zero, one, f, f, f, f); //South
+                this.renderFace(matrixStack, vertexConsumer, zero, one, one, zero, f + diff, f + diff, f + diff, f + diff); //North
+                this.renderFace(matrixStack, vertexConsumer, zero, zero, zero, one, f + diff, f, f, f + diff); //East
+                this.renderFace(matrixStack, vertexConsumer, one, one, one, zero, f + diff, f, f, f + diff); //West
+                this.renderFace(matrixStack, vertexConsumer, zero, one, one, one, f, f, f + diff, f + diff); //Down
+                this.renderFace(matrixStack, vertexConsumer, zero, one, zero, zero, f + diff, f + diff, f, f); //Up
                 break;
             case EAST:
                 f = 0.5f + 0.25f; //Center of cube up 1/4 block
-                this.renderFace(matrixStack, vertexConsumer, f, f+diff, zero, one, one, one, one, one); //South
-                this.renderFace(matrixStack, vertexConsumer, f, f+diff, one, zero, zero, zero, zero, zero); //North
-                this.renderFace(matrixStack, vertexConsumer, f+diff, f+diff, one, zero, zero, one, one, zero); //East
+                this.renderFace(matrixStack, vertexConsumer, f, f + diff, zero, one, one, one, one, one); //South
+                this.renderFace(matrixStack, vertexConsumer, f, f + diff, one, zero, zero, zero, zero, zero); //North
+                this.renderFace(matrixStack, vertexConsumer, f + diff, f + diff, one, zero, zero, one, one, zero); //East
                 this.renderFace(matrixStack, vertexConsumer, f, f, zero, one, zero, one, one, zero); //West
-                this.renderFace(matrixStack, vertexConsumer, f, f+diff, zero, zero, zero, zero, one, one); //Down
-                this.renderFace(matrixStack, vertexConsumer, f, f+diff, one, one, one, one, zero, zero); //Up
+                this.renderFace(matrixStack, vertexConsumer, f, f + diff, zero, zero, zero, zero, one, one); //Down
+                this.renderFace(matrixStack, vertexConsumer, f, f + diff, one, one, one, one, zero, zero); //Up
                 break;
             case WEST:
                 f = 0.5f - 0.25f; //Center of cube shifted 1/4 block to the west
-                this.renderFace(matrixStack, vertexConsumer, f, f-diff, zero, one, one, one, one, one); //South
-                this.renderFace(matrixStack, vertexConsumer, f, f-diff, one, zero, zero, zero, zero, zero); //North
+                this.renderFace(matrixStack, vertexConsumer, f, f - diff, zero, one, one, one, one, one); //South
+                this.renderFace(matrixStack, vertexConsumer, f, f - diff, one, zero, zero, zero, zero, zero); //North
                 this.renderFace(matrixStack, vertexConsumer, f, f, zero, one, zero, one, one, zero); //East
-                this.renderFace(matrixStack, vertexConsumer, f-diff, f-diff, one, zero, zero, one, one, zero); //West
-                this.renderFace(matrixStack, vertexConsumer, f, f-diff, one, one, one, one, zero, zero); //Down
-                this.renderFace(matrixStack, vertexConsumer, f, f-diff, zero, zero, zero, zero, one, one); //Up
+                this.renderFace(matrixStack, vertexConsumer, f - diff, f - diff, one, zero, zero, one, one, zero); //West
+                this.renderFace(matrixStack, vertexConsumer, f, f - diff, one, one, one, one, zero, zero); //Down
+                this.renderFace(matrixStack, vertexConsumer, f, f - diff, zero, zero, zero, zero, one, one); //Up
                 break;
             default:
                 break;

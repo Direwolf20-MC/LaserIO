@@ -1,6 +1,5 @@
 package com.direwolf20.laserio.client.screens;
 
-import com.direwolf20.laserio.client.renderer.LaserIOItemRendererFluid;
 import com.direwolf20.laserio.client.screens.widgets.NumberButton;
 import com.direwolf20.laserio.client.screens.widgets.ToggleButton;
 import com.direwolf20.laserio.common.LaserIO;

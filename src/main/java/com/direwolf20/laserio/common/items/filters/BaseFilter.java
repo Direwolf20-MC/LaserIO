@@ -1,7 +1,6 @@
 package com.direwolf20.laserio.common.items.filters;
 
 import com.direwolf20.laserio.client.events.EventTooltip;
-import com.direwolf20.laserio.setup.ModSetup;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;

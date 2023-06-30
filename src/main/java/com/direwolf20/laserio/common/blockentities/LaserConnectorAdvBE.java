@@ -3,13 +3,10 @@ package com.direwolf20.laserio.common.blockentities;
 import com.direwolf20.laserio.common.blockentities.basebe.BaseLaserBE;
 import com.direwolf20.laserio.setup.Registration;
 import com.direwolf20.laserio.util.DimBlockPos;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -44,8 +41,8 @@ public class LaserConnectorAdvBE extends BaseLaserBE {
 
     /**
      * @param connectingDimPos The Position in world you're connecting this TE to.
-     * @param be            The block entity being connected to this one (And vice versa)
-     *                      Connects This Pos -> Target Pos, and connects Target Pos -> This pos
+     * @param be               The block entity being connected to this one (And vice versa)
+     *                         Connects This Pos -> Target Pos, and connects Target Pos -> This pos
      */
 
     public void addPartnerConnection(DimBlockPos connectingDimPos, LaserConnectorAdvBE be) {
@@ -54,7 +51,7 @@ public class LaserConnectorAdvBE extends BaseLaserBE {
         }
 
         if (be.getPartnerDimBlockPos() != null) { //Advanced Connections are 1-1
-                be.removePartnerConnection();
+            be.removePartnerConnection();
         }
 
         setPartnerDimBlockPos(connectingDimPos); // Add that node to this one
@@ -70,7 +67,7 @@ public class LaserConnectorAdvBE extends BaseLaserBE {
     }
 
     /**
-     *   Disconnects This Pos from Target Pos, and disconnects Target Pos from This pos
+     * Disconnects This Pos from Target Pos, and disconnects Target Pos from This pos
      */
 
     public void removePartnerConnection() {

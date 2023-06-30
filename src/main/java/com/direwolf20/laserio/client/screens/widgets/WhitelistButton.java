@@ -2,7 +2,6 @@ package com.direwolf20.laserio.client.screens.widgets;
 
 import com.direwolf20.laserio.common.LaserIO;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.renderer.GameRenderer;

@@ -1,16 +1,9 @@
 package com.direwolf20.laserio.client.screens;
 
-import com.direwolf20.laserio.client.screens.widgets.IconButton;
 import com.direwolf20.laserio.common.LaserIO;
-import com.direwolf20.laserio.common.containers.CardHolderContainer;
 import com.direwolf20.laserio.common.containers.LaserNodeContainer;
-import com.direwolf20.laserio.common.containers.customslot.CardHolderSlot;
-import com.direwolf20.laserio.common.containers.customslot.LaserNodeSlot;
-import com.direwolf20.laserio.common.items.CardHolder;
-import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.common.network.PacketHandler;
 import com.direwolf20.laserio.common.network.packets.PacketChangeColor;
-import com.direwolf20.laserio.common.network.packets.PacketOpenCard;
 import com.direwolf20.laserio.common.network.packets.PacketOpenNode;
 import com.direwolf20.laserio.util.MiscTools;
 import com.direwolf20.laserio.util.Vec2i;
@@ -21,15 +14,12 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.client.gui.widget.ExtendedButton;
@@ -218,15 +208,15 @@ public class LaserNodeSettingsScreen extends Screen {
             ItemStack itemStack = getAdjacentBlock(direction);
             if (!itemStack.isEmpty()) {
                 guiGraphics.renderItem(itemStack, tabs[direction.ordinal()].x + 4, tabs[direction.ordinal()].y - 14, 0);
-                if (MiscTools.inBounds(getGuiLeft() + tabs[direction.ordinal()].x+4, getGuiTop() + tabs[direction.ordinal()].y-14, 16, 16, mouseX, mouseY)) {
-                    guiGraphics.renderTooltip(font, itemStack, mouseX-getGuiLeft(), mouseY-getGuiTop());
+                if (MiscTools.inBounds(getGuiLeft() + tabs[direction.ordinal()].x + 4, getGuiTop() + tabs[direction.ordinal()].y - 14, 16, 16, mouseX, mouseY)) {
+                    guiGraphics.renderTooltip(font, itemStack, mouseX - getGuiLeft(), mouseY - getGuiTop());
                 }
             }
         }
-        guiGraphics.pose().translate(0,0,100);
+        guiGraphics.pose().translate(0, 0, 100);
         int startX = 15;
         int startY = 30;
-        guiGraphics.fill(startX, startY, startX+150, startY+10, new Color(laserRed, laserGreen, laserBlue, laserAlpha).getRGB());
+        guiGraphics.fill(startX, startY, startX + 150, startY + 10, new Color(laserRed, laserGreen, laserBlue, laserAlpha).getRGB());
         guiGraphics.pose().popPose();
     }
 
@@ -284,6 +274,11 @@ public class LaserNodeSettingsScreen extends Screen {
         return false;
     }
 
-    public int getGuiLeft() { return leftPos; }
-    public int getGuiTop() { return topPos; }
+    public int getGuiLeft() {
+        return leftPos;
+    }
+
+    public int getGuiTop() {
+        return topPos;
+    }
 }

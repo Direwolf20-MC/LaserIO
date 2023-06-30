@@ -4,7 +4,6 @@ import com.direwolf20.laserio.datagen.customrecipes.CardClearRecipeBuilder;
 import com.direwolf20.laserio.setup.Registration;
 import net.minecraft.advancements.critereon.InventoryChangeTrigger;
 import net.minecraft.advancements.critereon.ItemPredicate;
-import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.*;
 import net.minecraft.world.item.Items;
@@ -35,7 +34,7 @@ public class LaserIORecipes extends RecipeProvider {
                 .group("laserio")
                 .unlockedBy("has_quartz", InventoryChangeTrigger.TriggerInstance.hasItems(Items.QUARTZ_BLOCK))
                 .save(consumer);
-        SimpleCookingRecipeBuilder.smelting(Ingredient.of(Registration.Logic_Chip_Raw.get()),RecipeCategory.MISC,
+        SimpleCookingRecipeBuilder.smelting(Ingredient.of(Registration.Logic_Chip_Raw.get()), RecipeCategory.MISC,
                         Registration.Logic_Chip.get(), 1.0f, 100)
                 .unlockedBy("has_raw_chip", inventoryTrigger(ItemPredicate.Builder.item().of(Registration.Logic_Chip_Raw.get()).build()))
                 .save(consumer);

@@ -14,7 +14,6 @@ import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.common.items.cards.CardRedstone;
 import net.minecraft.client.color.item.ItemColors;
 import net.minecraft.client.gui.screens.MenuScreens;
-import net.minecraft.client.renderer.BiomeColors;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.item.ItemProperties;
@@ -28,7 +27,6 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.registries.RegistryObject;
 
 import java.awt.*;
 
@@ -149,21 +147,21 @@ public class ClientSetup {
         }, Registration.Card_Redstone.get());
         colors.register((stack, index) -> {
             if (index == 1) {
-                Color color = new Color(255, 0,0,255);
+                Color color = new Color(255, 0, 0, 255);
                 return color.getRGB();
             }
             return 0xFFFFFFFF;
         }, Registration.LaserNode_ITEM.get());
         colors.register((stack, index) -> {
             if (index == 1) {
-                Color color = new Color(255, 0,0,255);
+                Color color = new Color(255, 0, 0, 255);
                 return color.getRGB();
             }
             return 0xFFFFFFFF;
         }, Registration.LaserConnector_ITEM.get());
         colors.register((stack, index) -> {
             if (index == 1) {
-                Color color = new Color(255, 0,0,255);
+                Color color = new Color(255, 0, 0, 255);
                 return color.getRGB();
             }
             return 0xFFFFFFFF;
@@ -171,8 +169,7 @@ public class ClientSetup {
     }
 
     @SubscribeEvent
-    public static void blockColors(RegisterColorHandlersEvent.Block event)
-    {
+    public static void blockColors(RegisterColorHandlersEvent.Block event) {
         event.register(
                 (state, env, pos, index) -> {
                     assert env != null;
@@ -181,7 +178,8 @@ public class ClientSetup {
                         Color color = laserNodeBE.getColor();
                         return FastColor.ARGB32.color(color.getAlpha(), color.getRed(), color.getGreen(), color.getBlue());
                     }
-                    return FastColor.ARGB32.color(255, 255, 0, 0);},
+                    return FastColor.ARGB32.color(255, 255, 0, 0);
+                },
                 Registration.LaserNode.get()
         );
         event.register(
@@ -192,7 +190,8 @@ public class ClientSetup {
                         Color color = laserConnectorBE.getColor();
                         return FastColor.ARGB32.color(color.getAlpha(), color.getRed(), color.getGreen(), color.getBlue());
                     }
-                    return FastColor.ARGB32.color(255, 255, 0, 0);},
+                    return FastColor.ARGB32.color(255, 255, 0, 0);
+                },
                 Registration.LaserConnector.get()
         );
         event.register(
@@ -203,7 +202,8 @@ public class ClientSetup {
                         Color color = laserConnectorAdvBE.getColor();
                         return FastColor.ARGB32.color(color.getAlpha(), color.getRed(), color.getGreen(), color.getBlue());
                     }
-                    return FastColor.ARGB32.color(255, 255, 0, 0);},
+                    return FastColor.ARGB32.color(255, 255, 0, 0);
+                },
                 Registration.LaserConnectorAdv.get()
         );
     }

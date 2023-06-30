@@ -10,7 +10,6 @@ import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -187,8 +186,10 @@ public class BaseLaserBE extends BlockEntity {
         return connections;
     }
 
-    /** Get the connections world coordinates
-     *  Assumes the same dimension, because inter-dimensional connections are ONLY handled by advanced nodes*/
+    /**
+     * Get the connections world coordinates
+     * Assumes the same dimension, because inter-dimensional connections are ONLY handled by advanced nodes
+     */
     public Set<DimBlockPos> getWorldConnections() {
         Set<DimBlockPos> worldConnections = new HashSet<>();
         for (BlockPos relativePos : connections)

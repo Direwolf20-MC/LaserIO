@@ -2,7 +2,6 @@ package com.direwolf20.laserio.common.items;
 
 import com.direwolf20.laserio.common.containers.CardHolderContainer;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
-import com.direwolf20.laserio.setup.ModSetup;
 import com.direwolf20.laserio.util.ItemStackHandlerProvider;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
