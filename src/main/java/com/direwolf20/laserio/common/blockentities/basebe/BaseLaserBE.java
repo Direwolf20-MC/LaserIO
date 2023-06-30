@@ -1,6 +1,8 @@
 package com.direwolf20.laserio.common.blockentities.basebe;
 
+import com.direwolf20.laserio.common.blockentities.LaserConnectorAdvBE;
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
+import com.direwolf20.laserio.util.DimBlockPos;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -8,6 +10,7 @@ import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -35,8 +38,8 @@ public class BaseLaserBE extends BlockEntity {
     }
 
     /** Gets the node at a specific world position, returning null if not a node */
-    public LaserNodeBE getNodeAt(BlockPos pos) {
-        BlockEntity be = level.getBlockEntity(pos);
+    public LaserNodeBE getNodeAt(DimBlockPos pos) {
+        BlockEntity be = pos.getLevel(level.getServer()).getBlockEntity(pos.blockPos);
         if (be instanceof LaserNodeBE) return (LaserNodeBE) be;
         return null;
     }
@@ -66,19 +69,21 @@ public class BaseLaserBE extends BlockEntity {
      */
     public void discoverAllNodes() {
         //System.out.println("Discovering all nodes at: " + getBlockPos());
-        Set<BlockPos> otherNodesInNetwork = new HashSet<>(); //Fresh list of nodes
+        Set<DimBlockPos> otherNodesInNetwork = new HashSet<>(); //Fresh list of nodes
 
-        Queue<BlockPos> nodesToCheck = new LinkedList<>();
-        Set<BlockPos> checkedNodes = new HashSet<>();
-        nodesToCheck.add(getBlockPos()); //We should add this block to itself, as a starting point -- also if its a node it'll add itself
+        Queue<DimBlockPos> nodesToCheck = new LinkedList<>();
+        Set<DimBlockPos> checkedNodes = new HashSet<>();
+        nodesToCheck.add(new DimBlockPos(this.getLevel(), getBlockPos())); //We should add this block to itself, as a starting point -- also if its a node it'll add itself
 
         while (nodesToCheck.size() > 0) {
-            BlockPos posToCheck = nodesToCheck.remove(); //Pop the stack
+            DimBlockPos posToCheck = nodesToCheck.remove(); //Pop the stack
             if (!checkedNodes.add(posToCheck))
                 continue; //Don't check nodes we've checked before
-            BlockEntity be = level.getBlockEntity(posToCheck);
+            BlockEntity be = posToCheck.getLevel(getLevel().getServer()).getBlockEntity(posToCheck.blockPos);
             if (be instanceof BaseLaserBE baseLaserBE) {
-                Set<BlockPos> connectedNodes = baseLaserBE.getWorldConnections(); //Get all the nodes this node is connected to
+                Set<DimBlockPos> connectedNodes = baseLaserBE.getWorldConnections(); //Get all the nodes this node is connected to
+                if (be instanceof LaserConnectorAdvBE laserConnectorAdvBE && (laserConnectorAdvBE.getPartnerDimBlockPos() != null))
+                    connectedNodes.add(laserConnectorAdvBE.getPartnerDimBlockPos());
                 nodesToCheck.addAll(connectedNodes); //Add them to the list to check
                 baseLaserBE.setColor(getColor(), getWrenchAlpha());
                 baseLaserBE.markDirtyClient();
@@ -86,7 +91,7 @@ public class BaseLaserBE extends BlockEntity {
                     otherNodesInNetwork.add(posToCheck);
             }
         }
-        for (BlockPos pos : otherNodesInNetwork) { //Go through all the inventory nodes we've found and tell them about all the inventory nodes...
+        for (DimBlockPos pos : otherNodesInNetwork) { //Go through all the inventory nodes we've found and tell them about all the inventory nodes...
             LaserNodeBE nodeBE = getNodeAt(pos);
             if (nodeBE == null) continue;
             nodeBE.setOtherNodesInNetwork(otherNodesInNetwork);
@@ -182,11 +187,12 @@ public class BaseLaserBE extends BlockEntity {
         return connections;
     }
 
-    /** Get the connections world coordinates */
-    public Set<BlockPos> getWorldConnections() {
-        Set<BlockPos> worldConnections = new HashSet<>();
+    /** Get the connections world coordinates
+     *  Assumes the same dimension, because inter-dimensional connections are ONLY handled by advanced nodes*/
+    public Set<DimBlockPos> getWorldConnections() {
+        Set<DimBlockPos> worldConnections = new HashSet<>();
         for (BlockPos relativePos : connections)
-            worldConnections.add(getWorldPos(relativePos));
+            worldConnections.add(new DimBlockPos(level, getWorldPos(relativePos)));
         return worldConnections;
     }
 

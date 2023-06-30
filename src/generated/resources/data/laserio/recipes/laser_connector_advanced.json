@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "group": "laserio",
+  "key": {
+    "b": {
+      "item": "laserio:laser_connector"
+    },
+    "g": {
+      "tag": "forge:nether_stars"
+    },
+    "i": {
+      "tag": "forge:ingots/gold"
+    },
+    "r": {
+      "tag": "forge:dusts/redstone"
+    }
+  },
+  "pattern": [
+    " g ",
+    "rbr",
+    "iii"
+  ],
+  "result": {
+    "item": "laserio:laser_connector_advanced"
+  },
+  "show_notification": true
+}

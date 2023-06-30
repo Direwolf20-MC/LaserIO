@@ -1,4 +1,4 @@
-// 1.20.1	2023-06-24T13:14:22.1502505	Recipes
+// 1.20.1	2023-06-27T14:26:44.8936412	Recipes
 ab3a9ecc26922c085d82557de600115b01082d19 data/laserio/advancements/recipes/card_energy_nbtclear.json
 84fc4b80547b530f15f5d043882958f5f0de125f data/laserio/advancements/recipes/card_fluid_nbtclear.json
 d6b2f63c795c37d2e65d6b4673d600e913c99974 data/laserio/advancements/recipes/card_item_nbtclear.json
@@ -17,6 +17,7 @@ ec0bfe9692604b9f2ed216fdf509af0189b6a6f5 data/laserio/advancements/recipes/misc/
 0b1c3702f5ab44be62b1e127d5789685a02a894c data/laserio/advancements/recipes/misc/filter_tag.json
 8ae2fc85417663ad9bf154b8ce06a57ca01b6b3f data/laserio/advancements/recipes/misc/filter_tag_nbtclear.json
 3845a6daac0a90f7ba86d85df832f7908803943c data/laserio/advancements/recipes/misc/laser_connector.json
+b87f468692003351ebebe34874ee61d9559d368a data/laserio/advancements/recipes/misc/laser_connector_advanced.json
 11ef7f634afb984ae1421b29956cdb5c8ad835f8 data/laserio/advancements/recipes/misc/laser_node.json
 2e43e31e82b49a9d4256035ec619c04bf68a5df9 data/laserio/advancements/recipes/misc/laser_wrench.json
 4e1c5692db1e0196232f58633b04bd282f4ec695 data/laserio/advancements/recipes/misc/logic_chip.json
@@ -41,6 +42,7 @@ b0ac82e215f6e4957f9adc8eca40eede9a8d0c1c data/laserio/recipes/filter_count_nbtcl
 8d1bf64b6c5355a330c7537b915bb985568f6a3b data/laserio/recipes/filter_tag.json
 96d753b513563f9ce24bb1bcd47a3e3f8c798f55 data/laserio/recipes/filter_tag_nbtclear.json
 39d65fa607d629fbce0d9eee8a28c4e95d9993a3 data/laserio/recipes/laser_connector.json
+9c443ed98e19dc44e7751600663693d0ccc368ad data/laserio/recipes/laser_connector_advanced.json
 13d2531239004a448aad2f42133a3d3169749a37 data/laserio/recipes/laser_node.json
 16ce12759da0912a47301219a1d0645c4b066a8e data/laserio/recipes/laser_wrench.json
 f3457d14e22602f6b7cbf9c0ddc8191642bbc39b data/laserio/recipes/logic_chip.json

@@ -27,8 +27,7 @@ public class LaserIOLootTable extends VanillaBlockLoot {
     protected void generate() {
         dropSelf(Registration.LaserNode.get());
         dropSelf(Registration.LaserConnector.get());
-        //createStandardTable(Registration.COMPLEX_BLOCK.get(), Registration.COMPLEX_BLOCK_ENTITY.get(), ComplexBlockEntity.ITEMS_TAG);
-        //createStandardTable(Registration.PROCESSOR_BLOCK.get(), Registration.PROCESSOR_BLOCK_ENTITY.get(), ProcessorBlockEntity.ITEMS_INPUT_TAG, ProcessorBlockEntity.ITEMS_OUTPUT_TAG);
+        dropSelf(Registration.LaserConnectorAdv.get());
     }
 
     @Override
@@ -38,20 +37,4 @@ public class LaserIOLootTable extends VanillaBlockLoot {
                 .map(Map.Entry::getValue)
                 .collect(Collectors.toList());
     }
-
-    //Todo Needed?
-    /*private void createStandardTable(Block block, BlockEntityType<?> type, String... tags) {
-        LootPoolSingletonContainer.Builder<?> lti = LootItem.lootTableItem(block);
-        lti.apply(CopyNameFunction.copyName(CopyNameFunction.NameSource.BLOCK_ENTITY));
-        for (String tag : tags) {
-            lti.apply(CopyNbtFunction.copyData(ContextNbtProvider.BLOCK_ENTITY).copy(tag, "BlockEntityTag." + tag, CopyNbtFunction.MergeStrategy.REPLACE));
-        }
-        lti.apply(SetContainerContents.setContents(type).withEntry(DynamicLoot.dynamicEntry(new ResourceLocation("minecraft", "contents"))));
-
-        LootPool.Builder builder = LootPool.lootPool()
-                .setRolls(ConstantValue.exactly(1))
-                .add(lti);
-        add(block, LootTable.lootTable().withPool(builder));
-    }*/
-
 }

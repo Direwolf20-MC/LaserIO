@@ -1,12 +1,15 @@
 package com.direwolf20.laserio.common.network.packets;
 
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
+import com.direwolf20.laserio.util.DimBlockPos;
 import com.direwolf20.laserio.util.ParticleDataFluid;
 import com.direwolf20.laserio.util.ParticleRenderDataFluid;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fluids.FluidStack;
@@ -31,12 +34,14 @@ public class PacketNodeParticlesFluid {
         for (ParticleDataFluid data : tempList) {
             buffer.writeFluidStack(data.fluidStack);
             if (data.fromData != null) {
-                buffer.writeBlockPos(data.fromData.node());
+                buffer.writeResourceKey(data.fromData.node().levelKey);
+                buffer.writeBlockPos(data.fromData.node().blockPos);
                 buffer.writeByte(data.fromData.direction());
                 buffer.writeByte(data.fromData.position());
             }
             if (data.toData != null) {
-                buffer.writeBlockPos(data.toData.node());
+                buffer.writeResourceKey(data.toData.node().levelKey);
+                buffer.writeBlockPos(data.toData.node().blockPos);
                 buffer.writeByte(data.toData.direction());
                 buffer.writeByte(data.toData.position());
             }
@@ -48,10 +53,10 @@ public class PacketNodeParticlesFluid {
         int size = buffer.readInt();
         for (int i = 0; i < size; i++) {
             FluidStack fluidStack = buffer.readFluidStack();
-            BlockPos fromNode = buffer.readBlockPos();
+            DimBlockPos fromNode = new DimBlockPos(buffer.readResourceKey(Registries.DIMENSION), buffer.readBlockPos());
             byte fromDirection = buffer.readByte();
             byte extractPosition = buffer.readByte();
-            BlockPos toNode = buffer.readBlockPos();
+            DimBlockPos toNode = new DimBlockPos(buffer.readResourceKey(Registries.DIMENSION), buffer.readBlockPos());
             byte toDirection = buffer.readByte();
             byte insertPosition = buffer.readByte();
             ParticleDataFluid data = new ParticleDataFluid(fluidStack, fromNode, fromDirection, toNode, toDirection, extractPosition, insertPosition);
@@ -69,24 +74,23 @@ public class PacketNodeParticlesFluid {
 
     public static void clientPacketHandler(PacketNodeParticlesFluid msg) {
         List<ParticleDataFluid> tempList = msg.particleList;
-
         for (ParticleDataFluid data : tempList) {
             //Extract
             if (data.fromData != null) {
-                BlockPos fromPos = data.fromData.node();
-                BlockEntity fromTE = Minecraft.getInstance().level.getBlockEntity(fromPos);
+                DimBlockPos fromPos = data.fromData.node();
+                BlockEntity fromTE = Minecraft.getInstance().level.getBlockEntity(fromPos.blockPos);
                 if (!(fromTE instanceof LaserNodeBE)) {
                 } else {
-                    ((LaserNodeBE) fromTE).addParticleDataFluid(new ParticleRenderDataFluid(data.fluidStack, fromPos.relative(Direction.values()[data.fromData.direction()]), data.fromData.direction(), data.fromData.node(), data.fromData.position()));
+                    ((LaserNodeBE) fromTE).addParticleDataFluid(new ParticleRenderDataFluid(data.fluidStack, fromPos.blockPos.relative(Direction.values()[data.fromData.direction()]), data.fromData.direction(), data.fromData.node().blockPos, data.fromData.position()));
                 }
             }
             if (data.toData != null) {
                 //Insert
-                BlockPos toPos = data.toData.node();
-                BlockEntity toTE = Minecraft.getInstance().level.getBlockEntity(toPos);
+                DimBlockPos toPos = data.toData.node();
+                BlockEntity toTE = Minecraft.getInstance().level.getBlockEntity(toPos.blockPos);
                 if (!(toTE instanceof LaserNodeBE)) {
                 } else {
-                    ((LaserNodeBE) toTE).addParticleDataFluid(new ParticleRenderDataFluid(data.fluidStack, data.toData.node(), data.toData.direction(), toPos.relative(Direction.values()[data.toData.direction()]), data.toData.position()));
+                    ((LaserNodeBE) toTE).addParticleDataFluid(new ParticleRenderDataFluid(data.fluidStack, data.toData.node().blockPos, data.toData.direction(), toPos.blockPos.relative(Direction.values()[data.toData.direction()]), data.toData.position()));
                 }
             }
         }

@@ -5,8 +5,8 @@
     32
   ],
   "textures": {
-    "0": "laserio:block/laser_connector",
-    "particle": "laserio:block/laser_connector"
+    "0": "laserio:block/laser_connector_advanced",
+    "particle": "laserio:block/laser_connector_advanced"
   },
   "elements": [
     {
