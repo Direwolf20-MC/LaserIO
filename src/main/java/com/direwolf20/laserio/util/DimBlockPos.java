@@ -8,7 +8,6 @@ import net.minecraft.nbt.NbtUtils;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 
 import java.util.Objects;
@@ -33,12 +32,10 @@ public class DimBlockPos {
     }
 
     public Level getLevel(MinecraftServer server) {
-        Level level;
         if (server == null)
-            level = Minecraft.getInstance().level;
+            return null;//level = Minecraft.getInstance().level;
         else
-            level = server.getLevel(this.levelKey);
-        return level;
+            return server.getLevel(this.levelKey);
     }
 
     public CompoundTag toNBT() {

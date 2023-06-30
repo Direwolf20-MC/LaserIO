@@ -25,8 +25,8 @@ public class ClientEvents {
         ItemStack myItem = getWrench(myplayer);
         if (myItem.getItem() instanceof LaserWrench) {
             DimBlockPos selectedDimPos = LaserWrench.getConnectionPos(myItem, myplayer.level());
-            if (selectedDimPos != null && myplayer.level().equals(selectedDimPos.getLevel(myplayer.level().getServer()))) {
-                BlockEntity be = selectedDimPos.getLevel(myplayer.level().getServer()).getBlockEntity(selectedDimPos.blockPos);
+            if (selectedDimPos != null && myplayer.level().dimension().equals(selectedDimPos.levelKey)) {
+                BlockEntity be = myplayer.level().getBlockEntity(selectedDimPos.blockPos);
                 if (!selectedDimPos.blockPos.equals(BlockPos.ZERO) && (be instanceof BaseLaserBE))
                     BlockOverlayRender.renderSelectedBlock(evt, selectedDimPos.blockPos, (BaseLaserBE) be);
             }

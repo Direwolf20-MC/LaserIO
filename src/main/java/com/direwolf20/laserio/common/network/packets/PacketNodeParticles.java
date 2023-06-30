@@ -9,6 +9,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
@@ -79,7 +80,7 @@ public class PacketNodeParticles {
             //Extract
             if (data.fromData != null) {
                 DimBlockPos fromPos = data.fromData.node();
-                BlockEntity fromTE = fromPos.getLevel(null).getBlockEntity(fromPos.blockPos);
+                BlockEntity fromTE = Minecraft.getInstance().level.getBlockEntity(fromPos.blockPos);
                 if (!(fromTE instanceof LaserNodeBE)) {
                 } else {
                     ((LaserNodeBE) fromTE).addParticleData(new ParticleRenderData(data.item, data.itemCount, fromPos.blockPos.relative(Direction.values()[data.fromData.direction()]), data.fromData.direction(), data.fromData.node().blockPos, data.fromData.position()));
@@ -88,7 +89,7 @@ public class PacketNodeParticles {
             if (data.toData != null) {
                 //Insert
                 DimBlockPos toPos = data.toData.node();
-                BlockEntity toTE = toPos.getLevel(null).getBlockEntity(toPos.blockPos);
+                BlockEntity toTE = Minecraft.getInstance().level.getBlockEntity(toPos.blockPos);
                 if (!(toTE instanceof LaserNodeBE)) {
                 } else {
                     ((LaserNodeBE) toTE).addParticleData(new ParticleRenderData(data.item, data.itemCount, data.toData.node().blockPos, data.toData.direction(), toPos.blockPos.relative(Direction.values()[data.toData.direction()]), data.toData.position()));

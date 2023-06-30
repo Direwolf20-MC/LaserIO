@@ -10,6 +10,7 @@ import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -72,13 +73,13 @@ public class BaseLaserBE extends BlockEntity {
 
         Queue<DimBlockPos> nodesToCheck = new LinkedList<>();
         Set<DimBlockPos> checkedNodes = new HashSet<>();
-        nodesToCheck.add(new DimBlockPos(level, getBlockPos())); //We should add this block to itself, as a starting point -- also if its a node it'll add itself
+        nodesToCheck.add(new DimBlockPos(this.getLevel(), getBlockPos())); //We should add this block to itself, as a starting point -- also if its a node it'll add itself
 
         while (nodesToCheck.size() > 0) {
             DimBlockPos posToCheck = nodesToCheck.remove(); //Pop the stack
             if (!checkedNodes.add(posToCheck))
                 continue; //Don't check nodes we've checked before
-            BlockEntity be = posToCheck.getLevel(level.getServer()).getBlockEntity(posToCheck.blockPos);
+            BlockEntity be = posToCheck.getLevel(getLevel().getServer()).getBlockEntity(posToCheck.blockPos);
             if (be instanceof BaseLaserBE baseLaserBE) {
                 Set<DimBlockPos> connectedNodes = baseLaserBE.getWorldConnections(); //Get all the nodes this node is connected to
                 if (be instanceof LaserConnectorAdvBE laserConnectorAdvBE && (laserConnectorAdvBE.getPartnerDimBlockPos() != null))

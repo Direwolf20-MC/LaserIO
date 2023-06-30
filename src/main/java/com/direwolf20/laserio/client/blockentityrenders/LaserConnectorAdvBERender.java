@@ -31,8 +31,6 @@ public class LaserConnectorAdvBERender extends BaseLaserBERender<LaserConnectorA
 
     private void renderCube(LaserConnectorAdvBE blockEntity, Matrix4f matrixStack, VertexConsumer vertexConsumer, long gameTime, float partialTicks) {
         float f = this.getOffsetUp();
-        float zeroTiny = 0.484375f;
-        float oneTiny = 0.515625f;
         float oneSmall = 0.53125f;
         float zeroSmall = 0.46875f;
         float oneBig = 0.5625f;
