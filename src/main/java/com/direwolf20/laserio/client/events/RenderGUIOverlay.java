@@ -13,6 +13,6 @@ public class RenderGUIOverlay {
         DimBlockPos dimBlockPos = laserConnectorAdvBE.getPartnerDimBlockPos();
         if (dimBlockPos == null) return;
         String dimString = I18n.get(dimBlockPos.levelKey.location().getPath()) + ": [" + dimBlockPos.blockPos.getX() + "," + dimBlockPos.blockPos.getY() + "," + dimBlockPos.blockPos.getZ() + "]";
-        guiGraphics.drawString(font, dimString, guiGraphics.guiWidth()/2 - dimString.length()*2, guiGraphics.guiHeight()-155, Color.WHITE.getRGB(), false);
+        guiGraphics.drawString(font, dimString, guiGraphics.guiWidth()/2 - dimString.length()*2, guiGraphics.guiHeight()/20 + guiGraphics.guiHeight()/2, Color.WHITE.getRGB(), false);
     }
 }
