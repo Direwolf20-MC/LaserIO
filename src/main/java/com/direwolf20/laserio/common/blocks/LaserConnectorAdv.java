@@ -25,25 +25,6 @@ public class LaserConnectorAdv extends LaserConnector implements EntityBlock {
         return new LaserConnectorAdvBE(pos, state);
     }
 
-
-    //TODO Temp Code for testing
-    @SuppressWarnings("deprecation")
-    @Override
-    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult result) {
-        if (!world.isClientSide) {
-            BlockEntity blockEntity = world.getBlockEntity(pos);
-            if (blockEntity instanceof LaserConnectorAdvBE baseLaserBE) {
-                DimBlockPos dimBlockPos = baseLaserBE.getPartnerDimBlockPos();
-                if (dimBlockPos == null)
-                    System.out.println("Partner Is: null");
-                else
-                    System.out.println("Partner Is: " + dimBlockPos.getLevel(world.getServer()).dimension().toString() + ":" + dimBlockPos.blockPos);
-            }
-            return InteractionResult.SUCCESS;
-        }
-        return super.use(state, world, pos, player, hand, result);
-    }
-
     @Override
     public void onRemove(BlockState state, Level worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
         if (newState.getBlock() != this) {
