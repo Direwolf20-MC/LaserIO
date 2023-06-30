@@ -19,6 +19,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
@@ -161,20 +163,65 @@ public class RenderUtils {
             }
 
             if (be instanceof LaserConnectorAdvBE laserConnectorAdvBE && laserConnectorAdvBE.getPartnerDimBlockPos() != null) {
-                BlockPos endBlock = laserConnectorAdvBE.getBlockPos().relative(Direction.UP);
+                Direction facing = level.getBlockState(be.getBlockPos()).getValue(BlockStateProperties.FACING).getOpposite();
+                BlockPos endBlock = laserConnectorAdvBE.getBlockPos().relative(facing);
                 Color color = be.getColor();
                 Player myplayer = Minecraft.getInstance().player;
                 ItemStack myItem = getWrench(myplayer);
                 int alpha = (myItem.getItem() instanceof LaserWrench) ? Math.min(color.getAlpha() + be.getWrenchAlpha(), 255) : color.getAlpha();
-                float diffX = endBlock.getX() + .5f - startBlock.getX();
+                /*float diffX = endBlock.getX() + .5f - startBlock.getX();
                 float diffY = endBlock.getY() - 0.25f - startBlock.getY();
                 float diffZ = endBlock.getZ() + .5f - startBlock.getZ();
-                Vector3f endLaser = new Vector3f(diffX, diffY, diffZ);
-                drawLaser(builder, positionMatrix, endLaser, startLaser, color.getRed()/255f, color.getGreen()/255f, color.getBlue()/255f, alpha/255f, 0.025f, v, v + diffY * 1.5, be);
+                Vector3f endLaser = new Vector3f(diffX, diffY, diffZ);*/
+                Vector3f endLaser = calculateEndAdvConnector(startBlock, endBlock, facing);
+                drawLaser(builder, positionMatrix, endLaser, startLaser, color.getRed()/255f, color.getGreen()/255f, color.getBlue()/255f, alpha/255f, 0.025f, v, v + endLaser.y() * 1.5, be);
             }
             matrixStackIn.popPose();
         }
         buffer.endBatch(MyRenderType.CONNECTING_LASER); //This apparently is needed in RenderWorldLast
+    }
+
+    public static Vector3f calculateEndAdvConnector(BlockPos startBlock, BlockPos endBlock, Direction facing) {
+
+        float diffX = endBlock.getX() - startBlock.getX();
+        float diffY = endBlock.getY() - startBlock.getY();
+        float diffZ = endBlock.getZ() - startBlock.getZ();
+
+        switch (facing) {
+            case UP:
+                diffX += 0.5f;
+                diffY -= 0.25f;
+                diffZ += 0.5f;
+                break;
+            case DOWN:
+                diffX += 0.5f;
+                diffY += 1.25f;
+                diffZ += 0.5f;
+                break;
+            case NORTH:
+                diffX += 0.5f;
+                diffY += 0.5f;
+                diffZ += 1.25f;
+                break;
+            case SOUTH:
+                diffX += 0.5f;
+                diffY += 0.5f;
+                diffZ -= 0.25f;
+                break;
+            case EAST:
+                diffX -= 0.25f;
+                diffY += 0.5f;
+                diffZ += 0.5f;
+                break;
+            case WEST:
+                diffX += 1.25f;
+                diffY += 0.5f;
+                diffZ += 0.5f;
+                break;
+            default:
+                break;
+        }
+        return new Vector3f(diffX, diffY, diffZ);
     }
 
     public static void drawConnectingLasersLast4(Set<LaserNodeBE> beConnectingRenders, PoseStack matrixStackIn) {
