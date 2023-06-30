@@ -572,7 +572,8 @@
             11
           ],
           "rotation": 180,
-          "texture": "#0"
+          "texture": "#0",
+          "tintindex": 1
         },
         "east": {
           "uv": [
@@ -582,7 +583,8 @@
             11
           ],
           "rotation": 180,
-          "texture": "#0"
+          "texture": "#0",
+          "tintindex": 1
         },
         "south": {
           "uv": [
@@ -592,7 +594,8 @@
             11
           ],
           "rotation": 180,
-          "texture": "#0"
+          "texture": "#0",
+          "tintindex": 1
         },
         "west": {
           "uv": [
@@ -602,7 +605,8 @@
             11
           ],
           "rotation": 180,
-          "texture": "#0"
+          "texture": "#0",
+          "tintindex": 1
         },
         "up": {
           "uv": [
@@ -611,7 +615,8 @@
             15,
             9
           ],
-          "texture": "#0"
+          "texture": "#0",
+          "tintindex": 1
         },
         "down": {
           "uv": [
@@ -620,7 +625,8 @@
             15,
             10
           ],
-          "texture": "#0"
+          "texture": "#0",
+          "tintindex": 1
         }
       }
     },
@@ -720,7 +726,8 @@
             14,
             11
           ],
-          "texture": "#0"
+          "texture": "#0",
+          "tintindex": 1
         },
         "east": {
           "uv": [
@@ -729,7 +736,8 @@
             15,
             11
           ],
-          "texture": "#0"
+          "texture": "#0",
+          "tintindex": 1
         },
         "south": {
           "uv": [
@@ -738,7 +746,8 @@
             15,
             7
           ],
-          "texture": "#0"
+          "texture": "#0",
+          "tintindex": 1
         },
         "west": {
           "uv": [
@@ -747,7 +756,8 @@
             15,
             6
           ],
-          "texture": "#0"
+          "texture": "#0",
+          "tintindex": 1
         },
         "up": {
           "uv": [
@@ -756,7 +766,8 @@
             15,
             9
           ],
-          "texture": "#0"
+          "texture": "#0",
+          "tintindex": 1
         }
       }
     },

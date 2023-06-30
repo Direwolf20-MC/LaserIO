@@ -7,6 +7,8 @@ import com.direwolf20.laserio.client.events.ClientEvents;
 import com.direwolf20.laserio.client.events.EventTooltip;
 import com.direwolf20.laserio.client.screens.*;
 import com.direwolf20.laserio.common.LaserIO;
+import com.direwolf20.laserio.common.blockentities.LaserConnectorAdvBE;
+import com.direwolf20.laserio.common.blockentities.LaserConnectorBE;
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.common.items.cards.CardRedstone;
@@ -152,6 +154,20 @@ public class ClientSetup {
             }
             return 0xFFFFFFFF;
         }, Registration.LaserNode_ITEM.get());
+        colors.register((stack, index) -> {
+            if (index == 1) {
+                Color color = new Color(255, 0,0,255);
+                return color.getRGB();
+            }
+            return 0xFFFFFFFF;
+        }, Registration.LaserConnector_ITEM.get());
+        colors.register((stack, index) -> {
+            if (index == 1) {
+                Color color = new Color(255, 0,0,255);
+                return color.getRGB();
+            }
+            return 0xFFFFFFFF;
+        }, Registration.LaserConnectorAdv_ITEM.get());
     }
 
     @SubscribeEvent
@@ -167,6 +183,28 @@ public class ClientSetup {
                     }
                     return FastColor.ARGB32.color(255, 255, 0, 0);},
                 Registration.LaserNode.get()
+        );
+        event.register(
+                (state, env, pos, index) -> {
+                    assert env != null;
+                    assert pos != null;
+                    if (env.getBlockEntity(pos) instanceof LaserConnectorBE laserConnectorBE) {
+                        Color color = laserConnectorBE.getColor();
+                        return FastColor.ARGB32.color(color.getAlpha(), color.getRed(), color.getGreen(), color.getBlue());
+                    }
+                    return FastColor.ARGB32.color(255, 255, 0, 0);},
+                Registration.LaserConnector.get()
+        );
+        event.register(
+                (state, env, pos, index) -> {
+                    assert env != null;
+                    assert pos != null;
+                    if (env.getBlockEntity(pos) instanceof LaserConnectorAdvBE laserConnectorAdvBE) {
+                        Color color = laserConnectorAdvBE.getColor();
+                        return FastColor.ARGB32.color(color.getAlpha(), color.getRed(), color.getGreen(), color.getBlue());
+                    }
+                    return FastColor.ARGB32.color(255, 255, 0, 0);},
+                Registration.LaserConnectorAdv.get()
         );
     }
 }
