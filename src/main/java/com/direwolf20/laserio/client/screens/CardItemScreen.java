@@ -262,6 +262,9 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
             } else if (filter.getItem() instanceof FilterCount) {
                 showAllow = false;
                 showNBT = true;
+            } else if (filter.getItem() instanceof FilterNBT) {
+                showAllow = true;
+                showNBT = false;
             }
             if (BaseCard.getNamedTransferMode(card) == BaseCard.TransferMode.SENSOR)
                 showAllow = false;
@@ -480,7 +483,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
 
     public void toggleFilterSlots() {
         filter = container.slots.get(0).getItem();
-        showFilter = !filter.isEmpty() && !(filter.getItem() instanceof FilterTag);
+        showFilter = !filter.isEmpty() && !(filter.getItem() instanceof FilterTag) && !(filter.getItem() instanceof FilterNBT);
         Button exactButton = buttons.get("exact");
         if (showFilter) { //If the filter isn't empty, and the allowList is set to -1, it means we don't have a real value for allow list yet so get it
             if (filter.getItem() instanceof FilterMod) {
@@ -761,7 +764,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
         }
         if (hoveredSlot instanceof CardItemSlot) { //Right click
             if (btn == 0) {
-                if (filter.getItem() instanceof BaseFilter && !(filter.getItem() instanceof FilterTag)) //Save the filter before removing it from the slot
+                if (filter.getItem() instanceof BaseFilter && !(filter.getItem() instanceof FilterTag) && !(filter.getItem() instanceof FilterNBT)) //Save the filter before removing it from the slot
                     PacketHandler.sendToServer(new PacketUpdateFilter(isAllowList == 1, isCompareNBT == 1));
             } else if (btn == 1) {
                 int slot = hoveredSlot.getSlotIndex();

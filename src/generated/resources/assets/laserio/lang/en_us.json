@@ -10,6 +10,7 @@
   "item.laserio.filter_basic": "Basic Filter",
   "item.laserio.filter_count": "Counting Filter",
   "item.laserio.filter_mod": "Mod Filter",
+  "item.laserio.filter_nbt": "NBT Filter",
   "item.laserio.filter_tag": "Tag Filter",
   "item.laserio.laser_wrench": "Laser Wrench",
   "item.laserio.logic_chip": "Logic Chip",
