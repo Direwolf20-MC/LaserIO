@@ -31,6 +31,7 @@ public class BaseCardCache {
     public final List<ItemStack> filteredItems;
     public final List<FluidStack> filteredFluids;
     public final List<String> filterTags;
+    public final List<String> filterNBTs;
     public final byte sneaky;
     public final LaserNodeBE be;
     public final BaseCard.CardType cardType;
@@ -71,12 +72,14 @@ public class BaseCardCache {
             filteredItems = new ArrayList<>();
             filteredFluids = new ArrayList<>();
             filterTags = new ArrayList<>();
+            filterNBTs = new ArrayList<>();
             isAllowList = false;
             isCompareNBT = false;
         } else {
             this.filteredItems = getFilteredItems();
             this.filteredFluids = getFilteredFluids();
             this.filterTags = getFilterTags();
+            this.filterNBTs = getFilterNBTs();
             isAllowList = BaseFilter.getAllowList(filterCard);
             isCompareNBT = BaseFilter.getCompareNBT(filterCard);
         }
@@ -194,6 +197,14 @@ public class BaseCardCache {
         return filterTags;
     }
 
+    public List<String> getFilterNBTs() {
+        List<String> filterNBTs = new ArrayList<>();
+        if (filterCard.getItem() instanceof FilterNBT) {
+            filterNBTs = FilterTag.getTags(filterCard);
+        }
+        return filterNBTs;
+    }
+
     public boolean isStackValidForCard(ItemStack testStack) {
         if (filterCard.equals(ItemStack.EMPTY)) return true; //If theres no filter in the card
         ItemStackKey key = new ItemStackKey(testStack, isCompareNBT);
@@ -209,6 +220,13 @@ public class BaseCardCache {
             for (TagKey tagKey : testStack.getItem().builtInRegistryHolder().tags().toList()) {
                 String tag = tagKey.location().toString().toLowerCase(Locale.ROOT);
                 if (filterTags.contains(tag)) {
+                    filterCache.put(key, isAllowList);
+                    return isAllowList;
+                }
+            }
+        } else if (filterCard.getItem() instanceof FilterNBT) {
+            for (String tag : testStack.getOrCreateTag().getAllKeys()) {
+                if (filterNBTs.contains(tag)) {
                     filterCache.put(key, isAllowList);
                     return isAllowList;
                 }

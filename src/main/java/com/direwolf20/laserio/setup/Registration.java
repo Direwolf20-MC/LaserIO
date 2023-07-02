@@ -16,10 +16,7 @@ import com.direwolf20.laserio.common.items.cards.CardEnergy;
 import com.direwolf20.laserio.common.items.cards.CardFluid;
 import com.direwolf20.laserio.common.items.cards.CardItem;
 import com.direwolf20.laserio.common.items.cards.CardRedstone;
-import com.direwolf20.laserio.common.items.filters.FilterBasic;
-import com.direwolf20.laserio.common.items.filters.FilterCount;
-import com.direwolf20.laserio.common.items.filters.FilterMod;
-import com.direwolf20.laserio.common.items.filters.FilterTag;
+import com.direwolf20.laserio.common.items.filters.*;
 import com.direwolf20.laserio.common.items.upgrades.OverclockerCard;
 import com.direwolf20.laserio.common.items.upgrades.OverclockerNode;
 import com.direwolf20.laserio.datagen.customrecipes.CardClearRecipe;
@@ -92,6 +89,7 @@ public class Registration {
     public static final RegistryObject<Item> Filter_Count = ITEMS.register("filter_count", FilterCount::new);
     public static final RegistryObject<Item> Filter_Tag = ITEMS.register("filter_tag", FilterTag::new);
     public static final RegistryObject<Item> Filter_Mod = ITEMS.register("filter_mod", FilterMod::new);
+    public static final RegistryObject<Item> Filter_NBT = ITEMS.register("filter_nbt", FilterNBT::new);
 
     //Misc
     public static final RegistryObject<Item> Logic_Chip_Raw = ITEMS.register("logic_chip_raw", LogicChipRaw::new);
@@ -118,6 +116,8 @@ public class Registration {
             () -> IForgeMenuType.create((windowId, inv, data) -> new FilterCountContainer(windowId, inv, inv.player, data)));
     public static final RegistryObject<MenuType<FilterTagContainer>> FilterTag_Container = CONTAINERS.register("filtertag",
             () -> IForgeMenuType.create((windowId, inv, data) -> new FilterTagContainer(windowId, inv, inv.player, data)));
+    public static final RegistryObject<MenuType<FilterNBTContainer>> FilterNBT_Container = CONTAINERS.register("filternbt",
+            () -> IForgeMenuType.create((windowId, inv, data) -> new FilterNBTContainer(windowId, inv, inv.player, data)));
 
     // Conveniance function: Take a RegistryObject<Block> and make a corresponding RegistryObject<Item> from it
     /*public static <B extends Block> RegistryObject<Item> fromBlock(RegistryObject<B> block) {

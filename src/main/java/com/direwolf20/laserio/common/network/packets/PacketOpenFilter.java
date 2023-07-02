@@ -1,12 +1,10 @@
 package com.direwolf20.laserio.common.network.packets;
 
-import com.direwolf20.laserio.common.containers.CardItemContainer;
-import com.direwolf20.laserio.common.containers.FilterBasicContainer;
-import com.direwolf20.laserio.common.containers.FilterCountContainer;
-import com.direwolf20.laserio.common.containers.FilterTagContainer;
+import com.direwolf20.laserio.common.containers.*;
 import com.direwolf20.laserio.common.containers.customhandler.FilterBasicHandler;
 import com.direwolf20.laserio.common.items.filters.FilterBasic;
 import com.direwolf20.laserio.common.items.filters.FilterCount;
+import com.direwolf20.laserio.common.items.filters.FilterNBT;
 import com.direwolf20.laserio.common.items.filters.FilterTag;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
@@ -58,6 +56,14 @@ public class PacketOpenFilter {
             FilterBasicHandler handler = FilterBasic.getInventory(filterItem);
             NetworkHooks.openScreen(sender, new SimpleMenuProvider(
                     (windowId, playerInventory, playerEntity) -> new FilterTagContainer(windowId, playerInventory, sender, handler, sourcePos, filterItem, cardItem), Component.translatable("")), (buf -> {
+                buf.writeItem(filterItem);
+                buf.writeItem(ItemStack.EMPTY);
+            }));
+        }
+        if (filterItem.getItem() instanceof FilterNBT) {
+            FilterBasicHandler handler = FilterBasic.getInventory(filterItem);
+            NetworkHooks.openScreen(sender, new SimpleMenuProvider(
+                    (windowId, playerInventory, playerEntity) -> new FilterNBTContainer(windowId, playerInventory, sender, handler, sourcePos, filterItem, cardItem), Component.translatable("")), (buf -> {
                 buf.writeItem(filterItem);
                 buf.writeItem(ItemStack.EMPTY);
             }));

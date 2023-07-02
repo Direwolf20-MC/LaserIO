@@ -1,8 +1,9 @@
-// 1.20.1	2023-06-27T13:58:01.0597279	Item Models: laserio
+// 1.20.1	2023-07-01T16:04:39.0804775	Item Models: laserio
 52e0efd1f22b88ec99436633dce050d27b229fc1 assets/laserio/models/item/card_holder.json
 e437c48fed9e84ae9f2efcc79fae92735ab6b2eb assets/laserio/models/item/filter_basic.json
 407cf22e86fd33341e67e7eaaf1349d536332fac assets/laserio/models/item/filter_count.json
 cd8990fc4fed52b07c4d3302a2cc2e9a5f0a7261 assets/laserio/models/item/filter_mod.json
+9c735062b3a96f79361d6e3efe3bdd366034246a assets/laserio/models/item/filter_nbt.json
 5250eb0ada2b07c6f2b050e015d509efc69e6602 assets/laserio/models/item/filter_tag.json
 254e582dc655241e0be610e502512b3b52de3db2 assets/laserio/models/item/laser_connector.json
 3579587dcd20483d2053f3622759a926cc7fbfe2 assets/laserio/models/item/laser_connector_advanced.json

@@ -50,7 +50,7 @@ public class BaseFilter extends Item {
             toWrite.append(tooltipMaker(allowString, allowColor));
             tooltip.add(toWrite);
 
-            if (!(stack.getItem() instanceof FilterTag)) {
+            if (!(stack.getItem() instanceof FilterTag) && !(stack.getItem() instanceof FilterNBT)) {
                 toWrite = tooltipMaker("laserio.tooltip.item.filter.nbt", ChatFormatting.GRAY.getColor());
                 boolean nbtMode = getCompareNBT(stack);
                 String nbtString = nbtMode ? "laserio.tooltip.item.filter.nbt.allow" : "laserio.tooltip.item.filter.nbt.deny";

@@ -1,6 +1,8 @@
 package com.direwolf20.laserio.common.network.packets;
 
+import com.direwolf20.laserio.common.containers.FilterNBTContainer;
 import com.direwolf20.laserio.common.containers.FilterTagContainer;
+import com.direwolf20.laserio.common.items.filters.FilterNBT;
 import com.direwolf20.laserio.common.items.filters.FilterTag;
 import com.google.common.collect.Lists;
 import net.minecraft.network.FriendlyByteBuf;
@@ -45,6 +47,11 @@ public class PacketUpdateFilterTag {
                     ItemStack stack = ((FilterTagContainer) container).filterItem;
                     FilterTag.setAllowList(stack, msg.allowList);
                     FilterTag.setTags(stack, msg.tags);
+                }
+                if (container instanceof FilterNBTContainer) {
+                    ItemStack stack = ((FilterNBTContainer) container).filterItem;
+                    FilterNBT.setAllowList(stack, msg.allowList);
+                    FilterNBT.setTags(stack, msg.tags);
                 }
             });
 

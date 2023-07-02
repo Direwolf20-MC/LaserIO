@@ -1,4 +1,4 @@
-// 1.20.1	2023-06-27T14:26:44.8936412	Recipes
+// 1.20.1	2023-07-01T21:14:58.9898752	Recipes
 ab3a9ecc26922c085d82557de600115b01082d19 data/laserio/advancements/recipes/card_energy_nbtclear.json
 84fc4b80547b530f15f5d043882958f5f0de125f data/laserio/advancements/recipes/card_fluid_nbtclear.json
 d6b2f63c795c37d2e65d6b4673d600e913c99974 data/laserio/advancements/recipes/card_item_nbtclear.json
@@ -14,6 +14,8 @@ f6afb1954e5dbf4b74d9ab275c6b5d230283318d data/laserio/advancements/recipes/misc/
 e5c467d68913b4610ee8dd630e043361173698eb data/laserio/advancements/recipes/misc/filter_count_nbtclear.json
 ec0bfe9692604b9f2ed216fdf509af0189b6a6f5 data/laserio/advancements/recipes/misc/filter_mod.json
 20298792fb5d0f17a280116aee5f208f43949eab data/laserio/advancements/recipes/misc/filter_mod_nbtclear.json
+3a387883e82fe97ec09ebbc590f387c6b83c8edf data/laserio/advancements/recipes/misc/filter_nbt.json
+a803eb92a2bf7de3249fa936f09d7cf6c2cc9e2c data/laserio/advancements/recipes/misc/filter_nbt_nbtclear.json
 0b1c3702f5ab44be62b1e127d5789685a02a894c data/laserio/advancements/recipes/misc/filter_tag.json
 8ae2fc85417663ad9bf154b8ce06a57ca01b6b3f data/laserio/advancements/recipes/misc/filter_tag_nbtclear.json
 3845a6daac0a90f7ba86d85df832f7908803943c data/laserio/advancements/recipes/misc/laser_connector.json
@@ -39,6 +41,8 @@ db5c52cdf904b3e0cb4b8d16ba220023131fa46e data/laserio/recipes/filter_basic.json
 b0ac82e215f6e4957f9adc8eca40eede9a8d0c1c data/laserio/recipes/filter_count_nbtclear.json
 6e61792a55a03103c99e403ab7da508df7119ca8 data/laserio/recipes/filter_mod.json
 43f0a281148f8e7704d3a3f3f36dbd652a5d6378 data/laserio/recipes/filter_mod_nbtclear.json
+6b7ecc083ec41e0b55a1a6a0ab4746d89050adfe data/laserio/recipes/filter_nbt.json
+e777d62168f977ba680616bc2c9dfd61b5757330 data/laserio/recipes/filter_nbt_nbtclear.json
 8d1bf64b6c5355a330c7537b915bb985568f6a3b data/laserio/recipes/filter_tag.json
 96d753b513563f9ce24bb1bcd47a3e3f8c798f55 data/laserio/recipes/filter_tag_nbtclear.json
 39d65fa607d629fbce0d9eee8a28c4e95d9993a3 data/laserio/recipes/laser_connector.json

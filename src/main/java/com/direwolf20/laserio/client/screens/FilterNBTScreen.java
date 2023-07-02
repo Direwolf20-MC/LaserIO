@@ -5,7 +5,7 @@ import com.direwolf20.laserio.client.renderer.LaserIOItemRendererFluid;
 import com.direwolf20.laserio.client.screens.widgets.IconButton;
 import com.direwolf20.laserio.client.screens.widgets.ToggleButton;
 import com.direwolf20.laserio.common.LaserIO;
-import com.direwolf20.laserio.common.containers.FilterTagContainer;
+import com.direwolf20.laserio.common.containers.FilterNBTContainer;
 import com.direwolf20.laserio.common.containers.customslot.FilterBasicSlot;
 import com.direwolf20.laserio.common.items.filters.FilterTag;
 import com.direwolf20.laserio.common.network.PacketHandler;
@@ -23,29 +23,21 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.FluidTags;
-import net.minecraft.tags.ItemTags;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.material.Fluid;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidUtil;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.IFluidHandlerItem;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import java.awt.*;
 import java.util.List;
 import java.util.*;
 
-public class FilterTagScreen extends AbstractContainerScreen<FilterTagContainer> {
+public class FilterNBTScreen extends AbstractContainerScreen<FilterNBTContainer> {
     private final ResourceLocation GUI = new ResourceLocation(LaserIO.MODID, "textures/gui/filtertag.png");
 
-    protected final FilterTagContainer container;
+    protected final FilterNBTContainer container;
     private ItemStack filter;
     private boolean isAllowList;
     private EditBox tagField;
@@ -61,7 +53,7 @@ public class FilterTagScreen extends AbstractContainerScreen<FilterTagContainer>
     LaserIOItemRendererFluid tagFluidRenderer;
 
 
-    public FilterTagScreen(FilterTagContainer container, Inventory inv, Component name) {
+    public FilterNBTScreen(FilterNBTContainer container, Inventory inv, Component name) {
         super(container, inv, name);
         this.container = container;
         this.filter = container.filterItem;
@@ -103,7 +95,7 @@ public class FilterTagScreen extends AbstractContainerScreen<FilterTagContainer>
 
         int tagsPerPage = 11;
 
-
+        ItemStack stackInSlot = container.handler.getStackInSlot(0);
         stackInSlotTags.sort(Comparator.naturalOrder());
         tags.sort(Comparator.naturalOrder());
 
@@ -125,31 +117,8 @@ public class FilterTagScreen extends AbstractContainerScreen<FilterTagContainer>
 
         int slot = 0;
         overSlot = -1;
-        LaserGuiGraphics laserGuiGraphics = new LaserGuiGraphics(minecraft, guiGraphics.bufferSource());
-        for (String tag : displayTags) {
-            List<Item> tagItems = ForgeRegistries.ITEMS.tags().getTag(ItemTags.create(new ResourceLocation(tag))).stream().toList();
-            ItemStack drawStack = ItemStack.EMPTY;
-            if (tagItems.size() > 0) {
-                drawStack = new ItemStack(tagItems.get((cycleRenders / 120) % tagItems.size()));
-                matrixStack.pushPose();
-                if (!drawStack.isEmpty())
-                    laserGuiGraphics.renderItemScale(8f, drawStack, (availableItemsstartX) - 4, (tagStartY) - 5);
-                matrixStack.popPose();
-            }
 
-            List<Fluid> tagFluids = ForgeRegistries.FLUIDS.tags().getTag(FluidTags.create(new ResourceLocation(tag))).stream().toList();
-            FluidStack drawFluidStack = FluidStack.EMPTY;
-            ItemStack bucketStack = ItemStack.EMPTY;
-            if (tagFluids.size() > 0) {
-                drawFluidStack = new FluidStack(tagFluids.get((cycleRenders / 120) % tagFluids.size()), 1000);
-                matrixStack.pushPose();
-                if (!drawFluidStack.isEmpty()) {
-                    bucketStack = new ItemStack(drawFluidStack.getFluid().getBucket(), 1);
-                    if (!bucketStack.isEmpty())
-                        laserGuiGraphics.renderItemScale(8f, bucketStack, (availableItemsstartX) - 4, (tagStartY) - 5);
-                }
-                matrixStack.popPose();
-            }
+        for (String tag : displayTags) {
             matrixStack.pushPose();
             matrixStack.scale(0.75f, 0.75f, 0.75f);
             int fontColor = stackInSlotTags.contains(tag) ? Color.BLUE.getRGB() : Color.DARK_GRAY.getRGB();
@@ -164,11 +133,11 @@ public class FilterTagScreen extends AbstractContainerScreen<FilterTagContainer>
                 RenderSystem.disableDepthTest();
                 RenderSystem.colorMask(true, true, true, false);
                 guiGraphics.fillGradient(availableItemsstartX - 1, tagStartY - 2, availableItemsstartX + 160, tagStartY + 8, color, color);
-                if (MiscTools.inBounds(availableItemsstartX, tagStartY - 2, 8, 8, mouseX, mouseY)) {
-                    if (!drawStack.isEmpty())
-                        guiGraphics.renderTooltip(font, drawStack, mouseX, mouseY);
-                    if (!bucketStack.isEmpty())
-                        guiGraphics.renderTooltip(font, bucketStack, mouseX, mouseY);
+                Tag tempTag = stackInSlot.getOrCreateTag().get(displayTags.get(overSlot));
+                if (tempTag != null) {
+                    String tooltip = Objects.requireNonNull(stackInSlot.getOrCreateTag().get(displayTags.get(overSlot))).toString();
+                    if (tooltip.length() > 60) tooltip = tooltip.substring(0,60) + "...";
+                    guiGraphics.renderTooltip(font, Component.literal(tooltip), mouseX, mouseY);
                 }
                 RenderSystem.colorMask(true, true, true, true);
                 matrixStack.popPose();
@@ -201,24 +170,10 @@ public class FilterTagScreen extends AbstractContainerScreen<FilterTagContainer>
         stackInSlotTags = new ArrayList<>();
         ItemStack stackInSlot = container.handler.getStackInSlot(0);
         if (!stackInSlot.isEmpty()) {
-            stackInSlot.getItem().builtInRegistryHolder().tags().forEach(t -> {
-                String tag = t.location().toString().toLowerCase(Locale.ROOT);
-                if (!stackInSlotTags.contains(tag) && !tags.contains(tag))
-                    stackInSlotTags.add(tag);
+            stackInSlot.getOrCreateTag().getAllKeys().forEach(t -> {
+                if (!stackInSlotTags.contains(t) && !tags.contains(t))
+                    stackInSlotTags.add(t);
             });
-
-            Optional<IFluidHandlerItem> fluidHandlerLazyOptional = FluidUtil.getFluidHandler(stackInSlot).resolve();
-            if (fluidHandlerLazyOptional.isPresent()) {
-                IFluidHandler fluidHandler = fluidHandlerLazyOptional.get();
-                for (int tank = 0; tank < fluidHandler.getTanks(); tank++) {
-                    FluidStack fluidStack = fluidHandler.getFluidInTank(tank);
-                    fluidStack.getFluid().builtInRegistryHolder().tags().forEach(t -> {
-                        String tag = t.location().toString().toLowerCase(Locale.ROOT);
-                        if (!stackInSlotTags.contains(tag) && !tags.contains(tag))
-                            stackInSlotTags.add(tag);
-                    });
-                }
-            }
         }
     }
 
