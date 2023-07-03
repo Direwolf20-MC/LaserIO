@@ -127,6 +127,19 @@ public class CardItemContainer extends AbstractContainerMenu {
 
     @Override
     public boolean stillValid(Player playerIn) {
+        if (cardHolder.isEmpty() && cardHolderUUID != null) {
+            //System.out.println("Lost card holder!");
+            Inventory playerInventory = playerEntity.getInventory();
+            for (int i = 0; i < playerInventory.items.size(); i++) {
+                ItemStack itemStack = playerInventory.items.get(i);
+                if (itemStack.getItem() instanceof CardHolder) {
+                    if (CardHolder.getUUID(itemStack).equals(cardHolderUUID)) {
+                        cardHolder = itemStack;
+                        break;
+                    }
+                }
+            }
+        }
         if (sourceContainer.equals(BlockPos.ZERO))
             return playerIn.getMainHandItem().equals(cardItem) || playerIn.getOffhandItem().equals(cardItem);
         return true;
