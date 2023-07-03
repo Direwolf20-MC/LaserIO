@@ -83,7 +83,7 @@ public class LaserNodeScreen extends AbstractContainerScreen<LaserNodeContainer>
     @Override
     protected boolean hasClickedOutside(double mouseX, double mouseY, int guiLeftIn, int guiTopIn, int mouseButton) {
         if (showCardHolderUI)
-            return mouseX < (double) guiLeftIn - 50 || mouseY < (double) guiTopIn || mouseX >= (double) (guiLeftIn + this.imageWidth) || mouseY >= (double) (guiTopIn + this.imageHeight);
+            return mouseX < (double) guiLeftIn - 100 || mouseY < (double) guiTopIn || mouseX >= (double) (guiLeftIn + this.imageWidth) || mouseY >= (double) (guiTopIn + this.imageHeight);
         return super.hasClickedOutside(mouseX, mouseY, guiLeftIn, guiTopIn, mouseButton);
     }
 
@@ -133,7 +133,7 @@ public class LaserNodeScreen extends AbstractContainerScreen<LaserNodeContainer>
         if (showCardHolderUI) {
             ResourceLocation CardHolderGUI = new ResourceLocation(LaserIO.MODID, "textures/gui/cardholder_node.png");
             RenderSystem.setShaderTexture(0, CardHolderGUI);
-            guiGraphics.blit(CardHolderGUI, getGuiLeft() - 50, getGuiTop() + 24, 0, 0, this.imageWidth, this.imageHeight);
+            guiGraphics.blit(CardHolderGUI, getGuiLeft() - 100, getGuiTop() + 24, 0, 0, this.imageWidth, this.imageHeight);
         }
     }
 

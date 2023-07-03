@@ -7,6 +7,7 @@ import com.direwolf20.laserio.common.containers.customhandler.FilterCountHandler
 import com.direwolf20.laserio.common.containers.customslot.CardItemSlot;
 import com.direwolf20.laserio.common.containers.customslot.CardOverclockSlot;
 import com.direwolf20.laserio.common.containers.customslot.FilterBasicSlot;
+import com.direwolf20.laserio.common.items.CardHolder;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.common.items.filters.BaseFilter;
 import com.direwolf20.laserio.common.items.filters.FilterBasic;
@@ -23,12 +24,17 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
+import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.SlotItemHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
 
 import javax.annotation.Nullable;
+import java.util.UUID;
+
+import static com.direwolf20.laserio.common.blocks.LaserNode.findCardHolders;
 
 public class CardItemContainer extends AbstractContainerMenu {
     public static final int SLOTS = 2;
@@ -40,6 +46,9 @@ public class CardItemContainer extends AbstractContainerMenu {
     protected IItemHandler playerInventory;
     public BlockPos sourceContainer = BlockPos.ZERO;
     public byte direction = -1;
+    public ItemStack cardHolder;
+    public IItemHandler cardHolderHandler;
+    public UUID cardHolderUUID;
 
     protected CardItemContainer(@Nullable MenuType<?> pMenuType, int pContainerId) {
         super(pMenuType, pContainerId);
@@ -48,6 +57,7 @@ public class CardItemContainer extends AbstractContainerMenu {
     public CardItemContainer(int windowId, Inventory playerInventory, Player player, FriendlyByteBuf extraData) {
         this(windowId, playerInventory, player, extraData.readItem());
         this.direction = extraData.readByte();
+        cardHolder = findCardHolders(player);
     }
 
     public CardItemContainer(int windowId, Inventory playerInventory, Player player, ItemStack cardItem) {
@@ -62,7 +72,12 @@ public class CardItemContainer extends AbstractContainerMenu {
             addSlotBox(filterHandler, 0, 44, 25, 5, 18, 3, 18);
             toggleFilterSlots();
         }
-
+        cardHolder = findCardHolders(player);
+        if (!cardHolder.isEmpty()) {
+            this.cardHolderHandler = cardHolder.getCapability(ForgeCapabilities.ITEM_HANDLER, null).orElse(new ItemStackHandler(CardHolderContainer.SLOTS));
+            addSlotBox(cardHolderHandler, 0, -92, 32, 5, 18, 3, 18);
+            cardHolderUUID = CardHolder.getUUID(cardHolder);
+        }
         layoutPlayerInventorySlots(8, 84);
     }
 

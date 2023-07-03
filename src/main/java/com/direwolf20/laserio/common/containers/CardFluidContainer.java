@@ -1,6 +1,7 @@
 package com.direwolf20.laserio.common.containers;
 
 
+import com.direwolf20.laserio.common.items.CardHolder;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.setup.Registration;
 import net.minecraft.core.BlockPos;
@@ -8,13 +9,18 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
+
+import static com.direwolf20.laserio.common.blocks.LaserNode.findCardHolders;
 
 public class CardFluidContainer extends CardItemContainer {
 
     public CardFluidContainer(int windowId, Inventory playerInventory, Player player, FriendlyByteBuf extraData) {
         this(windowId, playerInventory, player, extraData.readItem());
         this.direction = extraData.readByte();
+        cardHolder = findCardHolders(player);
     }
 
     public CardFluidContainer(int windowId, Inventory playerInventory, Player player, ItemStack cardItem) {
@@ -29,7 +35,12 @@ public class CardFluidContainer extends CardItemContainer {
             addSlotBox(filterHandler, 0, 44, 25, 5, 18, 3, 18);
             toggleFilterSlots();
         }
-
+        cardHolder = findCardHolders(player);
+        if (!cardHolder.isEmpty()) {
+            this.cardHolderHandler = cardHolder.getCapability(ForgeCapabilities.ITEM_HANDLER, null).orElse(new ItemStackHandler(CardHolderContainer.SLOTS));
+            addSlotBox(cardHolderHandler, 0, -92, 32, 5, 18, 3, 18);
+            cardHolderUUID = CardHolder.getUUID(cardHolder);
+        }
         layoutPlayerInventorySlots(8, 84);
     }
 
