@@ -158,12 +158,19 @@ public class CardItemContainer extends AbstractContainerMenu {
             if (ItemHandlerHelper.canItemStacksStack(itemstack, cardItem)) return ItemStack.EMPTY;
             //If its one of the 3 slots at the top try to move it into your inventory
             if (index < SLOTS) {
-                if (!this.moveItemStackTo(stack, SLOTS + FILTERSLOTS,  SLOTS + FILTERSLOTS + CardHolderContainer.SLOTS, false)) { //Try the CardHolder First!
-                    return ItemStack.EMPTY;
+                if (!cardHolder.isEmpty()) { //Do the below set of logic if we have a card holder, otherwise just try to move to inventory
+                    if (!this.moveItemStackTo(stack, SLOTS + FILTERSLOTS, SLOTS + FILTERSLOTS + CardHolderContainer.SLOTS, false)) { //Try the CardHolder First!
+                        return ItemStack.EMPTY;
+                    }
+                    if (!this.moveItemStackTo(stack, SLOTS + FILTERSLOTS + CardHolderContainer.SLOTS, 36 + SLOTS + FILTERSLOTS + CardHolderContainer.SLOTS, true)) {
+                        return ItemStack.EMPTY;
+                    }
+                } else { //If no card holder, the slot targets are different.
+                    if (!this.moveItemStackTo(stack, SLOTS + FILTERSLOTS, 36 + SLOTS + FILTERSLOTS, true)) {
+                        return ItemStack.EMPTY;
+                    }
                 }
-                if (!this.moveItemStackTo(stack, SLOTS + FILTERSLOTS + CardHolderContainer.SLOTS, 36 + SLOTS + FILTERSLOTS + CardHolderContainer.SLOTS, true)) {
-                    return ItemStack.EMPTY;
-                }
+
                 slot.onQuickCraft(stack, itemstack);
             } else if (index >= SLOTS && index < SLOTS + FILTERSLOTS) {
                 //No-Op
