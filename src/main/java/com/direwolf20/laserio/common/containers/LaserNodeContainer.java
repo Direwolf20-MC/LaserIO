@@ -70,8 +70,10 @@ public class LaserNodeContainer extends AbstractContainerMenu {
             if (slotId < SLOTS && slots.get(slotId) instanceof CardHolderSlot) {
                 ItemStack carriedItem = getCarried();
                 ItemStack stackInSlot = slots.get(slotId).getItem();
-                if (!carriedItem.isEmpty() && !stackInSlot.isEmpty() && !ItemStack.isSameItemSameTags(carriedItem, stackInSlot))
-                    return;
+                if (stackInSlot.getMaxStackSize() == 1 && stackInSlot.getCount() > 1) {
+                    if (!carriedItem.isEmpty() && !stackInSlot.isEmpty() && !ItemStack.isSameItemSameTags(carriedItem, stackInSlot))
+                        return;
+                }
             } else {
                 ItemStack slotItem = slots.get(slotId).getItem();
                 if (slotItem.getItem() instanceof CardHolder)
@@ -101,15 +103,12 @@ public class LaserNodeContainer extends AbstractContainerMenu {
 
     @Override
     protected boolean moveItemStackTo(ItemStack itemStack, int fromSlot, int toSlot, boolean p_38907_) {
-        //return super.moveItemStackTo(itemStack, fromSlot, toSlot, p_38907_);
-        //System.out.println(itemStack + ":" + fromSlot + ":" + toSlot + ":" + p_38907_);
         boolean flag = false;
         int i = fromSlot;
         if (p_38907_) {
             i = toSlot - 1;
         }
 
-        //if (itemStack.isStackable()) {
         while (!itemStack.isEmpty()) {
             if (p_38907_) {
                 if (i < fromSlot) {
