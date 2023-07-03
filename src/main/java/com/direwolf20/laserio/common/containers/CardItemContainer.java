@@ -4,6 +4,7 @@ import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import com.direwolf20.laserio.common.containers.customhandler.CardItemHandler;
 import com.direwolf20.laserio.common.containers.customhandler.FilterBasicHandler;
 import com.direwolf20.laserio.common.containers.customhandler.FilterCountHandler;
+import com.direwolf20.laserio.common.containers.customslot.CardHolderSlot;
 import com.direwolf20.laserio.common.containers.customslot.CardItemSlot;
 import com.direwolf20.laserio.common.containers.customslot.CardOverclockSlot;
 import com.direwolf20.laserio.common.containers.customslot.FilterBasicSlot;
@@ -92,6 +93,20 @@ public class CardItemContainer extends AbstractContainerMenu {
         if (slotId >= SLOTS && slotId < SLOTS + FILTERSLOTS) {
             return;
         }
+        if (slotId >= 0) {
+            if (slots.get(slotId) instanceof CardHolderSlot) {
+                ItemStack carriedItem = getCarried();
+                ItemStack stackInSlot = slots.get(slotId).getItem();
+                if (stackInSlot.getMaxStackSize() == 1 && stackInSlot.getCount() > 1) {
+                    if (!carriedItem.isEmpty() && !stackInSlot.isEmpty() && !ItemStack.isSameItemSameTags(carriedItem, stackInSlot))
+                        return;
+                }
+            } else {
+                ItemStack slotItem = slots.get(slotId).getItem();
+                if (slotItem.getItem() instanceof CardHolder)
+                    return;
+            }
+        }
         super.clicked(slotId, dragType, clickTypeIn, player);
     }
 
@@ -126,6 +141,13 @@ public class CardItemContainer extends AbstractContainerMenu {
     }
 
     @Override
+    public boolean canTakeItemForPickAll(ItemStack itemStack, Slot slot) {
+        if (slot instanceof CardHolderSlot)
+            return false;
+        return true;
+    }
+
+    @Override
     public ItemStack quickMoveStack(Player playerIn, int index) {
         if (cardItem.getCount() > 1) return ItemStack.EMPTY; // Don't let quickMove happen in multistack cards
         ItemStack itemstack = ItemStack.EMPTY;
@@ -136,13 +158,16 @@ public class CardItemContainer extends AbstractContainerMenu {
             if (ItemHandlerHelper.canItemStacksStack(itemstack, cardItem)) return ItemStack.EMPTY;
             //If its one of the 3 slots at the top try to move it into your inventory
             if (index < SLOTS) {
-                if (!this.moveItemStackTo(stack, SLOTS + FILTERSLOTS, 36 + SLOTS + FILTERSLOTS, true)) {
+                if (!this.moveItemStackTo(stack, SLOTS + FILTERSLOTS,  SLOTS + FILTERSLOTS + CardHolderContainer.SLOTS, false)) { //Try the CardHolder First!
+                    return ItemStack.EMPTY;
+                }
+                if (!this.moveItemStackTo(stack, SLOTS + FILTERSLOTS + CardHolderContainer.SLOTS, 36 + SLOTS + FILTERSLOTS + CardHolderContainer.SLOTS, true)) {
                     return ItemStack.EMPTY;
                 }
                 slot.onQuickCraft(stack, itemstack);
             } else if (index >= SLOTS && index < SLOTS + FILTERSLOTS) {
                 //No-Op
-            } else { //From player inventory TO something
+            } else { //From player inventory (or Card Holder) TO something
                 ItemStack currentStack = slot.getItem().copy();
                 if (slots.get(0).mayPlace(currentStack) || slots.get(1).mayPlace(currentStack)) {
                     if (!this.moveItemStackTo(stack, 0, SLOTS, false)) {
@@ -209,6 +234,8 @@ public class CardItemContainer extends AbstractContainerMenu {
                 addSlot(new CardOverclockSlot(handler, index, x, y));
             else if (handler instanceof FilterBasicHandler)
                 addSlot(new FilterBasicSlot(handler, index, x, y, slots.get(0).getItem().getItem() instanceof FilterCount));
+            else if (handler != null && (handler.getSlots() == CardHolderContainer.SLOTS))
+                addSlot(new CardHolderSlot(handler, index, x, y));
             else
                 addSlot(new SlotItemHandler(handler, index, x, y));
             x += dx;

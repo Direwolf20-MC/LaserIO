@@ -209,7 +209,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
     }
 
     public void toggleHolderSlots() {
-        for (int i = 2; i < 2 + CardHolderContainer.SLOTS; i++) {
+        for (int i = 17; i < 17 + CardHolderContainer.SLOTS; i++) {
             if (i >= container.slots.size()) continue;
             Slot slot = container.getSlot(i);
             if (!(slot instanceof CardHolderSlot)) continue;
