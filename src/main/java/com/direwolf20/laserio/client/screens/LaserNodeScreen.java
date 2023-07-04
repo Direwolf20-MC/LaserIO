@@ -6,9 +6,11 @@ import com.direwolf20.laserio.common.containers.CardHolderContainer;
 import com.direwolf20.laserio.common.containers.LaserNodeContainer;
 import com.direwolf20.laserio.common.containers.customslot.CardHolderSlot;
 import com.direwolf20.laserio.common.containers.customslot.LaserNodeSlot;
+import com.direwolf20.laserio.common.items.CardCloner;
 import com.direwolf20.laserio.common.items.CardHolder;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.common.network.PacketHandler;
+import com.direwolf20.laserio.common.network.packets.PacketCopyPasteCard;
 import com.direwolf20.laserio.common.network.packets.PacketOpenCard;
 import com.direwolf20.laserio.common.network.packets.PacketOpenNode;
 import com.direwolf20.laserio.util.MiscTools;
@@ -165,6 +167,16 @@ public class LaserNodeScreen extends AbstractContainerScreen<LaserNodeContainer>
 
     @Override
     public boolean mouseClicked(double x, double y, int btn) {
+        if (hoveredSlot != null && container.getCarried().getItem() instanceof CardCloner) {
+            if (hoveredSlot instanceof LaserNodeSlot && !hoveredSlot.getItem().isEmpty())
+            if (btn == 0) { //Left click
+                PacketHandler.sendToServer(new PacketCopyPasteCard(hoveredSlot.getSlotIndex(), true));
+            }
+            if (btn == 1) { //Right click
+                PacketHandler.sendToServer(new PacketCopyPasteCard(hoveredSlot.getSlotIndex(), false));
+            }
+            return true;
+        }
         if (MiscTools.inBounds(getGuiLeft() + tabs[1].x, getGuiTop() + tabs[1].y, 24, 12, x, y) && container.side != 1) {
             PacketHandler.sendToServer(new PacketOpenNode(container.tile.getBlockPos(), (byte) 1));
             Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));

@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "group": "laserio",
+  "key": {
+    "b": {
+      "item": "laserio:logic_chip"
+    },
+    "c": {
+      "item": "minecraft:paper"
+    },
+    "i": {
+      "tag": "forge:ingots/iron"
+    }
+  },
+  "pattern": [
+    "i i",
+    "cbc",
+    "i i"
+  ],
+  "result": {
+    "item": "laserio:card_cloner"
+  },
+  "show_notification": true
+}
