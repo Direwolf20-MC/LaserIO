@@ -38,4 +38,30 @@ public class CardCloner extends Item {
 
         return filterStack.getItem().toString();
     }
+
+    public static ItemStack getFilter(ItemStack stack) {
+        CompoundTag compoundTag = getSettings(stack);
+        ItemStackHandler itemStackHandler = new ItemStackHandler(CardItemContainer.SLOTS);
+        itemStackHandler.deserializeNBT(compoundTag.getCompound("inv"));
+        ItemStack filterStack = itemStackHandler.getStackInSlot(0);
+        return filterStack;
+    }
+
+    public static int getOverclockCount(ItemStack stack) {
+        CompoundTag compoundTag = getSettings(stack);
+        ItemStackHandler itemStackHandler = new ItemStackHandler(CardItemContainer.SLOTS);
+        itemStackHandler.deserializeNBT(compoundTag.getCompound("inv"));
+        ItemStack overclockStack = itemStackHandler.getStackInSlot(1);
+        if (overclockStack.isEmpty()) return 0;
+
+        return overclockStack.getCount();
+    }
+
+    public static ItemStack getOverclocker(ItemStack stack) {
+        CompoundTag compoundTag = getSettings(stack);
+        ItemStackHandler itemStackHandler = new ItemStackHandler(CardItemContainer.SLOTS);
+        itemStackHandler.deserializeNBT(compoundTag.getCompound("inv"));
+        ItemStack overclockStack = itemStackHandler.getStackInSlot(1);
+        return overclockStack;
+    }
 }
