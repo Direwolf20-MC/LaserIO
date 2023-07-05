@@ -211,7 +211,11 @@ public class PacketCopyPasteCard {
                                 }
                             }
                             ItemStack tempStack = slotStack.copy();
-                            tempStack.setTag(CardCloner.getSettings(clonerStack));
+                            CompoundTag compoundTag = CardCloner.getSettings(clonerStack);
+                            if (compoundTag.equals(new CompoundTag()))
+                                tempStack.setTag(null);
+                            else
+                                tempStack.setTag(CardCloner.getSettings(clonerStack));
                             container.getSlot(msg.slot).set(tempStack);
                             playSound(player, Holder.direct(SoundEvent.createVariableRangeEvent(new ResourceLocation(SoundEvents.UI_BUTTON_CLICK.get().getLocation().toString()))));
                             ((LaserNodeContainer)container).tile.updateThisNode();
