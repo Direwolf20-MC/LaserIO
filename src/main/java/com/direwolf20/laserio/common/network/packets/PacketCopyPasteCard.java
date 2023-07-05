@@ -5,6 +5,7 @@ import com.direwolf20.laserio.common.containers.customhandler.CardItemHandler;
 import com.direwolf20.laserio.common.items.CardCloner;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
 import net.minecraft.core.Holder;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.game.ClientboundSoundPacket;
 import net.minecraft.resources.ResourceLocation;
@@ -145,7 +146,8 @@ public class PacketCopyPasteCard {
                 ItemStack clonerStack = container.getCarried();
                 if (msg.copy) { //copy mode
                     CardCloner.setItemType(clonerStack, slotStack.getItem().toString());
-                    CardCloner.saveSettings(clonerStack, slotStack.getOrCreateTag());
+                    CompoundTag compoundTag = slotStack.getTag() == null ? new CompoundTag() : slotStack.getTag();
+                    CardCloner.saveSettings(clonerStack, compoundTag);
                     playSound(player, Holder.direct(SoundEvent.createVariableRangeEvent(new ResourceLocation(SoundEvents.UI_CARTOGRAPHY_TABLE_TAKE_RESULT.getLocation().toString()))));
                 } else {
                     if (slotStack.getItem().toString().equals(CardCloner.getItemType(clonerStack))) {
