@@ -80,6 +80,8 @@ public class CardHolder extends Item {
     }
 
     public static ItemStack addCardToInventory(ItemStack cardHolder, ItemStack card) {
+        if (card.getItem() instanceof BaseFilter && card.hasTag())
+            return card;
         IItemHandler handler = cardHolder.getCapability(ForgeCapabilities.ITEM_HANDLER, null).orElse(new ItemStackHandler(CardHolderContainer.SLOTS));
         List<Integer> emptySlots = new ArrayList<>();
         for (int i = 0; i < handler.getSlots(); i++) {
