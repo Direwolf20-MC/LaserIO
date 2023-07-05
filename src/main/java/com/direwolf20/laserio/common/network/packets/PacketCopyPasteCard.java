@@ -53,7 +53,7 @@ public class PacketCopyPasteCard {
                 x, y, z, // The sound location
                 1, // The volume, 1 is normal, higher is louder
                 1, // The pitch, 1 is normal, higher is higher pitch
-                player.level().getRandom().nextLong() // A random for some reason?
+                1 // A random for some reason? (Some sounds have different variants, like the enchanting table success
         );
 
         // Send the packet to the player
@@ -217,7 +217,7 @@ public class PacketCopyPasteCard {
                             else
                                 tempStack.setTag(CardCloner.getSettings(clonerStack));
                             container.getSlot(msg.slot).set(tempStack);
-                            playSound(player, Holder.direct(SoundEvent.createVariableRangeEvent(new ResourceLocation(SoundEvents.UI_BUTTON_CLICK.get().getLocation().toString()))));
+                            playSound(player, Holder.direct(SoundEvent.createVariableRangeEvent(new ResourceLocation(SoundEvents.ENCHANTMENT_TABLE_USE.getLocation().toString()))));
                             ((LaserNodeContainer)container).tile.updateThisNode();
                         } else {
                             playSound(player, Holder.direct(SoundEvent.createVariableRangeEvent(new ResourceLocation(SoundEvents.WAXED_SIGN_INTERACT_FAIL.getLocation().toString()))));
