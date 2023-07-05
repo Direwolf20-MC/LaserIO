@@ -8,10 +8,7 @@ import com.direwolf20.laserio.common.blocks.LaserConnector;
 import com.direwolf20.laserio.common.blocks.LaserConnectorAdv;
 import com.direwolf20.laserio.common.blocks.LaserNode;
 import com.direwolf20.laserio.common.containers.*;
-import com.direwolf20.laserio.common.items.CardHolder;
-import com.direwolf20.laserio.common.items.LaserWrench;
-import com.direwolf20.laserio.common.items.LogicChip;
-import com.direwolf20.laserio.common.items.LogicChipRaw;
+import com.direwolf20.laserio.common.items.*;
 import com.direwolf20.laserio.common.items.cards.CardEnergy;
 import com.direwolf20.laserio.common.items.cards.CardFluid;
 import com.direwolf20.laserio.common.items.cards.CardItem;
@@ -77,6 +74,7 @@ public class Registration {
     //Items
     public static final RegistryObject<Item> Laser_Wrench = ITEMS.register("laser_wrench", LaserWrench::new);
     public static final RegistryObject<Item> Card_Holder = ITEMS.register("card_holder", CardHolder::new);
+    public static final RegistryObject<Item> Card_Cloner = ITEMS.register("card_cloner", CardCloner::new);
 
     //Cards
     public static final RegistryObject<Item> Card_Item = ITEMS.register("card_item", CardItem::new);

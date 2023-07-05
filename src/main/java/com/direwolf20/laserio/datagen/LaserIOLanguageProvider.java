@@ -33,6 +33,7 @@ public class LaserIOLanguageProvider extends LanguageProvider {
         add(Registration.Logic_Chip_Raw.get(), "Raw Logic Chip");
         add(Registration.Overclocker_Card.get(), "Card Overclocker");
         add(Registration.Overclocker_Node.get(), "Node Overclocker");
+        add(Registration.Card_Cloner.get(), "Card Cloner");
 
         add("screen.laserio.extractamt", "Transfer Amount");
         add("screen.laserio.tickSpeed", "Speed (Ticks)");
@@ -94,6 +95,7 @@ public class LaserIOLanguageProvider extends LanguageProvider {
         add("laserio.tooltip.item.card.mode.EXTRACT", "Extract");
         add("laserio.tooltip.item.card.mode.INSERT", "Insert");
         add("laserio.tooltip.item.card.mode.STOCK", "Stock");
+        add("laserio.tooltip.item.card.mode.SENSOR", "Sensor");
         add("laserio.tooltip.item.card.sneaky", "Sneaky: ");
         add("laserio.tooltip.item.card.sneaky.DOWN", "Down");
         add("laserio.tooltip.item.card.sneaky.UP", "Up");
@@ -101,6 +103,9 @@ public class LaserIOLanguageProvider extends LanguageProvider {
         add("laserio.tooltip.item.card.sneaky.SOUTH", "South");
         add("laserio.tooltip.item.card.sneaky.WEST", "West");
         add("laserio.tooltip.item.card.sneaky.EAST", "East");
+        add("laserio.tooltip.item.card.Filter", "Filter: ");
+        add("laserio.tooltip.item.card.Overclockers", "Overclockers: ");
+        add("laserio.tooltip.item.card.None", "None");
 
         //Filter Tooltips
         add("laserio.tooltip.item.filter.type", "Type: ");

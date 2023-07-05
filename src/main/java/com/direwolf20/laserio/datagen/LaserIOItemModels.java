@@ -33,5 +33,6 @@ public class LaserIOItemModels extends ItemModelProvider {
         singleTexture(Registration.Logic_Chip_Raw.getId().getPath(), mcLoc("item/generated"), "layer0", modLoc("item/logic_chip_raw"));
         singleTexture(Registration.Overclocker_Card.getId().getPath(), mcLoc("item/generated"), "layer0", modLoc("item/overclocker_card"));
         singleTexture(Registration.Overclocker_Node.getId().getPath(), mcLoc("item/generated"), "layer0", modLoc("item/overclocker_node"));
+        singleTexture(Registration.Card_Cloner.getId().getPath(), mcLoc("item/generated"), "layer0", modLoc("item/card_cloner"));
     }
 }

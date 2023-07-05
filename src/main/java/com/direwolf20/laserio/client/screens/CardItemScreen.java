@@ -4,10 +4,13 @@ import com.direwolf20.laserio.client.screens.widgets.ChannelButton;
 import com.direwolf20.laserio.client.screens.widgets.NumberButton;
 import com.direwolf20.laserio.client.screens.widgets.ToggleButton;
 import com.direwolf20.laserio.common.LaserIO;
+import com.direwolf20.laserio.common.containers.CardHolderContainer;
 import com.direwolf20.laserio.common.containers.CardItemContainer;
+import com.direwolf20.laserio.common.containers.customslot.CardHolderSlot;
 import com.direwolf20.laserio.common.containers.customslot.CardItemSlot;
 import com.direwolf20.laserio.common.containers.customslot.CardOverclockSlot;
 import com.direwolf20.laserio.common.containers.customslot.FilterBasicSlot;
+import com.direwolf20.laserio.common.items.CardHolder;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.common.items.cards.CardItem;
 import com.direwolf20.laserio.common.items.cards.CardRedstone;
@@ -63,6 +66,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
     protected Map<String, Button> buttons = new HashMap<>();
     protected byte currentRedstoneMode;
     protected boolean renderFluids = false;
+    private boolean showCardHolderUI;
 
     protected final String[] sneakyNames = {
             "screen.laserio.default",
@@ -79,10 +83,12 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
         this.container = container;
         this.card = container.cardItem;
         filter = container.slots.get(0).getItem();
+        showCardHolderUI = container.cardHolder.isEmpty();
     }
 
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+        validateHolder();
         this.renderBackground(guiGraphics);
         toggleFilterSlots();
         guiGraphics = renderFluids ? new LaserGuiGraphicsFluid(Minecraft.getInstance(), guiGraphics.bufferSource(), this) : new LaserGuiGraphics(Minecraft.getInstance(), guiGraphics.bufferSource());
@@ -183,6 +189,39 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
                     guiGraphics.renderTooltip(font, Component.translatable("screen.laserio.or"), mouseX, mouseY);
             }
         }
+    }
+
+    public boolean validateHolder() {
+        Inventory playerInventory = container.playerEntity.getInventory();
+        for (int i = 0; i < playerInventory.items.size(); i++) {
+            ItemStack itemStack = playerInventory.items.get(i);
+            if (itemStack.getItem() instanceof CardHolder) {
+                if (CardHolder.getUUID(itemStack).equals(container.cardHolderUUID)) {
+                    showCardHolderUI = true;
+                    toggleHolderSlots();
+                    return true;
+                }
+            }
+        }
+        showCardHolderUI = false;
+        toggleHolderSlots();
+        return false;
+    }
+
+    public void toggleHolderSlots() {
+        for (int i = 17; i < 17 + CardHolderContainer.SLOTS; i++) {
+            if (i >= container.slots.size()) continue;
+            Slot slot = container.getSlot(i);
+            if (!(slot instanceof CardHolderSlot)) continue;
+            ((CardHolderSlot) slot).setEnabled(showCardHolderUI);
+        }
+    }
+
+    @Override
+    protected boolean hasClickedOutside(double mouseX, double mouseY, int guiLeftIn, int guiTopIn, int mouseButton) {
+        if (showCardHolderUI)
+            return mouseX < (double) guiLeftIn - 100 || mouseY < (double) guiTopIn || mouseX >= (double) (guiLeftIn + this.imageWidth) || mouseY >= (double) (guiTopIn + this.imageHeight);
+        return super.hasClickedOutside(mouseX, mouseY, guiLeftIn, guiTopIn, mouseButton);
     }
 
     public void updateItemCounts() {
@@ -595,6 +634,11 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
             relX = relX + 43;
             relY = relY + 24;
             guiGraphics.blit(GUI, relX, relY, 0, 167, slotsWidth, slotsHeight);
+        }
+        if (showCardHolderUI) {
+            ResourceLocation CardHolderGUI = new ResourceLocation(LaserIO.MODID, "textures/gui/cardholder_node.png");
+            RenderSystem.setShaderTexture(0, CardHolderGUI);
+            guiGraphics.blit(CardHolderGUI, getGuiLeft() - 100, getGuiTop() + 24, 0, 0, this.imageWidth, this.imageHeight);
         }
     }
 
