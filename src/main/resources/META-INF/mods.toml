@@ -59,4 +59,4 @@ Can't have DireWire without Wire!
 [[dependencies.laserio]]
     modId="patchouli"
     mandatory=true
-    versionRange="[1.18.2-67,)"
+    versionRange="[1.20.1-80-FORGE,)"
