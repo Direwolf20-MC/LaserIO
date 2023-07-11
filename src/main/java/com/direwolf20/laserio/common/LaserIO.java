@@ -32,7 +32,6 @@ public class LaserIO {
         //MinecraftForge.EVENT_BUS.register(this);
         // Register 'ModSetup::init' to be called at mod setup time (server and client)
         modbus.addListener(ModSetup::init);
-        modbus.addListener(Registration::addCreative);
         ModSetup.TABS.register(modbus);
         //modbus.addGenericListener(RecipeSerializer.class, this::registerRecipeSerializers);
         // Register 'ClientSetup::init' to be called at mod setup time (client only)
