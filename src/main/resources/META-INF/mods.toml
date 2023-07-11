@@ -56,7 +56,7 @@ Can't have DireWire without Wire!
     versionRange="[1.18.2,)"
     ordering="NONE"
     side="BOTH"
-#[[dependencies.laserio]]
-#    modId="patchouli"
-#    mandatory=true
-#    versionRange="[1.18.2-67,)"
+[[dependencies.laserio]]
+    modId="patchouli"
+    mandatory=true
+    versionRange="[1.18.2-67,)"

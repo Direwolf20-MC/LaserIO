@@ -17,6 +17,10 @@
       "text": "By holding shift and right clicking the Card holder, it will start automatically pulling cards out of your inventory! You can tell this is activated because the card holder starts to glow as if it were enchanted. Shift-right click again to toggle it off. If you have the card holder in your inventory when you open a node, you'll see its cards displayed"
     },
     {
+      "type": "patchouli:text",
+      "text": "NOTE: Filters and Overclockers can now be stored in the card holder!  Filters will only be automatically added to the card holder if they have no stored data. Craft them by themselves to clear any saved data.$(br2)Filters with stored data can still be manually added to the card holder."
+    },
+    {
       "type": "patchouli:crafting",
       "title": "Card Holder",
       "recipe": "laserio:card_holder"
