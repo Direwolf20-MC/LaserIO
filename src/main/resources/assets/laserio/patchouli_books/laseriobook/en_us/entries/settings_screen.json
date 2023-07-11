@@ -9,6 +9,15 @@
       "text": "The network settings screen is available from any $(l:laserio:laser_node)Laser Node$(/l) screen. In this settings screen, you may change the color of the network. This color will affect:$(li)Laser Node Block (in world)$(li)Laser Connector Block (in world)$(li)Color of lasers between blocks. "
     },
     {
+      "type": "patchouli:image",
+      "title": "Colored Nodes",
+      "images": [
+        "laserio:textures/book/entries/settings1.png"
+      ],
+      "border": true,
+      "text": "Different Colored networks"
+    },
+    {
       "type": "patchouli:text",
       "text": "The color of the lasers between the node and inventories (Like chests or tanks) will not be affected.$(br2)Making a change to a node on a network will automatically propagate to all other nodes across the same network. In this way, you can have different colored networks around your world!$(br2)This is purely cosmetic and has no practical effect on functionality."
     },

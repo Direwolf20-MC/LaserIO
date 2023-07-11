@@ -12,7 +12,7 @@
       "type": "patchouli:image",
       "title": "Adv. Connector",
       "images": [
-        "laserio:textures/book/entries/laser_connector_advanced.png"
+        "laserio:textures/book/entries/laser_connector_advanced1.png"
       ],
       "border": true,
       "text": "Two Advanced Connectors linked to each other"
@@ -25,7 +25,7 @@
       "type": "patchouli:image",
       "title": "Partner Coordindates",
       "images": [
-        "laserio:textures/book/entries/laser_connector_advanced_2.png"
+        "laserio:textures/book/entries/laser_connector_advanced2.png"
       ],
       "border": true,
       "text": "Showing the coordinates of the partner connector"
