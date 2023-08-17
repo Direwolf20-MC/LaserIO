@@ -174,7 +174,7 @@ public class ItemHandlerUtil {
         if (inserterCardCache.filterCard.getItem() instanceof FilterCount) { //If this is a count filter, only try to insert how many more items we need
             int filterCount = inserterCardCache.getFilterAmt(incstack);
             if (filterCount <= 0) return insertResults; //This should never happen in theory...
-            ItemHandlerUtil.InventoryCounts inventoryCounts = new InventoryCounts(source, isCompareNBT);
+            ItemHandlerUtil.InventoryCounts inventoryCounts = new InventoryCounts(source, inserterCardCache.isCompareNBT);
             int amtInInv = inventoryCounts.getCount(remainingStack);
             int amtNeeded = filterCount - amtInInv;
             if (amtNeeded <= 0) return insertResults;
