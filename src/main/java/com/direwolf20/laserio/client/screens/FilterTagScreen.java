@@ -242,7 +242,7 @@ public class FilterTagScreen extends AbstractContainerScreen<FilterTagContainer>
         Button addButton = new IconButton(getGuiLeft() + 155, getGuiTop() + 5, 16, 16, add, (button) -> {
             if (!tagField.getValue().isEmpty()) {
                 String tag = tagField.getValue().toLowerCase(Locale.ROOT);
-                tag = tag.replaceAll("[^a-z0-9/._-]", "");
+                tag = tag.replaceAll("[^a-z0-9/:._-]", "");
                 if (!tags.contains(tag))
                     tags.add(tag);
                 tagField.setValue("");
@@ -356,7 +356,7 @@ public class FilterTagScreen extends AbstractContainerScreen<FilterTagContainer>
         if (tagField.isFocused() && (p_keyPressed_1_ == 257 || p_keyPressed_1_ == 335)) { //enter key
             if (!tagField.getValue().isEmpty()) {
                 String tag = tagField.getValue().toLowerCase(Locale.ROOT);
-                tag = tag.replaceAll("[^a-z0-9/._-]", "");
+                tag = tag.replaceAll("[^a-z0-9/:._-]", "");
                 if (!tags.contains(tag))
                     tags.add(tag);
                 tagField.setValue("");
