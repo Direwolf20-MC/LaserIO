@@ -1002,6 +1002,9 @@ public class LaserNodeBE extends BaseLaserBE {
     public boolean extractFluidStackExact(ExtractorCardCache extractorCardCache, IFluidHandler fromInventory, FluidStack extractStack) {
         int totalAmtNeeded = extractStack.getAmount();
         int amtToExtract = extractStack.getAmount();
+
+        FluidStack testDrain = fromInventory.drain(extractStack, IFluidHandler.FluidAction.SIMULATE);
+        if (testDrain.getAmount() < totalAmtNeeded) return false; //If we don't have enough in the extractTank we can't pull out this exact amount!
         List<InserterCardCache> inserterCardCaches = getPossibleInserters(extractorCardCache, extractStack);
         int roundRobin = -1;
 
@@ -1849,6 +1852,7 @@ public class LaserNodeBE extends BaseLaserBE {
         for (ParticleRenderDataFluid partData : particleRenderDataFluids) {
             //if (particlesDrawnThisTick > 64) return;
             FluidStack fluidStack = partData.fluidStack;
+            if (fluidStack.isEmpty()) continue; //I managed to crash without this, so added it :)
             BlockPos toPos = partData.toPos;
             BlockPos fromPos = partData.fromPos;
             Direction direction = Direction.values()[partData.direction];

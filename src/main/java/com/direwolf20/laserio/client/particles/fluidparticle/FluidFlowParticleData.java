@@ -50,7 +50,7 @@ public class FluidFlowParticleData implements ParticleOptions {
     @Nonnull
     @Override
     public String writeToString() {
-        return String.format(Locale.ROOT, "%s %.2f %.2f %.2f %.2f %.2f %s",
+        return String.format(Locale.ROOT, "%s %.2f %.2f %.2f %d",
                 this.getType(), this.targetX, this.targetY, this.targetZ, this.ticksPerBlock);
     }
 
