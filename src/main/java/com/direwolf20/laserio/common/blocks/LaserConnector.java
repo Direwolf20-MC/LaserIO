@@ -7,11 +7,14 @@ import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.SimpleWaterloggedBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -20,7 +23,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import javax.annotation.Nullable;
 import java.util.stream.Stream;
 
-public class LaserConnector extends BaseLaserBlock implements EntityBlock {
+public class LaserConnector extends BaseLaserBlock implements EntityBlock, SimpleWaterloggedBlock {
     protected static final VoxelShape[] shapes = new VoxelShape[]{
             Stream.of(
                     Block.box(6.5, 4.25, 6.5, 9.5, 4.75, 9.5),
@@ -143,6 +146,10 @@ public class LaserConnector extends BaseLaserBlock implements EntityBlock {
     public LaserConnector() {
         super();
         //defaultBlockState(getStateDefinition().any().setValue(FACING, Direction.NORTH));
+
+        registerDefaultState(stateDefinition.any()
+                .setValue(BlockStateProperties.WATERLOGGED, false)
+        );
     }
 
     @Nullable
@@ -169,7 +176,7 @@ public class LaserConnector extends BaseLaserBlock implements EntityBlock {
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(BlockStateProperties.FACING);
+        builder.add(BlockStateProperties.FACING, BlockStateProperties.WATERLOGGED);
     }
 
     @Override
@@ -182,4 +189,8 @@ public class LaserConnector extends BaseLaserBlock implements EntityBlock {
         return true;
     }
 
+    @Override
+    public FluidState getFluidState(BlockState state) {
+        return Boolean.TRUE.equals(state.getValue(BlockStateProperties.WATERLOGGED)) ? Fluids.WATER.getSource(false) : super.getFluidState(state);
+    }
 }
