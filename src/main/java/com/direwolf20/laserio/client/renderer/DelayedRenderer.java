@@ -16,20 +16,12 @@ public class DelayedRenderer {
     public static void render(PoseStack matrixStackIn) {
         if (beRenders.size() > 0) {
             RenderUtils.drawLasersLast2(beRenders, matrixStackIn);
-            /*BaseLaserBE blockentity = beRenders.remove();
-            Set<BlockPos> renderedConnections = blockentity.getRenderedConnections();
-            for (BlockPos target : renderedConnections)
-                RenderUtils.drawLasersLast(blockentity, blockentity.getBlockPos(), blockentity.getWorldPos(target), matrixStackIn);*/
         }
     }
 
     public static void renderConnections(PoseStack matrixStackIn) {
         if (beConnectingRenders.isEmpty()) return;
         RenderUtils.drawConnectingLasersLast4(beConnectingRenders, matrixStackIn);
-        /*for (LaserNodeBE blockentity : beConnectingRenders) {
-            //LaserNodeBE blockentity = beConnectingRenders.remove();
-            RenderUtils.drawConnectingLasersLast2(blockentity, matrixStackIn);
-        }*/
         beConnectingRenders.clear();
     }
 

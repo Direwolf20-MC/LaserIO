@@ -1,0 +1,4 @@
+// 1.20.1	2023-06-27T13:58:01.0602287	Loot Tables
+c5726937d6920d471a92b3b78bc18928c3075f2a data/laserio/loot_tables/blocks/laser_connector.json
+f12657c7a130011834944b79a82f612b9a7c2969 data/laserio/loot_tables/blocks/laser_connector_advanced.json
+36898cfead2a1119ea9c15f8c84710a5eee0762d data/laserio/loot_tables/blocks/laser_node.json

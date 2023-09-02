@@ -1,6 +1,8 @@
 package com.direwolf20.laserio.common.blockentities.basebe;
 
+import com.direwolf20.laserio.common.blockentities.LaserConnectorAdvBE;
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
+import com.direwolf20.laserio.util.DimBlockPos;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -14,6 +16,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 
 import javax.annotation.Nonnull;
+import java.awt.*;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Queue;
@@ -25,16 +28,38 @@ import static com.direwolf20.laserio.common.items.LaserWrench.maxDistance;
 public class BaseLaserBE extends BlockEntity {
     protected final Set<BlockPos> connections = new CopyOnWriteArraySet<>();
     protected final Set<BlockPos> renderedConnections = new CopyOnWriteArraySet<>();
+    protected Color laserColor = new Color(1f, 0f, 0f, 0.33f);
+    protected int wrenchAlpha = 0;
+    protected final Color defaultColor = new Color(1f, 0f, 0f, 0.33f);
 
     public BaseLaserBE(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
     }
 
     /** Gets the node at a specific world position, returning null if not a node */
-    public LaserNodeBE getNodeAt(BlockPos pos) {
-        BlockEntity be = level.getBlockEntity(pos);
+    public LaserNodeBE getNodeAt(DimBlockPos pos) {
+        BlockEntity be = pos.getLevel(level.getServer()).getBlockEntity(pos.blockPos);
         if (be instanceof LaserNodeBE) return (LaserNodeBE) be;
         return null;
+    }
+
+    public void setColor(Color color, int wrenchAlpha) {
+        laserColor = color;
+        this.wrenchAlpha = wrenchAlpha;
+        if (level != null)
+            level.sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), 8);
+    }
+
+    public Color getColor() {
+        return laserColor;
+    }
+
+    public int getWrenchAlpha() {
+        return wrenchAlpha;
+    }
+
+    public Color getDefaultColor() {
+        return defaultColor;
     }
 
     /**
@@ -43,25 +68,29 @@ public class BaseLaserBE extends BlockEntity {
      */
     public void discoverAllNodes() {
         //System.out.println("Discovering all nodes at: " + getBlockPos());
-        Set<BlockPos> otherNodesInNetwork = new HashSet<>(); //Fresh list of nodes
+        Set<DimBlockPos> otherNodesInNetwork = new HashSet<>(); //Fresh list of nodes
 
-        Queue<BlockPos> nodesToCheck = new LinkedList<>();
-        Set<BlockPos> checkedNodes = new HashSet<>();
-        nodesToCheck.add(getBlockPos()); //We should add this block to itself, as a starting point -- also if its a node it'll add itself
+        Queue<DimBlockPos> nodesToCheck = new LinkedList<>();
+        Set<DimBlockPos> checkedNodes = new HashSet<>();
+        nodesToCheck.add(new DimBlockPos(this.getLevel(), getBlockPos())); //We should add this block to itself, as a starting point -- also if its a node it'll add itself
 
         while (nodesToCheck.size() > 0) {
-            BlockPos posToCheck = nodesToCheck.remove(); //Pop the stack
+            DimBlockPos posToCheck = nodesToCheck.remove(); //Pop the stack
             if (!checkedNodes.add(posToCheck))
                 continue; //Don't check nodes we've checked before
-            BlockEntity be = level.getBlockEntity(posToCheck);
-            if (be instanceof BaseLaserBE) {
-                Set<BlockPos> connectedNodes = ((BaseLaserBE) be).getWorldConnections(); //Get all the nodes this node is connected to
+            BlockEntity be = posToCheck.getLevel(getLevel().getServer()).getBlockEntity(posToCheck.blockPos);
+            if (be instanceof BaseLaserBE baseLaserBE) {
+                Set<DimBlockPos> connectedNodes = baseLaserBE.getWorldConnections(); //Get all the nodes this node is connected to
+                if (be instanceof LaserConnectorAdvBE laserConnectorAdvBE && (laserConnectorAdvBE.getPartnerDimBlockPos() != null))
+                    connectedNodes.add(laserConnectorAdvBE.getPartnerDimBlockPos());
                 nodesToCheck.addAll(connectedNodes); //Add them to the list to check
+                baseLaserBE.setColor(getColor(), getWrenchAlpha());
+                baseLaserBE.markDirtyClient();
                 if (be instanceof LaserNodeBE)
                     otherNodesInNetwork.add(posToCheck);
             }
         }
-        for (BlockPos pos : otherNodesInNetwork) { //Go through all the inventory nodes we've found and tell them about all the inventory nodes...
+        for (DimBlockPos pos : otherNodesInNetwork) { //Go through all the inventory nodes we've found and tell them about all the inventory nodes...
             LaserNodeBE nodeBE = getNodeAt(pos);
             if (nodeBE == null) continue;
             nodeBE.setOtherNodesInNetwork(otherNodesInNetwork);
@@ -129,6 +158,12 @@ public class BaseLaserBE extends BlockEntity {
     public void addConnection(BlockPos connectingPos, BaseLaserBE be) {
         addNode(connectingPos); // Add that node to this one
         be.addNode(getBlockPos()); // Add this node to that one
+        if (getColor().equals(getDefaultColor()) && !(be.getColor().equals(be.getDefaultColor())))
+            setColor(be.getColor(), getWrenchAlpha());
+        else if (be.getColor().equals(be.getDefaultColor()) && !(getColor().equals(getDefaultColor())))
+            be.setColor(getColor(), getWrenchAlpha());
+        else
+            setColor(be.getColor(), getWrenchAlpha());
         addRenderNode(connectingPos); // Add the render on this node only
         discoverAllNodes(); //Re discover this new network
     }
@@ -151,11 +186,14 @@ public class BaseLaserBE extends BlockEntity {
         return connections;
     }
 
-    /** Get the connections world coordinates */
-    public Set<BlockPos> getWorldConnections() {
-        Set<BlockPos> worldConnections = new HashSet<>();
+    /**
+     * Get the connections world coordinates
+     * Assumes the same dimension, because inter-dimensional connections are ONLY handled by advanced nodes
+     */
+    public Set<DimBlockPos> getWorldConnections() {
+        Set<DimBlockPos> worldConnections = new HashSet<>();
         for (BlockPos relativePos : connections)
-            worldConnections.add(getWorldPos(relativePos));
+            worldConnections.add(new DimBlockPos(level, getWorldPos(relativePos)));
         return worldConnections;
     }
 
@@ -242,6 +280,10 @@ public class BaseLaserBE extends BlockEntity {
         BlockPos originalPos = NbtUtils.readBlockPos(tag.getCompound("myWorldPos"));
         if (!originalPos.equals(getBlockPos()) && !originalPos.equals(BlockPos.ZERO))
             validateConnections(originalPos);
+        if (tag.contains("laserColor")) {
+            int wrenchA = tag.contains("wrenchAlpha") ? tag.getInt("wrenchAlpha") : 0;
+            setColor(new Color(tag.getInt("laserColor"), true), wrenchA);
+        }
     }
 
     @Override
@@ -262,6 +304,9 @@ public class BaseLaserBE extends BlockEntity {
         }
         tag.put("renderedConnections", renderedConnections);
         tag.put("myWorldPos", NbtUtils.writeBlockPos(getBlockPos()));
+        Color color = getColor();
+        tag.putInt("laserColor", getColor().getRGB());
+        tag.putInt("wrenchAlpha", getWrenchAlpha());
     }
 
     @Nonnull

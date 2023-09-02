@@ -1,12 +1,14 @@
 package com.direwolf20.laserio.util;
 
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,28 +19,38 @@ public class MiscTools {
     }
 
     public static Vector3f findOffset(Direction direction, int slot, Vector3f[] offsets) {
-        Vector3f offsetVector = offsets[slot].copy();
+        Vector3f offsetVector = new Vector3f(offsets[slot]);
         switch (direction) {
             case UP -> {
-                offsetVector.transform(Vector3f.XP.rotationDegrees(-270));
+                Quaternionf quaternionf = Axis.XP.rotationDegrees(-270);
+                offsetVector = quaternionf.transform(offsetVector);
+                //offsetVector.transform(Vector3f.XP.rotationDegrees(-270));
                 offsetVector.add(0, 1, 0);
             }
             case DOWN -> {
-                offsetVector.transform(Vector3f.XP.rotationDegrees(-90));
+                Quaternionf quaternionf = Axis.XP.rotationDegrees(-90);
+                offsetVector = quaternionf.transform(offsetVector);
+                //offsetVector.transform(Vector3f.XP.rotationDegrees(-90));
                 offsetVector.add(0, 0, 1);
                 //reverse = false;
             }
             //case NORTH -> offsetVector;
             case EAST -> {
-                offsetVector.transform(Vector3f.YP.rotationDegrees(-90));
+                Quaternionf quaternionf = Axis.YP.rotationDegrees(-90);
+                offsetVector = quaternionf.transform(offsetVector);
+                //offsetVector.transform(Vector3f.YP.rotationDegrees(-90));
                 offsetVector.add(1, 0, 0);
             }
             case SOUTH -> {
-                offsetVector.transform(Vector3f.YP.rotationDegrees(-180));
+                Quaternionf quaternionf = Axis.YP.rotationDegrees(-180);
+                offsetVector = quaternionf.transform(offsetVector);
+                //offsetVector.transform(Vector3f.YP.rotationDegrees(-180));
                 offsetVector.add(1, 0, 1);
             }
             case WEST -> {
-                offsetVector.transform(Vector3f.YP.rotationDegrees(-270));
+                Quaternionf quaternionf = Axis.YP.rotationDegrees(-270);
+                offsetVector = quaternionf.transform(offsetVector);
+                //offsetVector.transform(Vector3f.YP.rotationDegrees(-270));
                 offsetVector.add(0, 0, 1);
             }
         }

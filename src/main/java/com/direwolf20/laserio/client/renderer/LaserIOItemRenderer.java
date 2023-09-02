@@ -1,32 +1,22 @@
 package com.direwolf20.laserio.client.renderer;
 
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.*;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.BufferUploader;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.color.item.ItemColors;
-import net.minecraft.client.gui.Font;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.entity.ItemRenderer;
-import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureManager;
-import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.ModelManager;
-import net.minecraft.util.Mth;
-import net.minecraft.world.item.ItemStack;
-
-import javax.annotation.Nullable;
 
 /** This class is used to make the numbers on items in the FilterCountContainer smaller when greater than 100 **/
 public class LaserIOItemRenderer extends ItemRenderer {
-    public LaserIOItemRenderer(TextureManager textureManager, ModelManager modelManager, ItemColors itemColors, BlockEntityWithoutLevelRenderer blockEntityWithoutLevelRenderer) {
-        super(textureManager, modelManager, itemColors, blockEntityWithoutLevelRenderer);
+    public LaserIOItemRenderer(Minecraft minecraft, TextureManager textureManager, ModelManager modelManager, ItemColors itemColors, BlockEntityWithoutLevelRenderer blockEntityWithoutLevelRenderer) {
+        super(minecraft, textureManager, modelManager, itemColors, blockEntityWithoutLevelRenderer);
     }
 
     private void fillRect(BufferBuilder p_115153_, int p_115154_, int p_115155_, int p_115156_, int p_115157_, int p_115158_, int p_115159_, int p_115160_, int p_115161_) {
@@ -40,7 +30,7 @@ public class LaserIOItemRenderer extends ItemRenderer {
         BufferUploader.drawWithShader(p_115153_.end());
     }
 
-    @Override
+    /*@Override
     public void renderGuiItemDecorations(Font font, ItemStack itemstack, int x, int y, @Nullable String altText) {
         if (!itemstack.isEmpty()) {
             PoseStack posestack = new PoseStack();
@@ -168,5 +158,5 @@ public class LaserIOItemRenderer extends ItemRenderer {
 
         posestack.popPose();
         RenderSystem.applyModelViewMatrix();
-    }
+    }*/
 }

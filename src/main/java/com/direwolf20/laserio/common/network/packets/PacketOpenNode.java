@@ -21,7 +21,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.network.NetworkEvent;
 import net.minecraftforge.network.NetworkHooks;
 
@@ -73,7 +73,7 @@ public class PacketOpenNode {
                 else return;
 
                 final BlockPos sourcePos = pos;
-                BlockEntity be = sender.level.getBlockEntity(sourcePos);
+                BlockEntity be = sender.level().getBlockEntity(sourcePos);
                 if (be == null || !(be instanceof BaseLaserBE))
                     return;
 
@@ -82,7 +82,7 @@ public class PacketOpenNode {
                     // set it to empty, so it's doesn't get dropped
                     sender.containerMenu.setCarried(ItemStack.EMPTY);
                 }
-                be.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, Direction.values()[msg.side]).ifPresent(h -> {
+                be.getCapability(ForgeCapabilities.ITEM_HANDLER, Direction.values()[msg.side]).ifPresent(h -> {
                     ItemStack cardHolder = findCardHolders(sender);
                     MenuProvider containerProvider = new MenuProvider() {
                         @Override

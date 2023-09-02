@@ -1,5 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
+  "category": "misc",
   "group": "laserio",
   "key": {
     "g": {
@@ -22,5 +23,6 @@
   ],
   "result": {
     "item": "laserio:card_redstone"
-  }
+  },
+  "show_notification": true
 }

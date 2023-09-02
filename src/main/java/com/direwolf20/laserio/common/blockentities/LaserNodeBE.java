@@ -14,7 +14,6 @@ import com.direwolf20.laserio.common.items.filters.FilterTag;
 import com.direwolf20.laserio.common.items.upgrades.OverclockerNode;
 import com.direwolf20.laserio.setup.Registration;
 import com.direwolf20.laserio.util.*;
-import com.mojang.math.Vector3f;
 import it.unimi.dsi.fastutil.bytes.Byte2BooleanMap;
 import it.unimi.dsi.fastutil.bytes.Byte2BooleanOpenHashMap;
 import it.unimi.dsi.fastutil.bytes.Byte2ByteMap;
@@ -35,17 +34,16 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.common.util.NonNullConsumer;
-import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.ItemStackHandler;
+import org.joml.Vector3f;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -99,7 +97,7 @@ public class LaserNodeBE extends BaseLaserBE {
     private final Map<SideConnection, NonNullConsumer<LazyOptional<IEnergyStorage>>> connectionInvalidatorEnergy = new HashMap<>();
 
     /** Variables for tracking and sending items/filters/etc **/
-    private final Set<BlockPos> otherNodesInNetwork = new HashSet<>();
+    private final Set<DimBlockPos> otherNodesInNetwork = new HashSet<>();
     private final List<InserterCardCache> inserterNodes = new CopyOnWriteArrayList<>(); //All Inventory nodes that contain an inserter card
     private final HashMap<ExtractorCardCache, HashMap<ItemStackKey, List<InserterCardCache>>> inserterCache = new HashMap<>();
     private final HashMap<ExtractorCardCache, HashMap<FluidStackKey, List<InserterCardCache>>> inserterCacheFluid = new HashMap<>();
@@ -143,10 +141,10 @@ public class LaserNodeBE extends BaseLaserBE {
     }
 
     /** This is called by nodes when a connection is added/removed - the other node does the discovery and then tells this one about it **/
-    public void setOtherNodesInNetwork(Set<BlockPos> otherNodesInNetwork) {
+    public void setOtherNodesInNetwork(Set<DimBlockPos> otherNodesInNetwork) {
         this.otherNodesInNetwork.clear();
-        for (BlockPos pos : otherNodesInNetwork) {
-            this.otherNodesInNetwork.add(getRelativePos(pos));
+        for (DimBlockPos pos : otherNodesInNetwork) {
+            this.otherNodesInNetwork.add(new DimBlockPos(pos.getLevel(level.getServer()), getRelativePos(pos.blockPos)));
         }
         refreshAllInvNodes(); //Seeing as the otherNodes list just got updated, we should refresh the InventoryNode content caches
     }
@@ -329,8 +327,8 @@ public class LaserNodeBE extends BaseLaserBE {
     public void refreshRedstoneNetwork() {
         //System.out.println("Updating Redstone Network at: " + getBlockPos() + ", Gametime: " + level.getGameTime());
         redstoneNetwork.clear();
-        for (BlockPos pos : otherNodesInNetwork) {
-            LaserNodeBE laserNodeBE = getNodeAt(getWorldPos(pos));
+        for (DimBlockPos pos : otherNodesInNetwork) {
+            LaserNodeBE laserNodeBE = getNodeAt(new DimBlockPos(pos.getLevel(level.getServer()), getWorldPos(pos.blockPos)));
             if (laserNodeBE == null) continue;
             for (Map.Entry<Byte, Byte> entry : laserNodeBE.myRedstoneIn.byte2ByteEntrySet()) {
                 updateRedstoneNetwork(entry.getKey(), entry.getValue());
@@ -365,10 +363,10 @@ public class LaserNodeBE extends BaseLaserBE {
         //if (inserterUpdated || extractorUpdated)
         markDirtyClient();
         if (inserterUpdated) {
-            for (BlockPos pos : otherNodesInNetwork) {
-                LaserNodeBE node = getNodeAt(getWorldPos(pos));
+            for (DimBlockPos pos : otherNodesInNetwork) {
+                LaserNodeBE node = getNodeAt(new DimBlockPos(pos.getLevel(level.getServer()), getWorldPos(pos.blockPos)));
                 if (node == null) continue;
-                node.checkInvNode(this.getBlockPos(), true);
+                node.checkInvNode(new DimBlockPos(this.level, this.getBlockPos()), true);
             }
         }
     }
@@ -533,12 +531,12 @@ public class LaserNodeBE extends BaseLaserBE {
         }
     }
 
-    public boolean chunksLoaded(BlockPos nodePos, BlockPos destinationPos) {
-        assert level != null;
-        if (!level.isLoaded(nodePos)) {
+    public boolean chunksLoaded(DimBlockPos nodePos, BlockPos destinationPos) {
+        assert nodePos.getLevel(level.getServer()) != null;
+        if (!nodePos.getLevel(level.getServer()).isLoaded(nodePos.blockPos)) {
             return false;
         }
-        if (!level.isLoaded(destinationPos)) {
+        if (!nodePos.getLevel(level.getServer()).isLoaded(destinationPos)) {
             return false;
         }
         return true;
@@ -1014,6 +1012,9 @@ public class LaserNodeBE extends BaseLaserBE {
     public boolean extractFluidStackExact(ExtractorCardCache extractorCardCache, IFluidHandler fromInventory, FluidStack extractStack) {
         int totalAmtNeeded = extractStack.getAmount();
         int amtToExtract = extractStack.getAmount();
+
+        FluidStack testDrain = fromInventory.drain(extractStack, IFluidHandler.FluidAction.SIMULATE);
+        if (testDrain.getAmount() < totalAmtNeeded) return false; //If we don't have enough in the extractTank we can't pull out this exact amount!
         List<InserterCardCache> inserterCardCaches = getPossibleInserters(extractorCardCache, extractStack);
         int roundRobin = -1;
 
@@ -1861,6 +1862,7 @@ public class LaserNodeBE extends BaseLaserBE {
         for (ParticleRenderDataFluid partData : particleRenderDataFluids) {
             //if (particlesDrawnThisTick > 64) return;
             FluidStack fluidStack = partData.fluidStack;
+            if (fluidStack.isEmpty()) continue; //I managed to crash without this, so added it :)
             BlockPos toPos = partData.toPos;
             BlockPos fromPos = partData.fromPos;
             Direction direction = Direction.values()[partData.direction];
@@ -1918,12 +1920,12 @@ public class LaserNodeBE extends BaseLaserBE {
 
     /** Draw the particles between node and inventory **/
     public void drawParticlesFluid(FluidStack fluidStack, Direction fromDirection, LaserNodeBE sourceBE, LaserNodeBE destinationBE, Direction destinationDirection, int extractPosition, int insertPosition) {
-        ServerTickHandler.addToListFluid(new ParticleDataFluid(fluidStack, sourceBE.getBlockPos(), (byte) fromDirection.ordinal(), destinationBE.getBlockPos(), (byte) destinationDirection.ordinal(), (byte) extractPosition, (byte) insertPosition), level);
+        ServerTickHandler.addToListFluid(new ParticleDataFluid(fluidStack, new DimBlockPos(sourceBE.level, sourceBE.getBlockPos()), (byte) fromDirection.ordinal(), new DimBlockPos(destinationBE.level, destinationBE.getBlockPos()), (byte) destinationDirection.ordinal(), (byte) extractPosition, (byte) insertPosition));
     }
 
     /** Draw the particles between node and inventory **/
     public void drawParticles(ItemStack itemStack, int amount, Direction fromDirection, LaserNodeBE sourceBE, LaserNodeBE destinationBE, Direction destinationDirection, int extractPosition, int insertPosition) {
-        ServerTickHandler.addToList(new ParticleData(Item.getId(itemStack.getItem()), (byte) amount, sourceBE.getBlockPos(), (byte) fromDirection.ordinal(), destinationBE.getBlockPos(), (byte) destinationDirection.ordinal(), (byte) extractPosition, (byte) insertPosition), level);
+        ServerTickHandler.addToList(new ParticleData(Item.getId(itemStack.getItem()), (byte) amount, new DimBlockPos(sourceBE.level, sourceBE.getBlockPos()), (byte) fromDirection.ordinal(), new DimBlockPos(destinationBE.level, destinationBE.getBlockPos()), (byte) destinationDirection.ordinal(), (byte) extractPosition, (byte) insertPosition));
 
         /*ServerLevel serverWorld = (ServerLevel) level;
         //Extract
@@ -1961,10 +1963,10 @@ public class LaserNodeBE extends BaseLaserBE {
 
     /** When this node changes, tell other nodes to refresh their cache of it **/
     public void notifyOtherNodesOfChange() {
-        for (BlockPos pos : otherNodesInNetwork) {
-            LaserNodeBE node = getNodeAt(getWorldPos(pos));
+        for (DimBlockPos pos : otherNodesInNetwork) {
+            LaserNodeBE node = getNodeAt(new DimBlockPos(pos.getLevel(level.getServer()), getWorldPos(pos.blockPos)));
             if (node == null) continue;
-            node.checkInvNode(this.getBlockPos(), true);
+            node.checkInvNode(new DimBlockPos(this.level, this.getBlockPos()), true);
             //node.refreshRedstoneNetwork();
             node.redstoneRefreshed = false;
         }
@@ -1978,8 +1980,8 @@ public class LaserNodeBE extends BaseLaserBE {
         channelOnlyCache.clear();
         this.stockerDestinationCache.clear();
         this.redstoneNetwork.clear();
-        for (BlockPos pos : otherNodesInNetwork) {
-            checkInvNode(getWorldPos(pos), false);
+        for (DimBlockPos pos : otherNodesInNetwork) {
+            checkInvNode(new DimBlockPos(pos.getLevel(level.getServer()), getWorldPos(pos.blockPos)), false);
         }
         //refreshRedstoneNetwork();
         redstoneRefreshed = false;
@@ -1992,10 +1994,10 @@ public class LaserNodeBE extends BaseLaserBE {
      * Also populates the providerNodes and stockerNodes variables, so we know which inventory nodes provide or keep in stock items.
      * This method is called by refreshAllInvNodes() or on demand when the contents of an inventory node's container is changed
      */
-    public void checkInvNode(BlockPos pos, boolean sortInserters) {
+    public void checkInvNode(DimBlockPos pos, boolean sortInserters) {
         //System.out.println("Check inv node at: " + getBlockPos());
         LaserNodeBE be = getNodeAt(pos);
-        BlockPos relativePos = getRelativePos(pos);
+        DimBlockPos relativePos = new DimBlockPos(be.level, getRelativePos(pos.blockPos));
         //Remove this position from all caches, so we can repopulate below
         inserterNodes.removeIf(p -> p.relativePos.equals(relativePos));
         inserterCache.clear(); //TODO maybe just remove destinations that match this blockPos
@@ -2022,9 +2024,9 @@ public class LaserNodeBE extends BaseLaserBE {
 
     public LaserNodeItemHandler getLaserNodeHandlerItem(InserterCardCache inserterCardCache) {
         if (!inserterCardCache.cardType.equals(BaseCard.CardType.ITEM)) return null;
-        BlockPos nodeWorldPos = getWorldPos(inserterCardCache.relativePos);
-        if (!chunksLoaded(nodeWorldPos, nodeWorldPos.relative(inserterCardCache.direction))) return null;
-        LaserNodeBE be = getNodeAt(getWorldPos(inserterCardCache.relativePos));
+        DimBlockPos nodeWorldPos = new DimBlockPos(inserterCardCache.relativePos.getLevel(level.getServer()), getWorldPos(inserterCardCache.relativePos.blockPos));
+        if (!chunksLoaded(nodeWorldPos, nodeWorldPos.blockPos.relative(inserterCardCache.direction))) return null;
+        LaserNodeBE be = getNodeAt(new DimBlockPos(inserterCardCache.relativePos.getLevel(level.getServer()), getWorldPos(inserterCardCache.relativePos.blockPos)));
         if (be == null) return null;
         IItemHandler handler = be.getAttachedInventory(inserterCardCache.direction, inserterCardCache.sneaky).orElse(EMPTY);
         if (handler.getSlots() == 0) return null;
@@ -2047,7 +2049,7 @@ public class LaserNodeBE extends BaseLaserBE {
         BlockEntity be = level.getBlockEntity(getBlockPos().relative(direction));
         // if we have a TE and its an item handler, try extracting from that
         if (be != null) {
-            LazyOptional<IItemHandler> handler = be.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, inventorySide);
+            LazyOptional<IItemHandler> handler = be.getCapability(ForgeCapabilities.ITEM_HANDLER, inventorySide);
             if (handler.isPresent()) {
                 // add the invalidator
                 handler.addListener(getInvalidatorItem(sideConnection));
@@ -2071,7 +2073,7 @@ public class LaserNodeBE extends BaseLaserBE {
         BlockEntity be = level.getBlockEntity(getBlockPos().relative(direction));
         // if we have a TE and its an item handler, try extracting from that
         if (be != null) {
-            LazyOptional<IItemHandler> handler = be.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, inventorySide);
+            LazyOptional<IItemHandler> handler = be.getCapability(ForgeCapabilities.ITEM_HANDLER, inventorySide);
             if (handler.isPresent()) {
                 return handler;
             }
@@ -2089,9 +2091,9 @@ public class LaserNodeBE extends BaseLaserBE {
 
     public LaserNodeFluidHandler getLaserNodeHandlerFluid(InserterCardCache inserterCardCache) {
         if (!inserterCardCache.cardType.equals(BaseCard.CardType.FLUID)) return null;
-        BlockPos nodeWorldPos = getWorldPos(inserterCardCache.relativePos);
-        if (!chunksLoaded(nodeWorldPos, nodeWorldPos.relative(inserterCardCache.direction))) return null;
-        LaserNodeBE be = getNodeAt(getWorldPos(inserterCardCache.relativePos));
+        DimBlockPos nodeWorldPos = new DimBlockPos(inserterCardCache.relativePos.getLevel(level.getServer()), getWorldPos(inserterCardCache.relativePos.blockPos));
+        if (!chunksLoaded(nodeWorldPos, nodeWorldPos.blockPos.relative(inserterCardCache.direction))) return null;
+        LaserNodeBE be = getNodeAt(new DimBlockPos(inserterCardCache.relativePos.getLevel(level.getServer()), getWorldPos(inserterCardCache.relativePos.blockPos)));
         if (be == null) return null;
         LazyOptional<IFluidHandler> fluidhandler = be.getAttachedFluidTank(inserterCardCache.direction, inserterCardCache.sneaky);
         if (!fluidhandler.isPresent()) return null;
@@ -2116,7 +2118,7 @@ public class LaserNodeBE extends BaseLaserBE {
         BlockEntity be = level.getBlockEntity(getBlockPos().relative(direction));
         // if we have a TE and its an item handler, try extracting from that
         if (be != null) {
-            LazyOptional<IFluidHandler> handler = be.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, inventorySide);
+            LazyOptional<IFluidHandler> handler = be.getCapability(ForgeCapabilities.FLUID_HANDLER, inventorySide);
             if (handler.isPresent()) {
                 // add the invalidator
                 handler.addListener(getInvalidatorFluid(sideConnection));
@@ -2140,7 +2142,7 @@ public class LaserNodeBE extends BaseLaserBE {
         BlockEntity be = level.getBlockEntity(getBlockPos().relative(direction));
         // if we have a TE and its an item handler, try extracting from that
         if (be != null) {
-            LazyOptional<IFluidHandler> handler = be.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, inventorySide);
+            LazyOptional<IFluidHandler> handler = be.getCapability(ForgeCapabilities.FLUID_HANDLER, inventorySide);
             if (handler.isPresent()) {
                 return handler;
             }
@@ -2150,9 +2152,9 @@ public class LaserNodeBE extends BaseLaserBE {
 
     public LaserNodeEnergyHandler getLaserNodeHandlerEnergy(InserterCardCache inserterCardCache) {
         if (!inserterCardCache.cardType.equals(BaseCard.CardType.ENERGY)) return null;
-        BlockPos nodeWorldPos = getWorldPos(inserterCardCache.relativePos);
-        if (!chunksLoaded(nodeWorldPos, nodeWorldPos.relative(inserterCardCache.direction))) return null;
-        LaserNodeBE be = getNodeAt(getWorldPos(inserterCardCache.relativePos));
+        DimBlockPos nodeWorldPos = new DimBlockPos(inserterCardCache.relativePos.getLevel(level.getServer()), getWorldPos(inserterCardCache.relativePos.blockPos));
+        if (!chunksLoaded(nodeWorldPos, nodeWorldPos.blockPos.relative(inserterCardCache.direction))) return null;
+        LaserNodeBE be = getNodeAt(new DimBlockPos(inserterCardCache.relativePos.getLevel(level.getServer()), getWorldPos(inserterCardCache.relativePos.blockPos)));
         if (be == null) return null;
         Optional<IEnergyStorage> energyhandler = be.getAttachedEnergyTank(inserterCardCache.direction, inserterCardCache.sneaky).resolve();
         if (energyhandler.isEmpty()) return null;
@@ -2176,7 +2178,7 @@ public class LaserNodeBE extends BaseLaserBE {
         BlockEntity be = level.getBlockEntity(getBlockPos().relative(direction));
         // if we have a TE and its an item handler, try extracting from that
         if (be != null) {
-            LazyOptional<IEnergyStorage> handler = be.getCapability(CapabilityEnergy.ENERGY, inventorySide);
+            LazyOptional<IEnergyStorage> handler = be.getCapability(ForgeCapabilities.ENERGY, inventorySide);
             if (handler.isPresent()) {
                 // add the invalidator
                 handler.addListener(getInvalidatorEnergy(sideConnection));
@@ -2200,7 +2202,7 @@ public class LaserNodeBE extends BaseLaserBE {
         BlockEntity be = level.getBlockEntity(getBlockPos().relative(direction));
         // if we have a TE and its an item handler, try extracting from that
         if (be != null) {
-            LazyOptional<IEnergyStorage> handler = be.getCapability(CapabilityEnergy.ENERGY, inventorySide);
+            LazyOptional<IEnergyStorage> handler = be.getCapability(ForgeCapabilities.ENERGY, inventorySide);
             if (handler.isPresent()) {
                 return handler;
             }
@@ -2248,7 +2250,7 @@ public class LaserNodeBE extends BaseLaserBE {
         this.cardRenders.clear();
         redstoneCardSides.clear();
         for (Direction direction : Direction.values()) {
-            IItemHandler h = getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction).orElse(new ItemStackHandler(0));
+            IItemHandler h = getCapability(ForgeCapabilities.ITEM_HANDLER, direction).orElse(new ItemStackHandler(0));
             for (int slot = 0; slot < h.getSlots(); slot++) {
                 ItemStack card = h.getStackInSlot(slot);
                 if (!(card.getItem() instanceof BaseCard)) continue;
@@ -2306,10 +2308,10 @@ public class LaserNodeBE extends BaseLaserBE {
     @Nonnull
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY && side != null) {
+        if (cap == ForgeCapabilities.ITEM_HANDLER && side != null) {
             return nodeSideCaches[side.ordinal()].handlerLazyOptional.cast();
         }
-        if (cap == CapabilityEnergy.ENERGY) {
+        if (cap == ForgeCapabilities.ENERGY) {
             if (side == null) {
                 return LazyOptional.empty();
             } else {

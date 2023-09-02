@@ -4,10 +4,9 @@ import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.commands.arguments.item.ItemInput;
 import net.minecraft.commands.arguments.item.ItemParser;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.core.Registry;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
@@ -53,9 +52,9 @@ public class ItemFlowParticleData implements ParticleOptions {
                 this.getType(), this.targetX, this.targetY, this.targetZ, this.ticksPerBlock);
     }
 
-    public String getParameters() {
+    /*public String getParameters() {
         return Registry.PARTICLE_TYPE.getKey(this.getType()) + " " + (new ItemInput(this.itemStack.getItem().builtInRegistryHolder(), this.itemStack.getTag())).serialize();
-    }
+    }*/
 
     @OnlyIn(Dist.CLIENT)
     public ItemStack getItemStack() {
@@ -69,7 +68,7 @@ public class ItemFlowParticleData implements ParticleOptions {
             reader.expect(' ');
             //ItemParser itemparser = (new ItemParser(reader, false)).parse();
             //ItemStack itemstack = (new ItemInput(itemparser.getItem(), itemparser.getNbt())).createItemStack(1, false);
-            ItemParser.ItemResult itemparser$itemresult = ItemParser.parseForItem(HolderLookup.forRegistry(Registry.ITEM), reader);
+            ItemParser.ItemResult itemparser$itemresult = ItemParser.parseForItem(BuiltInRegistries.ITEM.asLookup(), reader);
             ItemStack itemstack = (new ItemInput(itemparser$itemresult.item(), itemparser$itemresult.nbt())).createItemStack(1, false);
 
             reader.expect(' ');

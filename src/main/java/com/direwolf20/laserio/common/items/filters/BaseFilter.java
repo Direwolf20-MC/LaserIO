@@ -1,7 +1,6 @@
 package com.direwolf20.laserio.common.items.filters;
 
 import com.direwolf20.laserio.client.events.EventTooltip;
-import com.direwolf20.laserio.setup.ModSetup;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
@@ -24,7 +23,7 @@ import static com.direwolf20.laserio.util.MiscTools.tooltipMaker;
 
 public class BaseFilter extends Item {
     public BaseFilter() {
-        super(new Item.Properties().tab(ModSetup.ITEM_GROUP));
+        super(new Item.Properties());
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -51,7 +50,7 @@ public class BaseFilter extends Item {
             toWrite.append(tooltipMaker(allowString, allowColor));
             tooltip.add(toWrite);
 
-            if (!(stack.getItem() instanceof FilterTag)) {
+            if (!(stack.getItem() instanceof FilterTag) && !(stack.getItem() instanceof FilterNBT)) {
                 toWrite = tooltipMaker("laserio.tooltip.item.filter.nbt", ChatFormatting.GRAY.getColor());
                 boolean nbtMode = getCompareNBT(stack);
                 String nbtString = nbtMode ? "laserio.tooltip.item.filter.nbt.allow" : "laserio.tooltip.item.filter.nbt.deny";

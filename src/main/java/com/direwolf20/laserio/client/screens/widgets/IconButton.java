@@ -1,9 +1,8 @@
 package com.direwolf20.laserio.client.screens.widgets;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -12,28 +11,17 @@ public class IconButton extends Button {
     private ResourceLocation texture;
 
     public IconButton(int x, int y, int width, int height, ResourceLocation texture, OnPress onPress) {
-        super(x, y, width, height, Component.empty(), onPress);
-
-        this.texture = texture;
-    }
-
-    public IconButton(int x, int y, int width, int height, ResourceLocation texture, OnPress onPress, OnTooltip onTooltip) {
-        super(x, y, width, height, Component.empty(), onPress, onTooltip);
+        super(x, y, width, height, Component.empty(), onPress, Button.DEFAULT_NARRATION);
 
         this.texture = texture;
     }
 
     @Override
-    public void render(PoseStack stack, int mouseX, int mouseY, float partialTicks) {
+    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
         RenderSystem.setShaderTexture(0, texture);
-        blit(stack, this.x, this.y, 0, 0, width, height, width, height);
-    }
-
-    @Override
-    public void renderToolTip(PoseStack stack, int x, int y) {
-        super.renderToolTip(stack, x, y);
+        guiGraphics.blit(texture, this.getX(), this.getY(), 0, 0, width, height, width, height);
     }
 
     @Override
@@ -46,8 +34,8 @@ public class IconButton extends Button {
         return super.mouseClicked(x, y, button);
     }
 
-    @Override
+    /*@Override
     public void updateNarration(NarrationElementOutput p_169152_) {
 
-    }
+    }*/
 }

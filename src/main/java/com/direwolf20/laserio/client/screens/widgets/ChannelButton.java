@@ -2,7 +2,7 @@ package com.direwolf20.laserio.client.screens.widgets;
 
 import com.direwolf20.laserio.common.LaserIO;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
@@ -33,26 +33,21 @@ public class ChannelButton extends Button {
     };
 
     public ChannelButton(int widthIn, int heightIn, int width, int height, int channel, OnPress onPress) {
-        super(widthIn, heightIn, width, height, Component.empty(), onPress);
+        super(widthIn, heightIn, width, height, Component.empty(), onPress, Button.DEFAULT_NARRATION);
         this.channel = channel;
     }
 
     @Override
-    public void render(PoseStack stack, int mouseX, int mouseY, float partialTicks) {
+    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
         //fill(stack, this.x, this.y, this.x + this.width, this.y + this.height, 0xFFa8a8a8);
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
         RenderSystem.setShaderTexture(0, resourceLocation);
-        blit(stack, this.x, this.y, 0, 0, width, height, width, height);
-        fill(stack, this.x + 4, this.y + 4, this.x + this.width - 4, this.y + this.height - 4, colors[channel].getRGB());
+        guiGraphics.blit(resourceLocation, this.getX(), this.getY(), 0, 0, width, height, width, height);
+        guiGraphics.fill(this.getX() + 4, this.getY() + 4, this.getX() + this.width - 4, this.getY() + this.height - 4, colors[channel].getRGB());
     }
 
     public void setChannel(int channel) {
         this.channel = channel;
-    }
-
-    @Override
-    public void renderToolTip(PoseStack stack, int x, int y) {
-        super.renderToolTip(stack, x, y);
     }
 }

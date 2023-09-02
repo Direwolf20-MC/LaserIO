@@ -1,6 +1,7 @@
 {
   "values": [
     "laserio:laser_node",
-    "laserio:laser_connector"
+    "laserio:laser_connector",
+    "laserio:laser_connector_advanced"
   ]
 }

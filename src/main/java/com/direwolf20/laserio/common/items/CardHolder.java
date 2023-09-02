@@ -2,7 +2,9 @@ package com.direwolf20.laserio.common.items;
 
 import com.direwolf20.laserio.common.containers.CardHolderContainer;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
-import com.direwolf20.laserio.setup.ModSetup;
+import com.direwolf20.laserio.common.items.filters.BaseFilter;
+import com.direwolf20.laserio.common.items.upgrades.OverclockerCard;
+import com.direwolf20.laserio.common.items.upgrades.OverclockerNode;
 import com.direwolf20.laserio.util.ItemStackHandlerProvider;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -16,8 +18,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.network.NetworkHooks;
@@ -30,7 +32,7 @@ import java.util.UUID;
 
 public class CardHolder extends Item {
     public CardHolder() {
-        super(new Item.Properties().tab(ModSetup.ITEM_GROUP)
+        super(new Item.Properties()
                 .stacksTo(1));
     }
 
@@ -44,7 +46,7 @@ public class CardHolder extends Item {
             return new InteractionResultHolder<>(InteractionResult.PASS, itemstack);
         }
 
-        itemstack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null).ifPresent(h -> {
+        itemstack.getCapability(ForgeCapabilities.ITEM_HANDLER, null).ifPresent(h -> {
             NetworkHooks.openScreen((ServerPlayer) player, new SimpleMenuProvider(
                     (windowId, playerInventory, playerEntity) -> new CardHolderContainer(windowId, playerInventory, player, itemstack, h), Component.translatable("")), (buf -> {
                 buf.writeItem(itemstack);
@@ -71,14 +73,16 @@ public class CardHolder extends Item {
         if (entity instanceof Player player && getActive(stack)) {
             for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
                 ItemStack cardStack = player.getInventory().getItem(i);
-                if (cardStack.getItem() instanceof BaseCard)
+                if (cardStack.getItem() instanceof BaseCard || cardStack.getItem() instanceof BaseFilter || cardStack.getItem() instanceof OverclockerCard || cardStack.getItem() instanceof OverclockerNode)
                     addCardToInventory(stack, cardStack);
             }
         }
     }
 
     public static ItemStack addCardToInventory(ItemStack cardHolder, ItemStack card) {
-        IItemHandler handler = cardHolder.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null).orElse(new ItemStackHandler(CardHolderContainer.SLOTS));
+        if (card.getItem() instanceof BaseFilter && card.hasTag())
+            return card;
+        IItemHandler handler = cardHolder.getCapability(ForgeCapabilities.ITEM_HANDLER, null).orElse(new ItemStackHandler(CardHolderContainer.SLOTS));
         List<Integer> emptySlots = new ArrayList<>();
         for (int i = 0; i < handler.getSlots(); i++) {
             ItemStack stackInSlot = handler.getStackInSlot(i);

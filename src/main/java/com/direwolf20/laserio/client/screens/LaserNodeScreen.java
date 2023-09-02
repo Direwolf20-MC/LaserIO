@@ -1,22 +1,28 @@
 package com.direwolf20.laserio.client.screens;
 
+import com.direwolf20.laserio.client.screens.widgets.IconButton;
 import com.direwolf20.laserio.common.LaserIO;
 import com.direwolf20.laserio.common.containers.CardHolderContainer;
 import com.direwolf20.laserio.common.containers.LaserNodeContainer;
 import com.direwolf20.laserio.common.containers.customslot.CardHolderSlot;
 import com.direwolf20.laserio.common.containers.customslot.LaserNodeSlot;
+import com.direwolf20.laserio.common.items.CardCloner;
 import com.direwolf20.laserio.common.items.CardHolder;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.common.network.PacketHandler;
+import com.direwolf20.laserio.common.network.packets.PacketCopyPasteCard;
 import com.direwolf20.laserio.common.network.packets.PacketOpenCard;
 import com.direwolf20.laserio.common.network.packets.PacketOpenNode;
 import com.direwolf20.laserio.util.MiscTools;
 import com.direwolf20.laserio.util.Vec2i;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
+import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -24,8 +30,11 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.state.BlockState;
 
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class LaserNodeScreen extends AbstractContainerScreen<LaserNodeContainer> {
     private final ResourceLocation GUI = new ResourceLocation(LaserIO.MODID, "textures/gui/laser_node.png");
@@ -60,49 +69,73 @@ public class LaserNodeScreen extends AbstractContainerScreen<LaserNodeContainer>
     @Override
     public void init() {
         super.init();
+        List<AbstractWidget> leftWidgets = new ArrayList<>();
+        ResourceLocation settings = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/settings.png");
+        Button settingsButton = new IconButton(getGuiLeft() + 155, getGuiTop() + 25, 16, 16, settings, (button) -> {
+            Minecraft.getInstance().setScreen(new LaserNodeSettingsScreen(container, Component.translatable("screen.laserio.settings")));
+        });
+        leftWidgets.add(settingsButton);
+
+        for (int i = 0; i < leftWidgets.size(); i++) {
+            addRenderableWidget(leftWidgets.get(i));
+        }
+
     }
 
     @Override
     protected boolean hasClickedOutside(double mouseX, double mouseY, int guiLeftIn, int guiTopIn, int mouseButton) {
         if (showCardHolderUI)
-            return mouseX < (double) guiLeftIn - 50 || mouseY < (double) guiTopIn || mouseX >= (double) (guiLeftIn + this.imageWidth) || mouseY >= (double) (guiTopIn + this.imageHeight);
+            return mouseX < (double) guiLeftIn - 100 || mouseY < (double) guiTopIn || mouseX >= (double) (guiLeftIn + this.imageWidth) || mouseY >= (double) (guiTopIn + this.imageHeight);
         return super.hasClickedOutside(mouseX, mouseY, guiLeftIn, guiTopIn, mouseButton);
     }
 
     @Override
-    public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
         validateHolder();
-        this.renderBackground(matrixStack);
-        super.render(matrixStack, mouseX, mouseY, partialTicks);
-        this.renderTooltip(matrixStack, mouseX, mouseY);
+        this.renderBackground(guiGraphics);
+        super.render(guiGraphics, mouseX, mouseY, partialTicks);
+        this.renderTooltip(guiGraphics, mouseX, mouseY);
     }
 
     @Override
-    protected void renderLabels(PoseStack matrixStack, int mouseX, int mouseY) {
-        fill(matrixStack, tabs[container.side].x + 2, tabs[container.side].y + 2, tabs[container.side].x + 22, tabs[container.side].y + 14, 0xFFC6C6C6);
-        fill(matrixStack, tabs[container.side].x, tabs[container.side].y + 11, tabs[container.side].x + 2, tabs[container.side].y + 12, 0xFFFFFFFF);
-        fill(matrixStack, tabs[container.side].x + 22, tabs[container.side].y + 11, tabs[container.side].x + 24, tabs[container.side].y + 12, 0xFFFFFFFF);
-        matrixStack.pushPose();
-        font.draw(matrixStack, sides[container.side].getString(), imageWidth / 2 - font.width(sides[container.side].getString()) / 2, 20, Color.DARK_GRAY.getRGB());
-        font.draw(matrixStack, "U", 15, 7, Color.DARK_GRAY.getRGB());
-        font.draw(matrixStack, "D", 43, 7, Color.DARK_GRAY.getRGB());
-        font.draw(matrixStack, "N", 71, 7, Color.DARK_GRAY.getRGB());
-        font.draw(matrixStack, "S", 99, 7, Color.DARK_GRAY.getRGB());
-        font.draw(matrixStack, "W", 128, 7, Color.DARK_GRAY.getRGB());
-        font.draw(matrixStack, "E", 155, 7, Color.DARK_GRAY.getRGB());
-        matrixStack.popPose();
+    protected void renderLabels(GuiGraphics guiGraphics, int mouseX, int mouseY) {
+        guiGraphics.fill(tabs[container.side].x + 2, tabs[container.side].y + 2, tabs[container.side].x + 22, tabs[container.side].y + 14, 0xFFC6C6C6);
+        guiGraphics.fill(tabs[container.side].x, tabs[container.side].y + 11, tabs[container.side].x + 2, tabs[container.side].y + 12, 0xFFFFFFFF);
+        guiGraphics.fill(tabs[container.side].x + 22, tabs[container.side].y + 11, tabs[container.side].x + 24, tabs[container.side].y + 12, 0xFFFFFFFF);
+        guiGraphics.drawString(font, sides[container.side].getString(), imageWidth / 2 - font.width(sides[container.side].getString()) / 2, 20, Color.DARK_GRAY.getRGB(), false);
+        guiGraphics.drawString(font, "U", 15, 7, Color.DARK_GRAY.getRGB(), false);
+        guiGraphics.drawString(font, "D", 43, 7, Color.DARK_GRAY.getRGB(), false);
+        guiGraphics.drawString(font, "N", 71, 7, Color.DARK_GRAY.getRGB(), false);
+        guiGraphics.drawString(font, "S", 99, 7, Color.DARK_GRAY.getRGB(), false);
+        guiGraphics.drawString(font, "W", 128, 7, Color.DARK_GRAY.getRGB(), false);
+        guiGraphics.drawString(font, "E", 155, 7, Color.DARK_GRAY.getRGB(), false);
+        for (Direction direction : Direction.values()) {
+            ItemStack itemStack = getAdjacentBlock(direction);
+            if (!itemStack.isEmpty()) {
+                guiGraphics.renderItem(itemStack, tabs[direction.ordinal()].x + 4, tabs[direction.ordinal()].y - 14, 0);
+                if (MiscTools.inBounds(getGuiLeft() + tabs[direction.ordinal()].x + 4, getGuiTop() + tabs[direction.ordinal()].y - 14, 16, 16, mouseX, mouseY)) {
+                    guiGraphics.renderTooltip(font, itemStack, mouseX - getGuiLeft(), mouseY - getGuiTop());
+                }
+            }
+        }
+    }
+
+    protected ItemStack getAdjacentBlock(Direction direction) {
+        BlockState blockState = container.playerEntity.level().getBlockState(this.container.tile.getBlockPos().relative(direction));
+        ItemStack itemStack = blockState.getBlock().asItem().getDefaultInstance();
+        return itemStack;
     }
 
     @Override
-    protected void renderBg(PoseStack matrixStack, float partialTicks, int mouseX, int mouseY) {
+    protected void renderBg(GuiGraphics guiGraphics, float partialTicks, int mouseX, int mouseY) {
         RenderSystem.setShaderTexture(0, GUI);
         int relX = (this.width - this.imageWidth) / 2;
         int relY = (this.height - this.imageHeight) / 2;
-        this.blit(matrixStack, relX, relY, 0, 0, this.imageWidth, this.imageHeight);
+        guiGraphics.blit(GUI, relX, relY, 0, 0, this.imageWidth, this.imageHeight);
         if (showCardHolderUI) {
             ResourceLocation CardHolderGUI = new ResourceLocation(LaserIO.MODID, "textures/gui/cardholder_node.png");
             RenderSystem.setShaderTexture(0, CardHolderGUI);
-            this.blit(matrixStack, getGuiLeft() - 50, getGuiTop() + 24, 0, 0, this.imageWidth, this.imageHeight);
+            guiGraphics.blit(CardHolderGUI, getGuiLeft() - 100, getGuiTop() + 24, 0, 0, this.imageWidth, this.imageHeight);
         }
     }
 
@@ -134,6 +167,16 @@ public class LaserNodeScreen extends AbstractContainerScreen<LaserNodeContainer>
 
     @Override
     public boolean mouseClicked(double x, double y, int btn) {
+        if (hoveredSlot != null && container.getCarried().getItem() instanceof CardCloner) {
+            if (hoveredSlot instanceof LaserNodeSlot && !hoveredSlot.getItem().isEmpty())
+            if (btn == 0) { //Left click
+                PacketHandler.sendToServer(new PacketCopyPasteCard(hoveredSlot.getSlotIndex(), true));
+            }
+            if (btn == 1) { //Right click
+                PacketHandler.sendToServer(new PacketCopyPasteCard(hoveredSlot.getSlotIndex(), false));
+            }
+            return true;
+        }
         if (MiscTools.inBounds(getGuiLeft() + tabs[1].x, getGuiTop() + tabs[1].y, 24, 12, x, y) && container.side != 1) {
             PacketHandler.sendToServer(new PacketOpenNode(container.tile.getBlockPos(), (byte) 1));
             Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));

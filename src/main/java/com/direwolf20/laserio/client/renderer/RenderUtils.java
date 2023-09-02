@@ -1,14 +1,14 @@
 package com.direwolf20.laserio.client.renderer;
 
 import com.direwolf20.laserio.client.blockentityrenders.LaserNodeBERender;
+import com.direwolf20.laserio.common.blockentities.LaserConnectorAdvBE;
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import com.direwolf20.laserio.common.blockentities.basebe.BaseLaserBE;
+import com.direwolf20.laserio.common.items.LaserWrench;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.util.CardRender;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Matrix4f;
-import com.mojang.math.Vector3f;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.texture.OverlayTexture;
@@ -18,16 +18,20 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
 
 import java.awt.*;
 import java.util.Queue;
 import java.util.Set;
 
+import static com.direwolf20.laserio.client.events.ClientEvents.getWrench;
 import static com.direwolf20.laserio.util.MiscTools.findOffset;
 
 public class RenderUtils {
@@ -145,15 +149,73 @@ public class RenderUtils {
             Vector3f startLaser = new Vector3f(0.5f, .5f, 0.5f);
             for (BlockPos target : be.getRenderedConnections()) {
                 BlockPos endBlock = be.getWorldPos(target);
+                Color color = be.getColor();
+                Player myplayer = Minecraft.getInstance().player;
+                ItemStack myItem = getWrench(myplayer);
+                int alpha = (myItem.getItem() instanceof LaserWrench) ? Math.min(color.getAlpha() + be.getWrenchAlpha(), 255) : color.getAlpha();
                 float diffX = endBlock.getX() + .5f - startBlock.getX();
                 float diffY = endBlock.getY() + .5f - startBlock.getY();
                 float diffZ = endBlock.getZ() + .5f - startBlock.getZ();
                 Vector3f endLaser = new Vector3f(diffX, diffY, diffZ);
-                drawLaser(builder, positionMatrix, endLaser, startLaser, 1, 0, 0, 0.33f, 0.025f, v, v + diffY * 1.5, be);
+                drawLaser(builder, positionMatrix, endLaser, startLaser, color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, alpha / 255f, 0.025f, v, v + diffY * 1.5, be);
+            }
+
+            if (be instanceof LaserConnectorAdvBE laserConnectorAdvBE && laserConnectorAdvBE.getPartnerDimBlockPos() != null && !level.getBlockState(be.getBlockPos()).isAir()) {
+                Direction facing = level.getBlockState(be.getBlockPos()).getValue(BlockStateProperties.FACING).getOpposite();
+                BlockPos endBlock = laserConnectorAdvBE.getBlockPos().relative(facing);
+                Color color = be.getColor();
+                Player myplayer = Minecraft.getInstance().player;
+                ItemStack myItem = getWrench(myplayer);
+                int alpha = (myItem.getItem() instanceof LaserWrench) ? Math.min(color.getAlpha() + be.getWrenchAlpha(), 255) : color.getAlpha();
+                Vector3f endLaser = calculateEndAdvConnector(startBlock, endBlock, facing);
+                drawLaser(builder, positionMatrix, endLaser, startLaser, color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, alpha / 255f, 0.025f, v, v + endLaser.y() * 1.5, be);
             }
             matrixStackIn.popPose();
         }
         buffer.endBatch(MyRenderType.CONNECTING_LASER); //This apparently is needed in RenderWorldLast
+    }
+
+    public static Vector3f calculateEndAdvConnector(BlockPos startBlock, BlockPos endBlock, Direction facing) {
+
+        float diffX = endBlock.getX() - startBlock.getX();
+        float diffY = endBlock.getY() - startBlock.getY();
+        float diffZ = endBlock.getZ() - startBlock.getZ();
+
+        switch (facing) {
+            case UP:
+                diffX += 0.5f;
+                diffY -= 0.25f;
+                diffZ += 0.5f;
+                break;
+            case DOWN:
+                diffX += 0.5f;
+                diffY += 1.25f;
+                diffZ += 0.5f;
+                break;
+            case NORTH:
+                diffX += 0.5f;
+                diffY += 0.5f;
+                diffZ += 1.25f;
+                break;
+            case SOUTH:
+                diffX += 0.5f;
+                diffY += 0.5f;
+                diffZ -= 0.25f;
+                break;
+            case EAST:
+                diffX -= 0.25f;
+                diffY += 0.5f;
+                diffZ += 0.5f;
+                break;
+            case WEST:
+                diffX += 1.25f;
+                diffY += 0.5f;
+                diffZ += 0.5f;
+                break;
+            default:
+                break;
+        }
+        return new Vector3f(diffX, diffY, diffZ);
     }
 
     public static void drawConnectingLasersLast4(Set<LaserNodeBE> beConnectingRenders, PoseStack matrixStackIn) {
@@ -226,7 +288,7 @@ public class RenderUtils {
             matrixStackIn.translate(startBlock.getX() - projectedView.x, startBlock.getY() - projectedView.y, startBlock.getZ() - projectedView.z);
 
             for (Direction direction : Direction.values()) { //Todo Improve
-                IItemHandler h = be.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction).orElse(new ItemStackHandler(0));
+                IItemHandler h = be.getCapability(ForgeCapabilities.ITEM_HANDLER, direction).orElse(new ItemStackHandler(0));
                 for (int slot = 0; slot < h.getSlots(); slot++) {
                     ItemStack card = h.getStackInSlot(slot);
                     if (card.getItem() instanceof BaseCard) {
@@ -277,7 +339,7 @@ public class RenderUtils {
             matrixStackIn.translate(startBlock.getX() - projectedView.x, startBlock.getY() - projectedView.y, startBlock.getZ() - projectedView.z);
 
             for (Direction direction : Direction.values()) { //Todo Improve
-                IItemHandler h = be.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction).orElse(new ItemStackHandler(0));
+                IItemHandler h = be.getCapability(ForgeCapabilities.ITEM_HANDLER, direction).orElse(new ItemStackHandler(0));
                 for (int slot = 0; slot < h.getSlots(); slot++) {
                     ItemStack card = h.getStackInSlot(slot);
                     if (card.getItem() instanceof BaseCard) {
@@ -338,7 +400,7 @@ public class RenderUtils {
 
         builder = buffer.getBuffer(MyRenderType.LASER_MAIN_BEAM);
         for (Direction direction : Direction.values()) { //Todo Improve
-            IItemHandler h = be.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction).orElse(new ItemStackHandler(0));
+            IItemHandler h = be.getCapability(ForgeCapabilities.ITEM_HANDLER, direction).orElse(new ItemStackHandler(0));
             for (int slot = 0; slot < h.getSlots(); slot++) {
                 ItemStack card = h.getStackInSlot(slot);
                 if (card.getItem() instanceof BaseCard) {
@@ -375,7 +437,7 @@ public class RenderUtils {
 
         builder = buffer.getBuffer(MyRenderType.LASER_MAIN_CORE);
         for (Direction direction : Direction.values()) { //Todo Improve
-            IItemHandler h = be.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction).orElse(new ItemStackHandler(0));
+            IItemHandler h = be.getCapability(ForgeCapabilities.ITEM_HANDLER, direction).orElse(new ItemStackHandler(0));
             for (int slot = 0; slot < h.getSlots(); slot++) {
                 ItemStack card = h.getStackInSlot(slot);
                 if (card.getItem() instanceof BaseCard) {
@@ -492,12 +554,12 @@ public class RenderUtils {
         Player player = Minecraft.getInstance().player;
         Vector3f P = new Vector3f((float) player.getX() - be.getBlockPos().getX(), (float) player.getEyeY() - be.getBlockPos().getY(), (float) player.getZ() - be.getBlockPos().getZ());
 
-        Vector3f PS = from.copy();
+        Vector3f PS = new Vector3f(from);
         PS.sub(P);
-        Vector3f SE = to.copy();
+        Vector3f SE = new Vector3f(to);
         SE.sub(from);
 
-        Vector3f adjustedVec = PS.copy();
+        Vector3f adjustedVec = new Vector3f(PS);
         adjustedVec.cross(SE);
         adjustedVec.normalize();
         return adjustedVec;
@@ -507,13 +569,13 @@ public class RenderUtils {
         Vector3f adjustedVec = adjustBeamToEyes(from, to, be);
         adjustedVec.mul(thickness); //Determines how thick the beam is
 
-        Vector3f p1 = from.copy();
+        Vector3f p1 = new Vector3f(from);
         p1.add(adjustedVec);
-        Vector3f p2 = from.copy();
+        Vector3f p2 = new Vector3f(from);
         p2.sub(adjustedVec);
-        Vector3f p3 = to.copy();
+        Vector3f p3 = new Vector3f(to);
         p3.add(adjustedVec);
-        Vector3f p4 = to.copy();
+        Vector3f p4 = new Vector3f(to);
         p4.sub(adjustedVec);
 
         builder.vertex(positionMatrix, p1.x(), p1.y(), p1.z())

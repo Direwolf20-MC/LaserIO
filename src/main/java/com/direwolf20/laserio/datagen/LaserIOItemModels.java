@@ -2,13 +2,13 @@ package com.direwolf20.laserio.datagen;
 
 import com.direwolf20.laserio.common.LaserIO;
 import com.direwolf20.laserio.setup.Registration;
-import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.minecraftforge.client.model.generators.ItemModelProvider;
 import net.minecraftforge.common.data.ExistingFileHelper;
 
 public class LaserIOItemModels extends ItemModelProvider {
-    public LaserIOItemModels(DataGenerator generator, ExistingFileHelper existingFileHelper) {
-        super(generator, LaserIO.MODID, existingFileHelper);
+    public LaserIOItemModels(PackOutput output, ExistingFileHelper existingFileHelper) {
+        super(output, LaserIO.MODID, existingFileHelper);
     }
 
     @Override
@@ -16,6 +16,7 @@ public class LaserIOItemModels extends ItemModelProvider {
         //Block Items
         withExistingParent(Registration.LaserConnector_ITEM.getId().getPath(), modLoc("block/laser_connector"));
         withExistingParent(Registration.LaserNode_ITEM.getId().getPath(), modLoc("block/laser_node"));
+        withExistingParent(Registration.LaserConnectorAdv_ITEM.getId().getPath(), modLoc("block/laser_connector_advanced"));
 
         //Item items
         singleTexture(Registration.Laser_Wrench.getId().getPath(), mcLoc("item/generated"), "layer0", modLoc("item/laser_wrench"));
@@ -27,9 +28,11 @@ public class LaserIOItemModels extends ItemModelProvider {
         singleTexture(Registration.Filter_Count.getId().getPath(), mcLoc("item/generated"), "layer0", modLoc("item/filter_count"));
         singleTexture(Registration.Filter_Tag.getId().getPath(), mcLoc("item/generated"), "layer0", modLoc("item/filter_tag"));
         singleTexture(Registration.Filter_Mod.getId().getPath(), mcLoc("item/generated"), "layer0", modLoc("item/filter_mod"));
+        singleTexture(Registration.Filter_NBT.getId().getPath(), mcLoc("item/generated"), "layer0", modLoc("item/filter_nbt"));
         singleTexture(Registration.Logic_Chip.getId().getPath(), mcLoc("item/generated"), "layer0", modLoc("item/logic_chip"));
         singleTexture(Registration.Logic_Chip_Raw.getId().getPath(), mcLoc("item/generated"), "layer0", modLoc("item/logic_chip_raw"));
         singleTexture(Registration.Overclocker_Card.getId().getPath(), mcLoc("item/generated"), "layer0", modLoc("item/overclocker_card"));
         singleTexture(Registration.Overclocker_Node.getId().getPath(), mcLoc("item/generated"), "layer0", modLoc("item/overclocker_node"));
+        singleTexture(Registration.Card_Cloner.getId().getPath(), mcLoc("item/generated"), "layer0", modLoc("item/card_cloner"));
     }
 }

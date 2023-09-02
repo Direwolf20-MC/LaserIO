@@ -1,23 +1,19 @@
 package com.direwolf20.laserio.setup;
 
 import com.direwolf20.laserio.common.LaserIO;
+import com.direwolf20.laserio.common.blockentities.LaserConnectorAdvBE;
 import com.direwolf20.laserio.common.blockentities.LaserConnectorBE;
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import com.direwolf20.laserio.common.blocks.LaserConnector;
+import com.direwolf20.laserio.common.blocks.LaserConnectorAdv;
 import com.direwolf20.laserio.common.blocks.LaserNode;
 import com.direwolf20.laserio.common.containers.*;
-import com.direwolf20.laserio.common.items.CardHolder;
-import com.direwolf20.laserio.common.items.LaserWrench;
-import com.direwolf20.laserio.common.items.LogicChip;
-import com.direwolf20.laserio.common.items.LogicChipRaw;
+import com.direwolf20.laserio.common.items.*;
 import com.direwolf20.laserio.common.items.cards.CardEnergy;
 import com.direwolf20.laserio.common.items.cards.CardFluid;
 import com.direwolf20.laserio.common.items.cards.CardItem;
 import com.direwolf20.laserio.common.items.cards.CardRedstone;
-import com.direwolf20.laserio.common.items.filters.FilterBasic;
-import com.direwolf20.laserio.common.items.filters.FilterCount;
-import com.direwolf20.laserio.common.items.filters.FilterMod;
-import com.direwolf20.laserio.common.items.filters.FilterTag;
+import com.direwolf20.laserio.common.items.filters.*;
 import com.direwolf20.laserio.common.items.upgrades.OverclockerCard;
 import com.direwolf20.laserio.common.items.upgrades.OverclockerNode;
 import com.direwolf20.laserio.datagen.customrecipes.CardClearRecipe;
@@ -40,11 +36,12 @@ import static com.direwolf20.laserio.common.LaserIO.MODID;
 public class Registration {
 
     private static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, MODID);
-    private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
+    public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
     private static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, MODID);
     private static final DeferredRegister<MenuType<?>> CONTAINERS = DeferredRegister.create(ForgeRegistries.MENU_TYPES, MODID);
     public static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZERS = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, LaserIO.MODID);
     public static final RegistryObject<CardClearRecipe.Serializer> CARD_CLEAR_RECIPE_SERIALIZER = RECIPE_SERIALIZERS.register("cardclear", CardClearRecipe.Serializer::new);
+
     public static void init() {
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
         BLOCKS.register(bus);
@@ -56,21 +53,26 @@ public class Registration {
     }
 
     // Some common properties for our blocks and items
-    public static final Item.Properties ITEM_PROPERTIES = new Item.Properties().tab(ModSetup.ITEM_GROUP);
+    //public static final Item.Properties ITEM_PROPERTIES = new Item.Properties().tab(ModSetup.ITEM_GROUP);
 
     //Blocks
     public static final RegistryObject<Block> LaserConnector = BLOCKS.register("laser_connector", LaserConnector::new);
-    public static final RegistryObject<Item> LaserConnector_ITEM = fromBlock(LaserConnector);
+    public static final RegistryObject<Item> LaserConnector_ITEM = ITEMS.register("laser_connector", () -> new BlockItem(LaserConnector.get(), new Item.Properties()));
     public static final RegistryObject<LaserNode> LaserNode = BLOCKS.register("laser_node", LaserNode::new);
-    public static final RegistryObject<Item> LaserNode_ITEM = fromBlock(LaserNode);
+    public static final RegistryObject<Item> LaserNode_ITEM = ITEMS.register("laser_node", () -> new BlockItem(LaserNode.get(), new Item.Properties()));
+    public static final RegistryObject<Block> LaserConnectorAdv = BLOCKS.register("laser_connector_advanced", LaserConnectorAdv::new);
+    public static final RegistryObject<Item> LaserConnectorAdv_ITEM = ITEMS.register("laser_connector_advanced", () -> new BlockItem(LaserConnectorAdv.get(), new Item.Properties()));
+
 
     //BlockEntities (Not TileEntities - Honest)
     public static final RegistryObject<BlockEntityType<LaserNodeBE>> LaserNode_BE = BLOCK_ENTITIES.register("lasernode", () -> BlockEntityType.Builder.of(LaserNodeBE::new, LaserNode.get()).build(null));
     public static final RegistryObject<BlockEntityType<LaserConnectorBE>> LaserConnector_BE = BLOCK_ENTITIES.register("laserconnector", () -> BlockEntityType.Builder.of(LaserConnectorBE::new, LaserConnector.get()).build(null));
+    public static final RegistryObject<BlockEntityType<LaserConnectorAdvBE>> LaserConnectorAdv_BE = BLOCK_ENTITIES.register("laserconnectoradv", () -> BlockEntityType.Builder.of(LaserConnectorAdvBE::new, LaserConnectorAdv.get()).build(null));
 
     //Items
     public static final RegistryObject<Item> Laser_Wrench = ITEMS.register("laser_wrench", LaserWrench::new);
     public static final RegistryObject<Item> Card_Holder = ITEMS.register("card_holder", CardHolder::new);
+    public static final RegistryObject<Item> Card_Cloner = ITEMS.register("card_cloner", CardCloner::new);
 
     //Cards
     public static final RegistryObject<Item> Card_Item = ITEMS.register("card_item", CardItem::new);
@@ -83,6 +85,7 @@ public class Registration {
     public static final RegistryObject<Item> Filter_Count = ITEMS.register("filter_count", FilterCount::new);
     public static final RegistryObject<Item> Filter_Tag = ITEMS.register("filter_tag", FilterTag::new);
     public static final RegistryObject<Item> Filter_Mod = ITEMS.register("filter_mod", FilterMod::new);
+    public static final RegistryObject<Item> Filter_NBT = ITEMS.register("filter_nbt", FilterNBT::new);
 
     //Misc
     public static final RegistryObject<Item> Logic_Chip_Raw = ITEMS.register("logic_chip_raw", LogicChipRaw::new);
@@ -109,9 +112,11 @@ public class Registration {
             () -> IForgeMenuType.create((windowId, inv, data) -> new FilterCountContainer(windowId, inv, inv.player, data)));
     public static final RegistryObject<MenuType<FilterTagContainer>> FilterTag_Container = CONTAINERS.register("filtertag",
             () -> IForgeMenuType.create((windowId, inv, data) -> new FilterTagContainer(windowId, inv, inv.player, data)));
+    public static final RegistryObject<MenuType<FilterNBTContainer>> FilterNBT_Container = CONTAINERS.register("filternbt",
+            () -> IForgeMenuType.create((windowId, inv, data) -> new FilterNBTContainer(windowId, inv, inv.player, data)));
 
     // Conveniance function: Take a RegistryObject<Block> and make a corresponding RegistryObject<Item> from it
-    public static <B extends Block> RegistryObject<Item> fromBlock(RegistryObject<B> block) {
+    /*public static <B extends Block> RegistryObject<Item> fromBlock(RegistryObject<B> block) {
         return ITEMS.register(block.getId().getPath(), () -> new BlockItem(block.get(), ITEM_PROPERTIES));
-    }
+    }*/
 }

@@ -31,8 +31,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.network.NetworkHooks;
 
@@ -88,13 +88,18 @@ public class LaserNode extends BaseLaserBlock implements EntityBlock {
             if (be instanceof LaserNodeBE) {
 
                 if (heldItem.getItem() instanceof BaseCard) {
-                    LazyOptional<IItemHandler> itemHandler = be.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, result.getDirection());
+                    LazyOptional<IItemHandler> itemHandler = be.getCapability(ForgeCapabilities.ITEM_HANDLER, result.getDirection());
                     itemHandler.ifPresent(h -> {
                         ItemStack remainingStack = insertItemToNode(h, heldItem, false);
                         player.setItemInHand(InteractionHand.MAIN_HAND, remainingStack);
                     });
                 } else {
-                    be.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, result.getDirection()).ifPresent(h -> {
+                    Direction direction;
+                    if (player.isShiftKeyDown())
+                        direction = result.getDirection().getOpposite();
+                    else
+                        direction = result.getDirection();
+                    be.getCapability(ForgeCapabilities.ITEM_HANDLER, direction).ifPresent(h -> {
                         ItemStack cardHolder = findCardHolders(player);
                         if (!cardHolder.isEmpty()) CardHolder.getUUID(cardHolder);
                         MenuProvider containerProvider = new MenuProvider() {
@@ -105,13 +110,13 @@ public class LaserNode extends BaseLaserBlock implements EntityBlock {
 
                             @Override
                             public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player playerEntity) {
-                                return new LaserNodeContainer((LaserNodeBE) be, windowId, (byte) result.getDirection().ordinal(), playerInventory, playerEntity, (LaserNodeItemHandler) h, ContainerLevelAccess.create(be.getLevel(), be.getBlockPos()), cardHolder);
+                                return new LaserNodeContainer((LaserNodeBE) be, windowId, (byte) direction.ordinal(), playerInventory, playerEntity, (LaserNodeItemHandler) h, ContainerLevelAccess.create(be.getLevel(), be.getBlockPos()), cardHolder);
                             }
                         };
 
                         NetworkHooks.openScreen((ServerPlayer) player, containerProvider, (buf -> {
                             buf.writeBlockPos(pos);
-                            buf.writeByte((byte) result.getDirection().ordinal());
+                            buf.writeByte((byte) direction.ordinal());
                             buf.writeItemStack(cardHolder, false);
                         }));
                     });
@@ -240,7 +245,7 @@ public class LaserNode extends BaseLaserBlock implements EntityBlock {
             BlockEntity tileEntity = worldIn.getBlockEntity(pos);
             if (tileEntity != null) {
                 for (Direction direction : Direction.values()) {
-                    LazyOptional<IItemHandler> cap = tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction);
+                    LazyOptional<IItemHandler> cap = tileEntity.getCapability(ForgeCapabilities.ITEM_HANDLER, direction);
                     cap.ifPresent(handler -> {
                         for (int i = 0; i < handler.getSlots(); ++i) {
                             Containers.dropItemStack(worldIn, pos.getX(), pos.getY(), pos.getZ(), handler.getStackInSlot(i));

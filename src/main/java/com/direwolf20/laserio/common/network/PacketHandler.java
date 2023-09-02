@@ -36,6 +36,8 @@ public class PacketHandler {
         HANDLER.registerMessage(id++, PacketGhostSlot.class, PacketGhostSlot::encode, PacketGhostSlot::decode, PacketGhostSlot.Handler::handle);
         HANDLER.registerMessage(id++, PacketOpenNode.class, PacketOpenNode::encode, PacketOpenNode::decode, PacketOpenNode.Handler::handle);
         HANDLER.registerMessage(id++, PacketUpdateFilterTag.class, PacketUpdateFilterTag::encode, PacketUpdateFilterTag::decode, PacketUpdateFilterTag.Handler::handle);
+        HANDLER.registerMessage(id++, PacketChangeColor.class, PacketChangeColor::encode, PacketChangeColor::decode, PacketChangeColor.Handler::handle);
+        HANDLER.registerMessage(id++, PacketCopyPasteCard.class, PacketCopyPasteCard::encode, PacketCopyPasteCard::decode, PacketCopyPasteCard.Handler::handle);
         //HANDLER.registerMessage(id++, PacketExtractUpgrade.class,     PacketExtractUpgrade::encode,       PacketExtractUpgrade::decode,       PacketExtractUpgrade.Handler::handle);
 
         //Client Side

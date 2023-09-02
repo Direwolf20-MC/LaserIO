@@ -124,7 +124,7 @@ public class CardEnergyContainer extends AbstractContainerMenu {
                     }
                 }
 
-                if (!playerIn.level.isClientSide())
+                if (!playerIn.level().isClientSide())
                     CardEnergy.setInventory(cardItem, handler);
             }
 
@@ -196,7 +196,7 @@ public class CardEnergyContainer extends AbstractContainerMenu {
 
     @Override
     public void removed(Player playerIn) {
-        Level world = playerIn.getLevel();
+        Level world = playerIn.level();
         if (!world.isClientSide) {
             CardEnergy.setInventory(cardItem, handler);
             if (!sourceContainer.equals(BlockPos.ZERO)) {

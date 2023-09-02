@@ -1,5 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
+  "category": "misc",
   "group": "laserio",
   "key": {
     "g": {
@@ -19,5 +20,6 @@
   ],
   "result": {
     "item": "laserio:overclocker_card"
-  }
+  },
+  "show_notification": true
 }

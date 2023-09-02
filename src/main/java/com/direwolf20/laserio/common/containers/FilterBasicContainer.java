@@ -123,7 +123,7 @@ public class FilterBasicContainer extends AbstractContainerMenu {
 
     @Override
     public void removed(Player playerIn) { //Todo see if we can send the player back to their last container screen?
-        Level world = playerIn.getLevel();
+        Level world = playerIn.level();
         if (!world.isClientSide) {
             if (!sourceCard.equals(ItemStack.EMPTY)) { //Workaround to the card not always saving...
                 ItemStack overclockerStack = BaseCard.getInventory(sourceCard).getStackInSlot(1);

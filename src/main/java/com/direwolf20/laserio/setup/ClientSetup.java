@@ -1,11 +1,15 @@
 package com.direwolf20.laserio.setup;
 
+import com.direwolf20.laserio.client.blockentityrenders.LaserConnectorAdvBERender;
 import com.direwolf20.laserio.client.blockentityrenders.LaserConnectorBERender;
 import com.direwolf20.laserio.client.blockentityrenders.LaserNodeBERender;
 import com.direwolf20.laserio.client.events.ClientEvents;
 import com.direwolf20.laserio.client.events.EventTooltip;
 import com.direwolf20.laserio.client.screens.*;
 import com.direwolf20.laserio.common.LaserIO;
+import com.direwolf20.laserio.common.blockentities.LaserConnectorAdvBE;
+import com.direwolf20.laserio.common.blockentities.LaserConnectorBE;
+import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.common.items.cards.CardRedstone;
 import net.minecraft.client.color.item.ItemColors;
@@ -14,6 +18,7 @@ import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FastColor;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.RegisterClientTooltipComponentFactoriesEvent;
@@ -49,6 +54,7 @@ public class ClientSetup {
             MenuScreens.register(Registration.FilterBasic_Container.get(), FilterBasicScreen::new);           // Attach our container to the screen
             MenuScreens.register(Registration.FilterCount_Container.get(), FilterCountScreen::new);           // Attach our container to the screen
             MenuScreens.register(Registration.FilterTag_Container.get(), FilterTagScreen::new);           // Attach our container to the screen
+            MenuScreens.register(Registration.FilterNBT_Container.get(), FilterNBTScreen::new);           // Attach our container to the screen
         });
 
         //Item Properties -- For giving the Cards an Insert/Extract on the itemstack
@@ -83,6 +89,7 @@ public class ClientSetup {
         //Register Block Entity Renders
         event.registerBlockEntityRenderer(Registration.LaserConnector_BE.get(), LaserConnectorBERender::new);
         event.registerBlockEntityRenderer(Registration.LaserNode_BE.get(), LaserNodeBERender::new);
+        event.registerBlockEntityRenderer(Registration.LaserConnectorAdv_BE.get(), LaserConnectorAdvBERender::new);
     }
 
     @SubscribeEvent
@@ -139,7 +146,66 @@ public class ClientSetup {
             }
             return 0xFFFFFFFF;
         }, Registration.Card_Redstone.get());
+        colors.register((stack, index) -> {
+            if (index == 1) {
+                Color color = new Color(255, 0, 0, 255);
+                return color.getRGB();
+            }
+            return 0xFFFFFFFF;
+        }, Registration.LaserNode_ITEM.get());
+        colors.register((stack, index) -> {
+            if (index == 1) {
+                Color color = new Color(255, 0, 0, 255);
+                return color.getRGB();
+            }
+            return 0xFFFFFFFF;
+        }, Registration.LaserConnector_ITEM.get());
+        colors.register((stack, index) -> {
+            if (index == 1) {
+                Color color = new Color(255, 0, 0, 255);
+                return color.getRGB();
+            }
+            return 0xFFFFFFFF;
+        }, Registration.LaserConnectorAdv_ITEM.get());
     }
 
-
+    @SubscribeEvent
+    public static void blockColors(RegisterColorHandlersEvent.Block event) {
+        event.register(
+                (state, env, pos, index) -> {
+                    assert env != null;
+                    assert pos != null;
+                    if (env.getBlockEntity(pos) instanceof LaserNodeBE laserNodeBE) {
+                        Color color = laserNodeBE.getColor();
+                        return FastColor.ARGB32.color(color.getAlpha(), color.getRed(), color.getGreen(), color.getBlue());
+                    }
+                    return FastColor.ARGB32.color(255, 255, 0, 0);
+                },
+                Registration.LaserNode.get()
+        );
+        event.register(
+                (state, env, pos, index) -> {
+                    assert env != null;
+                    assert pos != null;
+                    if (env.getBlockEntity(pos) instanceof LaserConnectorBE laserConnectorBE) {
+                        Color color = laserConnectorBE.getColor();
+                        return FastColor.ARGB32.color(color.getAlpha(), color.getRed(), color.getGreen(), color.getBlue());
+                    }
+                    return FastColor.ARGB32.color(255, 255, 0, 0);
+                },
+                Registration.LaserConnector.get()
+        );
+        event.register(
+                (state, env, pos, index) -> {
+                    assert env != null;
+                    assert pos != null;
+                    if (env.getBlockEntity(pos) instanceof LaserConnectorAdvBE laserConnectorAdvBE) {
+                        Color color = laserConnectorAdvBE.getColor();
+                        return FastColor.ARGB32.color(color.getAlpha(), color.getRed(), color.getGreen(), color.getBlue());
+                    }
+                    return FastColor.ARGB32.color(255, 255, 0, 0);
+                },
+                Registration.LaserConnectorAdv.get()
+        );
+    }
 }

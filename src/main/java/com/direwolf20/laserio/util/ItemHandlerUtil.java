@@ -174,7 +174,7 @@ public class ItemHandlerUtil {
         if (inserterCardCache.filterCard.getItem() instanceof FilterCount) { //If this is a count filter, only try to insert how many more items we need
             int filterCount = inserterCardCache.getFilterAmt(incstack);
             if (filterCount <= 0) return insertResults; //This should never happen in theory...
-            ItemHandlerUtil.InventoryCounts inventoryCounts = new InventoryCounts(source, isCompareNBT);
+            ItemHandlerUtil.InventoryCounts inventoryCounts = new InventoryCounts(source, inserterCardCache.isCompareNBT);
             int amtInInv = inventoryCounts.getCount(remainingStack);
             int amtNeeded = filterCount - amtInInv;
             if (amtNeeded <= 0) return insertResults;
@@ -239,7 +239,7 @@ public class ItemHandlerUtil {
     }
 
     public static boolean doItemsMatch(ItemStack a, ItemStack b, boolean isCompareNBT) {
-        return isCompareNBT ? ItemHandlerHelper.canItemStacksStack(a, b) : a.sameItem(b);
+        return isCompareNBT ? ItemHandlerHelper.canItemStacksStack(a, b) : ItemStack.isSameItem(a, b);
     }
 
     public static boolean areItemsStackable(ItemStack toInsert, ItemStack inSlot) {
@@ -337,7 +337,7 @@ public class ItemHandlerUtil {
         public void setCount(ItemStack stack) {
             if (stack.isEmpty()) return;
             for (ItemStack cacheStack : itemMap.get(stack.getItem())) {
-                boolean sameItems = isCompareNBT ? ItemHandlerHelper.canItemStacksStack(cacheStack, stack) : cacheStack.sameItem(stack);
+                boolean sameItems = isCompareNBT ? ItemHandlerHelper.canItemStacksStack(cacheStack, stack) : ItemStack.isSameItem(cacheStack, stack);
                 if (sameItems) {
                     cacheStack.grow(stack.getCount());
                     totalCount += stack.getCount();
@@ -365,7 +365,7 @@ public class ItemHandlerUtil {
 
         public int getCount(ItemStack stack) {
             for (ItemStack cacheStack : itemMap.get(stack.getItem())) {
-                boolean sameItems = isCompareNBT ? ItemHandlerHelper.canItemStacksStack(cacheStack, stack) : cacheStack.sameItem(stack);
+                boolean sameItems = isCompareNBT ? ItemHandlerHelper.canItemStacksStack(cacheStack, stack) : ItemStack.isSameItem(cacheStack, stack);
                 if (sameItems)
                     return cacheStack.getCount();
             }
