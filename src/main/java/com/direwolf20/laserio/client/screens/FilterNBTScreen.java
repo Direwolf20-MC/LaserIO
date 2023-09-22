@@ -227,7 +227,7 @@ public class FilterNBTScreen extends AbstractContainerScreen<FilterNBTContainer>
 
         ResourceLocation remove = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/remove.png");
         Button removeButton = new IconButton(getGuiLeft() + 135, getGuiTop() + 5, 16, 16, remove, (button) -> {
-            if (selectedSlot != -1) {
+            if (selectedSlot != -1 && !tags.isEmpty()) {
                 tags.remove(displayTags.get(selectedSlot));
                 selectedSlot = -1;
             }
