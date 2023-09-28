@@ -52,10 +52,11 @@ public class LaserIORecipes extends RecipeProvider {
                 .unlockedBy("has_logic_chip", InventoryChangeTrigger.TriggerInstance.hasItems(Registration.Logic_Chip.get()))
                 .save(consumer);
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, Registration.LaserConnectorAdv.get(), 1)
-                .pattern(" g ")
+                .pattern("ede")
                 .pattern("rbr")
                 .pattern("iii")
-                .define('g', Tags.Items.NETHER_STARS)
+                .define('d', Tags.Items.GEMS_DIAMOND)
+                .define('e', Tags.Items.ENDER_PEARLS)
                 .define('i', Tags.Items.INGOTS_GOLD)
                 .define('r', Tags.Items.DUSTS_REDSTONE)
                 .define('b', Registration.LaserConnector_ITEM.get())

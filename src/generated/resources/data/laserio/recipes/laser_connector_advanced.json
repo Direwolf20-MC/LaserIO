@@ -6,8 +6,11 @@
     "b": {
       "item": "laserio:laser_connector"
     },
-    "g": {
-      "tag": "forge:nether_stars"
+    "d": {
+      "tag": "forge:gems/diamond"
+    },
+    "e": {
+      "tag": "forge:ender_pearls"
     },
     "i": {
       "tag": "forge:ingots/gold"
@@ -17,7 +20,7 @@
     }
   },
   "pattern": [
-    " g ",
+    "ede",
     "rbr",
     "iii"
   ],
