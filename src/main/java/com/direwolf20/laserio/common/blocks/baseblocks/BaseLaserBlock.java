@@ -18,6 +18,7 @@ public class BaseLaserBlock extends Block {
                 .sound(SoundType.METAL)
                 .strength(2.0f)
                 .noOcclusion()
+                .forceSolidOn()
         );
     }
 
