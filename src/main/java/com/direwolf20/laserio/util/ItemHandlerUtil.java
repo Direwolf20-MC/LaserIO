@@ -356,7 +356,7 @@ public class ItemHandlerUtil {
                     break;
                 }
             }
-            if (returnStack.equals(ItemStack.EMPTY)) return returnStack;
+            if (returnStack.isEmpty()) return returnStack;
 
             itemMap.get(returnStack.getItem()).removeIf(o -> o.isEmpty());
             totalCount -= returnStack.getCount();

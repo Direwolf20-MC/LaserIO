@@ -13,7 +13,7 @@ public class FilterCountHandler extends FilterBasicHandler {
 
     @Override
     protected void onContentsChanged(int slot) {
-        //if (!stack.equals(ItemStack.EMPTY))
+        //if (!stack.isEmpty())
         //    FilterCount.setInventory(stack, this);
     }
 

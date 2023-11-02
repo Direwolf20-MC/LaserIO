@@ -126,7 +126,7 @@ public class BaseCard extends Item {
      */
     @Override
     public boolean hasCraftingRemainingItem(ItemStack stack) {
-        return !(getInventory(stack).getStackInSlot(0).equals(ItemStack.EMPTY) && getInventory(stack).getStackInSlot(1).equals(ItemStack.EMPTY));
+        return !(getInventory(stack).getStackInSlot(0).isEmpty() && getInventory(stack).getStackInSlot(1).isEmpty());
     }
 
     public static CardItemHandler getInventory(ItemStack stack) {
