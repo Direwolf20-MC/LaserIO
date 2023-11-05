@@ -97,6 +97,7 @@ public class LaserConnectorAdvBE extends BaseLaserBE {
         DimBlockPos partner = getPartnerDimBlockPos();
         if (partner == null) {
             removePartnerConnection();
+            super.validateConnections(originalPos);
             return;
         }
         BlockEntity be = partner.getLevel(getLevel().getServer()).getBlockEntity(partner.blockPos);

@@ -251,8 +251,10 @@ public class BaseLaserBE extends BlockEntity {
             BlockPos connectingPos = getWorldPos(pos);
             BlockEntity be = level.getBlockEntity(connectingPos);
 
-            if (!(be instanceof BaseLaserBE)) {
+            if (!(be instanceof BaseLaserBE baseLaserBE)) {
                 removeNode(getWorldPos(pos)); //Remove that node from this one - since that node is no longer a node, we can't update it. Its abandoned!
+            } else { //Validate that the other side has this connection - it should but just in case
+                baseLaserBE.addNode(getBlockPos());
             }
         }
         for (BaseLaserBE be : connectionsToUpdate)
