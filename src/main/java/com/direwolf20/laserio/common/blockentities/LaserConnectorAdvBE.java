@@ -93,18 +93,29 @@ public class LaserConnectorAdvBE extends BaseLaserBE {
     /** Validates the connections are still valid -- for use if a block is moved **/
     @Override
     public void validateConnections(BlockPos originalPos) {
-        //TODO Handle this for ADV Lasers
+        //If we got here, it means the Adv Laser connector was moved, and so we assume it needs to update its partner
+        DimBlockPos partner = getPartnerDimBlockPos();
+        if (partner == null) {
+            removePartnerConnection();
+            return;
+        }
+        BlockEntity be = partner.getLevel(getLevel().getServer()).getBlockEntity(partner.blockPos);
+        if (be instanceof LaserConnectorAdvBE laserConnectorAdvBE) {
+            addPartnerConnection(partner, laserConnectorAdvBE); //If the partner still exists at the old spot, connect them, else remove
+        } else {
+            removePartnerConnection();
+        }
         super.validateConnections(originalPos);
     }
 
     /** Misc Methods for TE's */
     @Override
     public void load(CompoundTag tag) {
-        super.load(tag);
         if (tag.contains("partnerDimPos"))
             setPartnerDimBlockPos(new DimBlockPos(tag.getCompound("partnerDimPos")));
         else
             setPartnerDimBlockPos(null);
+        super.load(tag);
     }
 
     @Override
