@@ -123,7 +123,7 @@ public class FilterTagContainer extends AbstractContainerMenu {
         Level world = playerIn.level();
         if (!world.isClientSide) {
             handler.setStackInSlot(0, ItemStack.EMPTY); //Clear the current slot
-            if (!sourceCard.equals(ItemStack.EMPTY)) { //Workaround to the card not always saving...
+            if (!sourceCard.isEmpty()) { //Workaround to the card not always saving...
                 ItemStack overclockerStack = BaseCard.getInventory(sourceCard).getStackInSlot(1);
                 CardItemHandler cardHandler = new CardItemHandler(CardItemContainer.SLOTS, sourceCard);
                 cardHandler.setStackInSlot(0, filterItem);
