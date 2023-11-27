@@ -151,11 +151,12 @@ public class PacketCopyPasteCard {
                     playSound(player, Holder.direct(SoundEvent.createVariableRangeEvent(new ResourceLocation(SoundEvents.UI_CARTOGRAPHY_TABLE_TAKE_RESULT.getLocation().toString()))));
                 } else {
                     if (slotStack.getItem().toString().equals(CardCloner.getItemType(clonerStack))) {
+                        var isEnergyCard = slotStack.getItem().toString().equals("card_energy");
                         CardItemHandler cardItemHandler = BaseCard.getInventory(slotStack);
-                        ItemStack filterNeeded = CardCloner.getFilter(clonerStack);
-                        ItemStack existingFilter = cardItemHandler.getStackInSlot(0);
-                        ItemStack overclockersNeeded = CardCloner.getOverclocker(clonerStack);
-                        ItemStack existingOverclockers = cardItemHandler.getStackInSlot(1);
+                        ItemStack filterNeeded = isEnergyCard ? ItemStack.EMPTY : CardCloner.getFilter(clonerStack);
+                        ItemStack existingFilter = isEnergyCard ? ItemStack.EMPTY : cardItemHandler.getStackInSlot(0);
+                        ItemStack overclockersNeeded = CardCloner.getOverclocker(clonerStack, isEnergyCard ? 0 : 1);
+                        ItemStack existingOverclockers = cardItemHandler.getStackInSlot(isEnergyCard ? 0 : 1);
                         boolean filterSatisfied = false;
                         boolean filterNeedsReturn = false;
                         boolean overclockSatisfied = false;
@@ -194,8 +195,8 @@ public class PacketCopyPasteCard {
                                 }
                                 getItemFromHolder(laserNodeContainer, filterNeeded, false);
                             }
-                            if (existingOverclockers.getCount() != overclockersNeeded.getCount()) { //If we need to work with Overclockers
-                                if (existingOverclockers.getCount() > overclockersNeeded.getCount()) { //If we have too many overclockers
+                            if (existingOverclockers.getCount() != overclockersNeeded.getCount()) { // If we need to work with Overclockers
+                                if (existingOverclockers.getCount() > overclockersNeeded.getCount()) { // If we have too many overclockers
                                     int amtReturn = existingOverclockers.getCount() - overclockersNeeded.getCount();
                                     ItemStack returnStack = new ItemStack(existingOverclockers.getItem(), amtReturn);
                                     boolean success = returnItemToholder(laserNodeContainer, returnStack, false);
