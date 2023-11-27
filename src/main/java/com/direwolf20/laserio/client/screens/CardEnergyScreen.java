@@ -76,11 +76,6 @@ public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContaine
     }
 
     @Override
-    protected void renderLabels(GuiGraphics guiGraphics, int mouseX, int mouseY) {
-
-    }
-
-    @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
         validateHolder();
         this.renderBackground(guiGraphics);
@@ -462,6 +457,11 @@ public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContaine
         return card.getItem() instanceof BaseCard && BaseCard.getNamedTransferMode(card) == BaseCard.TransferMode.EXTRACT;
     }
 
+    @Override
+    protected void renderLabels(GuiGraphics guiGraphics, int mouseX, int mouseY) {
+
+    }
+
     private boolean showExtractLimit() {
         return card.getItem() instanceof BaseCard && BaseCard.getNamedTransferMode(card) == BaseCard.TransferMode.EXTRACT;
     }
@@ -472,6 +472,11 @@ public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContaine
         int relX = (this.width - this.imageWidth) / 2;
         int relY = (this.height - this.imageHeight) / 2;
         guiGraphics.blit(GUI, relX, relY, 0, 0, this.imageWidth, this.imageHeight);
+        if (showCardHolderUI) {
+            ResourceLocation CardHolderGUI = new ResourceLocation(LaserIO.MODID, "textures/gui/cardholder_node.png");
+            RenderSystem.setShaderTexture(0, CardHolderGUI);
+            guiGraphics.blit(CardHolderGUI, getGuiLeft() - 100, getGuiTop() + 24, 0, 0, this.imageWidth, this.imageHeight);
+        }
     }
 
     @Override
