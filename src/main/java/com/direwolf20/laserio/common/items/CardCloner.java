@@ -86,16 +86,19 @@ public class CardCloner extends Item {
             toWrite.append(tooltipMaker(String.valueOf(channel), LaserNodeBERender.colors[channel].getRGB()));
             tooltip.add(toWrite);
 
-            toWrite = tooltipMaker("laserio.tooltip.item.card.Filter", ChatFormatting.GRAY.getColor());
-            ItemStack filterStack = getFilter(stack);
-            if (filterStack.isEmpty())
-                toWrite.append(tooltipMaker("laserio.tooltip.item.card.None", ChatFormatting.WHITE.getColor()));
-            else
-                toWrite.append(tooltipMaker("item.laserio." + filterStack.getItem(), ChatFormatting.DARK_AQUA.getColor()));
-            tooltip.add(toWrite);
+            if (!cardType.equals("card_energy")) {
+                toWrite = tooltipMaker("laserio.tooltip.item.card.Filter", ChatFormatting.GRAY.getColor());
+                ItemStack filterStack = getFilter(stack);
+                if (filterStack.isEmpty())
+                    toWrite.append(tooltipMaker("laserio.tooltip.item.card.None", ChatFormatting.WHITE.getColor()));
+                else
+                    toWrite.append(tooltipMaker("item.laserio." + filterStack.getItem(), ChatFormatting.DARK_AQUA.getColor()));
+                tooltip.add(toWrite);
+            }
 
+            var overclockerSlot = cardType.equals("card_energy")? 0 : 1;
             toWrite = tooltipMaker("laserio.tooltip.item.card.Overclockers", ChatFormatting.GRAY.getColor());
-            ItemStack overclockStack = getOverclocker(stack);
+            ItemStack overclockStack = getOverclocker(stack, overclockerSlot);
             if (overclockStack.isEmpty())
                 toWrite.append(tooltipMaker(String.valueOf(0), ChatFormatting.WHITE.getColor()));
             else
@@ -138,21 +141,21 @@ public class CardCloner extends Item {
         return filterStack;
     }
 
-    public static int getOverclockCount(ItemStack stack) {
+    public static int getOverclockCount(ItemStack stack, int slot) {
         CompoundTag compoundTag = getSettings(stack);
         ItemStackHandler itemStackHandler = new ItemStackHandler(CardItemContainer.SLOTS);
         itemStackHandler.deserializeNBT(compoundTag.getCompound("inv"));
-        ItemStack overclockStack = itemStackHandler.getStackInSlot(1);
+        ItemStack overclockStack = itemStackHandler.getStackInSlot(slot);
         if (overclockStack.isEmpty()) return 0;
 
         return overclockStack.getCount();
     }
 
-    public static ItemStack getOverclocker(ItemStack stack) {
+    public static ItemStack getOverclocker(ItemStack stack, int slot) {
         CompoundTag compoundTag = getSettings(stack);
         ItemStackHandler itemStackHandler = new ItemStackHandler(CardItemContainer.SLOTS);
         itemStackHandler.deserializeNBT(compoundTag.getCompound("inv"));
-        ItemStack overclockStack = itemStackHandler.getStackInSlot(1);
+        ItemStack overclockStack = itemStackHandler.getStackInSlot(slot);
         return overclockStack;
     }
 }
