@@ -698,15 +698,27 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
         ItemStack slotStack = hoveredSlot.getItem();
         if (slotStack.isEmpty()) return true;
         if (btn == 2) { //Todo IMC Inventory Sorter so this works
-            slotStack.setCount(0);
-            PacketHandler.sendToServer(new PacketGhostSlot(hoveredSlot.index, slotStack, slotStack.getCount()));
+            if (Screen.hasShiftDown()) {
+                minecraft.setScreen(
+                        new SpecifyQuantityScreen(
+                                this,
+                                minecraft.player,
+                                hoveredSlot,
+                                slotStack,
+                                slotStack.getCount(),
+                                false
+                        )
+                );
+            } else {
+                slotStack.setCount(0);
+                PacketHandler.sendToServer(new PacketGhostSlot(hoveredSlot.index, slotStack, slotStack.getCount()));
+            }
             return true;
         }
         int amt = (btn == 0) ? 1 : -1;
         if (Screen.hasShiftDown()) amt *= 10;
         if (Screen.hasControlDown()) amt *= 64;
         if (amt + slotStack.getCount() > 4096) amt = 4096 - slotStack.getCount();
-
 
         PacketHandler.sendToServer(new PacketGhostSlot(hoveredSlot.index, slotStack, slotStack.getCount() + amt));
         return true;

@@ -94,14 +94,29 @@ public class CardFluidScreen extends CardItemScreen {
         if (!FilterCount.doesItemStackHoldFluids(slotStack))
             return super.filterSlot(btn);
         if (slotStack.isEmpty()) return true;
+
+        int filterSlot = hoveredSlot.index - CardItemContainer.SLOTS;
+        int currentMBAmt = FilterCount.getSlotAmount(filter, filterSlot);
+
         if (btn == 2) { //Todo IMC Inventory Sorter so this works
-            slotStack.setCount(0);
-            PacketHandler.sendToServer(new PacketGhostSlot(hoveredSlot.index, slotStack, slotStack.getCount(), 0));
+            if (Screen.hasShiftDown()) {
+                minecraft.setScreen(
+                        new SpecifyQuantityScreen(
+                                this,
+                                minecraft.player,
+                                hoveredSlot,
+                                slotStack,
+                                currentMBAmt,
+                                true
+                        )
+                );
+            } else {
+                slotStack.setCount(0);
+                PacketHandler.sendToServer(new PacketGhostSlot(hoveredSlot.index, slotStack, slotStack.getCount(), 0));
+            }
             return true;
         }
         int amt = (btn == 0) ? 1 : -1;
-        int filterSlot = hoveredSlot.index - CardItemContainer.SLOTS;
-        int currentMBAmt = FilterCount.getSlotAmount(filter, filterSlot);
         if (Screen.hasShiftDown()) amt *= 10;
         if (Screen.hasControlDown()) amt *= 100;
         int newMBAmt = currentMBAmt + amt;
