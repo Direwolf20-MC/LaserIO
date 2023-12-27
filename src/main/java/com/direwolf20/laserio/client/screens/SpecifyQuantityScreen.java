@@ -180,11 +180,6 @@ public class SpecifyQuantityScreen extends AbstractContainerScreen<SpecifyQuanti
         guiGraphics.blit(GUI, relX, relY, 0, 0, this.imageWidth, this.imageHeight);
     }
 
-    @Override
-    public boolean isPauseScreen() {
-        return false;
-    }
-
     public void close() {
         if (minecraft != null)
             minecraft.setScreen(parent);
