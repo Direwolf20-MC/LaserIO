@@ -673,6 +673,14 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
+        if (hoveredSlot == null)
+            return super.mouseScrolled(mouseX, mouseY, delta);
+        if (hoveredSlot instanceof FilterBasicSlot) {
+            if (filter.getItem() instanceof FilterCount) {
+                filterSlot(delta == 1d ? 0 : -1); //This just matches the logic of buttonClick where button 0 is +1 and any other button is -1
+                return true;
+            }
+        }
         return super.mouseScrolled(mouseX, mouseY, delta);
     }
 

@@ -129,6 +129,11 @@ public class CardFluidScreen extends CardItemScreen {
     }
 
     @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
+        return super.mouseScrolled(mouseX, mouseY, delta);
+    }
+
+    @Override
     public void saveSettings() {
         if (showFilter)
             PacketHandler.sendToServer(new PacketUpdateFilter(isAllowList == 1, isCompareNBT == 1));
