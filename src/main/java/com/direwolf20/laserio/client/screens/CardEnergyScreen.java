@@ -91,7 +91,8 @@ public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContaine
         }
         Button channelButton = buttons.get("channel");
         if (MiscTools.inBounds(channelButton.getX(), channelButton.getY(), channelButton.getWidth(), channelButton.getHeight(), mouseX, mouseY)) {
-            guiGraphics.renderTooltip(font, Component.translatable("screen.laserio.channel").append(String.valueOf(currentChannel)), mouseX, mouseY);
+            if (currentMode != 3)
+                guiGraphics.renderTooltip(font, Component.translatable("screen.laserio.channel").append(String.valueOf(currentChannel)), mouseX, mouseY);
         }
         Button redstoneChannelButton = buttons.get("redstoneChannel");
         if (MiscTools.inBounds(redstoneChannelButton.getX(), redstoneChannelButton.getY(), redstoneChannelButton.getWidth(), redstoneChannelButton.getHeight(), mouseX, mouseY)) {
@@ -504,7 +505,7 @@ public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContaine
     @Override
     public boolean mouseClicked(double x, double y, int btn) {
         ChannelButton channelButton = ((ChannelButton) buttons.get("channel"));
-        if (MiscTools.inBounds(channelButton.getX(), channelButton.getY(), channelButton.getWidth(), channelButton.getHeight(), x, y)) {
+        if ((currentMode != 3) && MiscTools.inBounds(channelButton.getX(), channelButton.getY(), channelButton.getWidth(), channelButton.getHeight(), x, y)) {
             if (btn == 0)
                 currentChannel = BaseCard.nextChannel(card);
             else if (btn == 1)
