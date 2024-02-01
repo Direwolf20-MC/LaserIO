@@ -149,10 +149,15 @@ public class CardCloner extends Item {
     }
 
     public static ItemStack getOverclocker(ItemStack stack) {
+        String cardType = getItemType(stack);
         CompoundTag compoundTag = getSettings(stack);
         ItemStackHandler itemStackHandler = new ItemStackHandler(CardItemContainer.SLOTS);
         itemStackHandler.deserializeNBT(compoundTag.getCompound("inv"));
-        ItemStack overclockStack = itemStackHandler.getStackInSlot(1);
+        ItemStack overclockStack;
+        if (cardType.equals("card_energy"))
+            overclockStack = itemStackHandler.getStackInSlot(0);
+        else
+            overclockStack = itemStackHandler.getStackInSlot(1);
         return overclockStack;
     }
 }
