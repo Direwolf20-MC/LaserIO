@@ -724,7 +724,9 @@ public class LaserNodeBE extends BaseLaserBE {
             boolean allMatched = true;
             for (ItemStack itemStack : filteredItemsList) { //Remove all the items from the list that we already have enough of
                 int amtHad = inventoryCounts.getCount(itemStack);
-                if (amtHad < itemStack.getCount() || (sensorCardCache.exact && amtHad > itemStack.getCount())) {
+                if ((amtHad >= itemStack.getCount() && (sensorCardCache.sensorMode == BaseCard.SensorMode.LESS_THAN)) ||
+                        (amtHad <= itemStack.getCount() && (sensorCardCache.sensorMode == BaseCard.SensorMode.GREATER_THAN)) ||
+                        ((sensorCardCache.exact || sensorCardCache.sensorMode == BaseCard.SensorMode.EQUAL_TO) && amtHad != itemStack.getCount())) {
                     if (andMode) {
                         allMatched = false;
                         break;
@@ -827,11 +829,15 @@ public class LaserNodeBE extends BaseLaserBE {
             outloop:
             for (FluidStack fluidStack : filteredFluidsOriginal) {
                 int desiredAmt = sensorCardCache.getFilterAmt(fluidStack);
+                boolean fluidFound = false;
                 for (int tank = 0; tank < adacentTank.getTanks(); tank++) { //Loop through all the tanks
                     FluidStack stackInTank = adacentTank.getFluidInTank(tank);
                     if (stackInTank.isFluidEqual(fluidStack)) {
+                        fluidFound = true;
                         int amtHad = stackInTank.getAmount();
-                        if (amtHad < desiredAmt || (sensorCardCache.exact && amtHad > desiredAmt)) {
+                        if ((amtHad >= desiredAmt && (sensorCardCache.sensorMode == BaseCard.SensorMode.LESS_THAN)) ||
+                                (amtHad <= desiredAmt && (sensorCardCache.sensorMode == BaseCard.SensorMode.GREATER_THAN)) ||
+                                ((sensorCardCache.exact || sensorCardCache.sensorMode == BaseCard.SensorMode.EQUAL_TO) && amtHad != desiredAmt)) {
                             //noOp
                         } else {
                             filteredFluids.remove(fluidStack);
@@ -840,6 +846,10 @@ public class LaserNodeBE extends BaseLaserBE {
                             }
                         }
                     }
+                }
+                // handle empty tank scenario for less than
+                if (!fluidFound && sensorCardCache.sensorMode == BaseCard.SensorMode.LESS_THAN) {
+                    filteredFluids.remove(fluidStack);
                 }
             }
             if (andMode)
