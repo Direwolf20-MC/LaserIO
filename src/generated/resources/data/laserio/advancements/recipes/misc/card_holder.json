@@ -22,14 +22,13 @@
   },
   "requirements": [
     [
-      "has_logic_chip",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_logic_chip"
     ]
   ],
   "rewards": {
     "recipes": [
       "laserio:card_holder"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

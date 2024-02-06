@@ -22,14 +22,13 @@
   },
   "requirements": [
     [
-      "has_raw_chip",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_raw_chip"
     ]
   ],
   "rewards": {
     "recipes": [
       "laserio:logic_chip"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

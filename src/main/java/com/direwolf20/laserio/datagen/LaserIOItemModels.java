@@ -3,8 +3,9 @@ package com.direwolf20.laserio.datagen;
 import com.direwolf20.laserio.common.LaserIO;
 import com.direwolf20.laserio.setup.Registration;
 import net.minecraft.data.PackOutput;
-import net.minecraftforge.client.model.generators.ItemModelProvider;
-import net.minecraftforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.client.model.generators.ItemModelProvider;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
+
 
 public class LaserIOItemModels extends ItemModelProvider {
     public LaserIOItemModels(PackOutput output, ExistingFileHelper existingFileHelper) {

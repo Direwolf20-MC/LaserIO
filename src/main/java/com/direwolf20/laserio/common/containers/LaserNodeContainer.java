@@ -18,11 +18,11 @@ import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemStackHandler;
-import net.minecraftforge.items.SlotItemHandler;
-import net.minecraftforge.items.wrapper.InvWrapper;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemStackHandler;
+import net.neoforged.neoforge.items.SlotItemHandler;
+import net.neoforged.neoforge.items.wrapper.InvWrapper;
 
 import javax.annotation.Nullable;
 import java.util.UUID;
@@ -59,7 +59,8 @@ public class LaserNodeContainer extends AbstractContainerMenu {
         }
         this.cardHolder = cardHolder;
 
-        this.cardHolderHandler = cardHolder.getCapability(ForgeCapabilities.ITEM_HANDLER, null).orElse(new ItemStackHandler(CardHolderContainer.SLOTS));
+        this.cardHolderHandler = cardHolder.getCapability(Capabilities.ItemHandler.ITEM, null);
+        if (cardHolderHandler == null) cardHolderHandler = new ItemStackHandler(CardHolderContainer.SLOTS);
         addSlotBox(cardHolderHandler, 0, -92, 32, 5, 18, 3, 18);
         cardHolderUUID = CardHolder.getUUID(cardHolder);
 
@@ -206,7 +207,7 @@ public class LaserNodeContainer extends AbstractContainerMenu {
             else
                 stackToMove = stack;
             //Try to move 1 card to the node slots first, failing that, to the inventory!
-            if (this.moveItemStackTo(stackToMove, 0, CARDSLOTS+1, false)) {
+            if (this.moveItemStackTo(stackToMove, 0, CARDSLOTS + 1, false)) {
                 return ItemStack.EMPTY;
             } else if (this.moveItemStackTo(stackToMove, SLOTS, 36 + SLOTS, true)) {
                 return ItemStack.EMPTY;

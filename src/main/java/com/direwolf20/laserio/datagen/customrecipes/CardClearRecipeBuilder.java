@@ -1,113 +1,119 @@
 package com.direwolf20.laserio.datagen.customrecipes;
 
-import com.direwolf20.laserio.setup.Registration;
-import com.google.common.collect.Lists;
 import net.minecraft.advancements.Advancement;
+import net.minecraft.advancements.AdvancementRequirements;
 import net.minecraft.advancements.AdvancementRewards;
-import net.minecraft.advancements.CriterionTriggerInstance;
-import net.minecraft.advancements.RequirementsStrategy;
+import net.minecraft.advancements.Criterion;
 import net.minecraft.advancements.critereon.RecipeUnlockedTrigger;
-import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.core.NonNullList;
 import net.minecraft.data.recipes.RecipeBuilder;
-import net.minecraft.data.recipes.ShapelessRecipeBuilder;
+import net.minecraft.data.recipes.RecipeCategory;
+import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.crafting.CraftingBookCategory;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.ItemLike;
 
 import javax.annotation.Nullable;
-import java.util.List;
-import java.util.function.Consumer;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Objects;
+
 
 public class CardClearRecipeBuilder implements RecipeBuilder {
+    private final RecipeCategory category;
     private final Item result;
     private final int count;
-    private final List<Ingredient> ingredients = Lists.newArrayList();
-    private final Advancement.Builder advancement = Advancement.Builder.advancement();
+    private final ItemStack resultStack; // Neo: add stack result support
+    private final NonNullList<Ingredient> ingredients = NonNullList.create();
+    private final Map<String, Criterion<?>> criteria = new LinkedHashMap<>();
     @Nullable
     private String group;
 
-    public CardClearRecipeBuilder(ItemLike result, int count) {
-        this.result = result.asItem();
-        this.count = count;
+    public CardClearRecipeBuilder(RecipeCategory pCategory, ItemLike pResult, int pCount) {
+        this(pCategory, new ItemStack(pResult, pCount));
     }
 
-    public static CardClearRecipeBuilder shapeless(ItemLike p_126190_) {
-        return new CardClearRecipeBuilder(p_126190_, 1);
+    public CardClearRecipeBuilder(RecipeCategory p_250837_, ItemStack result) {
+        this.category = p_250837_;
+        this.result = result.getItem();
+        this.count = result.getCount();
+        this.resultStack = result;
     }
 
-    public static CardClearRecipeBuilder shapeless(ItemLike p_126192_, int p_126193_) {
-        return new CardClearRecipeBuilder(p_126192_, p_126193_);
+    public static CardClearRecipeBuilder shapeless(ItemLike pResult) {
+        return new CardClearRecipeBuilder(RecipeCategory.MISC, pResult, 1);
     }
 
-    public CardClearRecipeBuilder requires(TagKey<Item> p_206420_) {
-        return this.requires(Ingredient.of(p_206420_));
+    public static CardClearRecipeBuilder shapeless(RecipeCategory pCategory, ItemStack result) {
+        return new CardClearRecipeBuilder(pCategory, result);
     }
 
-    public CardClearRecipeBuilder requires(ItemLike p_126210_) {
-        return this.requires(p_126210_, 1);
+    public CardClearRecipeBuilder requires(TagKey<Item> pTag) {
+        return this.requires(Ingredient.of(pTag));
     }
 
-    public CardClearRecipeBuilder requires(ItemLike p_126212_, int p_126213_) {
-        for (int i = 0; i < p_126213_; ++i) {
-            this.requires(Ingredient.of(p_126212_));
+    public CardClearRecipeBuilder requires(ItemLike pItem) {
+        return this.requires(pItem, 1);
+    }
+
+    public CardClearRecipeBuilder requires(ItemLike pItem, int pQuantity) {
+        for (int i = 0; i < pQuantity; ++i) {
+            this.requires(Ingredient.of(pItem));
         }
 
         return this;
     }
 
-    public CardClearRecipeBuilder requires(Ingredient p_126185_) {
-        return this.requires(p_126185_, 1);
+    public CardClearRecipeBuilder requires(Ingredient pIngredient) {
+        return this.requires(pIngredient, 1);
     }
 
-    public CardClearRecipeBuilder requires(Ingredient p_126187_, int p_126188_) {
-        for (int i = 0; i < p_126188_; ++i) {
-            this.ingredients.add(p_126187_);
+    public CardClearRecipeBuilder requires(Ingredient pIngredient, int pQuantity) {
+        for (int i = 0; i < pQuantity; ++i) {
+            this.ingredients.add(pIngredient);
         }
 
         return this;
     }
 
-    public CardClearRecipeBuilder unlockedBy(String p_126197_, CriterionTriggerInstance p_126198_) {
-        this.advancement.addCriterion(p_126197_, p_126198_);
+    public CardClearRecipeBuilder unlockedBy(String pName, Criterion<?> pCriterion) {
+        this.criteria.put(pName, pCriterion);
         return this;
     }
 
-    public CardClearRecipeBuilder group(@Nullable String p_126195_) {
-        this.group = p_126195_;
+    public CardClearRecipeBuilder group(@Nullable String pGroupName) {
+        this.group = pGroupName;
         return this;
     }
 
+    @Override
     public Item getResult() {
         return this.result;
     }
 
-    public void save(Consumer<FinishedRecipe> p_126205_, ResourceLocation p_126206_) {
-        this.ensureValid(p_126206_);
-        this.advancement.parent(new ResourceLocation("recipes/root")).addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(p_126206_)).rewards(AdvancementRewards.Builder.recipe(p_126206_)).requirements(RequirementsStrategy.OR);
-        String folder = ""; //Todo Check this?
-        p_126205_.accept(new CardClearRecipeBuilder.Result(p_126206_, this.result, this.count, this.group == null ? "" : this.group, this.ingredients, this.advancement, new ResourceLocation(p_126206_.getNamespace(), "recipes/" + folder + "/" + p_126206_.getPath())));
+    @Override
+    public void save(RecipeOutput pRecipeOutput, ResourceLocation pId) {
+        this.ensureValid(pId);
+        Advancement.Builder advancement$builder = pRecipeOutput.advancement()
+                .addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(pId))
+                .rewards(AdvancementRewards.Builder.recipe(pId))
+                .requirements(AdvancementRequirements.Strategy.OR);
+        this.criteria.forEach(advancement$builder::addCriterion);
+        CardClearRecipe shapelessrecipe = new CardClearRecipe(
+                Objects.requireNonNullElse(this.group, ""),
+                RecipeBuilder.determineBookCategory(this.category),
+                this.resultStack,
+                this.ingredients
+        );
+        pRecipeOutput.accept(pId, shapelessrecipe, advancement$builder.build(pId.withPrefix("recipes/" + this.category.getFolderName() + "/")));
     }
 
-    private void ensureValid(ResourceLocation p_126208_) {
-        if (this.advancement.getCriteria().isEmpty()) {
-            throw new IllegalStateException("No way of obtaining recipe " + p_126208_);
+    private void ensureValid(ResourceLocation pId) {
+        if (this.criteria.isEmpty()) {
+            throw new IllegalStateException("No way of obtaining recipe " + pId);
         }
-    }
-
-    public static class Result extends ShapelessRecipeBuilder.Result {
-
-        public Result(ResourceLocation resourceLocation, Item result, int count, String group, List<Ingredient> ingredients, Advancement.Builder advancement, ResourceLocation advancementId) {
-            super(resourceLocation, result, count, group, CraftingBookCategory.MISC, ingredients, advancement, advancementId);
-        }
-
-        @Override
-        public RecipeSerializer<?> getType() {
-            return Registration.CARD_CLEAR_RECIPE_SERIALIZER.get();
-        }
-
     }
 }

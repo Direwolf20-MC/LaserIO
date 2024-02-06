@@ -22,14 +22,13 @@
   },
   "requirements": [
     [
-      "has_filter_tag",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_filter_tag"
     ]
   ],
   "rewards": {
     "recipes": [
       "laserio:filter_tag_nbtclear"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

@@ -1,14 +1,17 @@
 package com.direwolf20.laserio.common;
 
+import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
+import com.direwolf20.laserio.common.items.CardHolder;
+import com.direwolf20.laserio.common.network.PacketHandler;
 import com.direwolf20.laserio.setup.ClientSetup;
 import com.direwolf20.laserio.setup.ModSetup;
 import com.direwolf20.laserio.setup.Registration;
 import com.mojang.logging.LogUtils;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.loading.FMLLoader;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import org.slf4j.Logger;
 
 // The value here should match an entry in the META-INF/mods.toml file
@@ -18,11 +21,10 @@ public class LaserIO {
     private static final Logger LOGGER = LogUtils.getLogger();
     public static final String MODID = "laserio";
 
-    public LaserIO() {
+    public LaserIO(IEventBus eventBus) {
         // Register the deferred registry
-        Registration.init();
+        Registration.init(eventBus);
         // Register the setup method for modloading
-        IEventBus modbus = FMLJavaModLoadingContext.get().getModEventBus();
         // Register the enqueueIMC method for modloading
         //FMLJavaModLoadingContext.get().getModEventBus().addListener(this::enqueueIMC);
         // Register the processIMC method for modloading
@@ -31,11 +33,30 @@ public class LaserIO {
         // Register ourselves for server and other game events we are interested in
         //MinecraftForge.EVENT_BUS.register(this);
         // Register 'ModSetup::init' to be called at mod setup time (server and client)
-        modbus.addListener(ModSetup::init);
-        ModSetup.TABS.register(modbus);
+        eventBus.addListener(ModSetup::init);
+        ModSetup.TABS.register(eventBus);
+        eventBus.addListener(this::registerCapabilities);
+        eventBus.addListener(PacketHandler::registerNetworking);
         //modbus.addGenericListener(RecipeSerializer.class, this::registerRecipeSerializers);
         // Register 'ClientSetup::init' to be called at mod setup time (client only)
-        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> modbus.addListener(ClientSetup::init));
+        if (FMLLoader.getDist().isClient()) {
+            eventBus.addListener(ClientSetup::init);
+        }
+    }
+
+    private void registerCapabilities(RegisterCapabilitiesEvent event) {
+        event.registerBlock(Capabilities.ItemHandler.BLOCK,
+                (level, pos, state, be, side) -> ((LaserNodeBE) be).nodeSideCaches[side.ordinal()].itemHandler,
+                // blocks to register for
+                Registration.LaserNode.get());
+        //TODO PORT -- Register and fix Card Holder
+        event.registerItem(Capabilities.ItemHandler.ITEM, (itemStack, context) -> {
+                    if (itemStack.getItem() instanceof CardHolder holder)
+                        return holder.getItemHandler(itemStack);
+                    return null;
+                },
+                Registration.Card_Holder.get()
+        );
     }
 
     /*public void registerRecipeSerializers(RegistryEvent.Register<RecipeSerializer<?>> event) {

@@ -9,9 +9,8 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.items.ItemStackHandler;
-import net.minecraftforge.items.wrapper.InvWrapper;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.items.wrapper.InvWrapper;
 
 import static com.direwolf20.laserio.common.blocks.LaserNode.findCardHolders;
 
@@ -37,7 +36,7 @@ public class CardFluidContainer extends CardItemContainer {
         }
         cardHolder = findCardHolders(player);
         if (!cardHolder.isEmpty()) {
-            this.cardHolderHandler = cardHolder.getCapability(ForgeCapabilities.ITEM_HANDLER, null).orElse(new ItemStackHandler(CardHolderContainer.SLOTS));
+            this.cardHolderHandler = cardHolder.getCapability(Capabilities.ItemHandler.ITEM, null);
             addSlotBox(cardHolderHandler, 0, -92, 32, 5, 18, 3, 18);
             cardHolderUUID = CardHolder.getUUID(cardHolder);
         }

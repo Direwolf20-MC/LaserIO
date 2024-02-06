@@ -16,10 +16,11 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemHandlerHelper;
-import net.minecraftforge.items.SlotItemHandler;
-import net.minecraftforge.items.wrapper.InvWrapper;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.items.SlotItemHandler;
+import net.neoforged.neoforge.items.wrapper.InvWrapper;
+
 
 public class FilterBasicContainer extends AbstractContainerMenu {
     public static final int SLOTS = 15;
@@ -80,7 +81,7 @@ public class FilterBasicContainer extends AbstractContainerMenu {
             //Only do this if we click from the players inventory
             if (index >= SLOTS) {
                 for (int i = 0; i < SLOTS; i++) { //Prevents the same item from going in there more than once.
-                    if (this.slots.get(i).getItem().equals(currentStack, false)) //Don't limit tags
+                    if (ItemStack.isSameItemSameTags(this.slots.get(i).getItem(), currentStack)) //Don't limit tags
                         return ItemStack.EMPTY;
                 }
                 if (!this.moveItemStackTo(currentStack, 0, SLOTS, false)) {

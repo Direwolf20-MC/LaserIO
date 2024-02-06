@@ -6,9 +6,8 @@ import com.direwolf20.laserio.common.containers.FilterBasicContainer;
 import com.direwolf20.laserio.common.containers.customslot.FilterBasicSlot;
 import com.direwolf20.laserio.common.items.filters.FilterBasic;
 import com.direwolf20.laserio.common.items.filters.FilterMod;
-import com.direwolf20.laserio.common.network.PacketHandler;
-import com.direwolf20.laserio.common.network.packets.PacketGhostSlot;
-import com.direwolf20.laserio.common.network.packets.PacketUpdateFilter;
+import com.direwolf20.laserio.common.network.data.GhostSlotPayload;
+import com.direwolf20.laserio.common.network.data.UpdateFilterPayload;
 import com.direwolf20.laserio.util.MiscTools;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -20,7 +19,8 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +41,7 @@ public class FilterBasicScreen extends AbstractContainerScreen<FilterBasicContai
 
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
-        this.renderBackground(guiGraphics);
+        //this.renderBackground(guiGraphics);
         super.render(guiGraphics, mouseX, mouseY, partialTicks);
         this.renderTooltip(guiGraphics, mouseX, mouseY);
         if (MiscTools.inBounds(getGuiLeft() + 5, getGuiTop() + 10, 16, 16, mouseX, mouseY)) {
@@ -117,7 +117,7 @@ public class FilterBasicScreen extends AbstractContainerScreen<FilterBasicContai
 
     @Override
     public void onClose() {
-        PacketHandler.sendToServer(new PacketUpdateFilter(isAllowList, isCompareNBT));
+        PacketDistributor.SERVER.noArg().send(new UpdateFilterPayload(isAllowList, isCompareNBT));
         super.onClose();
     }
 
@@ -143,7 +143,7 @@ public class FilterBasicScreen extends AbstractContainerScreen<FilterBasicContai
         stack = stack.copy().split(hoveredSlot.getMaxStackSize()); // Limit to slot limit
         if (ItemHandlerHelper.canItemStacksStack(stack, container.filterItem)) return true;
         hoveredSlot.set(stack); // Temporarily update the client for continuity purposes
-        PacketHandler.sendToServer(new PacketGhostSlot(hoveredSlot.index, stack, stack.getCount()));
+        PacketDistributor.SERVER.noArg().send(new GhostSlotPayload(hoveredSlot.index, stack, stack.getCount(), -1));
 
         return true;
     }
@@ -153,8 +153,8 @@ public class FilterBasicScreen extends AbstractContainerScreen<FilterBasicContai
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
-        return super.mouseScrolled(mouseX, mouseY, delta);
+    public boolean mouseScrolled(double mouseX, double mouseY, double pScrollX, double pScrollY) {
+        return super.mouseScrolled(mouseX, mouseY, pScrollX, pScrollY);
     }
 
     private static MutableComponent getTrans(String key, Object... args) {

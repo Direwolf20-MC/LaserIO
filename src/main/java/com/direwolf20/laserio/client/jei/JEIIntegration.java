@@ -19,6 +19,7 @@ import mezz.jei.api.runtime.IJeiRuntime;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.CraftingRecipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
 
 import javax.annotation.Nonnull;
@@ -38,16 +39,16 @@ public class JEIIntegration implements IModPlugin {
     public void onRuntimeAvailable(IJeiRuntime jeiRuntime) {
         IRecipeManager recipeRegistry = jeiRuntime.getRecipeManager();
         RecipeManager recipeManager = Minecraft.getInstance().level.getRecipeManager();
-        List<CraftingRecipe> hiddenRecipes = new ArrayList<>();
-        hiddenRecipes.add((CraftingRecipe) recipeManager.byKey(new ResourceLocation(Registration.Card_Item.getId() + "_nbtclear")).get());
-        hiddenRecipes.add((CraftingRecipe) recipeManager.byKey(new ResourceLocation(Registration.Card_Fluid.getId() + "_nbtclear")).get());
-        hiddenRecipes.add((CraftingRecipe) recipeManager.byKey(new ResourceLocation(Registration.Card_Energy.getId() + "_nbtclear")).get());
-        hiddenRecipes.add((CraftingRecipe) recipeManager.byKey(new ResourceLocation(Registration.Card_Redstone.getId() + "_nbtclear")).get());
-        hiddenRecipes.add((CraftingRecipe) recipeManager.byKey(new ResourceLocation(Registration.Filter_Basic.getId() + "_nbtclear")).get());
-        hiddenRecipes.add((CraftingRecipe) recipeManager.byKey(new ResourceLocation(Registration.Filter_Count.getId() + "_nbtclear")).get());
-        hiddenRecipes.add((CraftingRecipe) recipeManager.byKey(new ResourceLocation(Registration.Filter_Tag.getId() + "_nbtclear")).get());
-        hiddenRecipes.add((CraftingRecipe) recipeManager.byKey(new ResourceLocation(Registration.Filter_NBT.getId() + "_nbtclear")).get());
-        hiddenRecipes.add((CraftingRecipe) recipeManager.byKey(new ResourceLocation(Registration.Filter_Mod.getId() + "_nbtclear")).get());
+        List<RecipeHolder<CraftingRecipe>> hiddenRecipes = new ArrayList<>();
+        hiddenRecipes.add((RecipeHolder<CraftingRecipe>) recipeManager.byKey(new ResourceLocation(Registration.Card_Item.getId() + "_nbtclear")).get());
+        hiddenRecipes.add((RecipeHolder<CraftingRecipe>) recipeManager.byKey(new ResourceLocation(Registration.Card_Fluid.getId() + "_nbtclear")).get());
+        hiddenRecipes.add((RecipeHolder<CraftingRecipe>) recipeManager.byKey(new ResourceLocation(Registration.Card_Energy.getId() + "_nbtclear")).get());
+        hiddenRecipes.add((RecipeHolder<CraftingRecipe>) recipeManager.byKey(new ResourceLocation(Registration.Card_Redstone.getId() + "_nbtclear")).get());
+        hiddenRecipes.add((RecipeHolder<CraftingRecipe>) recipeManager.byKey(new ResourceLocation(Registration.Filter_Basic.getId() + "_nbtclear")).get());
+        hiddenRecipes.add((RecipeHolder<CraftingRecipe>) recipeManager.byKey(new ResourceLocation(Registration.Filter_Count.getId() + "_nbtclear")).get());
+        hiddenRecipes.add((RecipeHolder<CraftingRecipe>) recipeManager.byKey(new ResourceLocation(Registration.Filter_Tag.getId() + "_nbtclear")).get());
+        hiddenRecipes.add((RecipeHolder<CraftingRecipe>) recipeManager.byKey(new ResourceLocation(Registration.Filter_NBT.getId() + "_nbtclear")).get());
+        hiddenRecipes.add((RecipeHolder<CraftingRecipe>) recipeManager.byKey(new ResourceLocation(Registration.Filter_Mod.getId() + "_nbtclear")).get());
         recipeRegistry.hideRecipes(RecipeTypes.CRAFTING, hiddenRecipes);
     }
 

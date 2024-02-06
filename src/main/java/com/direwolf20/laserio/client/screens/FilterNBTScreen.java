@@ -8,9 +8,8 @@ import com.direwolf20.laserio.common.LaserIO;
 import com.direwolf20.laserio.common.containers.FilterNBTContainer;
 import com.direwolf20.laserio.common.containers.customslot.FilterBasicSlot;
 import com.direwolf20.laserio.common.items.filters.FilterTag;
-import com.direwolf20.laserio.common.network.PacketHandler;
-import com.direwolf20.laserio.common.network.packets.PacketGhostSlot;
-import com.direwolf20.laserio.common.network.packets.PacketUpdateFilterTag;
+import com.direwolf20.laserio.common.network.data.GhostSlotPayload;
+import com.direwolf20.laserio.common.network.data.UpdateFilterTagPayload;
 import com.direwolf20.laserio.util.MagicHelpers;
 import com.direwolf20.laserio.util.MiscTools;
 import com.mojang.blaze3d.platform.InputConstants;
@@ -29,6 +28,7 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.awt.*;
 import java.util.List;
@@ -68,7 +68,7 @@ public class FilterNBTScreen extends AbstractContainerScreen<FilterNBTContainer>
 
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
-        this.renderBackground(guiGraphics);
+        //this.renderBackground(guiGraphics);
         super.render(guiGraphics, mouseX, mouseY, partialTicks);
         this.renderTooltip(guiGraphics, mouseX, mouseY);
         if (MiscTools.inBounds(getGuiLeft() + 5, getGuiTop() + 10, 16, 16, mouseX, mouseY)) {
@@ -136,7 +136,7 @@ public class FilterNBTScreen extends AbstractContainerScreen<FilterNBTContainer>
                 Tag tempTag = stackInSlot.getOrCreateTag().get(displayTags.get(overSlot));
                 if (tempTag != null) {
                     String tooltip = Objects.requireNonNull(stackInSlot.getOrCreateTag().get(displayTags.get(overSlot))).toString();
-                    if (tooltip.length() > 60) tooltip = tooltip.substring(0,60) + "...";
+                    if (tooltip.length() > 60) tooltip = tooltip.substring(0, 60) + "...";
                     guiGraphics.renderTooltip(font, Component.literal(tooltip), mouseX, mouseY);
                 }
                 RenderSystem.colorMask(true, true, true, true);
@@ -283,7 +283,7 @@ public class FilterNBTScreen extends AbstractContainerScreen<FilterNBTContainer>
 
     @Override
     public void onClose() {
-        PacketHandler.sendToServer(new PacketUpdateFilterTag(isAllowList, tags));
+        PacketDistributor.SERVER.noArg().send(new UpdateFilterTagPayload(isAllowList, tags));
         super.onClose();
     }
 
@@ -357,7 +357,7 @@ public class FilterNBTScreen extends AbstractContainerScreen<FilterNBTContainer>
             ItemStack stack = this.menu.getCarried();// getMinecraft().player.inventoryMenu.getCarried();
             stack = stack.copy().split(hoveredSlot.getMaxStackSize()); // Limit to slot limit
             hoveredSlot.set(stack); // Temporarily update the client for continuity purposes
-            PacketHandler.sendToServer(new PacketGhostSlot(hoveredSlot.index, stack, stack.getCount()));
+            PacketDistributor.SERVER.noArg().send(new GhostSlotPayload(hoveredSlot.index, stack, stack.getCount(), -1));
             return true;
         }
         return super.mouseClicked(x, y, btn);
@@ -368,7 +368,7 @@ public class FilterNBTScreen extends AbstractContainerScreen<FilterNBTContainer>
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
+    public boolean mouseScrolled(double mouseX, double mouseY, double delta, double deltaY) {
         if (hoveredSlot == null) {
             if (delta == -1.0) {
                 if (page < maxPages) page++;
@@ -377,7 +377,7 @@ public class FilterNBTScreen extends AbstractContainerScreen<FilterNBTContainer>
             }
         }
 
-        return super.mouseScrolled(mouseX, mouseY, delta);
+        return super.mouseScrolled(mouseX, mouseY, delta, deltaY);
     }
 
     private static MutableComponent getTrans(String key, Object... args) {

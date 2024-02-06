@@ -14,12 +14,13 @@ import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidUtil;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.IFluidHandlerItem;
-import net.minecraftforge.network.NetworkHooks;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidUtil;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
+
+import java.util.Optional;
+
 
 public class FilterCount extends BaseFilter {
     public FilterCount() {
@@ -31,7 +32,7 @@ public class FilterCount extends BaseFilter {
         ItemStack itemstack = player.getItemInHand(hand);
         if (level.isClientSide()) return new InteractionResultHolder<>(InteractionResult.PASS, itemstack);
 
-        NetworkHooks.openScreen((ServerPlayer) player, new SimpleMenuProvider(
+        ((ServerPlayer) player).openMenu(new SimpleMenuProvider(
                 (windowId, playerInventory, playerEntity) -> new FilterCountContainer(windowId, playerInventory, player, itemstack), Component.translatable("")), (buf -> {
             buf.writeItem(itemstack);
             buf.writeItem(ItemStack.EMPTY);
@@ -160,12 +161,12 @@ public class FilterCount extends BaseFilter {
     }
 
     public static boolean doesItemStackHoldFluids(ItemStack stack) {
-        LazyOptional<IFluidHandlerItem> fluidHandlerLazyOptional = FluidUtil.getFluidHandler(stack);
+        Optional<IFluidHandlerItem> fluidHandlerLazyOptional = FluidUtil.getFluidHandler(stack);
         if (!fluidHandlerLazyOptional.isPresent()) {
             return false;
         }
         FluidStack fluidStack = FluidStack.EMPTY;
-        IFluidHandler fluidHandler = fluidHandlerLazyOptional.resolve().get();
+        IFluidHandler fluidHandler = fluidHandlerLazyOptional.get();
         for (int tank = 0; tank < fluidHandler.getTanks(); tank++) {
             fluidStack = fluidHandler.getFluidInTank(tank);
             if (!fluidStack.isEmpty())

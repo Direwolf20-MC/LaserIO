@@ -22,14 +22,13 @@
   },
   "requirements": [
     [
-      "has_card_item",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_card_item"
     ]
   ],
   "rewards": {
     "recipes": [
       "laserio:card_item_nbtclear"
     ]
-  },
-  "sends_telemetry_event": true
+  }
 }

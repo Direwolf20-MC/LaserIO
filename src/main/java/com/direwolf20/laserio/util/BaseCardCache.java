@@ -1,6 +1,7 @@
 package com.direwolf20.laserio.util;
 
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
+import com.direwolf20.laserio.common.containers.customhandler.FilterCountHandler;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.common.items.cards.CardEnergy;
 import com.direwolf20.laserio.common.items.cards.CardFluid;
@@ -9,14 +10,14 @@ import com.direwolf20.laserio.common.items.filters.*;
 import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidUtil;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.IFluidHandlerItem;
-import net.minecraftforge.items.ItemStackHandler;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidUtil;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
+import net.neoforged.neoforge.items.ItemStackHandler;
 
 import java.util.*;
 
@@ -130,11 +131,11 @@ public class BaseCardCache {
         if (filterCountsFluid.containsKey(key)) //If we've already tested this, get it from the cache
             return filterCountsFluid.get(key);
 
-        ItemStackHandler filterSlotHandler = FilterCount.getInventory(filterCard);
+        FilterCountHandler filterSlotHandler = FilterCount.getInventory(filterCard);
         for (int i = 0; i < filterSlotHandler.getSlots(); i++) { //Gotta iterate the card's NBT because of the way we store amounts (in the MBAmt tag)
             ItemStack itemStack = filterSlotHandler.getStackInSlot(i);
             if (!itemStack.isEmpty()) {
-                Optional<IFluidHandlerItem> fluidHandlerLazyOptional = FluidUtil.getFluidHandler(itemStack).resolve();
+                Optional<IFluidHandlerItem> fluidHandlerLazyOptional = FluidUtil.getFluidHandler(itemStack);
                 if (fluidHandlerLazyOptional.isEmpty()) continue;
                 IFluidHandler fluidHandler = fluidHandlerLazyOptional.get();
                 for (int tank = 0; tank < fluidHandler.getTanks(); tank++) {
@@ -176,7 +177,7 @@ public class BaseCardCache {
         for (int i = 0; i < filterSlotHandler.getSlots(); i++) {
             ItemStack itemStack = filterSlotHandler.getStackInSlot(i);
             if (!itemStack.isEmpty()) {
-                Optional<IFluidHandlerItem> fluidHandlerLazyOptional = FluidUtil.getFluidHandler(itemStack).resolve();
+                Optional<IFluidHandlerItem> fluidHandlerLazyOptional = FluidUtil.getFluidHandler(itemStack);
                 if (fluidHandlerLazyOptional.isEmpty()) continue;
                 IFluidHandler fluidHandler = fluidHandlerLazyOptional.get();
                 for (int tank = 0; tank < fluidHandler.getTanks(); tank++) {
@@ -249,7 +250,7 @@ public class BaseCardCache {
         if (filterCacheFluid.containsKey(key)) return filterCacheFluid.get(key);
         if (filterCard.getItem() instanceof FilterMod) {
             for (FluidStack stack : filteredFluids) {
-                if (ForgeRegistries.FLUIDS.getKey(stack.getFluid()).getNamespace().equals(ForgeRegistries.FLUIDS.getKey(testStack.getFluid()).getNamespace())) {
+                if (BuiltInRegistries.FLUID.getKey(stack.getFluid()).getNamespace().equals(BuiltInRegistries.FLUID.getKey(testStack.getFluid()).getNamespace())) {
                     filterCacheFluid.put(key, isAllowList);
                     return isAllowList;
                 }

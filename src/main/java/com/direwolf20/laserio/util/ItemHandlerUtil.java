@@ -10,9 +10,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -224,20 +223,6 @@ public class ItemHandlerUtil {
         return insertResults; // If we didn't get all we need, return the stack we did get and no slot cache
     }
 
-    public static ItemStack extractIngredient(IItemHandler source, @Nonnull Ingredient ingredient, boolean simulate) {
-        if (source == null || ingredient.checkInvalidation())
-            return ItemStack.EMPTY;
-
-        for (int i = 0; i < source.getSlots(); i++) {
-            ItemStack stackInSlot = source.getStackInSlot(i);
-            if (ingredient.test(stackInSlot)) { //If this ingredient matches
-                ItemStack tempStack = source.extractItem(i, 1, simulate);
-                return tempStack;
-            }
-        }
-        return ItemStack.EMPTY;
-    }
-
     public static boolean doItemsMatch(ItemStack a, ItemStack b, boolean isCompareNBT) {
         return isCompareNBT ? ItemHandlerHelper.canItemStacksStack(a, b) : ItemStack.isSameItem(a, b);
     }
@@ -293,7 +278,7 @@ public class ItemHandlerUtil {
         public InventoryCounts(ListTag nbtList) {
             for (int i = 0; i < nbtList.size(); i++) {
                 CompoundTag nbt = nbtList.getCompound(i);
-                ItemStack stack = ItemStack.of(nbt.getCompound("itemStack"));
+                ItemStack stack = ItemStack.of(nbt);
                 stack.setCount(nbt.getInt("count"));
                 setCount(stack);
             }
@@ -304,8 +289,8 @@ public class ItemHandlerUtil {
             int i = 0;
             for (ItemStack stack : itemMap.values()) {
                 CompoundTag nbt = new CompoundTag();
-                nbt.put("itemStack", stack.serializeNBT());
                 nbt.putInt("count", stack.getCount());
+                stack.save(nbt);
                 nbtList.add(i, nbt);
                 i++;
             }

@@ -7,11 +7,10 @@ import com.direwolf20.laserio.common.containers.CardItemContainer;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.common.items.cards.CardFluid;
 import com.direwolf20.laserio.common.items.filters.FilterCount;
-import com.direwolf20.laserio.common.network.PacketHandler;
-import com.direwolf20.laserio.common.network.packets.PacketGhostSlot;
-import com.direwolf20.laserio.common.network.packets.PacketOpenNode;
-import com.direwolf20.laserio.common.network.packets.PacketUpdateCard;
-import com.direwolf20.laserio.common.network.packets.PacketUpdateFilter;
+import com.direwolf20.laserio.common.network.data.GhostSlotPayload;
+import com.direwolf20.laserio.common.network.data.OpenNodePayload;
+import com.direwolf20.laserio.common.network.data.UpdateCardPayload;
+import com.direwolf20.laserio.common.network.data.UpdateFilterPayload;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
@@ -21,6 +20,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 public class CardFluidScreen extends CardItemScreen {
 
@@ -96,7 +96,7 @@ public class CardFluidScreen extends CardItemScreen {
         if (slotStack.isEmpty()) return true;
         if (btn == 2) { //Todo IMC Inventory Sorter so this works
             slotStack.setCount(0);
-            PacketHandler.sendToServer(new PacketGhostSlot(hoveredSlot.index, slotStack, slotStack.getCount(), 0));
+            PacketDistributor.SERVER.noArg().send(new GhostSlotPayload(hoveredSlot.index, slotStack, slotStack.getCount(), 0));
             return true;
         }
         int amt = (btn == 0) ? 1 : -1;
@@ -107,7 +107,7 @@ public class CardFluidScreen extends CardItemScreen {
         int newMBAmt = currentMBAmt + amt;
         if (newMBAmt < 0) newMBAmt = 0;
         if (newMBAmt > 4096000) newMBAmt = 4096000;
-        PacketHandler.sendToServer(new PacketGhostSlot(hoveredSlot.index, slotStack, slotStack.getCount(), newMBAmt));
+        PacketDistributor.SERVER.noArg().send(new GhostSlotPayload(hoveredSlot.index, slotStack, slotStack.getCount(), newMBAmt));
         return true;
     }
 
@@ -124,19 +124,19 @@ public class CardFluidScreen extends CardItemScreen {
     @Override
     public void openNode() {
         saveSettings();
-        PacketHandler.sendToServer(new PacketOpenNode(container.sourceContainer, container.direction));
+        PacketDistributor.SERVER.noArg().send(new OpenNodePayload(container.sourceContainer, container.direction));
         Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
-        return super.mouseScrolled(mouseX, mouseY, delta);
+    public boolean mouseScrolled(double mouseX, double mouseY, double delta, double deltaY) {
+        return super.mouseScrolled(mouseX, mouseY, delta, deltaY);
     }
 
     @Override
     public void saveSettings() {
         if (showFilter)
-            PacketHandler.sendToServer(new PacketUpdateFilter(isAllowList == 1, isCompareNBT == 1));
-        PacketHandler.sendToServer(new PacketUpdateCard(currentMode, currentChannel, currentFluidExtractAmt, currentPriority, currentSneaky, (short) currentTicks, currentExact, currentRegulate, (byte) currentRoundRobin, 0, 0, currentRedstoneMode, currentRedstoneChannel, currentAndMode));
+            PacketDistributor.SERVER.noArg().send(new UpdateFilterPayload(isAllowList == 1, isCompareNBT == 1));
+        PacketDistributor.SERVER.noArg().send(new UpdateCardPayload(currentMode, currentChannel, currentFluidExtractAmt, currentPriority, currentSneaky, (short) currentTicks, currentExact, currentRegulate, (byte) currentRoundRobin, 0, 0, currentRedstoneMode, currentRedstoneChannel, currentAndMode));
     }
 }

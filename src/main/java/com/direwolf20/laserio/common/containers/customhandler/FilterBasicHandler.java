@@ -2,7 +2,7 @@ package com.direwolf20.laserio.common.containers.customhandler;
 
 import com.direwolf20.laserio.common.items.filters.FilterBasic;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.ItemStackHandler;
+import net.neoforged.neoforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
 

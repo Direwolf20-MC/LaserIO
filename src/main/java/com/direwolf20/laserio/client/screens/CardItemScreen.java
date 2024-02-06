@@ -15,8 +15,7 @@ import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.common.items.cards.CardItem;
 import com.direwolf20.laserio.common.items.cards.CardRedstone;
 import com.direwolf20.laserio.common.items.filters.*;
-import com.direwolf20.laserio.common.network.PacketHandler;
-import com.direwolf20.laserio.common.network.packets.*;
+import com.direwolf20.laserio.common.network.data.*;
 import com.direwolf20.laserio.util.MiscTools;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -34,9 +33,10 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.client.gui.widget.ExtendedButton;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.client.gui.widget.ExtendedButton;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -89,7 +89,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
         validateHolder();
-        this.renderBackground(guiGraphics);
+        //this.renderBackground(guiGraphics);
         toggleFilterSlots();
         guiGraphics = renderFluids ? new LaserGuiGraphicsFluid(Minecraft.getInstance(), guiGraphics.bufferSource(), this) : new LaserGuiGraphics(Minecraft.getInstance(), guiGraphics.bufferSource());
         if (showFilter)
@@ -672,16 +672,16 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
+    public boolean mouseScrolled(double mouseX, double mouseY, double delta, double deltaY) {
         if (hoveredSlot == null)
-            return super.mouseScrolled(mouseX, mouseY, delta);
+            return super.mouseScrolled(mouseX, mouseY, delta, deltaY);
         if (hoveredSlot instanceof FilterBasicSlot) {
             if (filter.getItem() instanceof FilterCount) {
                 filterSlot(delta == 1d ? 0 : -1); //This just matches the logic of buttonClick where button 0 is +1 and any other button is -1
                 return true;
             }
         }
-        return super.mouseScrolled(mouseX, mouseY, delta);
+        return super.mouseScrolled(mouseX, mouseY, delta, deltaY);
     }
 
     private static MutableComponent getTrans(String key, Object... args) {
@@ -699,8 +699,8 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
 
     public void saveSettings() {
         if (showFilter)
-            PacketHandler.sendToServer(new PacketUpdateFilter(isAllowList == 1, isCompareNBT == 1));
-        PacketHandler.sendToServer(new PacketUpdateCard(currentMode, currentChannel, currentItemExtractAmt, currentPriority, currentSneaky, (short) currentTicks, currentExact, currentRegulate, (byte) currentRoundRobin, 0, 0, currentRedstoneMode, currentRedstoneChannel, currentAndMode));
+            PacketDistributor.SERVER.noArg().send(new UpdateFilterPayload(isAllowList == 1, isCompareNBT == 1));
+        PacketDistributor.SERVER.noArg().send(new UpdateCardPayload(currentMode, currentChannel, currentItemExtractAmt, currentPriority, currentSneaky, (short) currentTicks, currentExact, currentRegulate, (byte) currentRoundRobin, 0, 0, currentRedstoneMode, currentRedstoneChannel, currentAndMode));
     }
 
     public boolean filterSlot(int btn) {
@@ -708,7 +708,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
         if (slotStack.isEmpty()) return true;
         if (btn == 2) { //Todo IMC Inventory Sorter so this works
             slotStack.setCount(0);
-            PacketHandler.sendToServer(new PacketGhostSlot(hoveredSlot.index, slotStack, slotStack.getCount()));
+            PacketDistributor.SERVER.noArg().send(new GhostSlotPayload(hoveredSlot.index, slotStack, slotStack.getCount(), -1));
             return true;
         }
         int amt = (btn == 0) ? 1 : -1;
@@ -717,13 +717,13 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
         if (amt + slotStack.getCount() > 4096) amt = 4096 - slotStack.getCount();
 
 
-        PacketHandler.sendToServer(new PacketGhostSlot(hoveredSlot.index, slotStack, slotStack.getCount() + amt));
+        PacketDistributor.SERVER.noArg().send(new GhostSlotPayload(hoveredSlot.index, slotStack, slotStack.getCount() + amt, -1));
         return true;
     }
 
     public void openNode() {
         saveSettings();
-        PacketHandler.sendToServer(new PacketOpenNode(container.sourceContainer, container.direction));
+        PacketDistributor.SERVER.noArg().send(new OpenNodePayload(container.sourceContainer, container.direction));
         Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
     }
 
@@ -787,14 +787,14 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
                 stack = stack.copy().split(hoveredSlot.getMaxStackSize()); // Limit to slot limit
                 if (ItemHandlerHelper.canItemStacksStack(stack, container.cardItem)) return true;
                 hoveredSlot.set(stack); // Temporarily update the client for continuity purposes
-                PacketHandler.sendToServer(new PacketGhostSlot(hoveredSlot.index, stack, stack.getCount()));
+                PacketDistributor.SERVER.noArg().send(new GhostSlotPayload(hoveredSlot.index, stack, stack.getCount(), -1));
             } else if (filter.getItem() instanceof FilterCount) {
                 ItemStack stack = this.menu.getCarried();// getMinecraft().player.inventoryMenu.getCarried();
                 if (!stack.isEmpty()) {
                     stack = stack.copy();
                     if (ItemHandlerHelper.canItemStacksStack(stack, container.cardItem)) return true;
                     hoveredSlot.set(stack); // Temporarily update the client for continuity purposes
-                    PacketHandler.sendToServer(new PacketGhostSlot(hoveredSlot.index, stack, stack.getCount()));
+                    PacketDistributor.SERVER.noArg().send(new GhostSlotPayload(hoveredSlot.index, stack, stack.getCount(), -1));
                 } else {
                     filterSlot(btn);
                     /*ItemStack slotStack = hoveredSlot.getItem();
@@ -818,11 +818,11 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
         if (hoveredSlot instanceof CardItemSlot) { //Right click
             if (btn == 0) {
                 if (filter.getItem() instanceof BaseFilter && !(filter.getItem() instanceof FilterTag) && !(filter.getItem() instanceof FilterNBT)) //Save the filter before removing it from the slot
-                    PacketHandler.sendToServer(new PacketUpdateFilter(isAllowList == 1, isCompareNBT == 1));
+                    PacketDistributor.SERVER.noArg().send(new UpdateFilterPayload(isAllowList == 1, isCompareNBT == 1));
             } else if (btn == 1) {
                 int slot = hoveredSlot.getSlotIndex();
                 saveSettings();
-                PacketHandler.sendToServer(new PacketOpenFilter(slot));
+                PacketDistributor.SERVER.noArg().send(new OpenFilterPayload(slot));
                 return true;
             }
         }

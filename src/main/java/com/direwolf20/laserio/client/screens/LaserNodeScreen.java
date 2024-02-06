@@ -9,10 +9,9 @@ import com.direwolf20.laserio.common.containers.customslot.LaserNodeSlot;
 import com.direwolf20.laserio.common.items.CardCloner;
 import com.direwolf20.laserio.common.items.CardHolder;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
-import com.direwolf20.laserio.common.network.PacketHandler;
-import com.direwolf20.laserio.common.network.packets.PacketCopyPasteCard;
-import com.direwolf20.laserio.common.network.packets.PacketOpenCard;
-import com.direwolf20.laserio.common.network.packets.PacketOpenNode;
+import com.direwolf20.laserio.common.network.data.CopyPasteCardPayload;
+import com.direwolf20.laserio.common.network.data.OpenCardPayload;
+import com.direwolf20.laserio.common.network.data.OpenNodePayload;
 import com.direwolf20.laserio.util.MiscTools;
 import com.direwolf20.laserio.util.Vec2i;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -31,6 +30,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -92,7 +92,7 @@ public class LaserNodeScreen extends AbstractContainerScreen<LaserNodeContainer>
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
         validateHolder();
-        this.renderBackground(guiGraphics);
+        //this.renderBackground(guiGraphics);
         super.render(guiGraphics, mouseX, mouseY, partialTicks);
         this.renderTooltip(guiGraphics, mouseX, mouseY);
     }
@@ -169,41 +169,41 @@ public class LaserNodeScreen extends AbstractContainerScreen<LaserNodeContainer>
     public boolean mouseClicked(double x, double y, int btn) {
         if (hoveredSlot != null && container.getCarried().getItem() instanceof CardCloner) {
             if (hoveredSlot instanceof LaserNodeSlot && !hoveredSlot.getItem().isEmpty())
-            if (btn == 0) { //Left click
-                PacketHandler.sendToServer(new PacketCopyPasteCard(hoveredSlot.getSlotIndex(), true));
-            }
+                if (btn == 0) { //Left click
+                    PacketDistributor.SERVER.noArg().send(new CopyPasteCardPayload(hoveredSlot.getSlotIndex(), true));
+                }
             if (btn == 1) { //Right click
-                PacketHandler.sendToServer(new PacketCopyPasteCard(hoveredSlot.getSlotIndex(), false));
+                PacketDistributor.SERVER.noArg().send(new CopyPasteCardPayload(hoveredSlot.getSlotIndex(), false));
             }
             return true;
         }
         if (MiscTools.inBounds(getGuiLeft() + tabs[1].x, getGuiTop() + tabs[1].y, 24, 12, x, y) && container.side != 1) {
-            PacketHandler.sendToServer(new PacketOpenNode(container.tile.getBlockPos(), (byte) 1));
+            PacketDistributor.SERVER.noArg().send(new OpenNodePayload(container.tile.getBlockPos(), (byte) 1));
             Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
             return true;
         }
         if (MiscTools.inBounds(getGuiLeft() + tabs[0].x, getGuiTop() + tabs[0].y, 24, 12, x, y) && container.side != 0) {
-            PacketHandler.sendToServer(new PacketOpenNode(container.tile.getBlockPos(), (byte) 0));
+            PacketDistributor.SERVER.noArg().send(new OpenNodePayload(container.tile.getBlockPos(), (byte) 0));
             Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
             return true;
         }
         if (MiscTools.inBounds(getGuiLeft() + tabs[2].x, getGuiTop() + tabs[2].y, 24, 12, x, y) && container.side != 2) {
-            PacketHandler.sendToServer(new PacketOpenNode(container.tile.getBlockPos(), (byte) 2));
+            PacketDistributor.SERVER.noArg().send(new OpenNodePayload(container.tile.getBlockPos(), (byte) 2));
             Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
             return true;
         }
         if (MiscTools.inBounds(getGuiLeft() + tabs[3].x, getGuiTop() + tabs[3].y, 24, 12, x, y) && container.side != 3) {
-            PacketHandler.sendToServer(new PacketOpenNode(container.tile.getBlockPos(), (byte) 3));
+            PacketDistributor.SERVER.noArg().send(new OpenNodePayload(container.tile.getBlockPos(), (byte) 3));
             Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
             return true;
         }
         if (MiscTools.inBounds(getGuiLeft() + tabs[4].x, getGuiTop() + tabs[4].y, 24, 12, x, y) && container.side != 4) {
-            PacketHandler.sendToServer(new PacketOpenNode(container.tile.getBlockPos(), (byte) 4));
+            PacketDistributor.SERVER.noArg().send(new OpenNodePayload(container.tile.getBlockPos(), (byte) 4));
             Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
             return true;
         }
         if (MiscTools.inBounds(getGuiLeft() + tabs[5].x, getGuiTop() + tabs[5].y, 24, 12, x, y) && container.side != 5) {
-            PacketHandler.sendToServer(new PacketOpenNode(container.tile.getBlockPos(), (byte) 5));
+            PacketDistributor.SERVER.noArg().send(new OpenNodePayload(container.tile.getBlockPos(), (byte) 5));
             Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
             return true;
         }
@@ -213,7 +213,7 @@ public class LaserNodeScreen extends AbstractContainerScreen<LaserNodeContainer>
 
         if (btn == 1 && hoveredSlot instanceof LaserNodeSlot) { //Right click
             int slot = hoveredSlot.getSlotIndex();
-            PacketHandler.sendToServer(new PacketOpenCard(slot, container.tile.getBlockPos(), hasShiftDown()));
+            PacketDistributor.SERVER.noArg().send(new OpenCardPayload(slot, container.tile.getBlockPos(), hasShiftDown()));
             return true;
         }
         return super.mouseClicked(x, y, btn);

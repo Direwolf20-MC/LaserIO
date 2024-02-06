@@ -11,7 +11,7 @@ import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.network.NetworkHooks;
+
 
 public class CardRedstone extends BaseCard {
 
@@ -25,7 +25,7 @@ public class CardRedstone extends BaseCard {
         ItemStack itemstack = player.getItemInHand(hand);
         if (level.isClientSide()) return new InteractionResultHolder<>(InteractionResult.PASS, itemstack);
 
-        NetworkHooks.openScreen((ServerPlayer) player, new SimpleMenuProvider(
+        ((ServerPlayer) player).openMenu(new SimpleMenuProvider(
                 (windowId, playerInventory, playerEntity) -> new CardRedstoneContainer(windowId, playerInventory, player, itemstack), Component.translatable("")), (buf -> {
             buf.writeItem(itemstack);
             buf.writeByte(-1);

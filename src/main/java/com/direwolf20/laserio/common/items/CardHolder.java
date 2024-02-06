@@ -5,7 +5,6 @@ import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.common.items.filters.BaseFilter;
 import com.direwolf20.laserio.common.items.upgrades.OverclockerCard;
 import com.direwolf20.laserio.common.items.upgrades.OverclockerNode;
-import com.direwolf20.laserio.util.ItemStackHandlerProvider;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -18,23 +17,23 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemStackHandler;
-import net.minecraftforge.network.NetworkHooks;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.items.IItemHandler;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+import static com.direwolf20.laserio.setup.Registration.CARD_HOLDER_HANDLER;
 
 public class CardHolder extends Item {
     public CardHolder() {
         super(new Item.Properties()
                 .stacksTo(1));
     }
+
+    //TODO PORT - Fix CardHolder!
 
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
@@ -46,12 +45,13 @@ public class CardHolder extends Item {
             return new InteractionResultHolder<>(InteractionResult.PASS, itemstack);
         }
 
-        itemstack.getCapability(ForgeCapabilities.ITEM_HANDLER, null).ifPresent(h -> {
-            NetworkHooks.openScreen((ServerPlayer) player, new SimpleMenuProvider(
-                    (windowId, playerInventory, playerEntity) -> new CardHolderContainer(windowId, playerInventory, player, itemstack, h), Component.translatable("")), (buf -> {
+        IItemHandler itemHandler = itemstack.getCapability(Capabilities.ItemHandler.ITEM, null);
+        if (itemHandler != null) {
+            ((ServerPlayer) player).openMenu(new SimpleMenuProvider(
+                    (windowId, playerInventory, playerEntity) -> new CardHolderContainer(windowId, playerInventory, player, itemstack, itemHandler), Component.translatable("")), (buf -> {
                 buf.writeItem(itemstack);
             }));
-        });
+        }
 
         return new InteractionResultHolder<>(InteractionResult.PASS, itemstack);
     }
@@ -61,10 +61,8 @@ public class CardHolder extends Item {
         return getActive(itemStack);
     }
 
-    @Nullable
-    @Override
-    public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
-        return new ItemStackHandlerProvider(CardHolderContainer.SLOTS);
+    public IItemHandler getItemHandler(ItemStack stack) {
+        return stack.getData(CARD_HOLDER_HANDLER);
     }
 
     @Override
@@ -82,7 +80,8 @@ public class CardHolder extends Item {
     public static ItemStack addCardToInventory(ItemStack cardHolder, ItemStack card) {
         if (card.getItem() instanceof BaseFilter && card.hasTag())
             return card;
-        IItemHandler handler = cardHolder.getCapability(ForgeCapabilities.ITEM_HANDLER, null).orElse(new ItemStackHandler(CardHolderContainer.SLOTS));
+        IItemHandler handler = cardHolder.getCapability(Capabilities.ItemHandler.ITEM, null);
+        if (handler == null) return card;
         List<Integer> emptySlots = new ArrayList<>();
         for (int i = 0; i < handler.getSlots(); i++) {
             ItemStack stackInSlot = handler.getStackInSlot(i);

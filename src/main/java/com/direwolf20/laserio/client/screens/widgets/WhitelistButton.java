@@ -19,7 +19,7 @@ public class WhitelistButton extends Button {
     }
 
     @Override
-    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+    public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         guiGraphics.blit(isWhitelist ? allow : block, this.getX(), this.getY(), 0, 0, 16, 16, 16, 16);
     }

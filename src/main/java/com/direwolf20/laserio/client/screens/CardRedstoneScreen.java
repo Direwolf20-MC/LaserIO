@@ -5,9 +5,8 @@ import com.direwolf20.laserio.client.screens.widgets.ToggleButton;
 import com.direwolf20.laserio.common.LaserIO;
 import com.direwolf20.laserio.common.containers.CardRedstoneContainer;
 import com.direwolf20.laserio.common.items.cards.CardRedstone;
-import com.direwolf20.laserio.common.network.PacketHandler;
-import com.direwolf20.laserio.common.network.packets.PacketOpenNode;
-import com.direwolf20.laserio.common.network.packets.PacketUpdateRedstoneCard;
+import com.direwolf20.laserio.common.network.data.OpenNodePayload;
+import com.direwolf20.laserio.common.network.data.UpdateRedstoneCardPayload;
 import com.direwolf20.laserio.util.MiscTools;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -22,7 +21,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.client.gui.widget.ExtendedButton;
+import net.neoforged.neoforge.client.gui.widget.ExtendedButton;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -45,7 +45,7 @@ public class CardRedstoneScreen extends AbstractContainerScreen<CardRedstoneCont
 
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
-        this.renderBackground(guiGraphics);
+        //this.renderBackground(guiGraphics);
         super.render(guiGraphics, mouseX, mouseY, partialTicks);
         this.renderTooltip(guiGraphics, mouseX, mouseY);
         Button modeButton = buttons.get("mode");
@@ -182,8 +182,8 @@ public class CardRedstoneScreen extends AbstractContainerScreen<CardRedstoneCont
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
-        return super.mouseScrolled(mouseX, mouseY, delta);
+    public boolean mouseScrolled(double mouseX, double mouseY, double delta, double deltaY) {
+        return super.mouseScrolled(mouseX, mouseY, delta, deltaY);
     }
 
     private static MutableComponent getTrans(String key, Object... args) {
@@ -191,12 +191,12 @@ public class CardRedstoneScreen extends AbstractContainerScreen<CardRedstoneCont
     }
 
     public void saveSettings() {
-        PacketHandler.sendToServer(new PacketUpdateRedstoneCard(currentMode, currentRedstoneChannel, currentStrong));
+        PacketDistributor.SERVER.noArg().send(new UpdateRedstoneCardPayload(currentMode, currentRedstoneChannel, currentStrong));
     }
 
     public void openNode() {
         saveSettings();
-        PacketHandler.sendToServer(new PacketOpenNode(container.sourceContainer, container.direction));
+        PacketDistributor.SERVER.noArg().send(new OpenNodePayload(container.sourceContainer, container.direction));
         Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
     }
 

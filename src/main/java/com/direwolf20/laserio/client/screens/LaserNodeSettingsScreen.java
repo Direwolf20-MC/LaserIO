@@ -2,9 +2,8 @@ package com.direwolf20.laserio.client.screens;
 
 import com.direwolf20.laserio.common.LaserIO;
 import com.direwolf20.laserio.common.containers.LaserNodeContainer;
-import com.direwolf20.laserio.common.network.PacketHandler;
-import com.direwolf20.laserio.common.network.packets.PacketChangeColor;
-import com.direwolf20.laserio.common.network.packets.PacketOpenNode;
+import com.direwolf20.laserio.common.network.data.ChangeColorPayload;
+import com.direwolf20.laserio.common.network.data.OpenNodePayload;
 import com.direwolf20.laserio.util.MiscTools;
 import com.direwolf20.laserio.util.Vec2i;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -22,8 +21,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.client.gui.widget.ExtendedButton;
-import net.minecraftforge.client.gui.widget.ForgeSlider;
+import net.neoforged.neoforge.client.gui.widget.ExtendedButton;
+import net.neoforged.neoforge.client.gui.widget.ExtendedSlider;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -43,11 +43,11 @@ public class LaserNodeSettingsScreen extends Screen {
     private int laserBlue;
     private int laserAlpha;
     private int wrenchAlpha;
-    private ForgeSlider sliderRed;
-    private ForgeSlider sliderGreen;
-    private ForgeSlider sliderBlue;
-    private ForgeSlider sliderAlpha;
-    private ForgeSlider sliderWrenchAlpha;
+    private ExtendedSlider sliderRed;
+    private ExtendedSlider sliderGreen;
+    private ExtendedSlider sliderBlue;
+    private ExtendedSlider sliderAlpha;
+    private ExtendedSlider sliderWrenchAlpha;
     private final MutableComponent[] sides = {
             Component.translatable("screen.laserio.down"),
             Component.translatable("screen.laserio.up"),
@@ -57,7 +57,7 @@ public class LaserNodeSettingsScreen extends Screen {
             Component.translatable("screen.laserio.east"),
     };
 
-    private Map<ForgeSlider, IntConsumer> sliderMap = new HashMap<>();
+    private Map<ExtendedSlider, IntConsumer> sliderMap = new HashMap<>();
 
     private final Vec2i[] tabs = {
             new Vec2i(34, 4), //Down
@@ -90,7 +90,7 @@ public class LaserNodeSettingsScreen extends Screen {
 
         if (container.side != -1) {
             Button returnButton = new ExtendedButton(getGuiLeft() - 25, getGuiTop() + 1, 25, 20, Component.literal("<--"), (button) -> {
-                PacketHandler.sendToServer(new PacketOpenNode(container.tile.getBlockPos(), (byte) container.side));
+                PacketDistributor.SERVER.noArg().send(new OpenNodePayload(container.tile.getBlockPos(), (byte) container.side));
                 Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
             });
             leftWidgets.add(returnButton);
@@ -117,35 +117,35 @@ public class LaserNodeSettingsScreen extends Screen {
         });
         leftWidgets.add(defaultButton);
 
-        sliderRed = new ForgeSlider(getGuiLeft() + 15, getGuiTop() + 45, 150, 15, Component.translatable("screen.laserio.red").append(": "), Component.empty(), 0, 255, this.laserRed, true) {
+        sliderRed = new ExtendedSlider(getGuiLeft() + 15, getGuiTop() + 45, 150, 15, Component.translatable("screen.laserio.red").append(": "), Component.empty(), 0, 255, this.laserRed, true) {
             @Override
             protected void applyValue() {
                 laserRed = this.getValueInt();
             }
         };
         leftWidgets.add(sliderRed);
-        sliderGreen = new ForgeSlider(getGuiLeft() + 15, getGuiTop() + 65, 150, 15, Component.translatable("screen.laserio.green").append(": "), Component.empty(), 0, 255, this.laserGreen, true) {
+        sliderGreen = new ExtendedSlider(getGuiLeft() + 15, getGuiTop() + 65, 150, 15, Component.translatable("screen.laserio.green").append(": "), Component.empty(), 0, 255, this.laserGreen, true) {
             @Override
             protected void applyValue() {
                 laserGreen = this.getValueInt();
             }
         };
         leftWidgets.add(sliderGreen);
-        sliderBlue = new ForgeSlider(getGuiLeft() + 15, getGuiTop() + 85, 150, 15, Component.translatable("screen.laserio.blue").append(": "), Component.empty(), 0, 255, this.laserBlue, true) {
+        sliderBlue = new ExtendedSlider(getGuiLeft() + 15, getGuiTop() + 85, 150, 15, Component.translatable("screen.laserio.blue").append(": "), Component.empty(), 0, 255, this.laserBlue, true) {
             @Override
             protected void applyValue() {
                 laserBlue = this.getValueInt();
             }
         };
         leftWidgets.add(sliderBlue);
-        sliderAlpha = new ForgeSlider(getGuiLeft() + 15, getGuiTop() + 105, 150, 15, Component.translatable("screen.laserio.alpha").append(": "), Component.empty(), 0, 255, this.laserAlpha, true) {
+        sliderAlpha = new ExtendedSlider(getGuiLeft() + 15, getGuiTop() + 105, 150, 15, Component.translatable("screen.laserio.alpha").append(": "), Component.empty(), 0, 255, this.laserAlpha, true) {
             @Override
             protected void applyValue() {
                 laserAlpha = this.getValueInt();
             }
         };
         leftWidgets.add(sliderAlpha);
-        sliderWrenchAlpha = new ForgeSlider(getGuiLeft() + 15, getGuiTop() + 125, 150, 15, Component.translatable("screen.laserio.wrench").append(": "), Component.empty(), 0, 255, this.wrenchAlpha, true) {
+        sliderWrenchAlpha = new ExtendedSlider(getGuiLeft() + 15, getGuiTop() + 125, 150, 15, Component.translatable("screen.laserio.wrench").append(": "), Component.empty(), 0, 255, this.wrenchAlpha, true) {
             @Override
             protected void applyValue() {
                 wrenchAlpha = this.getValueInt();
@@ -169,14 +169,14 @@ public class LaserNodeSettingsScreen extends Screen {
 
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
-        this.renderBackground(guiGraphics);
-        this.renderBg(guiGraphics, partialTicks, mouseX, mouseY);
+        //this.renderBackground(guiGraphics);
+        //this.renderBg(guiGraphics, partialTicks, mouseX, mouseY);
         super.render(guiGraphics, mouseX, mouseY, partialTicks);
         this.renderLabels(guiGraphics, mouseX, mouseY);
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
+    public boolean mouseScrolled(double mouseX, double mouseY, double delta, double deltaY) {
         this.sliderMap.forEach((slider, consumer) -> {
             if (slider.isMouseOver(mouseX, mouseY)) {
                 slider.setValue(slider.getValueInt() + (delta > 0 ? 1 : -1));
@@ -188,7 +188,7 @@ public class LaserNodeSettingsScreen extends Screen {
     }
 
     private void syncColors() {
-        PacketHandler.sendToServer(new PacketChangeColor(container.tile.getBlockPos(), new Color(laserRed, laserGreen, laserBlue, laserAlpha).getRGB(), wrenchAlpha));
+        PacketDistributor.SERVER.noArg().send(new ChangeColorPayload(container.tile.getBlockPos(), new Color(laserRed, laserGreen, laserBlue, laserAlpha).getRGB(), wrenchAlpha));
     }
 
     protected void renderLabels(GuiGraphics guiGraphics, int mouseX, int mouseY) {
@@ -226,7 +226,9 @@ public class LaserNodeSettingsScreen extends Screen {
         return itemStack;
     }
 
-    protected void renderBg(GuiGraphics guiGraphics, float partialTicks, int mouseX, int mouseY) {
+    @Override
+    public void renderBackground(GuiGraphics guiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
+        super.renderBackground(guiGraphics, pMouseX, pMouseY, pPartialTick);
         RenderSystem.setShaderTexture(0, GUI);
         int relX = (this.width - this.imageWidth) / 2;
         int relY = (this.height - this.imageHeight) / 2;
@@ -236,32 +238,32 @@ public class LaserNodeSettingsScreen extends Screen {
     @Override
     public boolean mouseClicked(double x, double y, int btn) {
         if (MiscTools.inBounds(getGuiLeft() + tabs[1].x, getGuiTop() + tabs[1].y, 24, 12, x, y)) {
-            PacketHandler.sendToServer(new PacketOpenNode(container.tile.getBlockPos(), (byte) 1));
+            PacketDistributor.SERVER.noArg().send(new OpenNodePayload(container.tile.getBlockPos(), (byte) 1));
             Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
             return true;
         }
         if (MiscTools.inBounds(getGuiLeft() + tabs[0].x, getGuiTop() + tabs[0].y, 24, 12, x, y)) {
-            PacketHandler.sendToServer(new PacketOpenNode(container.tile.getBlockPos(), (byte) 0));
+            PacketDistributor.SERVER.noArg().send(new OpenNodePayload(container.tile.getBlockPos(), (byte) 0));
             Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
             return true;
         }
         if (MiscTools.inBounds(getGuiLeft() + tabs[2].x, getGuiTop() + tabs[2].y, 24, 12, x, y)) {
-            PacketHandler.sendToServer(new PacketOpenNode(container.tile.getBlockPos(), (byte) 2));
+            PacketDistributor.SERVER.noArg().send(new OpenNodePayload(container.tile.getBlockPos(), (byte) 2));
             Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
             return true;
         }
         if (MiscTools.inBounds(getGuiLeft() + tabs[3].x, getGuiTop() + tabs[3].y, 24, 12, x, y)) {
-            PacketHandler.sendToServer(new PacketOpenNode(container.tile.getBlockPos(), (byte) 3));
+            PacketDistributor.SERVER.noArg().send(new OpenNodePayload(container.tile.getBlockPos(), (byte) 3));
             Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
             return true;
         }
         if (MiscTools.inBounds(getGuiLeft() + tabs[4].x, getGuiTop() + tabs[4].y, 24, 12, x, y)) {
-            PacketHandler.sendToServer(new PacketOpenNode(container.tile.getBlockPos(), (byte) 4));
+            PacketDistributor.SERVER.noArg().send(new OpenNodePayload(container.tile.getBlockPos(), (byte) 4));
             Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
             return true;
         }
         if (MiscTools.inBounds(getGuiLeft() + tabs[5].x, getGuiTop() + tabs[5].y, 24, 12, x, y)) {
-            PacketHandler.sendToServer(new PacketOpenNode(container.tile.getBlockPos(), (byte) 5));
+            PacketDistributor.SERVER.noArg().send(new OpenNodePayload(container.tile.getBlockPos(), (byte) 5));
             Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
             return true;
         }

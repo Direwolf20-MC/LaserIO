@@ -14,10 +14,9 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.MenuProvider;
+import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
@@ -31,10 +30,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.network.NetworkHooks;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -88,38 +85,43 @@ public class LaserNode extends BaseLaserBlock implements EntityBlock {
             if (be instanceof LaserNodeBE) {
 
                 if (heldItem.getItem() instanceof BaseCard) {
-                    LazyOptional<IItemHandler> itemHandler = be.getCapability(ForgeCapabilities.ITEM_HANDLER, result.getDirection());
-                    itemHandler.ifPresent(h -> {
-                        ItemStack remainingStack = insertItemToNode(h, heldItem, false);
-                        player.setItemInHand(InteractionHand.MAIN_HAND, remainingStack);
-                    });
+                    IItemHandler itemHandler = level.getCapability(Capabilities.ItemHandler.BLOCK, pos, result.getDirection());
+                    ItemStack remainingStack = insertItemToNode(itemHandler, heldItem, false);
+                    player.setItemInHand(InteractionHand.MAIN_HAND, remainingStack);
                 } else {
                     Direction direction;
                     if (player.isShiftKeyDown())
                         direction = result.getDirection().getOpposite();
                     else
                         direction = result.getDirection();
-                    be.getCapability(ForgeCapabilities.ITEM_HANDLER, direction).ifPresent(h -> {
-                        ItemStack cardHolder = findCardHolders(player);
-                        if (!cardHolder.isEmpty()) CardHolder.getUUID(cardHolder);
-                        MenuProvider containerProvider = new MenuProvider() {
-                            @Override
-                            public Component getDisplayName() {
-                                return Component.translatable(SCREEN_LASERNODE);
-                            }
+                    IItemHandler itemHandler = level.getCapability(Capabilities.ItemHandler.BLOCK, pos, direction);
+                    ItemStack cardHolder = findCardHolders(player);
+                    if (!cardHolder.isEmpty()) CardHolder.getUUID(cardHolder);
 
-                            @Override
-                            public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player playerEntity) {
-                                return new LaserNodeContainer((LaserNodeBE) be, windowId, (byte) direction.ordinal(), playerInventory, playerEntity, (LaserNodeItemHandler) h, ContainerLevelAccess.create(be.getLevel(), be.getBlockPos()), cardHolder);
-                            }
-                        };
+                    ((ServerPlayer) player).openMenu(new SimpleMenuProvider(
+                            (windowId, playerInventory, playerEntity) -> new LaserNodeContainer((LaserNodeBE) be, windowId, (byte) direction.ordinal(), playerInventory, playerEntity, (LaserNodeItemHandler) itemHandler, ContainerLevelAccess.create(be.getLevel(), be.getBlockPos()), cardHolder), Component.translatable("")), (buf -> {
+                        buf.writeBlockPos(pos);
+                        buf.writeByte((byte) direction.ordinal());
+                        buf.writeItem(cardHolder);
+                    }));
+
+                    /*MenuProvider containerProvider = new MenuProvider() {
+                        @Override
+                        public Component getDisplayName() {
+                            return Component.translatable(SCREEN_LASERNODE);
+                        }
+
+                        @Override
+                        public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player playerEntity) {
+                            return new LaserNodeContainer((LaserNodeBE) be, windowId, (byte) direction.ordinal(), playerInventory, playerEntity, (LaserNodeItemHandler) itemHandler, ContainerLevelAccess.create(be.getLevel(), be.getBlockPos()), cardHolder);
+                        }
 
                         NetworkHooks.openScreen((ServerPlayer) player, containerProvider, (buf -> {
                             buf.writeBlockPos(pos);
                             buf.writeByte((byte) direction.ordinal());
                             buf.writeItemStack(cardHolder, false);
                         }));
-                    });
+                    };*/
                 }
             } else {
                 throw new IllegalStateException("Our named container provider is missing!");
@@ -245,12 +247,14 @@ public class LaserNode extends BaseLaserBlock implements EntityBlock {
             BlockEntity tileEntity = worldIn.getBlockEntity(pos);
             if (tileEntity != null) {
                 for (Direction direction : Direction.values()) {
-                    LazyOptional<IItemHandler> cap = tileEntity.getCapability(ForgeCapabilities.ITEM_HANDLER, direction);
-                    cap.ifPresent(handler -> {
-                        for (int i = 0; i < handler.getSlots(); ++i) {
-                            Containers.dropItemStack(worldIn, pos.getX(), pos.getY(), pos.getZ(), handler.getStackInSlot(i));
+                    //LazyOptional<IItemHandler> cap = tileEntity.getCapability(ForgeCapabilities.ITEM_HANDLER, direction);
+                    //cap.ifPresent(handler -> {
+                    var cap = worldIn.getCapability(Capabilities.ItemHandler.BLOCK, pos, state, tileEntity, direction);
+                    if (cap != null) {
+                        for (int i = 0; i < cap.getSlots(); ++i) {
+                            Containers.dropItemStack(worldIn, pos.getX(), pos.getY(), pos.getZ(), cap.getStackInSlot(i));
                         }
-                    });
+                    }
                 }
             }
 
