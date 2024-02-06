@@ -1,7 +1,6 @@
 package com.direwolf20.laserio.common.items.cards;
 
 import com.direwolf20.laserio.common.containers.CardEnergyContainer;
-import com.direwolf20.laserio.common.containers.customhandler.CardItemHandler;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -14,6 +13,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
 public class CardEnergy extends BaseCard {
+    public static final int max_energy_transfer = 1000000;
     public CardEnergy() {
         super();
         CARDTYPE = CardType.ENERGY;
@@ -34,7 +34,7 @@ public class CardEnergy extends BaseCard {
         return new InteractionResultHolder<>(InteractionResult.PASS, itemstack);
     }
 
-    public static CardItemHandler getInventory(ItemStack stack) {
+    /*public static CardItemHandler getInventory(ItemStack stack) {
         CompoundTag compound = stack.getTag();
         if (compound == null || !compound.contains("inv")) return new CardItemHandler(CardEnergyContainer.SLOTS, stack);
         CardItemHandler handler = new CardItemHandler(CardEnergyContainer.SLOTS, stack);
@@ -53,10 +53,10 @@ public class CardEnergy extends BaseCard {
         }
         stack.removeTagKey("inv");
         return handler;
-    }
+    }*/
 
     public static int setEnergyExtractAmt(ItemStack card, int energyextractamt) {
-        if (energyextractamt == 1000)
+        if (energyextractamt == max_energy_transfer)
             card.removeTagKey("energyextractamt");
         else
             card.getOrCreateTag().putInt("energyextractamt", energyextractamt);
@@ -65,7 +65,7 @@ public class CardEnergy extends BaseCard {
 
     public static int getEnergyExtractAmt(ItemStack card) {
         CompoundTag compound = card.getTag();
-        if (compound == null || !compound.contains("energyextractamt")) return 1000;
+        if (compound == null || !compound.contains("energyextractamt")) return max_energy_transfer;
         return compound.getInt("energyextractamt");
     }
 
