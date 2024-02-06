@@ -28,7 +28,7 @@ public class ServerTickHandler {
                     levels.add(data.toData.node().getLevel(event.getServer()));
                 }
                 for (Level level : levels)
-                    PacketDistributor.DIMENSION.with(level.dimension()).send(new NodeParticlesPayload(new ArrayList<>(particleList)));
+                    PacketDistributor.DIMENSION.with(level.dimension()).send(new NodeParticlesPayload(List.copyOf(particleList)));
                 particleList.clear();
             }
             if (!particleListFluid.isEmpty()) {
@@ -38,7 +38,7 @@ public class ServerTickHandler {
                     levels.add(data.toData.node().getLevel(event.getServer()));
                 }
                 for (Level level : levels)
-                    PacketDistributor.DIMENSION.with(level.dimension()).send(new NodeParticlesFluidPayload(new ArrayList<>(particleListFluid)));
+                    PacketDistributor.DIMENSION.with(level.dimension()).send(new NodeParticlesFluidPayload(List.copyOf(particleListFluid)));
                 particleListFluid.clear();
             }
         }
