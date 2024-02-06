@@ -1,6 +1,7 @@
 package com.direwolf20.laserio.common;
 
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
+import com.direwolf20.laserio.common.items.CardHolder;
 import com.direwolf20.laserio.common.network.PacketHandler;
 import com.direwolf20.laserio.setup.ClientSetup;
 import com.direwolf20.laserio.setup.ModSetup;
@@ -49,9 +50,13 @@ public class LaserIO {
                 // blocks to register for
                 Registration.LaserNode.get());
         //TODO PORT -- Register and fix Card Holder
-        /*event.registerItem(Capabilities.ItemHandler.ITEM, (itemStack, context) -> new EnergisedItem(itemStack, ((CardHolder) itemStack.getItem()).getEnergyMax()),
+        event.registerItem(Capabilities.ItemHandler.ITEM, (itemStack, context) -> {
+                    if (itemStack.getItem() instanceof CardHolder holder)
+                        return holder.getItemHandler(itemStack);
+                    return null;
+                },
                 Registration.Card_Holder.get()
-        );*/
+        );
     }
 
     /*public void registerRecipeSerializers(RegistryEvent.Register<RecipeSerializer<?>> event) {

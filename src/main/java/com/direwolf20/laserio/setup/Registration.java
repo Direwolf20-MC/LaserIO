@@ -17,6 +17,7 @@ import com.direwolf20.laserio.common.items.filters.*;
 import com.direwolf20.laserio.common.items.upgrades.OverclockerCard;
 import com.direwolf20.laserio.common.items.upgrades.OverclockerNode;
 import com.direwolf20.laserio.datagen.customrecipes.CardClearRecipe;
+import com.direwolf20.laserio.util.CardHolderItemStackHandler;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.BlockItem;
@@ -25,9 +26,11 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 import java.util.function.Supplier;
 
@@ -42,6 +45,9 @@ public class Registration {
     private static final DeferredRegister<MenuType<?>> CONTAINERS = DeferredRegister.create(Registries.MENU, MODID);
     public static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZERS = DeferredRegister.create(Registries.RECIPE_SERIALIZER, LaserIO.MODID);
     public static final Supplier<CardClearRecipe.Serializer> CARD_CLEAR_RECIPE_SERIALIZER = RECIPE_SERIALIZERS.register("cardclear", CardClearRecipe.Serializer::new);
+    // Create the DeferredRegister for attachment types
+    private static final DeferredRegister<AttachmentType<?>> ATTACHMENT_TYPES = DeferredRegister.create(NeoForgeRegistries.ATTACHMENT_TYPES, LaserIO.MODID);
+
 
     public static void init(IEventBus eventBus) {
         BLOCKS.register(eventBus);
@@ -50,6 +56,7 @@ public class Registration {
         CONTAINERS.register(eventBus);
         PARTICLE_TYPES.register(eventBus);
         RECIPE_SERIALIZERS.register(eventBus);
+        ATTACHMENT_TYPES.register(eventBus);
     }
 
     // Some common properties for our blocks and items
@@ -114,6 +121,11 @@ public class Registration {
             () -> IMenuTypeExtension.create((windowId, inv, data) -> new FilterTagContainer(windowId, inv, inv.player, data)));
     public static final DeferredHolder<MenuType<?>, MenuType<FilterNBTContainer>> FilterNBT_Container = CONTAINERS.register("filternbt",
             () -> IMenuTypeExtension.create((windowId, inv, data) -> new FilterNBTContainer(windowId, inv, inv.player, data)));
+
+    //Data attachments
+    public static final Supplier<AttachmentType<CardHolderItemStackHandler>> CARD_HOLDER_HANDLER = ATTACHMENT_TYPES.register(
+            "handler", () -> AttachmentType.serializable(() -> new CardHolderItemStackHandler(CardHolderContainer.SLOTS)).build());
+
 
     // Conveniance function: Take a RegistryObject<Block> and make a corresponding RegistryObject<Item> from it
     /*public static <B extends Block> RegistryObject<Item> fromBlock(RegistryObject<B> block) {

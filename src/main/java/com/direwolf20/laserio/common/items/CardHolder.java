@@ -25,6 +25,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import static com.direwolf20.laserio.setup.Registration.CARD_HOLDER_HANDLER;
+
 public class CardHolder extends Item {
     public CardHolder() {
         super(new Item.Properties()
@@ -50,7 +52,6 @@ public class CardHolder extends Item {
                 buf.writeItem(itemstack);
             }));
         }
-        ;
 
         return new InteractionResultHolder<>(InteractionResult.PASS, itemstack);
     }
@@ -58,6 +59,10 @@ public class CardHolder extends Item {
     @Override
     public boolean isFoil(ItemStack itemStack) {
         return getActive(itemStack);
+    }
+
+    public IItemHandler getItemHandler(ItemStack stack) {
+        return stack.getData(CARD_HOLDER_HANDLER);
     }
 
     @Override
@@ -76,6 +81,7 @@ public class CardHolder extends Item {
         if (card.getItem() instanceof BaseFilter && card.hasTag())
             return card;
         IItemHandler handler = cardHolder.getCapability(Capabilities.ItemHandler.ITEM, null);
+        if (handler == null) return card;
         List<Integer> emptySlots = new ArrayList<>();
         for (int i = 0; i < handler.getSlots(); i++) {
             ItemStack stackInSlot = handler.getStackInSlot(i);
