@@ -22,14 +22,13 @@
   },
   "requirements": [
     [
-      "has_card_fluid",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_card_fluid"
     ]
   ],
   "rewards": {
     "recipes": [
       "laserio:card_fluid_nbtclear"
     ]
-  },
-  "sends_telemetry_event": true
+  }
 }

@@ -1,12 +1,12 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_card_energy": {
+    "has_card_redstone": {
       "conditions": {
         "items": [
           {
             "items": [
-              "laserio:card_energy"
+              "laserio:card_redstone"
             ]
           }
         ]
@@ -15,21 +15,20 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "laserio:card_energy_nbtclear"
+        "recipe": "laserio:card_redstone_nbtclear"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
   },
   "requirements": [
     [
-      "has_card_energy",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_card_redstone"
     ]
   ],
   "rewards": {
     "recipes": [
-      "laserio:card_energy_nbtclear"
+      "laserio:card_redstone_nbtclear"
     ]
-  },
-  "sends_telemetry_event": true
+  }
 }

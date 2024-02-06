@@ -22,14 +22,13 @@
   },
   "requirements": [
     [
-      "has_logic_connector",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_logic_connector"
     ]
   ],
   "rewards": {
     "recipes": [
       "laserio:laser_node"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }
