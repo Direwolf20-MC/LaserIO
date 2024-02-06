@@ -41,8 +41,6 @@ public class ClientSetup {
 
         //Register our Render Events Class
         NeoForge.EVENT_BUS.register(ClientEvents.class);
-        //TODO - PORT - Fix
-        //NeoForge.EVENT_BUS.register(EventTooltip.class);
 
         //Screens
         event.enqueueWork(() -> {
