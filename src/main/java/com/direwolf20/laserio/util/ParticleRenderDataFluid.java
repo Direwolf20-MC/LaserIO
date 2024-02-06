@@ -1,7 +1,7 @@
 package com.direwolf20.laserio.util;
 
 import net.minecraft.core.BlockPos;
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 public class ParticleRenderDataFluid {
     public FluidStack fluidStack;

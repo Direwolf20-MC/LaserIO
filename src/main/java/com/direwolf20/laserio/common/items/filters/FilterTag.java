@@ -15,10 +15,11 @@ import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.network.NetworkHooks;
 
 import java.util.ArrayList;
 import java.util.List;
+
+;
 
 public class FilterTag extends BaseFilter {
     public FilterTag() {
@@ -31,7 +32,7 @@ public class FilterTag extends BaseFilter {
         if (level.isClientSide()) return new InteractionResultHolder<>(InteractionResult.PASS, itemstack);
 
         FilterBasicHandler handler = getInventory(itemstack);
-        NetworkHooks.openScreen((ServerPlayer) player, new SimpleMenuProvider(
+        ((ServerPlayer) player).openMenu(new SimpleMenuProvider(
                 (windowId, playerInventory, playerEntity) -> new FilterTagContainer(windowId, playerInventory, player, handler, itemstack), Component.translatable("")), (buf -> {
             buf.writeItem(itemstack);
             buf.writeItem(ItemStack.EMPTY);

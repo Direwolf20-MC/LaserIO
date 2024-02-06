@@ -2,8 +2,8 @@ package com.direwolf20.laserio.common.containers.customslot;
 
 import com.direwolf20.laserio.common.items.upgrades.OverclockerCard;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.SlotItemHandler;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.SlotItemHandler;
 
 import javax.annotation.Nonnull;
 

@@ -21,10 +21,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemStackHandler;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.items.IItemHandler;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
@@ -289,12 +287,13 @@ public class RenderUtils {
             matrixStackIn.translate(startBlock.getX() - projectedView.x, startBlock.getY() - projectedView.y, startBlock.getZ() - projectedView.z);
 
             for (Direction direction : Direction.values()) { //Todo Improve
-                IItemHandler h = be.getCapability(ForgeCapabilities.ITEM_HANDLER, direction).orElse(new ItemStackHandler(0));
+                IItemHandler h = level.getCapability(Capabilities.ItemHandler.BLOCK, be.getBlockPos(), direction);
+                if (h == null) continue;
                 for (int slot = 0; slot < h.getSlots(); slot++) {
                     ItemStack card = h.getStackInSlot(slot);
                     if (card.getItem() instanceof BaseCard) {
                         if (((BaseCard) card.getItem()).getCardType() == BaseCard.CardType.ITEM) {
-                            if (be.getAttachedInventoryNoCache(direction, (byte) -1).equals(LazyOptional.empty()))
+                            if (be.getAttachedInventoryNoCache(direction, (byte) -1) == null)
                                 continue;
                             boolean reverse = !direction.equals(Direction.DOWN);
                             if (BaseCard.getNamedTransferMode(card) != BaseCard.TransferMode.EXTRACT)
@@ -340,12 +339,13 @@ public class RenderUtils {
             matrixStackIn.translate(startBlock.getX() - projectedView.x, startBlock.getY() - projectedView.y, startBlock.getZ() - projectedView.z);
 
             for (Direction direction : Direction.values()) { //Todo Improve
-                IItemHandler h = be.getCapability(ForgeCapabilities.ITEM_HANDLER, direction).orElse(new ItemStackHandler(0));
+                IItemHandler h = level.getCapability(Capabilities.ItemHandler.BLOCK, be.getBlockPos(), direction);
+                if (h == null) continue;
                 for (int slot = 0; slot < h.getSlots(); slot++) {
                     ItemStack card = h.getStackInSlot(slot);
                     if (card.getItem() instanceof BaseCard) {
                         if (((BaseCard) card.getItem()).getCardType() == BaseCard.CardType.ITEM) {
-                            if (be.getAttachedInventoryNoCache(direction, (byte) -1).equals(LazyOptional.empty()))
+                            if (be.getAttachedInventoryNoCache(direction, (byte) -1) == null)
                                 continue;
                             float[] floatcolors = LaserNodeBERender.colors[BaseCard.getChannel(card)].getColorComponents(new float[3]);
                             boolean reverse = !direction.equals(Direction.DOWN);
@@ -401,12 +401,13 @@ public class RenderUtils {
 
         builder = buffer.getBuffer(MyRenderType.LASER_MAIN_BEAM);
         for (Direction direction : Direction.values()) { //Todo Improve
-            IItemHandler h = be.getCapability(ForgeCapabilities.ITEM_HANDLER, direction).orElse(new ItemStackHandler(0));
+            IItemHandler h = level.getCapability(Capabilities.ItemHandler.BLOCK, be.getBlockPos(), direction);
+            if (h == null) continue;
             for (int slot = 0; slot < h.getSlots(); slot++) {
                 ItemStack card = h.getStackInSlot(slot);
                 if (card.getItem() instanceof BaseCard) {
                     if (((BaseCard) card.getItem()).getCardType() == BaseCard.CardType.ITEM) {
-                        if (be.getAttachedInventoryNoCache(direction, (byte) -1).equals(LazyOptional.empty()))
+                        if (be.getAttachedInventoryNoCache(direction, (byte) -1) == null)
                             continue;
                         boolean reverse = direction.equals(Direction.DOWN) ? false : true;
                         if (BaseCard.getNamedTransferMode(card) != BaseCard.TransferMode.EXTRACT)
@@ -438,12 +439,13 @@ public class RenderUtils {
 
         builder = buffer.getBuffer(MyRenderType.LASER_MAIN_CORE);
         for (Direction direction : Direction.values()) { //Todo Improve
-            IItemHandler h = be.getCapability(ForgeCapabilities.ITEM_HANDLER, direction).orElse(new ItemStackHandler(0));
+            IItemHandler h = level.getCapability(Capabilities.ItemHandler.BLOCK, be.getBlockPos(), direction);
+            if (h == null) continue;
             for (int slot = 0; slot < h.getSlots(); slot++) {
                 ItemStack card = h.getStackInSlot(slot);
                 if (card.getItem() instanceof BaseCard) {
                     if (((BaseCard) card.getItem()).getCardType() == BaseCard.CardType.ITEM) {
-                        if (be.getAttachedInventoryNoCache(direction, (byte) -1).equals(LazyOptional.empty()))
+                        if (be.getAttachedInventoryNoCache(direction, (byte) -1) == null)
                             continue;
                         float[] floatcolors = LaserNodeBERender.colors[BaseCard.getChannel(card)].getColorComponents(new float[3]);
                         boolean reverse = direction.equals(Direction.DOWN) ? false : true;

@@ -10,6 +10,9 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderSet;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.tags.ItemTags;
@@ -17,9 +20,8 @@ import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.items.ItemStackHandler;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.items.ItemStackHandler;
 import org.lwjgl.opengl.GL11;
 
 import java.util.Comparator;
@@ -140,13 +142,13 @@ public class EventTooltip {
 
     private static void renderTagStack(GuiGraphics guiGraphics, String tag, int x, int y) {
         Minecraft mc = Minecraft.getInstance();
-        List<Item> tagItems = ForgeRegistries.ITEMS.tags().getTag(ItemTags.create(new ResourceLocation(tag))).stream().toList();
+        List<Holder<Item>> tagItems = BuiltInRegistries.ITEM.getTag(ItemTags.create(new ResourceLocation(tag))).stream().flatMap(HolderSet.ListBacked::stream).toList();
         if (tagItems.size() > 0) {
             ItemStack drawStack = new ItemStack(tagItems.get((int) (mc.level.getGameTime() / 20) % tagItems.size()));
             renderFilterStack(guiGraphics, drawStack, x, y);
         }
 
-        List<Fluid> tagFluids = ForgeRegistries.FLUIDS.tags().getTag(FluidTags.create(new ResourceLocation(tag))).stream().toList();
+        List<Holder<Fluid>> tagFluids = BuiltInRegistries.FLUID.getTag(FluidTags.create(new ResourceLocation(tag))).stream().flatMap(HolderSet.ListBacked::stream).toList();
         if (tagFluids.size() > 0) {
             FluidStack drawFluidStack = new FluidStack(tagFluids.get((int) (mc.level.getGameTime() / 20) % tagFluids.size()), 1000);
             if (!drawFluidStack.isEmpty()) {

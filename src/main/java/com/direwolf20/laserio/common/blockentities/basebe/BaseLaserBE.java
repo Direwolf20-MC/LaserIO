@@ -13,9 +13,7 @@ import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.AABB;
 
-import javax.annotation.Nonnull;
 import java.awt.*;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -311,11 +309,13 @@ public class BaseLaserBE extends BlockEntity {
         tag.putInt("wrenchAlpha", getWrenchAlpha());
     }
 
+    //TODO PORT - Replacement needed?
+    /*
     @Nonnull
     @Override
     public AABB getRenderBoundingBox() {
         return new AABB(getBlockPos().above(10).north(10).east(10), getBlockPos().below(10).south(10).west(10));
-    }
+    }*/
 
     @Override
     public ClientboundBlockEntityDataPacket getUpdatePacket() {

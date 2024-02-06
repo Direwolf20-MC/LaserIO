@@ -2,14 +2,14 @@ package com.direwolf20.laserio.client.jei.ghostfilterhandlers;
 
 import com.direwolf20.laserio.client.screens.CardItemScreen;
 import com.direwolf20.laserio.common.containers.customslot.FilterBasicSlot;
-import com.direwolf20.laserio.common.network.PacketHandler;
-import com.direwolf20.laserio.common.network.packets.PacketGhostSlot;
+import com.direwolf20.laserio.common.network.data.GhostSlotPayload;
 import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +37,7 @@ public class GhostFilterCard implements IGhostIngredientHandler<CardItemScreen> 
                     public void accept(I ingredient) {
                         ItemStack itemStack = (ItemStack) ingredient;
                         slot.set(itemStack.copy());
-                        PacketHandler.sendToServer(new PacketGhostSlot(slot.index, itemStack, itemStack.getCount()));
+                        PacketDistributor.SERVER.noArg().send(new GhostSlotPayload(slot.index, itemStack, itemStack.getCount(), -1));
                         //RS.NETWORK_HANDLER.sendToServer(new SetFilterSlotMessage(slot.index, (ItemStack) ingredient));
                     }
                 });
@@ -52,7 +52,7 @@ public class GhostFilterCard implements IGhostIngredientHandler<CardItemScreen> 
                     public void accept(I ingredient) {
                         ItemStack itemStack = new ItemStack(((FluidStack) ingredient).getFluid().getBucket(), 1);
                         slot.set(itemStack.copy());
-                        PacketHandler.sendToServer(new PacketGhostSlot(slot.index, itemStack, itemStack.getCount()));
+                        PacketDistributor.SERVER.noArg().send(new GhostSlotPayload(slot.index, itemStack, itemStack.getCount(), -1));
                         //RS.NETWORK_HANDLER.sendToServer(new SetFluidFilterSlotMessage(slot.index, StackUtils.copy((FluidStack) ingredient, FluidAttributes.BUCKET_VOLUME)));
                     }
                 });

@@ -9,10 +9,8 @@ import com.direwolf20.laserio.client.screens.FilterBasicScreen;
 import com.direwolf20.laserio.client.screens.FilterCountScreen;
 import com.direwolf20.laserio.client.screens.FilterTagScreen;
 import com.direwolf20.laserio.common.LaserIO;
-import com.direwolf20.laserio.setup.Registration;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
-import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
 import mezz.jei.api.runtime.IJeiRuntime;
@@ -39,7 +37,8 @@ public class JEIIntegration implements IModPlugin {
         IRecipeManager recipeRegistry = jeiRuntime.getRecipeManager();
         RecipeManager recipeManager = Minecraft.getInstance().level.getRecipeManager();
         List<CraftingRecipe> hiddenRecipes = new ArrayList<>();
-        hiddenRecipes.add((CraftingRecipe) recipeManager.byKey(new ResourceLocation(Registration.Card_Item.getId() + "_nbtclear")).get());
+        //TODO PORT - Fix this
+        /*hiddenRecipes.add((CraftingRecipe) recipeManager.byKey(new ResourceLocation(Registration.Card_Item.getId() + "_nbtclear")).get());
         hiddenRecipes.add((CraftingRecipe) recipeManager.byKey(new ResourceLocation(Registration.Card_Fluid.getId() + "_nbtclear")).get());
         hiddenRecipes.add((CraftingRecipe) recipeManager.byKey(new ResourceLocation(Registration.Card_Energy.getId() + "_nbtclear")).get());
         hiddenRecipes.add((CraftingRecipe) recipeManager.byKey(new ResourceLocation(Registration.Card_Redstone.getId() + "_nbtclear")).get());
@@ -48,7 +47,7 @@ public class JEIIntegration implements IModPlugin {
         hiddenRecipes.add((CraftingRecipe) recipeManager.byKey(new ResourceLocation(Registration.Filter_Tag.getId() + "_nbtclear")).get());
         hiddenRecipes.add((CraftingRecipe) recipeManager.byKey(new ResourceLocation(Registration.Filter_NBT.getId() + "_nbtclear")).get());
         hiddenRecipes.add((CraftingRecipe) recipeManager.byKey(new ResourceLocation(Registration.Filter_Mod.getId() + "_nbtclear")).get());
-        recipeRegistry.hideRecipes(RecipeTypes.CRAFTING, hiddenRecipes);
+        recipeRegistry.hideRecipes(RecipeTypes.CRAFTING, hiddenRecipes);*/
     }
 
     @Override

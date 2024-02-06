@@ -2,8 +2,8 @@ package com.direwolf20.laserio.util;
 
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;

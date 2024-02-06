@@ -13,9 +13,9 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.items.ItemStackHandler;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.items.ItemStackHandler;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -66,7 +66,8 @@ public class CardCloner extends Item {
                 return;
 
             CompoundTag compoundTag = stack.getOrCreateTag().getCompound("settings");
-            int mode = !compoundTag.contains("mode") ? 0 : compoundTag.getByte("mode");;
+            int mode = !compoundTag.contains("mode") ? 0 : compoundTag.getByte("mode");
+            ;
             String currentMode = BaseCard.TransferMode.values()[mode].toString();
             toWrite = tooltipMaker("laserio.tooltip.item.card.mode", ChatFormatting.GRAY.getColor());
             int modeColor = ChatFormatting.GRAY.getColor();
@@ -82,7 +83,8 @@ public class CardCloner extends Item {
             tooltip.add(toWrite);
 
             toWrite = tooltipMaker("laserio.tooltip.item.card.channel", ChatFormatting.GRAY.getColor());
-            int channel = !compoundTag.contains("channel") ? 0 : compoundTag.getByte("channel");;
+            int channel = !compoundTag.contains("channel") ? 0 : compoundTag.getByte("channel");
+            ;
             toWrite.append(tooltipMaker(String.valueOf(channel), LaserNodeBERender.colors[channel].getRGB()));
             tooltip.add(toWrite);
 

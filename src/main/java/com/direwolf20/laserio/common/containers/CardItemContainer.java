@@ -25,12 +25,11 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemHandlerHelper;
-import net.minecraftforge.items.ItemStackHandler;
-import net.minecraftforge.items.SlotItemHandler;
-import net.minecraftforge.items.wrapper.InvWrapper;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.items.SlotItemHandler;
+import net.neoforged.neoforge.items.wrapper.InvWrapper;
 
 import javax.annotation.Nullable;
 import java.util.UUID;
@@ -75,7 +74,7 @@ public class CardItemContainer extends AbstractContainerMenu {
         }
         cardHolder = findCardHolders(player);
         if (!cardHolder.isEmpty()) {
-            this.cardHolderHandler = cardHolder.getCapability(ForgeCapabilities.ITEM_HANDLER, null).orElse(new ItemStackHandler(CardHolderContainer.SLOTS));
+            this.cardHolderHandler = cardHolder.getCapability(Capabilities.ItemHandler.ITEM, null);
             addSlotBox(cardHolderHandler, 0, -92, 32, 5, 18, 3, 18);
             cardHolderUUID = CardHolder.getUUID(cardHolder);
         }

@@ -1,13 +1,13 @@
 package com.direwolf20.laserio.common.events;
 
-import com.direwolf20.laserio.common.network.PacketHandler;
-import com.direwolf20.laserio.common.network.packets.PacketNodeParticles;
-import com.direwolf20.laserio.common.network.packets.PacketNodeParticlesFluid;
+import com.direwolf20.laserio.common.network.data.NodeParticlesFluidPayload;
+import com.direwolf20.laserio.common.network.data.NodeParticlesPayload;
 import com.direwolf20.laserio.util.ParticleData;
 import com.direwolf20.laserio.util.ParticleDataFluid;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.event.TickEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -28,7 +28,7 @@ public class ServerTickHandler {
                     levels.add(data.toData.node().getLevel(event.getServer()));
                 }
                 for (Level level : levels)
-                    PacketHandler.sendToAll(new PacketNodeParticles(particleList), level);
+                    PacketDistributor.DIMENSION.with(level.dimension()).send(new NodeParticlesPayload(new ArrayList<>(particleList)));
                 particleList.clear();
             }
             if (!particleListFluid.isEmpty()) {
@@ -38,7 +38,7 @@ public class ServerTickHandler {
                     levels.add(data.toData.node().getLevel(event.getServer()));
                 }
                 for (Level level : levels)
-                    PacketHandler.sendToAll(new PacketNodeParticlesFluid(particleListFluid), level);
+                    PacketDistributor.DIMENSION.with(level.dimension()).send(new NodeParticlesFluidPayload(new ArrayList<>(particleListFluid)));
                 particleListFluid.clear();
             }
         }

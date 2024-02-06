@@ -18,12 +18,14 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidUtil;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.IFluidHandlerItem;
+import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidUtil;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
+
+import java.util.Optional;
+
 
 /** This class is used to make the numbers on items in the FilterCountContainer smaller when greater than 100 **/
 public class LaserIOItemRendererFluid extends ItemRenderer {
@@ -204,12 +206,12 @@ public class LaserIOItemRendererFluid extends ItemRenderer {
                 return reverseBounds;
             }
         }
-        LazyOptional<IFluidHandlerItem> fluidHandlerLazyOptional = FluidUtil.getFluidHandler(pStack);
+        Optional<IFluidHandlerItem> fluidHandlerLazyOptional = FluidUtil.getFluidHandler(pStack);
         if (!fluidHandlerLazyOptional.isPresent()) {
             return reverseBounds;
         }
         FluidStack fluidStack = FluidStack.EMPTY;
-        IFluidHandler fluidHandler = fluidHandlerLazyOptional.resolve().get();
+        IFluidHandler fluidHandler = fluidHandlerLazyOptional.get();
         for (int tank = 0; tank < fluidHandler.getTanks(); tank++) {
             fluidStack = fluidHandler.getFluidInTank(tank);
             if (!fluidStack.isEmpty())
