@@ -309,14 +309,6 @@ public class BaseLaserBE extends BlockEntity {
         tag.putInt("wrenchAlpha", getWrenchAlpha());
     }
 
-    //TODO PORT - Replacement needed?
-    /*
-    @Nonnull
-    @Override
-    public AABB getRenderBoundingBox() {
-        return new AABB(getBlockPos().above(10).north(10).east(10), getBlockPos().below(10).south(10).west(10));
-    }*/
-
     @Override
     public ClientboundBlockEntityDataPacket getUpdatePacket() {
         // Vanilla uses the type parameter to indicate which type of tile entity (command block, skull, or beacon?) is receiving the packet, but it seems like Forge has overridden this behavior
