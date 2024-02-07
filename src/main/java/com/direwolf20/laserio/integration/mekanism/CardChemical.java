@@ -1,6 +1,7 @@
-package com.direwolf20.laserio.common.items.cards;
+package com.direwolf20.laserio.integration.mekanism;
 
 import com.direwolf20.laserio.common.containers.CardFluidContainer;
+import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.setup.Config;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -14,10 +15,10 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
 
-public class CardFluid extends BaseCard {
-    public CardFluid() {
+public class CardChemical extends BaseCard {
+    public CardChemical() {
         super();
-        CARDTYPE = CardType.FLUID;
+        CARDTYPE = CardType.CHEMICAL;
     }
 
     @Override
@@ -31,12 +32,11 @@ public class CardFluid extends BaseCard {
             buf.writeByte(-1);
         }));
 
-        //System.out.println(itemstack.getItem().getRegistryName()+""+itemstack.getTag());
         return new InteractionResultHolder<>(InteractionResult.PASS, itemstack);
     }
 
     public static int setFluidExtractAmt(ItemStack card, int fluidextractamt) {
-        if (fluidextractamt == Config.BASE_MILLI_BUCKETS_FLUID.get())
+        if (fluidextractamt == Config.BASE_MILLI_BUCKETS_CHEMICAL.get())
             card.removeTagKey("fluidextractamt");
         else
             card.getOrCreateTag().putInt("fluidextractamt", fluidextractamt);
@@ -45,7 +45,7 @@ public class CardFluid extends BaseCard {
 
     public static int getFluidExtractAmt(ItemStack card) {
         CompoundTag compound = card.getTag();
-        if (compound == null || !compound.contains("fluidextractamt")) return Config.BASE_MILLI_BUCKETS_FLUID.get();
+        if (compound == null || !compound.contains("fluidextractamt")) return Config.BASE_MILLI_BUCKETS_CHEMICAL.get();
         return compound.getInt("fluidextractamt");
     }
 }

@@ -17,6 +17,7 @@ import com.direwolf20.laserio.common.items.filters.*;
 import com.direwolf20.laserio.common.items.upgrades.OverclockerCard;
 import com.direwolf20.laserio.common.items.upgrades.OverclockerNode;
 import com.direwolf20.laserio.datagen.customrecipes.CardClearRecipe;
+import com.direwolf20.laserio.integration.mekanism.CardChemical;
 import com.direwolf20.laserio.util.CardHolderItemStackHandler;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.inventory.MenuType;
@@ -86,6 +87,7 @@ public class Registration {
     public static final DeferredHolder<Item, CardFluid> Card_Fluid = ITEMS.register("card_fluid", CardFluid::new);
     public static final DeferredHolder<Item, CardEnergy> Card_Energy = ITEMS.register("card_energy", CardEnergy::new);
     public static final DeferredHolder<Item, CardRedstone> Card_Redstone = ITEMS.register("card_redstone", CardRedstone::new);
+    public static final DeferredHolder<Item, CardChemical> Card_Chemical = ITEMS.register("card_chemical", CardChemical::new);
 
     //Filters
     public static final DeferredHolder<Item, FilterBasic> Filter_Basic = ITEMS.register("filter_basic", FilterBasic::new);

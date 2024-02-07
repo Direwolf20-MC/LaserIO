@@ -55,8 +55,8 @@ public class PacketUpdateCard {
                     BaseCard.setExtractSpeed(stack, ticks);
                 } else if (stack.getItem() instanceof CardFluid) {
                     overClockerCount = container.getSlot(1).getItem().getCount();
-                    if (extractAmt > Math.max(overClockerCount * Config.MULTIPLIER_MILLI_BUCKETS.get(), Config.BASE_MILLI_BUCKETS.get())) {
-                        extractAmt = Math.max(overClockerCount * Config.MULTIPLIER_MILLI_BUCKETS.get(), Config.BASE_MILLI_BUCKETS.get());
+                    if (extractAmt > Math.max(overClockerCount * Config.MULTIPLIER_MILLI_BUCKETS_FLUID.get(), Config.BASE_MILLI_BUCKETS_FLUID.get())) {
+                        extractAmt = Math.max(overClockerCount * Config.MULTIPLIER_MILLI_BUCKETS_FLUID.get(), Config.BASE_MILLI_BUCKETS_FLUID.get());
                     }
                     CardFluid.setFluidExtractAmt(stack, extractAmt);
                     short ticks = payload.ticks();

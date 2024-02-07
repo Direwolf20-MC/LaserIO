@@ -85,7 +85,7 @@ public class CardFluidScreen extends CardItemScreen {
             if (currentMode == 0) {
                 currentPriority = (short) (Math.min(currentPriority + change, 4096));
             } else {
-                currentFluidExtractAmt = (Math.min(currentFluidExtractAmt + change, Math.max(overClockerCount * Config.MULTIPLIER_MILLI_BUCKETS.get(), Config.BASE_MILLI_BUCKETS.get())));
+                currentFluidExtractAmt = (Math.min(currentFluidExtractAmt + change, Math.max(overClockerCount * Config.MULTIPLIER_MILLI_BUCKETS_FLUID.get(), Config.BASE_MILLI_BUCKETS_FLUID.get())));
             }
         }
     }
