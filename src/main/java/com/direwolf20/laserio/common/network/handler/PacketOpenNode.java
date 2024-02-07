@@ -13,7 +13,8 @@ import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.SimpleMenuProvider;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerLevelAccess;
@@ -25,6 +26,7 @@ import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 
 import java.util.Optional;
 
+import static com.direwolf20.laserio.common.blocks.LaserNode.SCREEN_LASERNODE;
 import static com.direwolf20.laserio.common.blocks.LaserNode.findCardHolders;
 
 public class PacketOpenNode {
@@ -69,8 +71,24 @@ public class PacketOpenNode {
             IItemHandler h = sender.level().getCapability(Capabilities.ItemHandler.BLOCK, sourcePos, Direction.values()[payload.side()]);
             ItemStack cardHolder = findCardHolders(sender);
 
-            sender.openMenu(new SimpleMenuProvider(
-                    (windowId, playerInventory, playerEntity) -> new LaserNodeContainer((LaserNodeBE) be, windowId, payload.side(), playerInventory, playerEntity, (LaserNodeItemHandler) h, ContainerLevelAccess.create(be.getLevel(), be.getBlockPos()), cardHolder), Component.translatable("")), (buf -> {
+            MenuProvider containerProvider = new MenuProvider() {
+                @Override
+                public Component getDisplayName() {
+                    return Component.translatable(SCREEN_LASERNODE);
+                }
+
+                @Override
+                public boolean shouldTriggerClientSideContainerClosingOnOpen() {
+                    return false;
+                }
+
+                @Override
+                public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player playerEntity) {
+                    return new LaserNodeContainer((LaserNodeBE) be, windowId, payload.side(), playerInventory, playerEntity, (LaserNodeItemHandler) h, ContainerLevelAccess.create(be.getLevel(), be.getBlockPos()), cardHolder);
+                }
+            };
+
+            sender.openMenu(containerProvider, (buf -> {
                 buf.writeBlockPos(pos);
                 buf.writeByte(payload.side());
                 buf.writeItem(cardHolder);

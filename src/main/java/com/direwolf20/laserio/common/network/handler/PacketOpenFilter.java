@@ -10,7 +10,8 @@ import com.direwolf20.laserio.common.network.data.OpenFilterPayload;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.SimpleMenuProvider;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
@@ -18,6 +19,8 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 
 import java.util.Optional;
+
+import static com.direwolf20.laserio.common.blocks.LaserNode.SCREEN_LASERNODE;
 
 public class PacketOpenFilter {
     public static final PacketOpenFilter INSTANCE = new PacketOpenFilter();
@@ -29,31 +32,91 @@ public class PacketOpenFilter {
     public static void doOpenFilter(ItemStack filterItem, ItemStack cardItem, ServerPlayer sender, BlockPos sourcePos) {
         if (filterItem.getItem() instanceof FilterBasic) {
             FilterBasicHandler handler = FilterBasic.getInventory(filterItem);
-            sender.openMenu(new SimpleMenuProvider(
-                    (windowId, playerInventory, playerEntity) -> new FilterBasicContainer(windowId, playerInventory, sender, handler, sourcePos, filterItem, cardItem), net.minecraft.network.chat.Component.translatable("")), (buf -> {
+            MenuProvider containerProvider = new MenuProvider() {
+                @Override
+                public Component getDisplayName() {
+                    return Component.translatable(SCREEN_LASERNODE);
+                }
+
+                @Override
+                public boolean shouldTriggerClientSideContainerClosingOnOpen() {
+                    return false;
+                }
+
+                @Override
+                public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player playerEntity) {
+                    return new FilterBasicContainer(windowId, playerInventory, sender, handler, sourcePos, filterItem, cardItem);
+                }
+            };
+            sender.openMenu(containerProvider, (buf -> {
                 buf.writeItem(filterItem);
                 buf.writeItem(cardItem);
             }));
         }
         if (filterItem.getItem() instanceof FilterCount) {
-            sender.openMenu(new SimpleMenuProvider(
-                    (windowId, playerInventory, playerEntity) -> new FilterCountContainer(windowId, playerInventory, sender, sourcePos, filterItem, cardItem), net.minecraft.network.chat.Component.translatable("")), (buf -> {
+            MenuProvider containerProvider = new MenuProvider() {
+                @Override
+                public Component getDisplayName() {
+                    return Component.translatable(SCREEN_LASERNODE);
+                }
+
+                @Override
+                public boolean shouldTriggerClientSideContainerClosingOnOpen() {
+                    return false;
+                }
+
+                @Override
+                public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player playerEntity) {
+                    return new FilterCountContainer(windowId, playerInventory, sender, sourcePos, filterItem, cardItem);
+                }
+            };
+            sender.openMenu(containerProvider, (buf -> {
                 buf.writeItem(filterItem);
                 buf.writeItem(cardItem);
             }));
         }
         if (filterItem.getItem() instanceof FilterTag) {
             FilterBasicHandler handler = FilterBasic.getInventory(filterItem);
-            sender.openMenu(new SimpleMenuProvider(
-                    (windowId, playerInventory, playerEntity) -> new FilterTagContainer(windowId, playerInventory, sender, handler, sourcePos, filterItem, cardItem), net.minecraft.network.chat.Component.translatable("")), (buf -> {
+            MenuProvider containerProvider = new MenuProvider() {
+                @Override
+                public Component getDisplayName() {
+                    return Component.translatable(SCREEN_LASERNODE);
+                }
+
+                @Override
+                public boolean shouldTriggerClientSideContainerClosingOnOpen() {
+                    return false;
+                }
+
+                @Override
+                public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player playerEntity) {
+                    return new FilterTagContainer(windowId, playerInventory, sender, handler, sourcePos, filterItem, cardItem);
+                }
+            };
+            sender.openMenu(containerProvider, (buf -> {
                 buf.writeItem(filterItem);
                 buf.writeItem(ItemStack.EMPTY);
             }));
         }
         if (filterItem.getItem() instanceof FilterNBT) {
             FilterBasicHandler handler = FilterBasic.getInventory(filterItem);
-            sender.openMenu(new SimpleMenuProvider(
-                    (windowId, playerInventory, playerEntity) -> new FilterNBTContainer(windowId, playerInventory, sender, handler, sourcePos, filterItem, cardItem), Component.translatable("")), (buf -> {
+            MenuProvider containerProvider = new MenuProvider() {
+                @Override
+                public Component getDisplayName() {
+                    return Component.translatable(SCREEN_LASERNODE);
+                }
+
+                @Override
+                public boolean shouldTriggerClientSideContainerClosingOnOpen() {
+                    return false;
+                }
+
+                @Override
+                public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player playerEntity) {
+                    return new FilterNBTContainer(windowId, playerInventory, sender, handler, sourcePos, filterItem, cardItem);
+                }
+            };
+            sender.openMenu(containerProvider, (buf -> {
                 buf.writeItem(filterItem);
                 buf.writeItem(ItemStack.EMPTY);
             }));

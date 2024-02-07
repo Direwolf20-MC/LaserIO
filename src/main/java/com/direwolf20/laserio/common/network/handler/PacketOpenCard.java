@@ -10,7 +10,8 @@ import com.direwolf20.laserio.common.items.filters.BaseFilter;
 import com.direwolf20.laserio.common.network.data.OpenCardPayload;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.SimpleMenuProvider;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
@@ -19,6 +20,7 @@ import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 
 import java.util.Optional;
 
+import static com.direwolf20.laserio.common.blocks.LaserNode.SCREEN_LASERNODE;
 import static com.direwolf20.laserio.common.items.cards.BaseCard.getInventory;
 
 public class PacketOpenCard {
@@ -49,8 +51,23 @@ public class PacketOpenCard {
             final byte side = sideTemp;
             if (itemStack.getItem() instanceof CardItem) {
                 if (!payload.hasShiftDown()) {
-                    sender.openMenu(new SimpleMenuProvider(
-                            (windowId, playerInventory, playerEntity) -> new CardItemContainer(windowId, playerInventory, sender, payload.sourcePos(), itemStack, side), net.minecraft.network.chat.Component.translatable("")), (buf -> {
+                    MenuProvider containerProvider = new MenuProvider() {
+                        @Override
+                        public Component getDisplayName() {
+                            return Component.translatable(SCREEN_LASERNODE);
+                        }
+
+                        @Override
+                        public boolean shouldTriggerClientSideContainerClosingOnOpen() {
+                            return false;
+                        }
+
+                        @Override
+                        public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player playerEntity) {
+                            return new CardItemContainer(windowId, playerInventory, sender, payload.sourcePos(), itemStack, side);
+                        }
+                    };
+                    sender.openMenu(containerProvider, (buf -> {
                         buf.writeItem(itemStack);
                         buf.writeByte(side);
                     }));
@@ -61,8 +78,23 @@ public class PacketOpenCard {
                 }
             } else if (itemStack.getItem() instanceof CardFluid) {
                 if (!payload.hasShiftDown()) {
-                    sender.openMenu(new SimpleMenuProvider(
-                            (windowId, playerInventory, playerEntity) -> new CardFluidContainer(windowId, playerInventory, sender, payload.sourcePos(), itemStack, side), net.minecraft.network.chat.Component.translatable("")), (buf -> {
+                    MenuProvider containerProvider = new MenuProvider() {
+                        @Override
+                        public Component getDisplayName() {
+                            return Component.translatable(SCREEN_LASERNODE);
+                        }
+
+                        @Override
+                        public boolean shouldTriggerClientSideContainerClosingOnOpen() {
+                            return false;
+                        }
+
+                        @Override
+                        public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player playerEntity) {
+                            return new CardFluidContainer(windowId, playerInventory, sender, payload.sourcePos(), itemStack, side);
+                        }
+                    };
+                    sender.openMenu(containerProvider, (buf -> {
                         buf.writeItem(itemStack);
                         buf.writeByte(side);
                     }));
@@ -72,19 +104,47 @@ public class PacketOpenCard {
                         PacketOpenFilter.doOpenFilter(filterItem, itemStack, sender, payload.sourcePos());
                 }
             } else if (itemStack.getItem() instanceof CardEnergy) {
-                sender.openMenu(new SimpleMenuProvider(
-                        (windowId, playerInventory, playerEntity) -> new CardEnergyContainer(windowId, playerInventory, sender, payload.sourcePos(), itemStack, side), net.minecraft.network.chat.Component.translatable("")), (buf -> {
+                MenuProvider containerProvider = new MenuProvider() {
+                    @Override
+                    public Component getDisplayName() {
+                        return Component.translatable(SCREEN_LASERNODE);
+                    }
+
+                    @Override
+                    public boolean shouldTriggerClientSideContainerClosingOnOpen() {
+                        return false;
+                    }
+
+                    @Override
+                    public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player playerEntity) {
+                        return new CardEnergyContainer(windowId, playerInventory, sender, payload.sourcePos(), itemStack, side);
+                    }
+                };
+                sender.openMenu(containerProvider, (buf -> {
                     buf.writeItem(itemStack);
                     buf.writeByte(side);
                 }));
-
             } else if (itemStack.getItem() instanceof CardRedstone) {
-                sender.openMenu(new SimpleMenuProvider(
-                        (windowId, playerInventory, playerEntity) -> new CardRedstoneContainer(windowId, playerInventory, sender, payload.sourcePos(), itemStack, side), Component.translatable("")), (buf -> {
+                MenuProvider containerProvider = new MenuProvider() {
+                    @Override
+                    public Component getDisplayName() {
+                        return Component.translatable(SCREEN_LASERNODE);
+                    }
+
+                    @Override
+                    public boolean shouldTriggerClientSideContainerClosingOnOpen() {
+                        return false;
+                    }
+
+                    @Override
+                    public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player playerEntity) {
+                        return new CardRedstoneContainer(windowId, playerInventory, sender, payload.sourcePos(), itemStack, side);
+                    }
+                };
+                sender.openMenu(containerProvider, (buf -> {
                     buf.writeItem(itemStack);
                     buf.writeByte(side);
                 }));
-
             }
         });
     }
