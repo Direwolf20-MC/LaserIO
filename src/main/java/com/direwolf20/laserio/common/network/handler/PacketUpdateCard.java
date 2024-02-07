@@ -14,6 +14,8 @@ import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 
 import java.util.Optional;
 
+import static com.direwolf20.laserio.common.items.cards.CardEnergy.max_energy_transfer;
+
 public class PacketUpdateCard {
     public static final PacketUpdateCard INSTANCE = new PacketUpdateCard();
 
@@ -63,22 +65,7 @@ public class PacketUpdateCard {
                         ticks = (short) Math.max(20 - overClockerCount * 5, 1);
                     BaseCard.setExtractSpeed(stack, ticks);
                 } else if (stack.getItem() instanceof CardEnergy) {
-                    int overClockers = container.getSlot(0).getItem().getCount();
-                    int max = 1000;
-                    switch (overClockers) {
-                        case 1:
-                            max = 4000;
-                            break;
-                        case 2:
-                            max = 16000;
-                            break;
-                        case 3:
-                            max = 32000;
-                            break;
-                        case 4:
-                            max = 100000;
-                            break;
-                    }
+                    int max = max_energy_transfer;
                     if (extractAmt > max) {
                         extractAmt = max;
                     }
