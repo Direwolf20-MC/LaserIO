@@ -4,6 +4,7 @@ import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import com.direwolf20.laserio.common.items.CardHolder;
 import com.direwolf20.laserio.common.network.PacketHandler;
 import com.direwolf20.laserio.setup.ClientSetup;
+import com.direwolf20.laserio.setup.Config;
 import com.direwolf20.laserio.setup.ModSetup;
 import com.direwolf20.laserio.setup.Registration;
 import com.mojang.logging.LogUtils;
@@ -24,6 +25,7 @@ public class LaserIO {
     public LaserIO(IEventBus eventBus) {
         // Register the deferred registry
         Registration.init(eventBus);
+        Config.register();
         // Register the setup method for modloading
         // Register the enqueueIMC method for modloading
         //FMLJavaModLoadingContext.get().getModEventBus().addListener(this::enqueueIMC);

@@ -1,6 +1,7 @@
 package com.direwolf20.laserio.common.items.cards;
 
 import com.direwolf20.laserio.common.containers.CardFluidContainer;
+import com.direwolf20.laserio.setup.Config;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -35,7 +36,7 @@ public class CardFluid extends BaseCard {
     }
 
     public static int setFluidExtractAmt(ItemStack card, int fluidextractamt) {
-        if (fluidextractamt == 1000)
+        if (fluidextractamt == Config.BASE_MILLI_BUCKETS.get())
             card.removeTagKey("fluidextractamt");
         else
             card.getOrCreateTag().putInt("fluidextractamt", fluidextractamt);
@@ -44,7 +45,7 @@ public class CardFluid extends BaseCard {
 
     public static int getFluidExtractAmt(ItemStack card) {
         CompoundTag compound = card.getTag();
-        if (compound == null || !compound.contains("fluidextractamt")) return 1000;
+        if (compound == null || !compound.contains("fluidextractamt")) return Config.BASE_MILLI_BUCKETS.get();
         return compound.getInt("fluidextractamt");
     }
 }

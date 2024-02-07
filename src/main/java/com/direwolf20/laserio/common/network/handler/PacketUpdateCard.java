@@ -7,14 +7,13 @@ import com.direwolf20.laserio.common.items.cards.CardEnergy;
 import com.direwolf20.laserio.common.items.cards.CardFluid;
 import com.direwolf20.laserio.common.items.cards.CardItem;
 import com.direwolf20.laserio.common.network.data.UpdateCardPayload;
+import com.direwolf20.laserio.setup.Config;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 
 import java.util.Optional;
-
-import static com.direwolf20.laserio.common.items.cards.CardEnergy.max_energy_transfer;
 
 public class PacketUpdateCard {
     public static final PacketUpdateCard INSTANCE = new PacketUpdateCard();
@@ -56,8 +55,8 @@ public class PacketUpdateCard {
                     BaseCard.setExtractSpeed(stack, ticks);
                 } else if (stack.getItem() instanceof CardFluid) {
                     overClockerCount = container.getSlot(1).getItem().getCount();
-                    if (extractAmt > Math.max(overClockerCount * 2000, 1000)) {
-                        extractAmt = Math.max(overClockerCount * 2000, 1000);
+                    if (extractAmt > Math.max(overClockerCount * Config.MULTIPLIER_MILLI_BUCKETS.get(), Config.BASE_MILLI_BUCKETS.get())) {
+                        extractAmt = Math.max(overClockerCount * Config.MULTIPLIER_MILLI_BUCKETS.get(), Config.BASE_MILLI_BUCKETS.get());
                     }
                     CardFluid.setFluidExtractAmt(stack, extractAmt);
                     short ticks = payload.ticks();
@@ -65,7 +64,7 @@ public class PacketUpdateCard {
                         ticks = (short) Math.max(20 - overClockerCount * 5, 1);
                     BaseCard.setExtractSpeed(stack, ticks);
                 } else if (stack.getItem() instanceof CardEnergy) {
-                    int max = max_energy_transfer;
+                    int max = Config.MAX_FE_TICK.get();
                     if (extractAmt > max) {
                         extractAmt = max;
                     }
