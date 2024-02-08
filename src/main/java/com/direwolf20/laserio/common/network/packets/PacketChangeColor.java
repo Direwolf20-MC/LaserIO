@@ -1,5 +1,6 @@
 package com.direwolf20.laserio.common.network.packets;
 
+import com.direwolf20.laserio.common.Color;
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
@@ -7,7 +8,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.network.NetworkEvent;
 
-import java.awt.*;
 import java.util.function.Supplier;
 
 

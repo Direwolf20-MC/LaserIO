@@ -1,5 +1,6 @@
 package com.direwolf20.laserio.client.screens;
 
+import com.direwolf20.laserio.common.Color;
 import com.direwolf20.laserio.common.LaserIO;
 import com.direwolf20.laserio.common.containers.LaserNodeContainer;
 import com.direwolf20.laserio.common.network.PacketHandler;
@@ -25,7 +26,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.client.gui.widget.ExtendedButton;
 import net.minecraftforge.client.gui.widget.ForgeSlider;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

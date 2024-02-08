@@ -1,5 +1,6 @@
 package com.direwolf20.laserio.common.blockentities.basebe;
 
+import com.direwolf20.laserio.common.Color;
 import com.direwolf20.laserio.common.blockentities.LaserConnectorAdvBE;
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import com.direwolf20.laserio.util.DimBlockPos;
@@ -16,7 +17,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 
 import javax.annotation.Nonnull;
-import java.awt.*;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Queue;

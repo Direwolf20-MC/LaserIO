@@ -1,6 +1,7 @@
 package com.direwolf20.laserio.client.renderer;
 
 import com.direwolf20.laserio.client.blockentityrenders.LaserNodeBERender;
+import com.direwolf20.laserio.common.Color;
 import com.direwolf20.laserio.common.blockentities.LaserConnectorAdvBE;
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import com.direwolf20.laserio.common.blockentities.basebe.BaseLaserBE;
@@ -28,7 +29,6 @@ import net.minecraftforge.items.ItemStackHandler;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
-import java.awt.*;
 import java.util.Queue;
 import java.util.Set;
 

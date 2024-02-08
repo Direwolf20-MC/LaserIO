@@ -2,13 +2,13 @@ package com.direwolf20.laserio.client.blockentityrenders;
 
 import com.direwolf20.laserio.client.blockentityrenders.baseberender.BaseLaserBERender;
 import com.direwolf20.laserio.client.renderer.DelayedRenderer;
+import com.direwolf20.laserio.common.Color;
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import org.joml.Vector3f;
 
-import java.awt.*;
 
 public class LaserNodeBERender extends BaseLaserBERender<LaserNodeBE> {
     public static final Vector3f[] offsets = {

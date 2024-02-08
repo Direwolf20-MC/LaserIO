@@ -1,5 +1,6 @@
 package com.direwolf20.laserio.client.renderer;
 
+import com.direwolf20.laserio.common.Color;
 import com.direwolf20.laserio.common.blockentities.LaserConnectorAdvBE;
 import com.direwolf20.laserio.common.blockentities.LaserConnectorBE;
 import com.direwolf20.laserio.common.blockentities.basebe.BaseLaserBE;
@@ -13,7 +14,6 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.RenderLevelStageEvent;
 import org.joml.Matrix4f;
 
-import java.awt.*;
 
 public class BlockOverlayRender {
     public static void renderSelectedBlock(RenderLevelStageEvent event, BlockPos pos, BaseLaserBE be) {
