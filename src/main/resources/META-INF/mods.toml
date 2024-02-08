@@ -31,7 +31,9 @@ description='''
     versionRange="${minecraft_version_range}"
     ordering="NONE"
     side="BOTH"
-#[[dependencies.laserio]]
-#    modId="patchouli"
-#    mandatory=false
-#    versionRange="[1.20.1-80-FORGE,)"
+[[dependencies.laserio]] #optional
+    modId="mekanism" #mandatory
+    type="optional" #mandatory
+    versionRange="[10.4,)"
+    ordering="AFTER"
+    side="BOTH"

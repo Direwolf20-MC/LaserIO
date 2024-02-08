@@ -2,6 +2,8 @@ package com.direwolf20.laserio.setup;
 
 import com.direwolf20.laserio.common.LaserIO;
 import com.direwolf20.laserio.common.events.ServerTickHandler;
+import com.direwolf20.laserio.common.items.cards.CardRedstone;
+import com.direwolf20.laserio.integration.mekanism.MekanismIntegration;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
@@ -29,6 +31,14 @@ public class ModSetup {
                 Registration.ITEMS.getEntries().forEach(e -> {
                     Item item = e.get();
                     output.accept(item);
+                    if (item instanceof CardRedstone) { //Doing it this way puts the Mekanism card after the redstone card.
+                        if (MekanismIntegration.isLoaded()) {
+                            Registration.ITEMS_MEKANISM.getEntries().forEach(f -> {
+                                Item itemMek = f.get();
+                                output.accept(itemMek);
+                            });
+                        }
+                    }
                 });
             })
             .build());

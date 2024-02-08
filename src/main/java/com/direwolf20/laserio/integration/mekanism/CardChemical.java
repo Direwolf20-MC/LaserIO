@@ -1,6 +1,6 @@
 package com.direwolf20.laserio.integration.mekanism;
 
-import com.direwolf20.laserio.common.containers.CardFluidContainer;
+import com.direwolf20.laserio.common.containers.CardChemicalContainer;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.setup.Config;
 import net.minecraft.nbt.CompoundTag;
@@ -27,7 +27,7 @@ public class CardChemical extends BaseCard {
         if (level.isClientSide()) return new InteractionResultHolder<>(InteractionResult.PASS, itemstack);
 
         ((ServerPlayer) player).openMenu(new SimpleMenuProvider(
-                (windowId, playerInventory, playerEntity) -> new CardFluidContainer(windowId, playerInventory, player, itemstack), Component.translatable("")), (buf -> {
+                (windowId, playerInventory, playerEntity) -> new CardChemicalContainer(windowId, playerInventory, player, itemstack), Component.translatable("")), (buf -> {
             buf.writeItem(itemstack);
             buf.writeByte(-1);
         }));
@@ -35,17 +35,18 @@ public class CardChemical extends BaseCard {
         return new InteractionResultHolder<>(InteractionResult.PASS, itemstack);
     }
 
-    public static int setFluidExtractAmt(ItemStack card, int fluidextractamt) {
-        if (fluidextractamt == Config.BASE_MILLI_BUCKETS_CHEMICAL.get())
-            card.removeTagKey("fluidextractamt");
+    public static int setChemicalExtractAmt(ItemStack card, int chemicalextractamt) {
+        if (chemicalextractamt == Config.BASE_MILLI_BUCKETS_CHEMICAL.get())
+            card.removeTagKey("chemicalextractamt");
         else
-            card.getOrCreateTag().putInt("fluidextractamt", fluidextractamt);
-        return fluidextractamt;
+            card.getOrCreateTag().putInt("chemicalextractamt", chemicalextractamt);
+        return chemicalextractamt;
     }
 
-    public static int getFluidExtractAmt(ItemStack card) {
+    public static int getChemicalExtractAmt(ItemStack card) {
         CompoundTag compound = card.getTag();
-        if (compound == null || !compound.contains("fluidextractamt")) return Config.BASE_MILLI_BUCKETS_CHEMICAL.get();
-        return compound.getInt("fluidextractamt");
+        if (compound == null || !compound.contains("chemicalextractamt"))
+            return Config.BASE_MILLI_BUCKETS_CHEMICAL.get();
+        return compound.getInt("chemicalextractamt");
     }
 }

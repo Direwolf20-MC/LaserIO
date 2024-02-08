@@ -66,6 +66,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
     protected Map<String, Button> buttons = new HashMap<>();
     protected byte currentRedstoneMode;
     protected boolean renderFluids = false;
+    protected boolean renderChemicals = false; //TODO Chemical Rendering
     private boolean showCardHolderUI;
 
     protected final String[] sneakyNames = {
