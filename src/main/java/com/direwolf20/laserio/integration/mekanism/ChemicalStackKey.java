@@ -15,14 +15,6 @@ public class ChemicalStackKey {
         this.hash = Objects.hash(chemical);
     }
 
-    /*public FluidStack getStack() {
-        return new ChemicalStack(chemical, 1);
-    }
-
-    public FluidStack getStack(int amt) {
-        return new FluidStack(chemical, amt);
-    }*/
-
     @Override
     public int hashCode() {
         return hash;
