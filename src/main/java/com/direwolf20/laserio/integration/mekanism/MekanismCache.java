@@ -9,10 +9,15 @@ import mekanism.api.Action;
 import mekanism.api.chemical.ChemicalStack;
 import mekanism.api.chemical.ChemicalType;
 import mekanism.api.chemical.IChemicalHandler;
+import mekanism.api.chemical.gas.IGasHandler;
+import mekanism.api.chemical.infuse.IInfusionHandler;
+import mekanism.api.chemical.pigment.IPigmentHandler;
+import mekanism.api.chemical.slurry.ISlurryHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
 
 import java.util.HashMap;
@@ -236,5 +241,29 @@ public class MekanismCache {
             facingHandlerChemical.get(sideConnection).put(ChemicalType.SLURRY, blockCapabilityCacheSlurry);
 
         return facingHandlerChemical.get(sideConnection);
+    }
+
+    public Map<ChemicalType, IChemicalHandler<?, ?>> getAttachedChemicalTanksNoCache(Direction direction, Byte sneakySide) {
+        Direction inventorySide = direction.getOpposite();
+        if (sneakySide != -1)
+            inventorySide = Direction.values()[sneakySide];
+        Level level = laserNodeBE.getLevel();
+        // if no inventory cached yet, find a new one
+        assert level != null;
+        BlockEntity be = level.getBlockEntity(laserNodeBE.getBlockPos().relative(direction));
+        // if we have a TE and its an item handler, try extracting from that
+        if (be != null) {
+            Map<ChemicalType, IChemicalHandler<?, ?>> returnMap = new HashMap<>();
+            IGasHandler gasHandler = level.getCapability(MekanismStatics.GAS_CAPABILITY, laserNodeBE.getBlockPos().relative(direction), inventorySide);
+            if (gasHandler != null) returnMap.put(ChemicalType.GAS, gasHandler);
+            IInfusionHandler infusionHandler = level.getCapability(MekanismStatics.INFUSION_CAPABILITY, laserNodeBE.getBlockPos().relative(direction), inventorySide);
+            if (infusionHandler != null) returnMap.put(ChemicalType.INFUSION, infusionHandler);
+            IPigmentHandler pigmentHandler = level.getCapability(MekanismStatics.PIGMENT_CAPABILITY, laserNodeBE.getBlockPos().relative(direction), inventorySide);
+            if (pigmentHandler != null) returnMap.put(ChemicalType.PIGMENT, pigmentHandler);
+            ISlurryHandler slurryHandler = level.getCapability(MekanismStatics.SLURRY_CAPABILITY, laserNodeBE.getBlockPos().relative(direction), inventorySide);
+            if (slurryHandler != null) returnMap.put(ChemicalType.SLURRY, slurryHandler);
+            return returnMap;
+        }
+        return null;
     }
 }
