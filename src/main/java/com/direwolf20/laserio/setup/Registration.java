@@ -38,6 +38,7 @@ import java.util.function.Supplier;
 
 import static com.direwolf20.laserio.client.particles.ModParticles.PARTICLE_TYPES;
 import static com.direwolf20.laserio.common.LaserIO.MODID;
+import static com.direwolf20.laserio.integration.mekanism.client.chemicalparticle.MekanismModParticles.PARTICLE_TYPES_MEKANISM;
 
 public class Registration {
 
@@ -57,6 +58,7 @@ public class Registration {
         ITEMS.register(eventBus);
         if (MekanismIntegration.isLoaded()) {
             ITEMS_MEKANISM.register(eventBus);
+            PARTICLE_TYPES_MEKANISM.register(eventBus);
         }
         BLOCK_ENTITIES.register(eventBus);
         CONTAINERS.register(eventBus);

@@ -1,7 +1,13 @@
 package com.direwolf20.laserio.integration.mekanism;
 
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
+import com.direwolf20.laserio.common.blocks.LaserNode;
+import com.direwolf20.laserio.common.events.ServerTickHandler;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
+import com.direwolf20.laserio.integration.mekanism.client.chemicalparticle.ChemicalFlowParticleData;
+import com.direwolf20.laserio.integration.mekanism.client.chemicalparticle.ParticleDataChemical;
+import com.direwolf20.laserio.integration.mekanism.client.chemicalparticle.ParticleRenderDataChemical;
+import com.direwolf20.laserio.util.CardRender;
 import com.direwolf20.laserio.util.DimBlockPos;
 import com.direwolf20.laserio.util.ExtractorCardCache;
 import com.direwolf20.laserio.util.InserterCardCache;
@@ -13,16 +19,24 @@ import mekanism.api.chemical.gas.IGasHandler;
 import mekanism.api.chemical.infuse.IInfusionHandler;
 import mekanism.api.chemical.pigment.IPigmentHandler;
 import mekanism.api.chemical.slurry.ISlurryHandler;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
+import org.joml.Vector3f;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
+
+import static com.direwolf20.laserio.client.blockentityrenders.LaserNodeBERender.offsets;
+import static com.direwolf20.laserio.util.MiscTools.findOffset;
 
 public class MekanismCache {
     private record LaserNodeChemicalHandler(LaserNodeBE be, IChemicalHandler<?, ?> handler) {
@@ -33,7 +47,7 @@ public class MekanismCache {
     private final HashMap<ExtractorCardCache, HashMap<ChemicalStackKey, List<InserterCardCache>>> inserterCacheChemical = new HashMap<>();
 
     private final LaserNodeBE laserNodeBE;
-
+    private final Random random = new Random();
 
     public MekanismCache(LaserNodeBE laserNodeBE) {
         this.laserNodeBE = laserNodeBE;
@@ -130,7 +144,7 @@ public class MekanismCache {
             foundAnything = true;
             handler.insertChemical(drainedStack, Action.EXECUTE);
             //TODO Gas Particles
-            //drawParticlesFluid(drainedStack, extractorCardCache.direction, extractorCardCache.be, inserterCardCache.be, inserterCardCache.direction, extractorCardCache.cardSlot, inserterCardCache.cardSlot);
+            drawParticlesChemical(drainedStack, extractorCardCache.direction, extractorCardCache.be, inserterCardCache.be, inserterCardCache.direction, extractorCardCache.cardSlot, inserterCardCache.cardSlot);
             totalAmtNeeded -= drainedStack.getAmount();
             amtToExtract = totalAmtNeeded;
             if (extractorCardCache.roundRobin != 0) laserNodeBE.getNextRR(extractorCardCache, inserterCardCaches);
@@ -265,5 +279,54 @@ public class MekanismCache {
             return returnMap;
         }
         return null;
+    }
+
+    public void drawParticlesChemical(ChemicalStack<?> chemicalStack, Direction fromDirection, LaserNodeBE sourceBE, LaserNodeBE destinationBE, Direction destinationDirection, int extractPosition, int insertPosition) {
+        ServerTickHandler.addToListFluid(new ParticleDataChemical(chemicalStack, new DimBlockPos(sourceBE.getLevel(), sourceBE.getBlockPos()), (byte) fromDirection.ordinal(), new DimBlockPos(destinationBE.getLevel(), destinationBE.getBlockPos()), (byte) destinationDirection.ordinal(), (byte) extractPosition, (byte) insertPosition));
+    }
+
+    public void drawParticlesClient(ParticleRenderDataChemical partData) {
+        //if (particlesDrawnThisTick > 64) return;
+        Level level = laserNodeBE.getLevel();
+        ClientLevel clientLevel = (ClientLevel) level;
+        ChemicalStack<?> chemicalStack = partData.chemicalStack;
+        if (chemicalStack.isEmpty()) return; //I managed to crash without this, so added it :)
+        BlockPos toPos = partData.toPos;
+        BlockPos fromPos = partData.fromPos;
+        Direction direction = Direction.values()[partData.direction];
+        BlockState targetState = level.getBlockState(toPos);
+        float randomSpread = 0.01f;
+        int min = 100;
+        int max = 8000;
+        int minPart = 8;
+        int maxPart = 64;
+        long count = ((maxPart - minPart) * (chemicalStack.getAmount() - min)) / (max - min) + minPart;
+
+        if (targetState.getBlock() instanceof LaserNode) {
+            targetState = level.getBlockState(fromPos);
+            VoxelShape voxelShape = targetState.getShape(level, toPos);
+            Vector3f extractOffset = findOffset(direction, partData.position, offsets);
+            Vector3f insertOffset = CardRender.shapeOffset(extractOffset, voxelShape, fromPos, toPos, direction, level, targetState);
+            ChemicalFlowParticleData data = new ChemicalFlowParticleData(chemicalStack, toPos.getX() + extractOffset.x(), toPos.getY() + extractOffset.y(), toPos.getZ() + extractOffset.z(), 10, chemicalStack.getType().toString());
+            for (int i = 0; i < count; ++i) {
+                //particlesDrawnThisTick++;
+                double d1 = this.random.nextGaussian() * (double) randomSpread;
+                double d3 = this.random.nextGaussian() * (double) randomSpread;
+                double d5 = this.random.nextGaussian() * (double) randomSpread;
+                clientLevel.addParticle(data, toPos.getX() + insertOffset.x() + d1, toPos.getY() + insertOffset.y() + d3, toPos.getZ() + insertOffset.z() + d5, 0, 0, 0);
+            }
+        } else {
+            VoxelShape voxelShape = targetState.getShape(level, toPos);
+            Vector3f extractOffset = findOffset(direction, partData.position, offsets);
+            Vector3f insertOffset = CardRender.shapeOffset(extractOffset, voxelShape, fromPos, toPos, direction, level, targetState);
+            ChemicalFlowParticleData data = new ChemicalFlowParticleData(chemicalStack, fromPos.getX() + insertOffset.x(), fromPos.getY() + insertOffset.y(), fromPos.getZ() + insertOffset.z(), 10, chemicalStack.getType().toString());
+            for (int i = 0; i < count; ++i) {
+                //particlesDrawnThisTick++;
+                double d1 = this.random.nextGaussian() * (double) randomSpread;
+                double d3 = this.random.nextGaussian() * (double) randomSpread;
+                double d5 = this.random.nextGaussian() * (double) randomSpread;
+                clientLevel.addParticle(data, fromPos.getX() + extractOffset.x() + d1, fromPos.getY() + extractOffset.y() + d3, fromPos.getZ() + extractOffset.z() + d5, 0, 0, 0);
+            }
+        }
     }
 }
