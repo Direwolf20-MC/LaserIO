@@ -55,8 +55,9 @@ public class Registration {
     public static void init(IEventBus eventBus) {
         BLOCKS.register(eventBus);
         ITEMS.register(eventBus);
-        if (MekanismIntegration.isLoaded())
+        if (MekanismIntegration.isLoaded()) {
             ITEMS_MEKANISM.register(eventBus);
+        }
         BLOCK_ENTITIES.register(eventBus);
         CONTAINERS.register(eventBus);
         PARTICLE_TYPES.register(eventBus);
