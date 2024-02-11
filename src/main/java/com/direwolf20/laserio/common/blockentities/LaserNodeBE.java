@@ -1991,6 +1991,9 @@ public class LaserNodeBE extends BaseLaserBE {
         inserterNodes.clear();
         inserterCache.clear();
         inserterCacheFluid.clear();
+        if (mekanismCache != null) {
+            mekanismCache.inserterCacheChemical.clear();
+        }
         channelOnlyCache.clear();
         this.stockerDestinationCache.clear();
         this.redstoneNetwork.clear();
@@ -2016,6 +2019,9 @@ public class LaserNodeBE extends BaseLaserBE {
         inserterNodes.removeIf(p -> p.relativePos.equals(relativePos));
         inserterCache.clear(); //TODO maybe just remove destinations that match this blockPos
         inserterCacheFluid.clear();
+        if (mekanismCache != null) {
+            mekanismCache.inserterCacheChemical.clear();
+        }
         channelOnlyCache.clear();
         this.stockerDestinationCache.clear();
         if (be == null) return; //If the block position given doesn't contain a LaserNodeBE stop
@@ -2240,6 +2246,9 @@ public class LaserNodeBE extends BaseLaserBE {
         this.facingHandlerItem.remove(sideConnection);
         this.facingHandlerFluid.remove(sideConnection);
         this.facingHandlerEnergy.remove(sideConnection);
+        if (mekanismCache != null) {
+            mekanismCache.facingHandlerChemical.clear();
+        }
     }
 
     /** Called when a neighbor updates to invalidate the inventory cache */
@@ -2248,6 +2257,9 @@ public class LaserNodeBE extends BaseLaserBE {
         this.facingHandlerItem.clear();
         this.facingHandlerFluid.clear();
         this.facingHandlerEnergy.clear();
+        if (mekanismCache != null) {
+            mekanismCache.facingHandlerChemical.clear();
+        }
         markDirtyClient();
     }
 
