@@ -24,6 +24,7 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -32,10 +33,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
 import org.joml.Vector3f;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import static com.direwolf20.laserio.client.blockentityrenders.LaserNodeBERender.offsets;
@@ -55,6 +53,125 @@ public class MekanismCache {
 
     public MekanismCache(LaserNodeBE laserNodeBE) {
         this.laserNodeBE = laserNodeBE;
+    }
+
+    public boolean senseChemicals(SensorCardCache sensorCardCache) {
+        Level level = laserNodeBE.getLevel();
+        BlockPos adjacentPos = laserNodeBE.getBlockPos().relative(sensorCardCache.direction);
+        assert level != null;
+        if (!level.isLoaded(adjacentPos)) return false;
+        NodeSideCache nodeSideCache = laserNodeBE.nodeSideCaches[sensorCardCache.direction.ordinal()];
+        Map<ChemicalType, BlockCapabilityCache<? extends IChemicalHandler<?, ?>, Direction>> chemicalHandlerMap = getAttachedChemicalTanks(sensorCardCache.direction, sensorCardCache.sneaky);
+        if (chemicalHandlerMap == null || chemicalHandlerMap.isEmpty()) {
+            if (laserNodeBE.updateRedstoneFromSensor(false, sensorCardCache.redstoneChannel, nodeSideCache)) {
+                laserNodeBE.rendersChecked = false;
+                laserNodeBE.clearCachedInventories();
+                laserNodeBE.redstoneChecked = false;
+            }
+            return false;
+        }
+
+        ItemStack filter = sensorCardCache.filterCard;
+        boolean andMode = BaseCard.getAnd(sensorCardCache.cardItem);
+        boolean filterMatched = false;
+
+        if (filter.isEmpty()) { //Needs a filter
+            if (laserNodeBE.updateRedstoneFromSensor(false, sensorCardCache.redstoneChannel, nodeSideCache)) {
+                laserNodeBE.rendersChecked = false;
+                laserNodeBE.clearCachedInventories();
+                laserNodeBE.redstoneChecked = false;
+            }
+            return false;
+        }
+        if (filter.getItem() instanceof FilterBasic) {
+            List<ChemicalStack<?>> filteredChemicals = sensorCardCache.mekanismCardCache.getFilteredChemicals();
+            List<ChemicalStack<?>> filteredChemicalsOriginal = new ArrayList<>(filteredChemicals);
+
+            outloop:
+            for (Map.Entry<ChemicalType, BlockCapabilityCache<? extends IChemicalHandler<?, ?>, Direction>> entry : chemicalHandlerMap.entrySet()) {
+                IChemicalHandler<?, ?> chemicalHandler = entry.getValue().getCapability();
+                for (ChemicalStack<?> chemicalStack : filteredChemicalsOriginal) {
+                    if (!MekanismStatics.isValidChemicalForHandler(chemicalHandler, chemicalStack))
+                        continue; //Don't check Gas's against the pigments handler
+                    for (int tank = 0; tank < chemicalHandler.getTanks(); tank++) { //Loop through all the tanks
+                        ChemicalStack<?> stackInTank = chemicalHandler.getChemicalInTank(tank);
+                        if (new ChemicalStackKey(chemicalStack).equals(new ChemicalStackKey(stackInTank))) {
+                            filteredChemicals.remove(chemicalStack);
+                            if (!andMode) {
+                                break outloop;
+                            }
+                        }
+                    }
+                }
+            }
+            if (andMode)
+                filterMatched = filteredChemicals.size() == 0;
+            else
+                filterMatched = filteredChemicals.size() < filteredChemicalsOriginal.size();
+        } else if (filter.getItem() instanceof FilterCount) {
+            List<ChemicalStack<?>> filteredChemicals = sensorCardCache.mekanismCardCache.getFilteredChemicals();
+            List<ChemicalStack<?>> filteredChemicalsOriginal = new ArrayList<>(filteredChemicals);
+
+            outloop:
+            for (Map.Entry<ChemicalType, BlockCapabilityCache<? extends IChemicalHandler<?, ?>, Direction>> entry : chemicalHandlerMap.entrySet()) {
+                IChemicalHandler<?, ?> chemicalHandler = entry.getValue().getCapability();
+                for (ChemicalStack<?> chemicalStack : filteredChemicalsOriginal) {
+                    if (!MekanismStatics.isValidChemicalForHandler(chemicalHandler, chemicalStack))
+                        continue; //Don't check Gas's against the pigments handler
+                    int desiredAmt = sensorCardCache.mekanismCardCache.getFilterAmt(chemicalStack);
+                    for (int tank = 0; tank < chemicalHandler.getTanks(); tank++) { //Loop through all the tanks
+                        ChemicalStack<?> stackInTank = chemicalHandler.getChemicalInTank(tank);
+                        if (new ChemicalStackKey(chemicalStack).equals(new ChemicalStackKey(stackInTank))) {
+                            long amtHad = stackInTank.getAmount();
+                            if (amtHad < desiredAmt || (sensorCardCache.exact && amtHad > desiredAmt)) {
+                                //noOp
+                            } else {
+                                filteredChemicals.remove(chemicalStack);
+                                if (!andMode) {
+                                    break outloop;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            if (andMode)
+                filterMatched = filteredChemicals.size() == 0;
+            else
+                filterMatched = filteredChemicals.size() < filteredChemicalsOriginal.size();
+        } else if (filter.getItem() instanceof FilterTag) {
+            List<String> tags = sensorCardCache.getFilterTags();
+            int tagsToMatch = tags.size();
+
+            outloop:
+            for (Map.Entry<ChemicalType, BlockCapabilityCache<? extends IChemicalHandler<?, ?>, Direction>> entry : chemicalHandlerMap.entrySet()) {
+                IChemicalHandler<?, ?> chemicalHandler = entry.getValue().getCapability();
+                for (int tank = 0; tank < chemicalHandler.getTanks(); tank++) { //Loop through all the tanks
+                    ChemicalStack<?> stackInTank = chemicalHandler.getChemicalInTank(tank);
+                    for (TagKey tagKey : stackInTank.getType().getTags().toList()) {
+                        String chemicalTag = tagKey.location().toString().toLowerCase(Locale.ROOT);
+                        if (tags.contains(chemicalTag)) {
+                            tags.remove(chemicalTag);
+                            if (!andMode) {
+                                break outloop;
+                            }
+                        }
+                    }
+                }
+            }
+            //In and mode, the list of tags needs to be empty, in or mode it just has to be 1 smaller.
+            if (andMode)
+                filterMatched = tags.size() == 0;
+            else
+                filterMatched = tags.size() < tagsToMatch;
+        }
+        if (laserNodeBE.updateRedstoneFromSensor(filterMatched, sensorCardCache.redstoneChannel, nodeSideCache)) {
+            //System.out.println("Redstone network change detected");
+            laserNodeBE.rendersChecked = false;
+            laserNodeBE.clearCachedInventories();
+            laserNodeBE.redstoneChecked = false;
+        }
+        return true;
     }
 
     public boolean stockChemicals(StockerCardCache stockerCardCache) {

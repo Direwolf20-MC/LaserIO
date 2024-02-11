@@ -263,6 +263,9 @@ public class LaserNodeBE extends BaseLaserBE {
                         } else if (extractorCardCache.cardType.equals(BaseCard.CardType.ENERGY)) {
                             if (senseEnergy(sensorCardCache))
                                 countCardsHandled++;
+                        } else if (extractorCardCache.cardType.equals(BaseCard.CardType.CHEMICAL)) {
+                            if (mekanismCache.senseChemicals(sensorCardCache))
+                                countCardsHandled++;
                         }
                     }
                     if (extractorCardCache.remainingSleep <= 0) {
