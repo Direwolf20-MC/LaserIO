@@ -2,6 +2,7 @@ package com.direwolf20.laserio.datagen;
 
 import com.direwolf20.laserio.datagen.customrecipes.CardClearRecipeBuilder;
 import com.direwolf20.laserio.setup.Registration;
+import mekanism.common.tags.MekanismTags;
 import net.minecraft.advancements.critereon.InventoryChangeTrigger;
 import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.data.PackOutput;
@@ -149,6 +150,18 @@ public class LaserIORecipes extends RecipeProvider {
                 .define('r', Tags.Items.DUSTS_REDSTONE)
                 .define('p', Registration.Logic_Chip.get())
                 .define('g', Tags.Items.NUGGETS_GOLD)
+                .define('q', Tags.Items.GEMS_QUARTZ)
+                .group("laserio")
+                .unlockedBy("has_logic_chip", InventoryChangeTrigger.TriggerInstance.hasItems(Registration.Logic_Chip.get()))
+                .save(recipeOutput);
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, Registration.Card_Chemical.get(), 1)
+                .pattern("rlr")
+                .pattern("qpq")
+                .pattern("ggg")
+                .define('r', Tags.Items.DUSTS_REDSTONE)
+                .define('p', Registration.Logic_Chip.get())
+                .define('g', Tags.Items.NUGGETS_GOLD)
+                .define('l', MekanismTags.Items.CIRCUITS_BASIC)
                 .define('q', Tags.Items.GEMS_QUARTZ)
                 .group("laserio")
                 .unlockedBy("has_logic_chip", InventoryChangeTrigger.TriggerInstance.hasItems(Registration.Logic_Chip.get()))
