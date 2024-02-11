@@ -66,7 +66,7 @@ public class MekanismCache {
             if (chemicalHandler == null) continue;
             for (int tank = 0; tank < chemicalHandler.getTanks(); tank++) {
                 ChemicalStack<?> chemicalStack = chemicalHandler.getChemicalInTank(tank);
-                if (chemicalStack.isEmpty() /*|| !extractorCardCache.isStackValidForCard(fluidStack)*/)
+                if (chemicalStack.isEmpty() || !extractorCardCache.mekanismCardCache.isStackValidForCard(chemicalStack))
                     continue; //TODO Chemical Filtering
                 ChemicalStack<?> extractStack = chemicalStack.copy();
                 extractStack.setAmount(extractorCardCache.extractAmt);
@@ -143,7 +143,6 @@ public class MekanismCache {
             if (drainedStack.isEmpty()) continue; //If we didn't get anything for whatever reason
             foundAnything = true;
             handler.insertChemical(drainedStack, Action.EXECUTE);
-            //TODO Gas Particles
             drawParticlesChemical(drainedStack, extractorCardCache.direction, extractorCardCache.be, inserterCardCache.be, inserterCardCache.direction, extractorCardCache.cardSlot, inserterCardCache.cardSlot);
             totalAmtNeeded -= drainedStack.getAmount();
             amtToExtract = totalAmtNeeded;

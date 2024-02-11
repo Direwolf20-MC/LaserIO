@@ -7,7 +7,9 @@ import mekanism.api.chemical.pigment.IPigmentHandler;
 import mekanism.api.chemical.slurry.ISlurryHandler;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.capabilities.BlockCapability;
+import net.neoforged.neoforge.capabilities.ItemCapability;
 import org.jetbrains.annotations.Nullable;
 
 public class MekanismStatics {
@@ -15,6 +17,12 @@ public class MekanismStatics {
     public static BlockCapability<IInfusionHandler, @Nullable Direction> INFUSION_CAPABILITY = BlockCapability.createSided(new ResourceLocation("mekanism", "infusion_handler"), IInfusionHandler.class);
     public static BlockCapability<IPigmentHandler, @Nullable Direction> PIGMENT_CAPABILITY = BlockCapability.createSided(new ResourceLocation("mekanism", "pigment_handler"), IPigmentHandler.class);
     public static BlockCapability<ISlurryHandler, @Nullable Direction> SLURRY_CAPABILITY = BlockCapability.createSided(new ResourceLocation("mekanism", "slurry_handler"), ISlurryHandler.class);
+
+    public static ItemCapability<IGasHandler, Void> GAS_CAPABILITY_ITEM = ItemCapability.createVoid(new ResourceLocation("mekanism", "gas_handler"), IGasHandler.class);
+    public static ItemCapability<IInfusionHandler, Void> INFUSION_CAPABILITY_ITEM = ItemCapability.createVoid(new ResourceLocation("mekanism", "infusion_handler"), IInfusionHandler.class);
+    public static ItemCapability<IPigmentHandler, Void> PIGMENT_CAPABILITY_ITEM = ItemCapability.createVoid(new ResourceLocation("mekanism", "pigment_handler"), IPigmentHandler.class);
+    public static ItemCapability<ISlurryHandler, Void> SLURRY_CAPABILITY_ITEM = ItemCapability.createVoid(new ResourceLocation("mekanism", "slurry_handler"), ISlurryHandler.class);
+
 
     public static BlockCapability<? extends IChemicalHandler<?, ?>, @Nullable Direction> getCapabilityForChemical(ChemicalType chemicalType) {
         return switch (chemicalType) {
@@ -39,6 +47,20 @@ public class MekanismStatics {
     BlockCapability<HANDLER, DIRECTION> getCapabilityForChemical(IChemicalTank<CHEMICAL, STACK> tank) {
         //Note: We just use getEmptyStack as it still has enough information
         return getCapabilityForChemical(tank.getEmptyStack());
+    }
+
+    public static <CHEMICAL extends Chemical<CHEMICAL>, STACK extends ChemicalStack<CHEMICAL>, HANDLER extends IChemicalHandler<CHEMICAL, STACK>> boolean hasChemical(ItemStack stack, ItemCapability<HANDLER, Void> capability) {
+        HANDLER handler = stack.getCapability(capability);
+        if (handler != null) {
+            for (int tank = 0; tank < handler.getTanks(); ++tank) {
+                STACK chemicalStack = handler.getChemicalInTank(tank);
+                if (!chemicalStack.isEmpty()) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     /**
