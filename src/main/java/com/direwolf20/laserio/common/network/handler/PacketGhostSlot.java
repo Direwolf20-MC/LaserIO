@@ -38,7 +38,7 @@ public class PacketGhostSlot {
             ItemStack filterStack = container.slots.get(0).getItem();
 
             if (container instanceof CardItemContainer && filterStack.getItem() instanceof FilterCount) {
-                ItemStack stack = payload.stack();
+                ItemStack stack = payload.stack().copy();
                 FilterCountHandler handler = (FilterCountHandler) ((CardItemContainer) container).filterHandler;
                 int mbAmt = payload.mbAmt();
                 if (mbAmt == 0 && (container instanceof CardFluidContainer || container instanceof CardChemicalContainer)) {
