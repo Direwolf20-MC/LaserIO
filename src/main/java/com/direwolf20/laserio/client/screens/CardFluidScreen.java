@@ -4,6 +4,7 @@ import com.direwolf20.laserio.client.screens.widgets.NumberButton;
 import com.direwolf20.laserio.client.screens.widgets.ToggleButton;
 import com.direwolf20.laserio.common.LaserIO;
 import com.direwolf20.laserio.common.containers.CardItemContainer;
+import com.direwolf20.laserio.common.containers.customslot.FilterBasicSlot;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.common.items.cards.CardFluid;
 import com.direwolf20.laserio.common.items.filters.FilterCount;
@@ -13,6 +14,7 @@ import com.direwolf20.laserio.common.network.data.UpdateCardPayload;
 import com.direwolf20.laserio.common.network.data.UpdateFilterPayload;
 import com.direwolf20.laserio.setup.Config;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
@@ -21,7 +23,13 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidUtil;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
 import net.neoforged.neoforge.network.PacketDistributor;
+
+import java.util.Optional;
 
 public class CardFluidScreen extends CardItemScreen {
 
@@ -68,6 +76,30 @@ public class CardFluidScreen extends CardItemScreen {
             ((NumberButton) buttons.get("amount")).setValue(currentMode == 0 ? currentPriority : currentFluidExtractAmt);
             modeChange();
         }));
+    }
+
+    @Override
+    protected void renderTooltip(GuiGraphics pGuiGraphics, int pX, int pY) {
+        if (this.menu.getCarried().isEmpty() && this.hoveredSlot != null && this.hoveredSlot.hasItem()) {
+            ItemStack itemstack = this.hoveredSlot.getItem();
+            if (hoveredSlot instanceof FilterBasicSlot) {
+                Optional<IFluidHandlerItem> fluidHandlerLazyOptional = FluidUtil.getFluidHandler(itemstack);
+                if (fluidHandlerLazyOptional.isPresent()) {
+                    FluidStack fluidStack = FluidStack.EMPTY;
+                    IFluidHandler fluidHandler = fluidHandlerLazyOptional.get();
+                    for (int tank = 0; tank < fluidHandler.getTanks(); tank++) {
+                        fluidStack = fluidHandler.getFluidInTank(tank);
+                        if (!fluidStack.isEmpty())
+                            break;
+                    }
+                    if (!fluidStack.isEmpty()) {
+                        pGuiGraphics.renderTooltip(this.font, fluidStack.getDisplayName(), pX, pY);
+                        return;
+                    }
+                }
+            }
+            pGuiGraphics.renderTooltip(this.font, this.getTooltipFromContainerItem(itemstack), itemstack.getTooltipImage(), itemstack, pX, pY);
+        }
     }
 
     @Override
