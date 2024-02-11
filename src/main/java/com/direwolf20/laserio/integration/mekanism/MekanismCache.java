@@ -12,6 +12,7 @@ import com.direwolf20.laserio.util.CardRender;
 import com.direwolf20.laserio.util.DimBlockPos;
 import com.direwolf20.laserio.util.ExtractorCardCache;
 import com.direwolf20.laserio.util.InserterCardCache;
+import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
 import mekanism.api.Action;
 import mekanism.api.chemical.ChemicalStack;
 import mekanism.api.chemical.ChemicalType;
@@ -44,8 +45,8 @@ public class MekanismCache {
 
     }
 
-    private final Map<LaserNodeBE.SideConnection, Map<ChemicalType, BlockCapabilityCache<? extends IChemicalHandler<?, ?>, Direction>>> facingHandlerChemical = new HashMap<>();
-    private final HashMap<ExtractorCardCache, HashMap<ChemicalStackKey, List<InserterCardCache>>> inserterCacheChemical = new HashMap<>();
+    public final Map<LaserNodeBE.SideConnection, Map<ChemicalType, BlockCapabilityCache<? extends IChemicalHandler<?, ?>, Direction>>> facingHandlerChemical = new HashMap<>();
+    public final HashMap<ExtractorCardCache, HashMap<ChemicalStackKey, List<InserterCardCache>>> inserterCacheChemical = new HashMap<>();
 
     private final LaserNodeBE laserNodeBE;
     private final Random random = new Random();
@@ -82,13 +83,13 @@ public class MekanismCache {
                     extractStack.setAmount(amtRemaining);
                 }
 
-            /*if (extractorCardCache.exact) { //TODO Chemical Exact Mode
-                if (extractFluidStackExact(extractorCardCache, adjacentTank, extractStack))
-                    return true;
-            } else {*/
-                if (extractChemicalStack(extractorCardCache, chemicalHandler, extractStack, entry.getKey()))
-                    return true;
-                //}
+                if (extractorCardCache.exact) {
+                    if (extractChemicalStackExact(extractorCardCache, chemicalHandler, extractStack, entry.getKey()))
+                        return true;
+                } else {
+                    if (extractChemicalStack(extractorCardCache, chemicalHandler, extractStack, entry.getKey()))
+                        return true;
+                }
             }
         }
         return false;
@@ -152,10 +153,82 @@ public class MekanismCache {
         return foundAnything;
     }
 
+    public boolean extractChemicalStackExact(ExtractorCardCache extractorCardCache, IChemicalHandler fromInventory, ChemicalStack<?> extractStack, ChemicalType chemicalType) {
+        long totalAmtNeeded = extractStack.getAmount();
+        long amtToExtract = extractStack.getAmount();
+
+        ChemicalStack<?> testDrain = fromInventory.extractChemical(extractStack, Action.SIMULATE);
+        if (testDrain.getAmount() < totalAmtNeeded)
+            return false; //If we don't have enough in the extractTank we can't pull out this exact amount!
+        List<InserterCardCache> inserterCardCaches = getPossibleInserters(extractorCardCache, extractStack);
+        int roundRobin = -1;
+
+        if (extractorCardCache.roundRobin != 0) {
+            roundRobin = laserNodeBE.getRR(extractorCardCache);
+            inserterCardCaches = laserNodeBE.applyRR(extractorCardCache, inserterCardCaches, roundRobin);
+        }
+
+        Map<InserterCardCache, Long> insertHandlers = new Object2LongOpenHashMap<>();
+
+        for (InserterCardCache inserterCardCache : inserterCardCaches) {
+            LaserNodeChemicalHandler laserNodeChemicalHandler = getLaserNodeHandlerChemical(inserterCardCache, chemicalType);
+            if (laserNodeChemicalHandler == null) continue;
+            IChemicalHandler handler = laserNodeChemicalHandler.handler;
+            if (inserterCardCache.filterCard.getItem() instanceof FilterCount) {
+                int filterCount = inserterCardCache.mekanismCardCache.getFilterAmt(extractStack);
+                for (int tank = 0; tank < handler.getTanks(); tank++) {
+                    ChemicalStack<?> chemicalStack = handler.getChemicalInTank(tank);
+                    if (chemicalStack.isEmpty() || new ChemicalStackKey(chemicalStack).equals(new ChemicalStackKey(extractStack))) {
+                        long currentAmt = chemicalStack.getAmount();
+                        long neededAmt = filterCount - currentAmt;
+                        if (neededAmt < totalAmtNeeded) {
+                            amtToExtract = neededAmt;
+                            break;
+                        }
+                    }
+                }
+            }
+            if (amtToExtract == 0) {
+                amtToExtract = totalAmtNeeded;
+                continue;
+            }
+            extractStack.setAmount(amtToExtract);
+            long amtReturned = handler.insertChemical(extractStack, Action.SIMULATE).getAmount();
+            if (amtReturned == amtToExtract) { //Next inserter if nothing went in -- return false if enforcing round robin
+                if (extractorCardCache.roundRobin == 2) {
+                    return false;
+                }
+                if (extractorCardCache.roundRobin != 0) laserNodeBE.getNextRR(extractorCardCache, inserterCardCaches);
+                continue;
+            }
+            extractStack.setAmount(amtToExtract - amtReturned);
+            ChemicalStack<?> drainedStack = fromInventory.extractChemical(extractStack, Action.SIMULATE);
+            if (drainedStack.isEmpty()) continue; //If we didn't get anything for whatever reason
+            insertHandlers.put(inserterCardCache, drainedStack.getAmount()); //Add the handler to the list of handlers we found fluid in
+            totalAmtNeeded -= drainedStack.getAmount(); //Keep track of how much we have left to insert
+            amtToExtract = totalAmtNeeded;
+            if (extractorCardCache.roundRobin != 0) laserNodeBE.getNextRR(extractorCardCache, inserterCardCaches);
+            if (totalAmtNeeded == 0) break;
+        }
+
+        if (totalAmtNeeded > 0) return false;
+
+        for (Map.Entry<InserterCardCache, Long> entry : insertHandlers.entrySet()) {
+            InserterCardCache inserterCardCache = entry.getKey();
+            LaserNodeChemicalHandler laserNodeChemicalHandler = getLaserNodeHandlerChemical(inserterCardCache, chemicalType);
+            IChemicalHandler handler = laserNodeChemicalHandler.handler;
+            extractStack.setAmount(entry.getValue());
+            ChemicalStack<?> drainedStack = fromInventory.extractChemical(extractStack, Action.EXECUTE);
+            handler.insertChemical(drainedStack, Action.EXECUTE);
+            drawParticlesChemical(drainedStack, extractorCardCache.direction, extractorCardCache.be, inserterCardCache.be, inserterCardCache.direction, extractorCardCache.cardSlot, inserterCardCache.cardSlot);
+        }
+
+        return true;
+    }
+
     /** Finds all inserters that can be extracted to **/
     public List<InserterCardCache> getPossibleInserters(ExtractorCardCache extractorCardCache, ChemicalStack<?> stack) {
         ChemicalStackKey key = new ChemicalStackKey(stack);
-        inserterCacheChemical.clear(); //TODO Properly Handle This
         if (inserterCacheChemical.containsKey(extractorCardCache)) { //If this extractor card is already in the cache
             if (inserterCacheChemical.get(extractorCardCache).containsKey(key)) //If this extractor card AND itemKey are already in the cache
                 return inserterCacheChemical.get(extractorCardCache).get(key); //Return the cached results
@@ -204,7 +277,6 @@ public class MekanismCache {
 
     /** Somehow this makes it so if you break an adjacent chest it immediately invalidates the cache of it **/
     public Map<ChemicalType, BlockCapabilityCache<? extends IChemicalHandler<?, ?>, Direction>> getAttachedChemicalTanks(Direction direction, Byte sneakySide) {
-        facingHandlerChemical.clear(); //TODO Fix this
         Direction inventorySide = direction.getOpposite();
         if (sneakySide != -1)
             inventorySide = Direction.values()[sneakySide];
