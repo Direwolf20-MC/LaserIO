@@ -17,6 +17,8 @@ import com.direwolf20.laserio.common.items.filters.*;
 import com.direwolf20.laserio.common.items.upgrades.OverclockerCard;
 import com.direwolf20.laserio.common.items.upgrades.OverclockerNode;
 import com.direwolf20.laserio.datagen.customrecipes.CardClearRecipe;
+import com.direwolf20.laserio.integration.mekanism.CardChemical;
+import com.direwolf20.laserio.integration.mekanism.MekanismIntegration;
 import com.direwolf20.laserio.util.CardHolderItemStackHandler;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.inventory.MenuType;
@@ -36,6 +38,7 @@ import java.util.function.Supplier;
 
 import static com.direwolf20.laserio.client.particles.ModParticles.PARTICLE_TYPES;
 import static com.direwolf20.laserio.common.LaserIO.MODID;
+import static com.direwolf20.laserio.integration.mekanism.client.chemicalparticle.MekanismModParticles.PARTICLE_TYPES_MEKANISM;
 
 public class Registration {
 
@@ -48,10 +51,15 @@ public class Registration {
     // Create the DeferredRegister for attachment types
     private static final DeferredRegister<AttachmentType<?>> ATTACHMENT_TYPES = DeferredRegister.create(NeoForgeRegistries.ATTACHMENT_TYPES, LaserIO.MODID);
 
+    public static final DeferredRegister<Item> ITEMS_MEKANISM = DeferredRegister.create(Registries.ITEM, MODID);
 
     public static void init(IEventBus eventBus) {
         BLOCKS.register(eventBus);
         ITEMS.register(eventBus);
+        if (MekanismIntegration.isLoaded()) {
+            ITEMS_MEKANISM.register(eventBus);
+            PARTICLE_TYPES_MEKANISM.register(eventBus);
+        }
         BLOCK_ENTITIES.register(eventBus);
         CONTAINERS.register(eventBus);
         PARTICLE_TYPES.register(eventBus);
@@ -87,6 +95,9 @@ public class Registration {
     public static final DeferredHolder<Item, CardEnergy> Card_Energy = ITEMS.register("card_energy", CardEnergy::new);
     public static final DeferredHolder<Item, CardRedstone> Card_Redstone = ITEMS.register("card_redstone", CardRedstone::new);
 
+    //Mekanism
+    public static final DeferredHolder<Item, CardChemical> Card_Chemical = ITEMS_MEKANISM.register("card_chemical", CardChemical::new);
+
     //Filters
     public static final DeferredHolder<Item, FilterBasic> Filter_Basic = ITEMS.register("filter_basic", FilterBasic::new);
     public static final DeferredHolder<Item, FilterCount> Filter_Count = ITEMS.register("filter_count", FilterCount::new);
@@ -111,6 +122,8 @@ public class Registration {
             () -> IMenuTypeExtension.create((windowId, inv, data) -> new CardEnergyContainer(windowId, inv, inv.player, data)));
     public static final DeferredHolder<MenuType<?>, MenuType<CardRedstoneContainer>> CardRedstone_Container = CONTAINERS.register("cardredstone",
             () -> IMenuTypeExtension.create((windowId, inv, data) -> new CardRedstoneContainer(windowId, inv, inv.player, data)));
+    public static final DeferredHolder<MenuType<?>, MenuType<CardChemicalContainer>> CardChemical_Container = CONTAINERS.register("cardchemical",
+            () -> IMenuTypeExtension.create((windowId, inv, data) -> new CardChemicalContainer(windowId, inv, inv.player, data)));
     public static final DeferredHolder<MenuType<?>, MenuType<CardHolderContainer>> CardHolder_Container = CONTAINERS.register("cardholder",
             () -> IMenuTypeExtension.create((windowId, inv, data) -> new CardHolderContainer(windowId, inv, inv.player, data)));
     public static final DeferredHolder<MenuType<?>, MenuType<FilterBasicContainer>> FilterBasic_Container = CONTAINERS.register("filterbasic",

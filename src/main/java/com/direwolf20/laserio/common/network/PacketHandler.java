@@ -3,6 +3,7 @@ package com.direwolf20.laserio.common.network;
 import com.direwolf20.laserio.common.LaserIO;
 import com.direwolf20.laserio.common.network.data.*;
 import com.direwolf20.laserio.common.network.handler.*;
+import com.direwolf20.laserio.integration.mekanism.MekanismIntegration;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlerEvent;
 import net.neoforged.neoforge.network.registration.IPayloadRegistrar;
 
@@ -29,5 +30,11 @@ public class PacketHandler {
         registrar.play(NodeParticlesFluidPayload.ID, NodeParticlesFluidPayload::new, handler -> handler.client(PacketNodeParticlesFluid.get()::handle));
         //HANDLER.registerMessage(id++, PacketDurabilitySync.class,     PacketDurabilitySync::encode,       PacketDurabilitySync::decode,       PacketDurabilitySync.Handler::handle);
 
+
+        //Mekanism Packets Only
+        if (MekanismIntegration.isLoaded()) {
+            //Client Side
+            registrar.play(NodeParticlesChemicalPayload.ID, NodeParticlesChemicalPayload::new, handler -> handler.client(PacketNodeParticlesChemical.get()::handle));
+        }
     }
 }

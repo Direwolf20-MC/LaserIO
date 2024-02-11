@@ -12,6 +12,10 @@ import com.direwolf20.laserio.common.items.filters.FilterCount;
 import com.direwolf20.laserio.common.items.filters.FilterMod;
 import com.direwolf20.laserio.common.items.filters.FilterTag;
 import com.direwolf20.laserio.common.items.upgrades.OverclockerNode;
+import com.direwolf20.laserio.integration.mekanism.CardChemical;
+import com.direwolf20.laserio.integration.mekanism.MekanismCache;
+import com.direwolf20.laserio.integration.mekanism.MekanismIntegration;
+import com.direwolf20.laserio.integration.mekanism.client.chemicalparticle.ParticleRenderDataChemical;
 import com.direwolf20.laserio.setup.Registration;
 import com.direwolf20.laserio.util.*;
 import it.unimi.dsi.fastutil.bytes.Byte2BooleanMap;
@@ -19,6 +23,8 @@ import it.unimi.dsi.fastutil.bytes.Byte2BooleanOpenHashMap;
 import it.unimi.dsi.fastutil.bytes.Byte2ByteMap;
 import it.unimi.dsi.fastutil.bytes.Byte2ByteOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import mekanism.api.chemical.ChemicalType;
+import mekanism.api.chemical.IChemicalHandler;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -68,7 +74,7 @@ public class LaserNodeBE extends BaseLaserBE {
     private final IItemHandler EMPTY = new ItemStackHandler(0);
 
     /** Adjacent Inventory Handlers **/
-    private record SideConnection(Direction nodeSide, Direction sneakySide) {
+    public record SideConnection(Direction nodeSide, Direction sneakySide) {
     }
 
     /** BE and ItemHandler used for checking if a note/container is valid **/
@@ -92,12 +98,14 @@ public class LaserNodeBE extends BaseLaserBE {
 
     /** Variables for tracking and sending items/filters/etc **/
     private final Set<DimBlockPos> otherNodesInNetwork = new HashSet<>();
+
     private final List<InserterCardCache> inserterNodes = new CopyOnWriteArrayList<>(); //All Inventory nodes that contain an inserter card
     private final HashMap<ExtractorCardCache, HashMap<ItemStackKey, List<InserterCardCache>>> inserterCache = new HashMap<>();
     private final HashMap<ExtractorCardCache, HashMap<FluidStackKey, List<InserterCardCache>>> inserterCacheFluid = new HashMap<>();
     private final HashMap<ExtractorCardCache, List<InserterCardCache>> channelOnlyCache = new HashMap<>();
     private final List<ParticleRenderData> particleRenderData = new ArrayList<>();
     private final List<ParticleRenderDataFluid> particleRenderDataFluids = new ArrayList<>();
+    private final List<ParticleRenderDataChemical> particleRenderDataChemical = new ArrayList<>();
     private final Random random = new Random();
 
     private record StockerRequest(StockerCardCache stockerCardCache, ItemStackKey itemStackKey) {
@@ -125,13 +133,22 @@ public class LaserNodeBE extends BaseLaserBE {
     /** Misc Variables **/
     private boolean discoveredNodes = false; //The first time this block entity loads, it'll run discovery to refresh itself
 
+    public MekanismCache mekanismCache;
+
     public LaserNodeBE(BlockPos pos, BlockState state) {
         super(Registration.LaserNode_BE.get(), pos, state);
+        if (MekanismIntegration.isLoaded()) {
+            mekanismCache = new MekanismCache(this);
+        }
         for (Direction direction : Direction.values()) {
             final int j = direction.ordinal();
             com.direwolf20.laserio.common.containers.customhandler.LaserNodeItemHandler tempHandler = new com.direwolf20.laserio.common.containers.customhandler.LaserNodeItemHandler(LaserNodeContainer.SLOTS, this);
             nodeSideCaches[j] = new NodeSideCache(tempHandler, 0, new LaserEnergyStorage(direction));
         }
+    }
+
+    public List<InserterCardCache> getInserterNodes() {
+        return inserterNodes;
     }
 
     /** This is called by nodes when a connection is added/removed - the other node does the discovery and then tells this one about it **/
@@ -198,6 +215,9 @@ public class LaserNodeBE extends BaseLaserBE {
                         } else if (extractorCardCache.cardType.equals(BaseCard.CardType.ENERGY)) {
                             if (stockEnergy(stockerCardCache))
                                 countCardsHandled++;
+                        } else if (extractorCardCache.cardType.equals(BaseCard.CardType.CHEMICAL)) {
+                            if (mekanismCache.stockChemicals(stockerCardCache))
+                                countCardsHandled++;
                         }
                     } else {
                         if (extractorCardCache.cardType.equals(BaseCard.CardType.ITEM)) {
@@ -208,6 +228,9 @@ public class LaserNodeBE extends BaseLaserBE {
                                 countCardsHandled++;
                         } else if (extractorCardCache.cardType.equals(BaseCard.CardType.ENERGY)) {
                             if (sendEnergy(extractorCardCache))
+                                countCardsHandled++;
+                        } else if (extractorCardCache.cardType.equals(BaseCard.CardType.CHEMICAL)) {
+                            if (mekanismCache.sendChemicals(extractorCardCache))
                                 countCardsHandled++;
                         }
                     }
@@ -240,6 +263,9 @@ public class LaserNodeBE extends BaseLaserBE {
                         } else if (extractorCardCache.cardType.equals(BaseCard.CardType.ENERGY)) {
                             if (senseEnergy(sensorCardCache))
                                 countCardsHandled++;
+                        } else if (extractorCardCache.cardType.equals(BaseCard.CardType.CHEMICAL)) {
+                            if (mekanismCache.senseChemicals(sensorCardCache))
+                                countCardsHandled++;
                         }
                     }
                     if (extractorCardCache.remainingSleep <= 0) {
@@ -254,6 +280,7 @@ public class LaserNodeBE extends BaseLaserBE {
         drawParticlesClient();
         particleRenderData.clear();
         particleRenderDataFluids.clear();
+        particleRenderDataChemical.clear();
     }
 
     public void tickServer() {
@@ -951,7 +978,7 @@ public class LaserNodeBE extends BaseLaserBE {
             LaserNodeFluidHandler laserNodeFluidHandler = getLaserNodeHandlerFluid(inserterCardCache);
             if (laserNodeFluidHandler == null) continue;
             IFluidHandler handler = laserNodeFluidHandler.handler;
-            //for (int tank = 0; tank < handler.getTanks(); tank++) {
+
             if (inserterCardCache.filterCard.getItem() instanceof FilterCount) {
                 int filterCount = inserterCardCache.getFilterAmt(extractStack);
                 for (int tank = 0; tank < handler.getTanks(); tank++) {
@@ -1798,7 +1825,8 @@ public class LaserNodeBE extends BaseLaserBE {
                 clientLevel.addParticle(data, fromPos.getX() + extractOffset.x() + d1, fromPos.getY() + extractOffset.y() + d3, fromPos.getZ() + extractOffset.z() + d5, 0, 0, 0);
             }
         }*/
-        if (particleRenderData.isEmpty() && particleRenderDataFluids.isEmpty()) return;
+        if (particleRenderData.isEmpty() && particleRenderDataFluids.isEmpty() && particleRenderDataChemical.isEmpty())
+            return;
         ClientLevel clientLevel = (ClientLevel) level;
         //int particlesDrawnThisTick = 0;
         for (ParticleRenderData partData : particleRenderData) {
@@ -1885,6 +1913,10 @@ public class LaserNodeBE extends BaseLaserBE {
                 }
             }
         }
+
+        for (ParticleRenderDataChemical partData : particleRenderDataChemical) {
+            mekanismCache.drawParticlesClient(partData);
+        }
         //System.out.println(particlesDrawnThisTick);
     }
 
@@ -1895,6 +1927,10 @@ public class LaserNodeBE extends BaseLaserBE {
 
     public void addParticleDataFluid(ParticleRenderDataFluid particleRenderData) {
         this.particleRenderDataFluids.add(particleRenderData);
+    }
+
+    public void addParticleDataChemical(ParticleRenderDataChemical particleRenderData) {
+        this.particleRenderDataChemical.add(particleRenderData);
     }
 
     /** Draw the particles between node and inventory **/
@@ -1961,6 +1997,9 @@ public class LaserNodeBE extends BaseLaserBE {
         inserterNodes.clear();
         inserterCache.clear();
         inserterCacheFluid.clear();
+        if (mekanismCache != null) {
+            mekanismCache.inserterCacheChemical.clear();
+        }
         channelOnlyCache.clear();
         this.stockerDestinationCache.clear();
         this.redstoneNetwork.clear();
@@ -1986,6 +2025,9 @@ public class LaserNodeBE extends BaseLaserBE {
         inserterNodes.removeIf(p -> p.relativePos.equals(relativePos));
         inserterCache.clear(); //TODO maybe just remove destinations that match this blockPos
         inserterCacheFluid.clear();
+        if (mekanismCache != null) {
+            mekanismCache.inserterCacheChemical.clear();
+        }
         channelOnlyCache.clear();
         this.stockerDestinationCache.clear();
         if (be == null) return; //If the block position given doesn't contain a LaserNodeBE stop
@@ -2210,6 +2252,9 @@ public class LaserNodeBE extends BaseLaserBE {
         this.facingHandlerItem.remove(sideConnection);
         this.facingHandlerFluid.remove(sideConnection);
         this.facingHandlerEnergy.remove(sideConnection);
+        if (mekanismCache != null) {
+            mekanismCache.facingHandlerChemical.clear();
+        }
     }
 
     /** Called when a neighbor updates to invalidate the inventory cache */
@@ -2218,6 +2263,9 @@ public class LaserNodeBE extends BaseLaserBE {
         this.facingHandlerItem.clear();
         this.facingHandlerFluid.clear();
         this.facingHandlerEnergy.clear();
+        if (mekanismCache != null) {
+            mekanismCache.facingHandlerChemical.clear();
+        }
         markDirtyClient();
     }
 
@@ -2273,6 +2321,11 @@ public class LaserNodeBE extends BaseLaserBE {
                     //}
                 } else if (card.getItem() instanceof CardRedstone) {
                     redstoneCardSides.put((byte) direction.ordinal(), true);
+                    cardRenders.add(new CardRender(direction, slot, card, getBlockPos(), level, enabled));
+                } else if (card.getItem() instanceof CardChemical) {
+                    Map<ChemicalType, IChemicalHandler<?, ?>> chemicalHandlers = mekanismCache.getAttachedChemicalTanksNoCache(direction, BaseCard.getSneaky(card));
+                    if (chemicalHandlers == null || chemicalHandlers.isEmpty())
+                        continue;
                     cardRenders.add(new CardRender(direction, slot, card, getBlockPos(), level, enabled));
                 }
             }

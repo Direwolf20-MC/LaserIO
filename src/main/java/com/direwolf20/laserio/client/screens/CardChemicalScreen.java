@@ -6,40 +6,37 @@ import com.direwolf20.laserio.common.LaserIO;
 import com.direwolf20.laserio.common.containers.CardItemContainer;
 import com.direwolf20.laserio.common.containers.customslot.FilterBasicSlot;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
-import com.direwolf20.laserio.common.items.cards.CardFluid;
 import com.direwolf20.laserio.common.items.filters.FilterCount;
 import com.direwolf20.laserio.common.network.data.GhostSlotPayload;
 import com.direwolf20.laserio.common.network.data.OpenNodePayload;
 import com.direwolf20.laserio.common.network.data.UpdateCardPayload;
 import com.direwolf20.laserio.common.network.data.UpdateFilterPayload;
+import com.direwolf20.laserio.integration.mekanism.CardChemical;
 import com.direwolf20.laserio.setup.Config;
+import mekanism.api.chemical.ChemicalStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.FluidUtil;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
 import net.neoforged.neoforge.network.PacketDistributor;
 
-import java.util.Optional;
+import static com.direwolf20.laserio.integration.mekanism.MekanismStatics.doesItemStackHoldChemicals;
+import static com.direwolf20.laserio.integration.mekanism.MekanismStatics.getFirstChemicalOnItemStack;
 
-public class CardFluidScreen extends CardItemScreen {
+public class CardChemicalScreen extends CardItemScreen {
 
-    public int currentFluidExtractAmt;
+    public int currentChemicalExtractAmt;
     public final int filterStartX;
     public final int filterStartY;
     public final int filterEndX;
     public final int filterEndY;
 
-    public CardFluidScreen(CardItemContainer container, Inventory inv, Component name) {
+    public CardChemicalScreen(CardItemContainer container, Inventory inv, Component name) {
         super(container, inv, name);
         filterStartX = 35;
         filterStartY = 16;
@@ -49,16 +46,14 @@ public class CardFluidScreen extends CardItemScreen {
 
     @Override
     public void init() {
-        this.currentFluidExtractAmt = CardFluid.getFluidExtractAmt(card);
+        this.currentChemicalExtractAmt = CardChemical.getChemicalExtractAmt(card);
         super.init();
-        Minecraft minecraft = Minecraft.getInstance();
-        BlockEntityWithoutLevelRenderer blockentitywithoutlevelrenderer = new BlockEntityWithoutLevelRenderer(minecraft.getBlockEntityRenderDispatcher(), minecraft.getEntityModels());
-        this.renderFluids = true;
+        this.renderChemicals = true;
     }
 
     @Override
     public void addAmtButton() {
-        buttons.put("amount", new NumberButton(getGuiLeft() + 141, getGuiTop() + 25, 30, 12, currentMode == 0 ? currentPriority : currentFluidExtractAmt, (button) -> {
+        buttons.put("amount", new NumberButton(getGuiLeft() + 141, getGuiTop() + 25, 30, 12, currentMode == 0 ? currentPriority : currentChemicalExtractAmt, (button) -> {
             changeAmount(-1);
         }));
     }
@@ -73,7 +68,7 @@ public class CardFluidScreen extends CardItemScreen {
         buttons.put("mode", new ToggleButton(getGuiLeft() + 5, getGuiTop() + 5, 16, 16, modeTextures, currentMode, (button) -> {
             currentMode = BaseCard.nextTransferMode(card);
             ((ToggleButton) button).setTexturePosition(currentMode);
-            ((NumberButton) buttons.get("amount")).setValue(currentMode == 0 ? currentPriority : currentFluidExtractAmt);
+            ((NumberButton) buttons.get("amount")).setValue(currentMode == 0 ? currentPriority : currentChemicalExtractAmt);
             modeChange();
         }));
     }
@@ -83,20 +78,12 @@ public class CardFluidScreen extends CardItemScreen {
         if (this.menu.getCarried().isEmpty() && this.hoveredSlot != null && this.hoveredSlot.hasItem()) {
             ItemStack itemstack = this.hoveredSlot.getItem();
             if (hoveredSlot instanceof FilterBasicSlot) {
-                Optional<IFluidHandlerItem> fluidHandlerLazyOptional = FluidUtil.getFluidHandler(itemstack);
-                if (fluidHandlerLazyOptional.isPresent()) {
-                    FluidStack fluidStack = FluidStack.EMPTY;
-                    IFluidHandler fluidHandler = fluidHandlerLazyOptional.get();
-                    for (int tank = 0; tank < fluidHandler.getTanks(); tank++) {
-                        fluidStack = fluidHandler.getFluidInTank(tank);
-                        if (!fluidStack.isEmpty())
-                            break;
-                    }
-                    if (!fluidStack.isEmpty()) {
-                        pGuiGraphics.renderTooltip(this.font, fluidStack.getDisplayName(), pX, pY);
-                        return;
-                    }
-                }
+                ChemicalStack<?> chemicalStack = getFirstChemicalOnItemStack(itemstack);
+                if (chemicalStack.isEmpty())
+                    pGuiGraphics.renderTooltip(this.font, this.getTooltipFromContainerItem(itemstack), itemstack.getTooltipImage(), itemstack, pX, pY);
+                else
+                    pGuiGraphics.renderTooltip(this.font, chemicalStack.getTextComponent(), pX, pY);
+                return;
             }
             pGuiGraphics.renderTooltip(this.font, this.getTooltipFromContainerItem(itemstack), itemstack.getTooltipImage(), itemstack, pX, pY);
         }
@@ -111,13 +98,13 @@ public class CardFluidScreen extends CardItemScreen {
             if (currentMode == 0) {
                 currentPriority = (short) (Math.max(currentPriority + change, -4096));
             } else {
-                currentFluidExtractAmt = (Math.max(currentFluidExtractAmt + change, 1));
+                currentChemicalExtractAmt = (Math.max(currentChemicalExtractAmt + change, 1));
             }
         } else {
             if (currentMode == 0) {
                 currentPriority = (short) (Math.min(currentPriority + change, 4096));
             } else {
-                currentFluidExtractAmt = (Math.min(currentFluidExtractAmt + change, Math.max(overClockerCount * Config.MULTIPLIER_MILLI_BUCKETS_FLUID.get(), Config.BASE_MILLI_BUCKETS_FLUID.get())));
+                currentChemicalExtractAmt = (Math.min(currentChemicalExtractAmt + change, Math.max(overClockerCount * Config.MULTIPLIER_MILLI_BUCKETS_CHEMICAL.get(), Config.BASE_MILLI_BUCKETS_CHEMICAL.get())));
             }
         }
     }
@@ -125,7 +112,7 @@ public class CardFluidScreen extends CardItemScreen {
     @Override
     public boolean filterSlot(int btn) {
         ItemStack slotStack = hoveredSlot.getItem();
-        if (!FilterCount.doesItemStackHoldFluids(slotStack))
+        if (!doesItemStackHoldChemicals(slotStack))
             return super.filterSlot(btn);
         if (slotStack.isEmpty()) return true;
         if (btn == 2) { //Todo IMC Inventory Sorter so this works
@@ -151,7 +138,7 @@ public class CardFluidScreen extends CardItemScreen {
             changeAmount(1);
         else if (btn == 1)
             changeAmount(-1);
-        amountButton.setValue(currentMode == 0 ? currentPriority : currentFluidExtractAmt);
+        amountButton.setValue(currentMode == 0 ? currentPriority : currentChemicalExtractAmt);
         amountButton.playDownSound(Minecraft.getInstance().getSoundManager());
     }
 
@@ -171,6 +158,6 @@ public class CardFluidScreen extends CardItemScreen {
     public void saveSettings() {
         if (showFilter)
             PacketDistributor.SERVER.noArg().send(new UpdateFilterPayload(isAllowList == 1, isCompareNBT == 1));
-        PacketDistributor.SERVER.noArg().send(new UpdateCardPayload(currentMode, currentChannel, currentFluidExtractAmt, currentPriority, currentSneaky, (short) currentTicks, currentExact, currentRegulate, (byte) currentRoundRobin, 0, 0, currentRedstoneMode, currentRedstoneChannel, currentAndMode));
+        PacketDistributor.SERVER.noArg().send(new UpdateCardPayload(currentMode, currentChannel, currentChemicalExtractAmt, currentPriority, currentSneaky, (short) currentTicks, currentExact, currentRegulate, (byte) currentRoundRobin, 0, 0, currentRedstoneMode, currentRedstoneChannel, currentAndMode));
     }
 }

@@ -7,6 +7,7 @@ import com.direwolf20.laserio.common.items.cards.CardEnergy;
 import com.direwolf20.laserio.common.items.cards.CardFluid;
 import com.direwolf20.laserio.common.items.cards.CardItem;
 import com.direwolf20.laserio.common.network.data.UpdateCardPayload;
+import com.direwolf20.laserio.integration.mekanism.CardChemical;
 import com.direwolf20.laserio.setup.Config;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -55,8 +56,8 @@ public class PacketUpdateCard {
                     BaseCard.setExtractSpeed(stack, ticks);
                 } else if (stack.getItem() instanceof CardFluid) {
                     overClockerCount = container.getSlot(1).getItem().getCount();
-                    if (extractAmt > Math.max(overClockerCount * Config.MULTIPLIER_MILLI_BUCKETS.get(), Config.BASE_MILLI_BUCKETS.get())) {
-                        extractAmt = Math.max(overClockerCount * Config.MULTIPLIER_MILLI_BUCKETS.get(), Config.BASE_MILLI_BUCKETS.get());
+                    if (extractAmt > Math.max(overClockerCount * Config.MULTIPLIER_MILLI_BUCKETS_FLUID.get(), Config.BASE_MILLI_BUCKETS_FLUID.get())) {
+                        extractAmt = Math.max(overClockerCount * Config.MULTIPLIER_MILLI_BUCKETS_FLUID.get(), Config.BASE_MILLI_BUCKETS_FLUID.get());
                     }
                     CardFluid.setFluidExtractAmt(stack, extractAmt);
                     short ticks = payload.ticks();
@@ -75,6 +76,16 @@ public class PacketUpdateCard {
                     CardEnergy.setExtractSpeed(stack, ticks);
                     CardEnergy.setExtractLimitPercent(stack, payload.extractLimit());
                     CardEnergy.setInsertLimitPercent(stack, payload.insertLimit());
+                } else if (stack.getItem() instanceof CardChemical) {
+                    overClockerCount = container.getSlot(1).getItem().getCount();
+                    if (extractAmt > Math.max(overClockerCount * Config.MULTIPLIER_MILLI_BUCKETS_CHEMICAL.get(), Config.BASE_MILLI_BUCKETS_CHEMICAL.get())) {
+                        extractAmt = Math.max(overClockerCount * Config.MULTIPLIER_MILLI_BUCKETS_CHEMICAL.get(), Config.BASE_MILLI_BUCKETS_CHEMICAL.get());
+                    }
+                    CardChemical.setChemicalExtractAmt(stack, extractAmt);
+                    short ticks = payload.ticks();
+                    if (ticks < Math.max(20 - overClockerCount * 5, 1))
+                        ticks = (short) Math.max(20 - overClockerCount * 5, 1);
+                    BaseCard.setExtractSpeed(stack, ticks);
                 }
                 BaseCard.setPriority(stack, payload.priority());
                 BaseCard.setSneaky(stack, payload.sneaky());
