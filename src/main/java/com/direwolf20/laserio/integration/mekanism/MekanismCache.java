@@ -162,7 +162,7 @@ public class MekanismCache {
             else { //Find the list of items that can be extracted by this extractor and cache them
                 List<InserterCardCache> nodes = laserNodeBE.getInserterNodes().stream().filter(p -> (p.channel == extractorCardCache.channel)
                                 && (p.enabled)
-                                //&& (p.isStackValidForCard(stack)) //TODO Chemical Filtering
+                                && (p.mekanismCardCache.isStackValidForCard(stack))
                                 && (p.cardType.equals(extractorCardCache.cardType))
                                 && (!(p.relativePos.equals(BlockPos.ZERO) && p.direction.equals(extractorCardCache.direction))))
                         .toList();
@@ -172,7 +172,7 @@ public class MekanismCache {
         } else { //Find the list of items that can be extracted by this extractor and cache them along with the extractor card
             List<InserterCardCache> nodes = laserNodeBE.getInserterNodes().stream().filter(p -> (p.channel == extractorCardCache.channel)
                             && (p.enabled)
-                            //&& (p.isStackValidForCard(stack)) //TODO Chemical Filtering
+                            && (p.mekanismCardCache.isStackValidForCard(stack))
                             && (p.cardType.equals(extractorCardCache.cardType))
                             && (!(p.relativePos.equals(BlockPos.ZERO) && p.direction.equals(extractorCardCache.direction))))
                     .toList();
