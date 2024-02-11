@@ -10,6 +10,7 @@ import net.minecraft.data.recipes.*;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.neoforge.common.Tags;
+import net.neoforged.neoforge.common.conditions.ModLoadedCondition;
 import org.jetbrains.annotations.NotNull;
 
 
@@ -165,7 +166,7 @@ public class LaserIORecipes extends RecipeProvider {
                 .define('q', Tags.Items.GEMS_QUARTZ)
                 .group("laserio")
                 .unlockedBy("has_logic_chip", InventoryChangeTrigger.TriggerInstance.hasItems(Registration.Logic_Chip.get()))
-                .save(recipeOutput);
+                .save(recipeOutput.withConditions(new ModLoadedCondition("mekanism")));
 
         //Filters
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, Registration.Filter_Basic.get(), 4)

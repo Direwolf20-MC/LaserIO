@@ -1,4 +1,10 @@
 {
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "mekanism"
+    }
+  ],
   "parent": "minecraft:recipes/root",
   "criteria": {
     "has_logic_chip": {
