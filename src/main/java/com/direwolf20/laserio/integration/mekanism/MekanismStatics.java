@@ -13,6 +13,10 @@ import net.neoforged.neoforge.capabilities.BlockCapability;
 import net.neoforged.neoforge.capabilities.ItemCapability;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+
 public class MekanismStatics {
     public static BlockCapability<IGasHandler, @Nullable Direction> GAS_CAPABILITY = BlockCapability.createSided(new ResourceLocation("mekanism", "gas_handler"), IGasHandler.class);
     public static BlockCapability<IInfusionHandler, @Nullable Direction> INFUSION_CAPABILITY = BlockCapability.createSided(new ResourceLocation("mekanism", "infusion_handler"), IInfusionHandler.class);
@@ -36,6 +40,44 @@ public class MekanismStatics {
 
     public static boolean doesItemStackHoldChemicals(ItemStack itemStack) {
         return !getFirstChemicalOnItemStack(itemStack).isEmpty();
+    }
+
+    public static List<ChemicalStack<?>> getAllChemicalsOnItemStack(ItemStack itemStack) {
+        List<ChemicalStack<?>> chemicalStackList = new ArrayList<>();
+        if (itemStack.isEmpty()) return chemicalStackList;
+        IGasHandler gasHandler = itemStack.getCapability(MekanismStatics.GAS_CAPABILITY_ITEM);
+        if (gasHandler != null) {
+            for (int tank = 0; tank < gasHandler.getTanks(); tank++) {
+                ChemicalStack<?> chemicalStack = gasHandler.getChemicalInTank(tank);
+                if (!chemicalStack.isEmpty())
+                    chemicalStackList.add(chemicalStack);
+            }
+        }
+        IInfusionHandler infusionHandler = itemStack.getCapability(MekanismStatics.INFUSION_CAPABILITY_ITEM);
+        if (infusionHandler != null) {
+            for (int tank = 0; tank < infusionHandler.getTanks(); tank++) {
+                ChemicalStack<?> chemicalStack = infusionHandler.getChemicalInTank(tank);
+                if (!chemicalStack.isEmpty())
+                    chemicalStackList.add(chemicalStack);
+            }
+        }
+        IPigmentHandler pigmentHandler = itemStack.getCapability(MekanismStatics.PIGMENT_CAPABILITY_ITEM);
+        if (pigmentHandler != null) {
+            for (int tank = 0; tank < pigmentHandler.getTanks(); tank++) {
+                ChemicalStack<?> chemicalStack = pigmentHandler.getChemicalInTank(tank);
+                if (!chemicalStack.isEmpty())
+                    chemicalStackList.add(chemicalStack);
+            }
+        }
+        ISlurryHandler slurryHandler = itemStack.getCapability(MekanismStatics.SLURRY_CAPABILITY_ITEM);
+        if (slurryHandler != null) {
+            for (int tank = 0; tank < slurryHandler.getTanks(); tank++) {
+                ChemicalStack<?> chemicalStack = slurryHandler.getChemicalInTank(tank);
+                if (!chemicalStack.isEmpty())
+                    chemicalStackList.add(chemicalStack);
+            }
+        }
+        return chemicalStackList;
     }
 
     public static ChemicalStack<?> getFirstChemicalOnItemStack(ItemStack itemStack) {
@@ -73,6 +115,19 @@ public class MekanismStatics {
             }
         }
         return GasStack.EMPTY;
+    }
+
+    public static List<String> getTagsFromItemStack(ItemStack itemStack) {
+        List<String> tagsList = new ArrayList<>();
+        List<ChemicalStack<?>> chemicalStackList = getAllChemicalsOnItemStack(itemStack);
+        for (ChemicalStack<?> chemicalStack : chemicalStackList) {
+            chemicalStack.getType().getTags().forEach(t -> {
+                String tag = t.location().toString().toLowerCase(Locale.ROOT);
+                if (!tagsList.contains(tag) && !tagsList.contains(tag))
+                    tagsList.add(tag);
+            });
+        }
+        return tagsList;
     }
 
     @SuppressWarnings("unchecked")
