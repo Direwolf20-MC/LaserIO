@@ -66,7 +66,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
     protected Map<String, Button> buttons = new HashMap<>();
     protected byte currentRedstoneMode;
     protected boolean renderFluids = false;
-    protected boolean renderChemicals = false; //TODO Chemical Rendering
+    protected boolean renderChemicals = false;
     private boolean showCardHolderUI;
 
     protected final String[] sneakyNames = {
@@ -92,7 +92,14 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
         validateHolder();
         //this.renderBackground(guiGraphics);
         toggleFilterSlots();
-        guiGraphics = renderFluids ? new LaserGuiGraphicsFluid(Minecraft.getInstance(), guiGraphics.bufferSource(), this) : new LaserGuiGraphics(Minecraft.getInstance(), guiGraphics.bufferSource());
+        if (renderChemicals) {
+            guiGraphics = new LaserGuiGraphicsChemical(Minecraft.getInstance(), guiGraphics.bufferSource(), this);
+        } else if (renderFluids) {
+            guiGraphics = new LaserGuiGraphicsFluid(Minecraft.getInstance(), guiGraphics.bufferSource(), this);
+        } else {
+            guiGraphics = new LaserGuiGraphics(Minecraft.getInstance(), guiGraphics.bufferSource());
+
+        }
         if (showFilter)
             updateItemCounts();
         super.render(guiGraphics, mouseX, mouseY, partialTicks);

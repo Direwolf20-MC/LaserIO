@@ -4,6 +4,7 @@ import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import com.direwolf20.laserio.common.blocks.LaserNode;
 import com.direwolf20.laserio.common.events.ServerTickHandler;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
+import com.direwolf20.laserio.common.items.filters.FilterCount;
 import com.direwolf20.laserio.integration.mekanism.client.chemicalparticle.ChemicalFlowParticleData;
 import com.direwolf20.laserio.integration.mekanism.client.chemicalparticle.ParticleDataChemical;
 import com.direwolf20.laserio.integration.mekanism.client.chemicalparticle.ParticleRenderDataChemical;
@@ -67,20 +68,19 @@ public class MekanismCache {
             for (int tank = 0; tank < chemicalHandler.getTanks(); tank++) {
                 ChemicalStack<?> chemicalStack = chemicalHandler.getChemicalInTank(tank);
                 if (chemicalStack.isEmpty() || !extractorCardCache.mekanismCardCache.isStackValidForCard(chemicalStack))
-                    continue; //TODO Chemical Filtering
+                    continue;
                 ChemicalStack<?> extractStack = chemicalStack.copy();
                 extractStack.setAmount(extractorCardCache.extractAmt);
 
-                //TODO Chemical Filtering
-            /*if (extractorCardCache.filterCard.getItem() instanceof FilterCount) { //If this is a count filter, only try to extract up to the amount in the filter
-                int filterCount = extractorCardCache.getFilterAmt(extractStack);
-                if (filterCount <= 0) continue; //This should never happen in theory...
-                int amtInInv = fluidStack.getAmount();
-                int amtAllowedToRemove = amtInInv - filterCount;
-                if (amtAllowedToRemove <= 0) continue;
-                int amtRemaining = Math.min(extractStack.getAmount(), amtAllowedToRemove);
-                extractStack.setAmount(amtRemaining);
-            }*/
+                if (extractorCardCache.filterCard.getItem() instanceof FilterCount) { //If this is a count filter, only try to extract up to the amount in the filter
+                    int filterCount = extractorCardCache.mekanismCardCache.getFilterAmt(extractStack);
+                    if (filterCount <= 0) continue; //This should never happen in theory...
+                    long amtInInv = chemicalStack.getAmount();
+                    long amtAllowedToRemove = amtInInv - filterCount;
+                    if (amtAllowedToRemove <= 0) continue;
+                    long amtRemaining = Math.min(extractStack.getAmount(), amtAllowedToRemove);
+                    extractStack.setAmount(amtRemaining);
+                }
 
             /*if (extractorCardCache.exact) { //TODO Chemical Exact Mode
                 if (extractFluidStackExact(extractorCardCache, adjacentTank, extractStack))
@@ -110,21 +110,20 @@ public class MekanismCache {
             if (laserNodeChemicalHandler == null) continue;
             IChemicalHandler handler = laserNodeChemicalHandler.handler;
 
-            //for (int tank = 0; tank < handler.getTanks(); tank++) {
-            /*if (inserterCardCache.filterCard.getItem() instanceof FilterCount) { //TODO Chemical Filtering
-                int filterCount = inserterCardCache.getFilterAmt(extractStack);
+            if (inserterCardCache.filterCard.getItem() instanceof FilterCount) {
+                int filterCount = inserterCardCache.mekanismCardCache.getFilterAmt(extractStack);
                 for (int tank = 0; tank < handler.getTanks(); tank++) {
-                    FluidStack fluidStack = handler.getFluidInTank(tank);
-                    if (fluidStack.isEmpty() || fluidStack.isFluidEqual(extractStack)) {
-                        int currentAmt = fluidStack.getAmount();
-                        int neededAmt = filterCount - currentAmt;
+                    ChemicalStack<?> chemicalStack = handler.getChemicalInTank(tank);
+                    if (chemicalStack.isEmpty() || new ChemicalStackKey(chemicalStack).equals(new ChemicalStackKey(extractStack))) {
+                        long currentAmt = chemicalStack.getAmount();
+                        long neededAmt = filterCount - currentAmt;
                         if (neededAmt < extractStack.getAmount()) {
                             amtToExtract = neededAmt;
                             break;
                         }
                     }
                 }
-            }*/
+            }
             if (amtToExtract == 0) {
                 amtToExtract = totalAmtNeeded;
                 continue;

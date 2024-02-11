@@ -1,5 +1,6 @@
 package com.direwolf20.laserio.common.network.handler;
 
+import com.direwolf20.laserio.common.containers.CardChemicalContainer;
 import com.direwolf20.laserio.common.containers.CardFluidContainer;
 import com.direwolf20.laserio.common.containers.CardItemContainer;
 import com.direwolf20.laserio.common.containers.FilterCountContainer;
@@ -40,14 +41,14 @@ public class PacketGhostSlot {
                 ItemStack stack = payload.stack();
                 FilterCountHandler handler = (FilterCountHandler) ((CardItemContainer) container).filterHandler;
                 int mbAmt = payload.mbAmt();
-                if (mbAmt == 0 && container instanceof CardFluidContainer) {
+                if (mbAmt == 0 && (container instanceof CardFluidContainer || container instanceof CardChemicalContainer)) {
                     stack.setCount(0);
                 } else {
                     stack.setCount(payload.count());
                 }
                 handler.setStackInSlotSave(payload.slotNumber() - CardItemContainer.SLOTS, stack);
 
-                if (mbAmt != -1 && container instanceof CardFluidContainer) { //MB amt is only done in CardFluidContainers
+                if (mbAmt != -1 && (container instanceof CardFluidContainer || container instanceof CardChemicalContainer)) { //MB amt is only done in CardFluidContainers
                     handler.setMBAmountInSlot(payload.slotNumber() - CardItemContainer.SLOTS, mbAmt);
                 }
             } else if (container instanceof FilterCountContainer) {

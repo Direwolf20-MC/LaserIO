@@ -1,5 +1,6 @@
 package com.direwolf20.laserio.integration.mekanism;
 
+import com.direwolf20.laserio.common.containers.customhandler.FilterCountHandler;
 import com.direwolf20.laserio.common.items.filters.FilterBasic;
 import com.direwolf20.laserio.common.items.filters.FilterCount;
 import com.direwolf20.laserio.common.items.filters.FilterMod;
@@ -114,5 +115,34 @@ public class MekanismCardCache {
         }
         filterCacheChemical.put(key, !baseCardCache.isAllowList);
         return !baseCardCache.isAllowList;
+    }
+
+    public int getFilterAmt(ChemicalStack<?> testStack) {
+        ItemStack filterCard = baseCardCache.filterCard;
+        if (filterCard.equals(ItemStack.EMPTY))
+            return 0; //If theres no filter in the card (This should never happen in theory)
+        if (!(filterCard.getItem() instanceof FilterCount)) { //If this is a basic or tag Card return -1 which will mean infinite amount
+            return -1;
+        }
+        ChemicalStackKey key = new ChemicalStackKey(testStack);
+        if (filterCountsChemical.containsKey(key)) //If we've already tested this, get it from the cache
+            return filterCountsChemical.get(key);
+
+        FilterCountHandler filterSlotHandler = FilterCount.getInventory(filterCard);
+        for (int i = 0; i < filterSlotHandler.getSlots(); i++) { //Gotta iterate the card's NBT because of the way we store amounts (in the MBAmt tag)
+            ItemStack itemStack = filterSlotHandler.getStackInSlot(i);
+            if (!itemStack.isEmpty()) {
+                ChemicalStack<?> chemicalStack = MekanismStatics.getFirstChemicalOnItemStack(itemStack);
+                if (chemicalStack.isEmpty()) continue;
+                if (key.equals(new ChemicalStackKey(chemicalStack))) {
+                    int mbAmt = FilterCount.getSlotAmount(filterCard, i);
+                    filterCountsChemical.put(key, mbAmt);
+                    return mbAmt;
+                }
+
+            }
+        }
+        filterCountsChemical.put(key, 0);
+        return 0; //Should never get here in theory
     }
 }

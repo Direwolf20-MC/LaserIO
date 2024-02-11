@@ -972,7 +972,7 @@ public class LaserNodeBE extends BaseLaserBE {
             LaserNodeFluidHandler laserNodeFluidHandler = getLaserNodeHandlerFluid(inserterCardCache);
             if (laserNodeFluidHandler == null) continue;
             IFluidHandler handler = laserNodeFluidHandler.handler;
-            //for (int tank = 0; tank < handler.getTanks(); tank++) {
+
             if (inserterCardCache.filterCard.getItem() instanceof FilterCount) {
                 int filterCount = inserterCardCache.getFilterAmt(extractStack);
                 for (int tank = 0; tank < handler.getTanks(); tank++) {

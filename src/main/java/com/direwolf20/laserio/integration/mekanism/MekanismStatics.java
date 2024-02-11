@@ -1,6 +1,7 @@
 package com.direwolf20.laserio.integration.mekanism;
 
 import mekanism.api.chemical.*;
+import mekanism.api.chemical.gas.GasStack;
 import mekanism.api.chemical.gas.IGasHandler;
 import mekanism.api.chemical.infuse.IInfusionHandler;
 import mekanism.api.chemical.pigment.IPigmentHandler;
@@ -31,6 +32,47 @@ public class MekanismStatics {
             case PIGMENT -> PIGMENT_CAPABILITY;
             case SLURRY -> SLURRY_CAPABILITY;
         };
+    }
+
+    public static boolean doesItemStackHoldChemicals(ItemStack itemStack) {
+        return !getFirstChemicalOnItemStack(itemStack).isEmpty();
+    }
+
+    public static ChemicalStack<?> getFirstChemicalOnItemStack(ItemStack itemStack) {
+        if (itemStack.isEmpty()) return GasStack.EMPTY; //TODO Should I change this to something more generic?
+        IGasHandler gasHandler = itemStack.getCapability(MekanismStatics.GAS_CAPABILITY_ITEM);
+        if (gasHandler != null) {
+            for (int tank = 0; tank < gasHandler.getTanks(); tank++) {
+                ChemicalStack<?> chemicalStack = gasHandler.getChemicalInTank(tank);
+                if (!chemicalStack.isEmpty())
+                    return chemicalStack;
+            }
+        }
+        IInfusionHandler infusionHandler = itemStack.getCapability(MekanismStatics.INFUSION_CAPABILITY_ITEM);
+        if (infusionHandler != null) {
+            for (int tank = 0; tank < infusionHandler.getTanks(); tank++) {
+                ChemicalStack<?> chemicalStack = infusionHandler.getChemicalInTank(tank);
+                if (!chemicalStack.isEmpty())
+                    return chemicalStack;
+            }
+        }
+        IPigmentHandler pigmentHandler = itemStack.getCapability(MekanismStatics.PIGMENT_CAPABILITY_ITEM);
+        if (pigmentHandler != null) {
+            for (int tank = 0; tank < pigmentHandler.getTanks(); tank++) {
+                ChemicalStack<?> chemicalStack = pigmentHandler.getChemicalInTank(tank);
+                if (!chemicalStack.isEmpty())
+                    return chemicalStack;
+            }
+        }
+        ISlurryHandler slurryHandler = itemStack.getCapability(MekanismStatics.SLURRY_CAPABILITY_ITEM);
+        if (slurryHandler != null) {
+            for (int tank = 0; tank < slurryHandler.getTanks(); tank++) {
+                ChemicalStack<?> chemicalStack = slurryHandler.getChemicalInTank(tank);
+                if (!chemicalStack.isEmpty())
+                    return chemicalStack;
+            }
+        }
+        return GasStack.EMPTY;
     }
 
     @SuppressWarnings("unchecked")

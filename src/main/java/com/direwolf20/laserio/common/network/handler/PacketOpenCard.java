@@ -8,6 +8,7 @@ import com.direwolf20.laserio.common.items.cards.CardItem;
 import com.direwolf20.laserio.common.items.cards.CardRedstone;
 import com.direwolf20.laserio.common.items.filters.BaseFilter;
 import com.direwolf20.laserio.common.network.data.OpenCardPayload;
+import com.direwolf20.laserio.integration.mekanism.CardChemical;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.MenuProvider;
@@ -145,6 +146,33 @@ public class PacketOpenCard {
                     buf.writeItem(itemStack);
                     buf.writeByte(side);
                 }));
+            } else if (itemStack.getItem() instanceof CardChemical) {
+                if (!payload.hasShiftDown()) {
+                    MenuProvider containerProvider = new MenuProvider() {
+                        @Override
+                        public Component getDisplayName() {
+                            return Component.translatable(SCREEN_LASERNODE);
+                        }
+
+                        @Override
+                        public boolean shouldTriggerClientSideContainerClosingOnOpen() {
+                            return false;
+                        }
+
+                        @Override
+                        public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player playerEntity) {
+                            return new CardChemicalContainer(windowId, playerInventory, sender, payload.sourcePos(), itemStack, side);
+                        }
+                    };
+                    sender.openMenu(containerProvider, (buf -> {
+                        buf.writeItem(itemStack);
+                        buf.writeByte(side);
+                    }));
+                } else {
+                    ItemStack filterItem = handler.getStackInSlot(0);
+                    if (filterItem.getItem() instanceof BaseFilter)
+                        PacketOpenFilter.doOpenFilter(filterItem, itemStack, sender, payload.sourcePos());
+                }
             }
         });
     }
