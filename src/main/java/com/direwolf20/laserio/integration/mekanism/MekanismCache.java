@@ -493,10 +493,10 @@ public class MekanismCache {
         return inserterCacheChemical.computeIfAbsent(extractorCardCache, cache -> new Reference2ObjectOpenHashMap<>())
               .computeIfAbsent(stack.getType(), k -> laserNodeBE.getInserterNodes().stream()
                     .filter(p -> (p.channel == extractorCardCache.channel)
-                                 && (p.enabled)
-                                 && (p.mekanismCardCache.isStackValidForCard(stack))
-                                 && (p.cardType == extractorCardCache.cardType)
-                                 && (!(p.relativePos.blockPos.equals(BlockPos.ZERO) && p.direction == extractorCardCache.direction)))
+                            && (p.cardType == extractorCardCache.cardType)
+                            && (p.enabled)
+                            && (p.mekanismCardCache.isStackValidForCard(stack))
+                            && (!(p.relativePos.blockPos.equals(BlockPos.ZERO) && p.direction == extractorCardCache.direction)))
                     .toList()
               );
     }
