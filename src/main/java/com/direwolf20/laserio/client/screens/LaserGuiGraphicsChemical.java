@@ -12,7 +12,6 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.util.FastColor;
 import net.minecraft.util.Mth;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemStack;
@@ -122,9 +121,9 @@ public class LaserGuiGraphicsChemical extends GuiGraphics {
         TextureAtlasSprite chemicalSprite = Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(chemicalStack.getType().getIcon());
         int chemicalColor = chemicalStack.getChemicalColorRepresentation();
 
-        float red = FastColor.ARGB32.red(chemicalColor);
-        float green = FastColor.ARGB32.green(chemicalColor);
-        float blue = FastColor.ARGB32.blue(chemicalColor);
+        float red = (float) (chemicalColor >> 16 & 255) / 255.0F;
+        float green = (float) (chemicalColor >> 8 & 255) / 255.0F;
+        float blue = (float) (chemicalColor & 255) / 255.0F;
         blit(pX, pY, 100, 16, 16, chemicalSprite, red, green, blue, 1.0f);
     }
 }
