@@ -301,7 +301,7 @@ public class MekanismCache {
             long amtHad = 0;
             for (int tank = 0; tank < stockerTank.getTanks(); tank++) { //Loop through all the tanks
                 STACK stackInTank = stockerTank.getChemicalInTank(tank);
-                if (chemicalStack.getType() == stackInTank.getType())
+                if (chemicalStack.isTypeEqual(stackInTank))
                     amtHad += stackInTank.getAmount();
             }
             if (amtHad > desiredAmt) { //If we have too much of this fluid, remove the difference.
