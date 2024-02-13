@@ -47,8 +47,8 @@ public class ServerTickHandler {
             if (!particleListChemical.isEmpty()) {
                 Set<Level> levels = new HashSet<>();
                 for (ParticleDataChemical data : particleListChemical) {
-                    levels.add(data.fromData.node().getLevel(event.getServer()));
-                    levels.add(data.toData.node().getLevel(event.getServer()));
+                    levels.add(event.getServer().getLevel(data.fromData.node().dimension()));
+                    levels.add(event.getServer().getLevel(data.toData.node().dimension()));
                 }
                 for (Level level : levels)
                     PacketDistributor.DIMENSION.with(level.dimension()).send(new NodeParticlesChemicalPayload(List.copyOf(particleListChemical)));

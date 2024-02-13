@@ -1,6 +1,12 @@
 package com.direwolf20.laserio.integration.mekanism;
 
-import mekanism.api.chemical.*;
+import java.util.LinkedHashSet;
+import java.util.Set;
+import java.util.stream.Stream;
+import mekanism.api.chemical.Chemical;
+import mekanism.api.chemical.ChemicalStack;
+import mekanism.api.chemical.ChemicalType;
+import mekanism.api.chemical.IChemicalHandler;
 import mekanism.api.chemical.gas.GasStack;
 import mekanism.api.chemical.gas.IGasHandler;
 import mekanism.api.chemical.infuse.IInfusionHandler;
@@ -11,14 +17,11 @@ import mekanism.api.chemical.slurry.ISlurryHandler;
 import mekanism.api.chemical.slurry.SlurryStack;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.capabilities.BlockCapability;
 import net.neoforged.neoforge.capabilities.ItemCapability;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
 
 public class MekanismStatics {
     public static BlockCapability<IGasHandler, @Nullable Direction> GAS_CAPABILITY = BlockCapability.createSided(new ResourceLocation("mekanism", "gas_handler"), IGasHandler.class);
@@ -41,148 +44,64 @@ public class MekanismStatics {
         };
     }
 
+    public static ItemCapability<? extends IChemicalHandler<?, ?>, Void> getItemCapabilityForChemical(ChemicalType chemicalType) {
+        return switch (chemicalType) {
+            case GAS -> GAS_CAPABILITY_ITEM;
+            case INFUSION -> INFUSION_CAPABILITY_ITEM;
+            case PIGMENT -> PIGMENT_CAPABILITY_ITEM;
+            case SLURRY -> SLURRY_CAPABILITY_ITEM;
+        };
+    }
+
     public static boolean doesItemStackHoldChemicals(ItemStack itemStack) {
         return !getFirstChemicalOnItemStack(itemStack).isEmpty();
     }
 
-    public static List<ChemicalStack<?>> getAllChemicalsOnItemStack(ItemStack itemStack) {
-        List<ChemicalStack<?>> chemicalStackList = new ArrayList<>();
-        if (itemStack.isEmpty()) return chemicalStackList;
-        IGasHandler gasHandler = itemStack.getCapability(MekanismStatics.GAS_CAPABILITY_ITEM);
-        if (gasHandler != null) {
-            for (int tank = 0; tank < gasHandler.getTanks(); tank++) {
-                ChemicalStack<?> chemicalStack = gasHandler.getChemicalInTank(tank);
-                if (!chemicalStack.isEmpty())
-                    chemicalStackList.add(chemicalStack);
+    private static Set<Chemical<?>> getAllChemicalsOnItemStack(ItemStack itemStack) {
+        if (itemStack.isEmpty()) return Set.of();
+        Set<Chemical<?>> chemicalList = new LinkedHashSet<>();
+        for (ChemicalType chemicalType : ChemicalType.values()) {
+            IChemicalHandler<?, ?> handler = itemStack.getCapability(getItemCapabilityForChemical(chemicalType));
+            if (handler != null) {
+                for (int tank = 0; tank < handler.getTanks(); tank++) {
+                    ChemicalStack<?> chemicalStack = handler.getChemicalInTank(tank);
+                    if (!chemicalStack.isEmpty())
+                        chemicalList.add(chemicalStack.getType());
+                }
             }
         }
-        IInfusionHandler infusionHandler = itemStack.getCapability(MekanismStatics.INFUSION_CAPABILITY_ITEM);
-        if (infusionHandler != null) {
-            for (int tank = 0; tank < infusionHandler.getTanks(); tank++) {
-                ChemicalStack<?> chemicalStack = infusionHandler.getChemicalInTank(tank);
-                if (!chemicalStack.isEmpty())
-                    chemicalStackList.add(chemicalStack);
-            }
-        }
-        IPigmentHandler pigmentHandler = itemStack.getCapability(MekanismStatics.PIGMENT_CAPABILITY_ITEM);
-        if (pigmentHandler != null) {
-            for (int tank = 0; tank < pigmentHandler.getTanks(); tank++) {
-                ChemicalStack<?> chemicalStack = pigmentHandler.getChemicalInTank(tank);
-                if (!chemicalStack.isEmpty())
-                    chemicalStackList.add(chemicalStack);
-            }
-        }
-        ISlurryHandler slurryHandler = itemStack.getCapability(MekanismStatics.SLURRY_CAPABILITY_ITEM);
-        if (slurryHandler != null) {
-            for (int tank = 0; tank < slurryHandler.getTanks(); tank++) {
-                ChemicalStack<?> chemicalStack = slurryHandler.getChemicalInTank(tank);
-                if (!chemicalStack.isEmpty())
-                    chemicalStackList.add(chemicalStack);
-            }
-        }
-        return chemicalStackList;
+        return chemicalList;
     }
 
     public static ChemicalStack<?> getFirstChemicalOnItemStack(ItemStack itemStack) {
         if (itemStack.isEmpty()) return GasStack.EMPTY; //TODO Should I change this to something more generic?
-        IGasHandler gasHandler = itemStack.getCapability(MekanismStatics.GAS_CAPABILITY_ITEM);
-        if (gasHandler != null) {
-            for (int tank = 0; tank < gasHandler.getTanks(); tank++) {
-                ChemicalStack<?> chemicalStack = gasHandler.getChemicalInTank(tank);
-                if (!chemicalStack.isEmpty())
-                    return chemicalStack;
-            }
-        }
-        IInfusionHandler infusionHandler = itemStack.getCapability(MekanismStatics.INFUSION_CAPABILITY_ITEM);
-        if (infusionHandler != null) {
-            for (int tank = 0; tank < infusionHandler.getTanks(); tank++) {
-                ChemicalStack<?> chemicalStack = infusionHandler.getChemicalInTank(tank);
-                if (!chemicalStack.isEmpty())
-                    return chemicalStack;
-            }
-        }
-        IPigmentHandler pigmentHandler = itemStack.getCapability(MekanismStatics.PIGMENT_CAPABILITY_ITEM);
-        if (pigmentHandler != null) {
-            for (int tank = 0; tank < pigmentHandler.getTanks(); tank++) {
-                ChemicalStack<?> chemicalStack = pigmentHandler.getChemicalInTank(tank);
-                if (!chemicalStack.isEmpty())
-                    return chemicalStack;
-            }
-        }
-        ISlurryHandler slurryHandler = itemStack.getCapability(MekanismStatics.SLURRY_CAPABILITY_ITEM);
-        if (slurryHandler != null) {
-            for (int tank = 0; tank < slurryHandler.getTanks(); tank++) {
-                ChemicalStack<?> chemicalStack = slurryHandler.getChemicalInTank(tank);
-                if (!chemicalStack.isEmpty())
-                    return chemicalStack;
-            }
+        for (ChemicalType chemicalType : ChemicalType.values()) {
+            ChemicalStack<?> chemicalStack = getFirstChemicalOnItemStack(itemStack, chemicalType);
+            if (!chemicalStack.isEmpty())
+                return chemicalStack;
         }
         return GasStack.EMPTY;
     }
 
-    public static List<String> getTagsFromItemStack(ItemStack itemStack) {
-        List<String> tagsList = new ArrayList<>();
-        List<ChemicalStack<?>> chemicalStackList = getAllChemicalsOnItemStack(itemStack);
-        for (ChemicalStack<?> chemicalStack : chemicalStackList) {
-            chemicalStack.getType().getTags().forEach(t -> {
-                String tag = t.location().toString().toLowerCase(Locale.ROOT);
-                if (!tagsList.contains(tag) && !tagsList.contains(tag))
-                    tagsList.add(tag);
-            });
-        }
-        return tagsList;
-    }
-
-    public static boolean isValidChemicalForHandler(IChemicalHandler handler, ChemicalStack<?> chemicalStack) {
-        // Check if the handler is a gas handler
-        if (handler instanceof IGasHandler) {
-            // Ensure the chemical stack is also a gas stack
-            return chemicalStack instanceof GasStack;
-        }
-        if (handler instanceof ISlurryHandler) {
-            // Ensure the chemical stack is also a gas stack
-            return chemicalStack instanceof SlurryStack;
-        }
-        if (handler instanceof IPigmentHandler) {
-            // Ensure the chemical stack is also a gas stack
-            return chemicalStack instanceof PigmentStack;
-        }
-        if (handler instanceof IInfusionHandler) {
-            // Ensure the chemical stack is also a gas stack
-            return chemicalStack instanceof InfusionStack;
-        }
-
-        return false;
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <CHEMICAL extends Chemical<CHEMICAL>, HANDLER extends IChemicalHandler<CHEMICAL, ?>, DIRECTION extends Direction> BlockCapability<HANDLER, DIRECTION> getCapabilityForChemical(CHEMICAL chemical) {
-        return (BlockCapability<HANDLER, DIRECTION>) getCapabilityForChemical(ChemicalType.getTypeFor(chemical));
-    }
-
-    public static <CHEMICAL extends Chemical<CHEMICAL>, STACK extends ChemicalStack<CHEMICAL>, HANDLER extends IChemicalHandler<CHEMICAL, STACK>, DIRECTION extends Direction>
-    BlockCapability<HANDLER, DIRECTION> getCapabilityForChemical(STACK stack) {
-        return getCapabilityForChemical(stack.getType());
-    }
-
-    public static <CHEMICAL extends Chemical<CHEMICAL>, STACK extends ChemicalStack<CHEMICAL>, HANDLER extends IChemicalHandler<CHEMICAL, STACK>, DIRECTION extends Direction>
-    BlockCapability<HANDLER, DIRECTION> getCapabilityForChemical(IChemicalTank<CHEMICAL, STACK> tank) {
-        //Note: We just use getEmptyStack as it still has enough information
-        return getCapabilityForChemical(tank.getEmptyStack());
-    }
-
-    public static <CHEMICAL extends Chemical<CHEMICAL>, STACK extends ChemicalStack<CHEMICAL>, HANDLER extends IChemicalHandler<CHEMICAL, STACK>> boolean hasChemical(ItemStack stack, ItemCapability<HANDLER, Void> capability) {
-        HANDLER handler = stack.getCapability(capability);
+    public static ChemicalStack<?> getFirstChemicalOnItemStack(ItemStack itemStack, ChemicalType chemicalType) {
+        IChemicalHandler<?, ?> handler = itemStack.getCapability(getItemCapabilityForChemical(chemicalType));
         if (handler != null) {
-            for (int tank = 0; tank < handler.getTanks(); ++tank) {
-                STACK chemicalStack = handler.getChemicalInTank(tank);
-                if (!chemicalStack.isEmpty()) {
-                    return true;
-                }
+            for (int tank = 0; tank < handler.getTanks(); tank++) {
+                ChemicalStack<?> chemicalStack = handler.getChemicalInTank(tank);
+                if (!chemicalStack.isEmpty())
+                    return chemicalStack;
             }
         }
+        return switch (chemicalType) {
+            case GAS -> GasStack.EMPTY;
+            case INFUSION -> InfusionStack.EMPTY;
+            case PIGMENT -> PigmentStack.EMPTY;
+            case SLURRY -> SlurryStack.EMPTY;
+        };
+    }
 
-        return false;
+    public static Stream<? extends TagKey<?>> getTagsFromItemStack(ItemStack itemStack) {
+        return getAllChemicalsOnItemStack(itemStack).stream().flatMap(Chemical::getTags);
     }
 
     /**

@@ -1,36 +1,44 @@
 package com.direwolf20.laserio.integration.mekanism.client.chemicalparticle;
 
-
-import com.direwolf20.laserio.util.DimBlockPos;
-import mekanism.api.chemical.ChemicalStack;
-import mekanism.api.chemical.ChemicalType;
-import mekanism.api.chemical.gas.GasStack;
-import mekanism.api.chemical.infuse.InfusionStack;
-import mekanism.api.chemical.pigment.PigmentStack;
-import mekanism.api.chemical.slurry.SlurryStack;
+import mekanism.api.chemical.merged.BoxedChemicalStack;
+import net.minecraft.core.GlobalPos;
+import net.minecraft.network.FriendlyByteBuf;
 
 public class ParticleDataChemical {
-    public record PositionData(DimBlockPos node, byte direction, byte position) {
-    }
+    public record PositionData(GlobalPos node, byte direction, byte position) {
 
-    public String chemicalType;
-    public ChemicalStack<?> chemicalStack;
-    public PositionData fromData;
-    public PositionData toData;
-
-    public ParticleDataChemical(ChemicalStack<?> chemicalStack, DimBlockPos fromNode, byte fromDirection, DimBlockPos toNode, byte toDirection, byte extractPosition, byte insertPosition) {
-        if (chemicalStack instanceof GasStack) {
-            chemicalType = ChemicalType.GAS.getSerializedName();
-        } else if (chemicalStack instanceof SlurryStack) {
-            chemicalType = ChemicalType.SLURRY.getSerializedName();
-        } else if (chemicalStack instanceof PigmentStack) {
-            chemicalType = ChemicalType.PIGMENT.getSerializedName();
-        } else if (chemicalStack instanceof InfusionStack) {
-            chemicalType = ChemicalType.INFUSION.getSerializedName();
+        public PositionData(FriendlyByteBuf buffer) {
+            this(buffer.readGlobalPos(), buffer.readByte(), buffer.readByte());
         }
-        this.chemicalStack = chemicalStack;
-        this.fromData = new PositionData(fromNode, fromDirection, extractPosition);
-        this.toData = new PositionData(toNode, toDirection, insertPosition);
+
+        public void write(FriendlyByteBuf buffer) {
+            buffer.writeGlobalPos(node);
+            buffer.writeByte(direction);
+            buffer.writeByte(position);
+        }
     }
 
+    public final BoxedChemicalStack chemicalStack;
+    public final PositionData fromData;
+    public final PositionData toData;
+
+    public ParticleDataChemical(FriendlyByteBuf buffer) {
+        this(BoxedChemicalStack.read(buffer), new PositionData(buffer), new PositionData(buffer));
+    }
+
+    public ParticleDataChemical(BoxedChemicalStack boxedStack, GlobalPos fromNode, byte fromDirection, GlobalPos toNode, byte toDirection, byte extractPosition, byte insertPosition) {
+        this(boxedStack, new PositionData(fromNode, fromDirection, extractPosition), new PositionData(toNode, toDirection, insertPosition));
+    }
+
+    private ParticleDataChemical(BoxedChemicalStack boxedStack, PositionData fromData, PositionData toData) {
+        this.chemicalStack = boxedStack;
+        this.fromData = fromData;
+        this.toData = toData;
+    }
+
+    public void write(FriendlyByteBuf buffer) {
+        chemicalStack.write(buffer);
+        fromData.write(buffer);
+        toData.write(buffer);
+    }
 }

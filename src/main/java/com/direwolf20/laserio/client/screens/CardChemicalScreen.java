@@ -12,6 +12,7 @@ import com.direwolf20.laserio.common.network.data.OpenNodePayload;
 import com.direwolf20.laserio.common.network.data.UpdateCardPayload;
 import com.direwolf20.laserio.common.network.data.UpdateFilterPayload;
 import com.direwolf20.laserio.integration.mekanism.CardChemical;
+import com.direwolf20.laserio.integration.mekanism.MekanismStatics;
 import com.direwolf20.laserio.setup.Config;
 import mekanism.api.chemical.ChemicalStack;
 import net.minecraft.client.Minecraft;
@@ -24,9 +25,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.PacketDistributor;
-
-import static com.direwolf20.laserio.integration.mekanism.MekanismStatics.doesItemStackHoldChemicals;
-import static com.direwolf20.laserio.integration.mekanism.MekanismStatics.getFirstChemicalOnItemStack;
+import org.lwjgl.glfw.GLFW;
 
 public class CardChemicalScreen extends CardItemScreen {
 
@@ -60,11 +59,12 @@ public class CardChemicalScreen extends CardItemScreen {
 
     @Override
     public void addModeButton() {
-        ResourceLocation[] modeTextures = new ResourceLocation[4];
-        modeTextures[0] = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/modeinserter.png");
-        modeTextures[1] = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/modeextractor.png");
-        modeTextures[2] = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/modestocker.png");
-        modeTextures[3] = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/modesensor.png");
+        ResourceLocation[] modeTextures = {
+              new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/modeinserter.png"),
+              new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/modeextractor.png"),
+              new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/modestocker.png"),
+              new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/modesensor.png")
+        };
         buttons.put("mode", new ToggleButton(getGuiLeft() + 5, getGuiTop() + 5, 16, 16, modeTextures, currentMode, (button) -> {
             currentMode = BaseCard.nextTransferMode(card);
             ((ToggleButton) button).setTexturePosition(currentMode);
@@ -78,7 +78,7 @@ public class CardChemicalScreen extends CardItemScreen {
         if (this.menu.getCarried().isEmpty() && this.hoveredSlot != null && this.hoveredSlot.hasItem()) {
             ItemStack itemstack = this.hoveredSlot.getItem();
             if (hoveredSlot instanceof FilterBasicSlot) {
-                ChemicalStack<?> chemicalStack = getFirstChemicalOnItemStack(itemstack);
+                ChemicalStack<?> chemicalStack = MekanismStatics.getFirstChemicalOnItemStack(itemstack);
                 if (chemicalStack.isEmpty())
                     pGuiGraphics.renderTooltip(this.font, this.getTooltipFromContainerItem(itemstack), itemstack.getTooltipImage(), itemstack, pX, pY);
                 else
@@ -112,15 +112,15 @@ public class CardChemicalScreen extends CardItemScreen {
     @Override
     public boolean filterSlot(int btn) {
         ItemStack slotStack = hoveredSlot.getItem();
-        if (!doesItemStackHoldChemicals(slotStack))
+        if (!MekanismStatics.doesItemStackHoldChemicals(slotStack))
             return super.filterSlot(btn);
         if (slotStack.isEmpty()) return true;
-        if (btn == 2) { //Todo IMC Inventory Sorter so this works
+        if (btn == GLFW.GLFW_MOUSE_BUTTON_MIDDLE) { //Todo IMC Inventory Sorter so this works
             slotStack.setCount(0);
             PacketDistributor.SERVER.noArg().send(new GhostSlotPayload(hoveredSlot.index, slotStack, slotStack.getCount(), 0));
             return true;
         }
-        int amt = (btn == 0) ? 1 : -1;
+        int amt = (btn == GLFW.GLFW_MOUSE_BUTTON_LEFT) ? 1 : -1;
         int filterSlot = hoveredSlot.index - CardItemContainer.SLOTS;
         int currentMBAmt = FilterCount.getSlotAmount(filter, filterSlot);
         if (Screen.hasShiftDown()) amt *= 10;
@@ -134,9 +134,9 @@ public class CardChemicalScreen extends CardItemScreen {
 
     @Override
     public void setExtract(NumberButton amountButton, int btn) {
-        if (btn == 0)
+        if (btn == GLFW.GLFW_MOUSE_BUTTON_LEFT)
             changeAmount(1);
-        else if (btn == 1)
+        else if (btn == GLFW.GLFW_MOUSE_BUTTON_RIGHT)
             changeAmount(-1);
         amountButton.setValue(currentMode == 0 ? currentPriority : currentChemicalExtractAmt);
         amountButton.playDownSound(Minecraft.getInstance().getSoundManager());

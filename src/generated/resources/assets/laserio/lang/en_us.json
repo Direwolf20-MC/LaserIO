@@ -20,6 +20,8 @@
   "item.laserio.overclocker_card": "Card Overclocker",
   "item.laserio.overclocker_node": "Node Overclocker",
   "itemGroup.laserio": "LaserIO",
+  "laserio.error.particle.chemical": "Unknown Chemical: %s of Type: %s",
+  "laserio.error.particle.chemical_type": "Unknown Chemical Type: %s",
   "laserio.tooltip.item.card.Filter": "Filter: ",
   "laserio.tooltip.item.card.None": "None",
   "laserio.tooltip.item.card.Overclockers": "Overclockers: ",

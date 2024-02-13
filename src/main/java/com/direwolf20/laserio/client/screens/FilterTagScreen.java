@@ -32,6 +32,7 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.tags.ItemTags;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -201,34 +202,28 @@ public class FilterTagScreen extends AbstractContainerScreen<FilterTagContainer>
         }
     }
 
+    private void checkTag(TagKey<?> tagKey) {
+        String tag = tagKey.location().toString().toLowerCase(Locale.ROOT);
+        if (!stackInSlotTags.contains(tag) && !tags.contains(tag))
+            stackInSlotTags.add(tag);
+    }
+
     protected void populateStackInSlotTags() {
         stackInSlotTags = new ArrayList<>();
         ItemStack stackInSlot = container.handler.getStackInSlot(0);
         if (!stackInSlot.isEmpty()) {
-            stackInSlot.getItem().builtInRegistryHolder().tags().forEach(t -> {
-                String tag = t.location().toString().toLowerCase(Locale.ROOT);
-                if (!stackInSlotTags.contains(tag) && !tags.contains(tag))
-                    stackInSlotTags.add(tag);
-            });
+            stackInSlot.getItem().builtInRegistryHolder().tags().forEach(this::checkTag);
 
             Optional<IFluidHandlerItem> fluidHandlerLazyOptional = FluidUtil.getFluidHandler(stackInSlot);
             if (fluidHandlerLazyOptional.isPresent()) {
                 IFluidHandler fluidHandler = fluidHandlerLazyOptional.get();
                 for (int tank = 0; tank < fluidHandler.getTanks(); tank++) {
                     FluidStack fluidStack = fluidHandler.getFluidInTank(tank);
-                    fluidStack.getFluid().builtInRegistryHolder().tags().forEach(t -> {
-                        String tag = t.location().toString().toLowerCase(Locale.ROOT);
-                        if (!stackInSlotTags.contains(tag) && !tags.contains(tag))
-                            stackInSlotTags.add(tag);
-                    });
+                    fluidStack.getFluid().builtInRegistryHolder().tags().forEach(this::checkTag);
                 }
             }
             if (MekanismIntegration.isLoaded()) {
-                List<String> chemicalTags = MekanismStatics.getTagsFromItemStack(stackInSlot);
-                for (String tag : chemicalTags) {
-                    if (!stackInSlotTags.contains(tag) && !tags.contains(tag))
-                        stackInSlotTags.add(tag);
-                }
+                MekanismStatics.getTagsFromItemStack(stackInSlot).forEach(this::checkTag);
             }
         }
     }

@@ -116,6 +116,9 @@ public class LaserIOLanguageProvider extends LanguageProvider {
         add("laserio.tooltip.item.filter.nbt.allow", "True");
         add("laserio.tooltip.item.filter.nbt.deny", "False");
 
+        //Command/particle errors
+        add("laserio.error.particle.chemical_type", "Unknown Chemical Type: %s");
+        add("laserio.error.particle.chemical", "Unknown Chemical: %s of Type: %s");
         //add("", "");
     }
 }
