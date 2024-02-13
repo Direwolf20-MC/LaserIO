@@ -63,9 +63,9 @@ public class Config {
 
         COMMON_BUILDER.comment("Chemical Card").push(SUBCATEGORY_CHEMICAL);
         BASE_MILLI_BUCKETS_CHEMICAL = COMMON_BUILDER.comment("Millibuckets for Chemical Cards without Overclockers installed (Only is Mekanism is installed)")
-                .defineInRange("base_milli_buckets_chemical", 5000, 0, Integer.MAX_VALUE);
+                .defineInRange("base_milli_buckets_chemical", 15000, 0, Integer.MAX_VALUE);
         MULTIPLIER_MILLI_BUCKETS_CHEMICAL = COMMON_BUILDER.comment("Multiplier for Overclocker Cards - Number of Overclockers * this value = max millibuckets  (Only is Mekanism is installed)")
-                .defineInRange("multiplier_milli_buckets_chemical", 10000, 0, Integer.MAX_VALUE);
+                .defineInRange("multiplier_milli_buckets_chemical", 60000, 0, Integer.MAX_VALUE);
         COMMON_BUILDER.pop();
     }
 

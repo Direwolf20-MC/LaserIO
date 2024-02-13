@@ -52,7 +52,7 @@ public class CardChemicalScreen extends CardItemScreen {
 
     @Override
     public void addAmtButton() {
-        buttons.put("amount", new NumberButton(getGuiLeft() + 141, getGuiTop() + 25, 30, 12, currentMode == 0 ? currentPriority : currentChemicalExtractAmt, (button) -> {
+        buttons.put("amount", new NumberButton(getGuiLeft() + 139, getGuiTop() + 25, 32, 12, currentMode == 0 ? currentPriority : currentChemicalExtractAmt, (button) -> {
             changeAmount(-1);
         }));
     }
