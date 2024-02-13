@@ -48,6 +48,7 @@ import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
 import net.neoforged.neoforge.items.ItemStackHandler;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
 import java.util.*;
@@ -489,7 +490,7 @@ public class LaserNodeBE extends BaseLaserBE {
                                 && (p.enabled)
                                 && (p.isStackValidForCard(stack))
                                 && (p.cardType.equals(extractorCardCache.cardType))
-                                && (!(p.relativePos.equals(BlockPos.ZERO) && p.direction.equals(extractorCardCache.direction) && p.sneaky == extractorCardCache.sneaky)))
+                                && (!(p.relativePos.blockPos.equals(BlockPos.ZERO) && p.direction.equals(extractorCardCache.direction) && p.sneaky == extractorCardCache.sneaky)))
                         .toList();
                 inserterCache.get(extractorCardCache).put(key, nodes);
                 return nodes;
@@ -499,7 +500,7 @@ public class LaserNodeBE extends BaseLaserBE {
                             && (p.enabled)
                             && (p.isStackValidForCard(stack))
                             && (p.cardType.equals(extractorCardCache.cardType))
-                            && (!(p.relativePos.equals(BlockPos.ZERO) && p.direction.equals(extractorCardCache.direction) && p.sneaky == extractorCardCache.sneaky)))
+                            && (!(p.relativePos.blockPos.equals(BlockPos.ZERO) && p.direction.equals(extractorCardCache.direction) && p.sneaky == extractorCardCache.sneaky)))
                     .toList();
             HashMap<ItemStackKey, List<InserterCardCache>> tempMap = new HashMap<>();
             tempMap.put(key, nodes);
@@ -519,7 +520,7 @@ public class LaserNodeBE extends BaseLaserBE {
                                 && (p.enabled)
                                 && (p.isStackValidForCard(stack))
                                 && (p.cardType.equals(extractorCardCache.cardType))
-                                && (!(p.relativePos.equals(BlockPos.ZERO) && p.direction.equals(extractorCardCache.direction))))
+                                && (!(p.relativePos.blockPos.equals(BlockPos.ZERO) && p.direction.equals(extractorCardCache.direction))))
                         .toList();
                 inserterCacheFluid.get(extractorCardCache).put(key, nodes);
                 return nodes;
@@ -529,7 +530,7 @@ public class LaserNodeBE extends BaseLaserBE {
                             && (p.enabled)
                             && (p.isStackValidForCard(stack))
                             && (p.cardType.equals(extractorCardCache.cardType))
-                            && (!(p.relativePos.equals(BlockPos.ZERO) && p.direction.equals(extractorCardCache.direction))))
+                            && (!(p.relativePos.blockPos.equals(BlockPos.ZERO) && p.direction.equals(extractorCardCache.direction))))
                     .toList();
             HashMap<FluidStackKey, List<InserterCardCache>> tempMap = new HashMap<>();
             tempMap.put(key, nodes);
@@ -545,7 +546,7 @@ public class LaserNodeBE extends BaseLaserBE {
         } else {
             List<InserterCardCache> nodes = inserterNodes.stream().filter(p -> (p.channel == extractorCardCache.channel)
                             && (p.enabled)
-                            && (!(p.relativePos.equals(BlockPos.ZERO) && p.direction.equals(extractorCardCache.direction) && (p.cardType.equals(extractorCardCache.cardType)))))
+                            && (!(p.relativePos.blockPos.equals(BlockPos.ZERO) && p.direction.equals(extractorCardCache.direction) && (p.cardType.equals(extractorCardCache.cardType)))))
                     .toList();
             channelOnlyCache.put(extractorCardCache, nodes);
             return nodes;
@@ -2048,15 +2049,19 @@ public class LaserNodeBE extends BaseLaserBE {
         if (sortInserters) sortInserters();
     }
 
-    public LaserNodeItemHandler getLaserNodeHandlerItem(InserterCardCache inserterCardCache) {
-        if (!inserterCardCache.cardType.equals(BaseCard.CardType.ITEM)) return null;
+    @Nullable
+    public LaserNodeBE getLaserNodeBE(InserterCardCache inserterCardCache, BaseCard.CardType cardType) {
+        if (inserterCardCache.cardType != cardType) return null;
         DimBlockPos nodeWorldPos = new DimBlockPos(inserterCardCache.relativePos.getLevel(level.getServer()), getWorldPos(inserterCardCache.relativePos.blockPos));
         if (!chunksLoaded(nodeWorldPos, nodeWorldPos.blockPos.relative(inserterCardCache.direction))) return null;
-        LaserNodeBE be = getNodeAt(new DimBlockPos(inserterCardCache.relativePos.getLevel(level.getServer()), getWorldPos(inserterCardCache.relativePos.blockPos)));
+        return getNodeAt(new DimBlockPos(inserterCardCache.relativePos.getLevel(level.getServer()), getWorldPos(inserterCardCache.relativePos.blockPos)));
+    }
+
+    public LaserNodeItemHandler getLaserNodeHandlerItem(InserterCardCache inserterCardCache) {
+        LaserNodeBE be = getLaserNodeBE(inserterCardCache, BaseCard.CardType.ITEM);
         if (be == null) return null;
         IItemHandler handler = be.getAttachedInventory(inserterCardCache.direction, inserterCardCache.sneaky);
-        if (handler == null) handler = EMPTY;
-        if (handler.getSlots() == 0) return null;
+        if (handler == null || handler.getSlots() == 0) return null;
         return new LaserNodeItemHandler(be, handler);
     }
 
@@ -2114,14 +2119,10 @@ public class LaserNodeBE extends BaseLaserBE {
     }
 
     public LaserNodeFluidHandler getLaserNodeHandlerFluid(InserterCardCache inserterCardCache) {
-        if (!inserterCardCache.cardType.equals(BaseCard.CardType.FLUID)) return null;
-        DimBlockPos nodeWorldPos = new DimBlockPos(inserterCardCache.relativePos.getLevel(level.getServer()), getWorldPos(inserterCardCache.relativePos.blockPos));
-        if (!chunksLoaded(nodeWorldPos, nodeWorldPos.blockPos.relative(inserterCardCache.direction))) return null;
-        LaserNodeBE be = getNodeAt(new DimBlockPos(inserterCardCache.relativePos.getLevel(level.getServer()), getWorldPos(inserterCardCache.relativePos.blockPos)));
+        LaserNodeBE be = getLaserNodeBE(inserterCardCache, BaseCard.CardType.FLUID);
         if (be == null) return null;
         IFluidHandler fluidhandler = be.getAttachedFluidTank(inserterCardCache.direction, inserterCardCache.sneaky);
-        if (fluidhandler == null) return null;
-        if (fluidhandler.getTanks() == 0) return null;
+        if (fluidhandler == null || fluidhandler.getTanks() == 0) return null;
         return new LaserNodeFluidHandler(be, fluidhandler);
     }
 

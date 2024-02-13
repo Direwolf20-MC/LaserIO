@@ -5,7 +5,6 @@ import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.setup.Config;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
@@ -17,7 +16,6 @@ import net.minecraft.world.level.Level;
 
 public class CardChemical extends BaseCard {
     public CardChemical() {
-        super();
         CARDTYPE = CardType.CHEMICAL;
     }
 
@@ -26,7 +24,7 @@ public class CardChemical extends BaseCard {
         ItemStack itemstack = player.getItemInHand(hand);
         if (level.isClientSide()) return new InteractionResultHolder<>(InteractionResult.PASS, itemstack);
 
-        ((ServerPlayer) player).openMenu(new SimpleMenuProvider(
+        player.openMenu(new SimpleMenuProvider(
                 (windowId, playerInventory, playerEntity) -> new CardChemicalContainer(windowId, playerInventory, player, itemstack), Component.translatable("")), (buf -> {
             buf.writeItem(itemstack);
             buf.writeByte(-1);

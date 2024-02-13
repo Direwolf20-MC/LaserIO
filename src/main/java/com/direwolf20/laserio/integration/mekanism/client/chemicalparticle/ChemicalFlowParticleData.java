@@ -2,34 +2,37 @@ package com.direwolf20.laserio.integration.mekanism.client.chemicalparticle;
 
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.exceptions.Dynamic2CommandExceptionType;
+import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
+import mekanism.api.MekanismAPI;
+import mekanism.api.chemical.Chemical;
 import mekanism.api.chemical.ChemicalStack;
 import mekanism.api.chemical.ChemicalType;
-import mekanism.api.chemical.ChemicalUtils;
-import mekanism.api.chemical.gas.GasStack;
+import mekanism.api.chemical.merged.BoxedChemicalStack;
+import net.minecraft.core.Registry;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.network.FriendlyByteBuf;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
+import net.minecraft.network.chat.Component;
 
 import javax.annotation.Nonnull;
 import java.util.Locale;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.phys.Vec3;
 
 public class ChemicalFlowParticleData implements ParticleOptions {
-    private final ChemicalStack<?> chemicalStack;
-    public final String type;
-    public final double targetX;
-    public final double targetY;
-    public final double targetZ;
+    private final BoxedChemicalStack chemicalStack;
+    public final Vec3 target;
     public final int ticksPerBlock;
 
-    public ChemicalFlowParticleData(ChemicalStack<?> chemicalStack, double tx, double ty, double tz, int ticks, String type) {
+    public ChemicalFlowParticleData(BoxedChemicalStack chemicalStack, double tx, double ty, double tz, int ticks) {
+        this(chemicalStack, new Vec3(tx, ty, tz), ticks);
+    }
+
+    public ChemicalFlowParticleData(BoxedChemicalStack chemicalStack, Vec3 target, int ticks) {
         this.chemicalStack = chemicalStack.copy(); //Forge: Fix stack updating after the fact causing particle changes.
-        targetX = tx;
-        targetY = ty;
-        targetZ = tz;
+        this.target = target;
         ticksPerBlock = ticks;
-        this.type = type;
     }
 
     @Nonnull
@@ -40,39 +43,34 @@ public class ChemicalFlowParticleData implements ParticleOptions {
 
     @Override
     public void writeToNetwork(FriendlyByteBuf buffer) {
-        buffer.writeUtf(this.type);
-        ChemicalUtils.writeChemicalStack(buffer, this.chemicalStack);
-        buffer.writeDouble(this.targetX);
-        buffer.writeDouble(this.targetY);
-        buffer.writeDouble(this.targetZ);
+        this.chemicalStack.write(buffer);
+        buffer.writeVec3(target);
         buffer.writeInt(this.ticksPerBlock);
     }
 
     @Nonnull
     @Override
     public String writeToString() {
-        return String.format(Locale.ROOT, "%s %.2f %.2f %.2f %d %s",
-                this.getType(), this.targetX, this.targetY, this.targetZ, this.ticksPerBlock, this.type);
+        return String.format(Locale.ROOT, "%s %.2f %.2f %.2f %d %s %s %d",
+                this.getType(), this.target.x, this.target.y, this.target.z, this.ticksPerBlock, this.chemicalStack.getChemicalType().getSerializedName(),
+              this.chemicalStack.getChemicalStack().getType().getRegistryName(), this.chemicalStack.getChemicalStack().getAmount());
     }
 
     /*public String getParameters() {
         return Registry.PARTICLE_TYPE.getKey(this.getType()) + " " + (new ItemInput(this.fluidStack.getFluid(), this.itemStack.getTag())).serialize();
     }*/
 
-    @OnlyIn(Dist.CLIENT)
     public ChemicalStack<?> getChemicalStack() {
-        return this.chemicalStack;
+        return this.chemicalStack.getChemicalStack();
     }
 
-    public static final Deserializer<ChemicalFlowParticleData> DESERIALIZER = new Deserializer<ChemicalFlowParticleData>() {
+    public static final Deserializer<ChemicalFlowParticleData> DESERIALIZER = new Deserializer<>() {
+        private static final DynamicCommandExceptionType INVALID_TYPE = new DynamicCommandExceptionType(type -> Component.translatable("laserio.error.particle.chemical_type", type));
+        private static final Dynamic2CommandExceptionType INVALID_CHEMICAL = new Dynamic2CommandExceptionType((name, type) -> Component.translatable("laserio.error.particle.chemical", name, type));
+
         @Nonnull
         @Override
         public ChemicalFlowParticleData fromCommand(ParticleType<ChemicalFlowParticleData> particleTypeIn, StringReader reader) throws CommandSyntaxException {
-            reader.expect(' ');
-            String type = reader.readString();
-            reader.expect(' ');
-
-
             reader.expect(' ');
             double tx = reader.readDouble();
             reader.expect(' ');
@@ -81,23 +79,35 @@ public class ChemicalFlowParticleData implements ParticleOptions {
             double tz = reader.readDouble();
             reader.expect(' ');
             int ticks = reader.readInt();
-            return new ChemicalFlowParticleData(GasStack.EMPTY, tx, ty, tz, ticks, type); //TODO Check this
+            reader.expect(' ');
+            String rawType = reader.readString();
+            ChemicalType type = ChemicalType.fromString(rawType);
+            if (type == null) {
+                throw INVALID_TYPE.create(rawType);
+            }
+            reader.expect(' ');
+            String rawRegistryName = reader.readString();
+            ResourceLocation registryName = ResourceLocation.tryParse(rawRegistryName);
+            if (registryName == null) {
+                throw INVALID_CHEMICAL.create(rawRegistryName, type);
+            }
+            reader.expect(' ');
+            long amount = reader.readLong();
+            Registry<? extends Chemical<?>> registry = switch (type) {
+                case GAS -> MekanismAPI.GAS_REGISTRY;
+                case INFUSION -> MekanismAPI.INFUSE_TYPE_REGISTRY;
+                case PIGMENT -> MekanismAPI.PIGMENT_REGISTRY;
+                case SLURRY -> MekanismAPI.SLURRY_REGISTRY;
+            };
+            BoxedChemicalStack boxedStack = registry.getOptional(registryName)
+                  .map(chemical -> BoxedChemicalStack.box(chemical.getStack(amount)))
+                  .orElseThrow(() -> INVALID_CHEMICAL.create(registryName, type));
+            return new ChemicalFlowParticleData(boxedStack, tx, ty, tz, ticks);
         }
 
         @Override
         public ChemicalFlowParticleData fromNetwork(ParticleType<ChemicalFlowParticleData> particleTypeIn, FriendlyByteBuf buffer) {
-            String type = buffer.readUtf();
-            ChemicalType chemicalType = ChemicalType.fromString(type);
-            if (chemicalType == ChemicalType.GAS)
-                return new ChemicalFlowParticleData(ChemicalUtils.readGasStack(buffer), buffer.readDouble(), buffer.readDouble(), buffer.readDouble(), buffer.readInt(), type);
-            else if (chemicalType == ChemicalType.INFUSION)
-                return new ChemicalFlowParticleData(ChemicalUtils.readInfusionStack(buffer), buffer.readDouble(), buffer.readDouble(), buffer.readDouble(), buffer.readInt(), type);
-            else if (chemicalType == ChemicalType.PIGMENT)
-                return new ChemicalFlowParticleData(ChemicalUtils.readPigmentStack(buffer), buffer.readDouble(), buffer.readDouble(), buffer.readDouble(), buffer.readInt(), type);
-            else if (chemicalType == ChemicalType.SLURRY)
-                return new ChemicalFlowParticleData(ChemicalUtils.readSlurryStack(buffer), buffer.readDouble(), buffer.readDouble(), buffer.readDouble(), buffer.readInt(), type);
-            else
-                return null; //Shouldn't happen?
+            return new ChemicalFlowParticleData(BoxedChemicalStack.read(buffer), buffer.readVec3(), buffer.readInt());
         }
     };
 }

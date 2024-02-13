@@ -6,14 +6,16 @@ import com.direwolf20.laserio.common.items.filters.FilterCount;
 import com.direwolf20.laserio.common.items.filters.FilterMod;
 import com.direwolf20.laserio.common.items.filters.FilterTag;
 import com.direwolf20.laserio.util.BaseCardCache;
-import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Reference2BooleanMap;
+import it.unimi.dsi.fastutil.objects.Reference2BooleanOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Reference2IntMap;
+import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
+import java.util.EnumMap;
+import java.util.function.Predicate;
+import mekanism.api.chemical.Chemical;
 import mekanism.api.chemical.ChemicalStack;
-import mekanism.api.chemical.gas.IGasHandler;
-import mekanism.api.chemical.infuse.IInfusionHandler;
-import mekanism.api.chemical.pigment.IPigmentHandler;
-import mekanism.api.chemical.slurry.ISlurryHandler;
-import net.minecraft.tags.TagKey;
+import mekanism.api.chemical.ChemicalType;
+import mekanism.api.chemical.IChemicalHandler;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.items.ItemStackHandler;
 
@@ -23,22 +25,27 @@ import java.util.Locale;
 import java.util.Map;
 
 public class MekanismCardCache {
-    public final BaseCardCache baseCardCache;
-    public final List<ChemicalStack<?>> filteredChemicals;
-    public final Map<ChemicalStackKey, Boolean> filterCacheChemical = new Object2BooleanOpenHashMap<>();
-    public final Map<ChemicalStackKey, Integer> filterCountsChemical = new Object2IntOpenHashMap<>();
+    private final BaseCardCache baseCardCache;
+    private final Map<ChemicalType, List<ChemicalStack<?>>> filteredChemicals;
+    private final Reference2BooleanMap<Chemical<?>> filterCacheChemical = new Reference2BooleanOpenHashMap<>();
+    private final Reference2IntMap<Chemical<?>> filterCountsChemical = new Reference2IntOpenHashMap<>();
 
     public MekanismCardCache(BaseCardCache baseCardCache) {
         this.baseCardCache = baseCardCache;
-        if (this.baseCardCache.filterCard.equals(ItemStack.EMPTY)) {
-            filteredChemicals = new ArrayList<>();
+        if (this.baseCardCache.filterCard.isEmpty()) {
+            filteredChemicals = Map.of();
         } else {
             this.filteredChemicals = getFilteredChemicals();
         }
     }
 
-    public List<ChemicalStack<?>> getFilteredChemicals() {
-        List<ChemicalStack<?>> filteredChemicals = new ArrayList<>();
+    public <STACK extends ChemicalStack<?>> List<STACK> getFilteredChemicals(IChemicalHandler<?, STACK> chemicalHandler) {
+        return (List<STACK>) getFilteredChemicals().getOrDefault(ChemicalType.getTypeFor(chemicalHandler), List.of());
+    }
+
+    public Map<ChemicalType, List<ChemicalStack<?>>> getFilteredChemicals() {
+        //Note: We can use an enum map instead of having to use a linked map because the iteration order is already the same as what we want
+        Map<ChemicalType, List<ChemicalStack<?>>> filteredChemicalsMap = new EnumMap<>(ChemicalType.class);
         ItemStackHandler filterSlotHandler;
         ItemStack filterCard = baseCardCache.filterCard;
         if (filterCard.getItem() instanceof FilterBasic)
@@ -48,101 +55,66 @@ public class MekanismCardCache {
         for (int i = 0; i < filterSlotHandler.getSlots(); i++) {
             ItemStack itemStack = filterSlotHandler.getStackInSlot(i);
             if (!itemStack.isEmpty()) {
-                IGasHandler gasHandler = itemStack.getCapability(MekanismStatics.GAS_CAPABILITY_ITEM);
-                if (gasHandler != null) {
-                    for (int tank = 0; tank < gasHandler.getTanks(); tank++) {
-                        ChemicalStack<?> chemicalStack = gasHandler.getChemicalInTank(tank);
-                        if (!chemicalStack.isEmpty())
-                            filteredChemicals.add(chemicalStack); //If this is a basic card it'll always be one, but getFilterAmt handles the proper logic of returning a value
-                    }
-                }
-                IInfusionHandler infusionHandler = itemStack.getCapability(MekanismStatics.INFUSION_CAPABILITY_ITEM);
-                if (infusionHandler != null) {
-                    for (int tank = 0; tank < infusionHandler.getTanks(); tank++) {
-                        ChemicalStack<?> chemicalStack = infusionHandler.getChemicalInTank(tank);
-                        if (!chemicalStack.isEmpty())
-                            filteredChemicals.add(chemicalStack); //If this is a basic card it'll always be one, but getFilterAmt handles the proper logic of returning a value
-                    }
-                }
-                IPigmentHandler pigmentHandler = itemStack.getCapability(MekanismStatics.PIGMENT_CAPABILITY_ITEM);
-                if (pigmentHandler != null) {
-                    for (int tank = 0; tank < pigmentHandler.getTanks(); tank++) {
-                        ChemicalStack<?> chemicalStack = pigmentHandler.getChemicalInTank(tank);
-                        if (!chemicalStack.isEmpty())
-                            filteredChemicals.add(chemicalStack); //If this is a basic card it'll always be one, but getFilterAmt handles the proper logic of returning a value
-                    }
-                }
-                ISlurryHandler slurryHandler = itemStack.getCapability(MekanismStatics.SLURRY_CAPABILITY_ITEM);
-                if (slurryHandler != null) {
-                    for (int tank = 0; tank < slurryHandler.getTanks(); tank++) {
-                        ChemicalStack<?> chemicalStack = slurryHandler.getChemicalInTank(tank);
-                        if (!chemicalStack.isEmpty())
-                            filteredChemicals.add(chemicalStack); //If this is a basic card it'll always be one, but getFilterAmt handles the proper logic of returning a value
+                for (ChemicalType chemicalType : ChemicalType.values()) {
+                    IChemicalHandler<?, ?> handler = itemStack.getCapability(MekanismStatics.getItemCapabilityForChemical(chemicalType));
+                    if (handler != null) {
+                        List<ChemicalStack<?>> filteredChemicals = new ArrayList<>();
+                        for (int tank = 0; tank < handler.getTanks(); tank++) {
+                            ChemicalStack<?> chemicalStack = handler.getChemicalInTank(tank);
+                            if (!chemicalStack.isEmpty())
+                                filteredChemicals.add(chemicalStack); //If this is a basic card it'll always be one, but getFilterAmt handles the proper logic of returning a value
+                        }
+                        if (!filteredChemicals.isEmpty()) {
+                            filteredChemicalsMap.put(chemicalType, filteredChemicals);
+                        }
                     }
                 }
             }
         }
-        return filteredChemicals;
+        return filteredChemicalsMap;
     }
 
     public boolean isStackValidForCard(ChemicalStack<?> testStack) {
         ItemStack filterCard = baseCardCache.filterCard;
-        if (filterCard.equals(ItemStack.EMPTY)) return true; //If theres no filter in the card
-        ChemicalStackKey key = new ChemicalStackKey(testStack);
-        if (filterCacheChemical.containsKey(key)) return filterCacheChemical.get(key);
-        if (filterCard.getItem() instanceof FilterMod) {
-            for (ChemicalStack<?> stack : filteredChemicals) {
-                if (stack.getTypeRegistryName().getNamespace().equals(testStack.getTypeRegistryName().getNamespace())) {
-                    filterCacheChemical.put(key, baseCardCache.isAllowList);
-                    return baseCardCache.isAllowList;
+        if (filterCard.isEmpty()) return true; //If theres no filter in the card
+        return filterCacheChemical.computeIfAbsent(testStack.getType(), (Chemical<?> key) -> {
+            boolean matches;
+            if (filterCard.getItem() instanceof FilterTag) {
+                matches = key.getTags().map(tagKey -> tagKey.location().toString().toLowerCase(Locale.ROOT)).anyMatch(baseCardCache.filterTags::contains);
+            } else {
+                Predicate<ChemicalStack<?>> validityPredicate;
+                if (filterCard.getItem() instanceof FilterMod) {
+                    validityPredicate = stack -> stack.getTypeRegistryName().getNamespace().equals(key.getRegistryName().getNamespace());
+                } else {
+                    validityPredicate = stack -> key == stack.getType();
                 }
+                matches = filteredChemicals.getOrDefault(ChemicalType.getTypeFor(key), List.of()).stream().anyMatch(validityPredicate);
             }
-        } else if (filterCard.getItem() instanceof FilterTag) {
-            for (TagKey tagKey : testStack.getType().getTags().toList()) {
-                String tag = tagKey.location().toString().toLowerCase(Locale.ROOT);
-                if (baseCardCache.filterTags.contains(tag)) {
-                    filterCacheChemical.put(key, baseCardCache.isAllowList);
-                    return baseCardCache.isAllowList;
-                }
-            }
-        } else {
-            for (ChemicalStack<?> stack : filteredChemicals) {
-                if (key.equals(new ChemicalStackKey(stack))) {
-                    filterCacheChemical.put(key, baseCardCache.isAllowList);
-                    return baseCardCache.isAllowList;
-                }
-            }
-        }
-        filterCacheChemical.put(key, !baseCardCache.isAllowList);
-        return !baseCardCache.isAllowList;
+            return matches == baseCardCache.isAllowList;
+        });
     }
 
     public int getFilterAmt(ChemicalStack<?> testStack) {
         ItemStack filterCard = baseCardCache.filterCard;
-        if (filterCard.equals(ItemStack.EMPTY))
+        if (filterCard.isEmpty())
             return 0; //If theres no filter in the card (This should never happen in theory)
         if (!(filterCard.getItem() instanceof FilterCount)) { //If this is a basic or tag Card return -1 which will mean infinite amount
             return -1;
         }
-        ChemicalStackKey key = new ChemicalStackKey(testStack);
-        if (filterCountsChemical.containsKey(key)) //If we've already tested this, get it from the cache
-            return filterCountsChemical.get(key);
-
-        FilterCountHandler filterSlotHandler = FilterCount.getInventory(filterCard);
-        for (int i = 0; i < filterSlotHandler.getSlots(); i++) { //Gotta iterate the card's NBT because of the way we store amounts (in the MBAmt tag)
-            ItemStack itemStack = filterSlotHandler.getStackInSlot(i);
-            if (!itemStack.isEmpty()) {
-                ChemicalStack<?> chemicalStack = MekanismStatics.getFirstChemicalOnItemStack(itemStack);
-                if (chemicalStack.isEmpty()) continue;
-                if (key.equals(new ChemicalStackKey(chemicalStack))) {
-                    int mbAmt = FilterCount.getSlotAmount(filterCard, i);
-                    filterCountsChemical.put(key, mbAmt);
-                    return mbAmt;
+        //If we've already tested this, get it from the cache
+        return filterCountsChemical.computeIfAbsent(testStack.getType(), (Chemical<?> key) -> {
+            ChemicalType keyType = ChemicalType.getTypeFor(key);
+            FilterCountHandler filterSlotHandler = FilterCount.getInventory(filterCard);
+            for (int i = 0; i < filterSlotHandler.getSlots(); i++) { //Gotta iterate the card's NBT because of the way we store amounts (in the MBAmt tag)
+                ItemStack itemStack = filterSlotHandler.getStackInSlot(i);
+                if (!itemStack.isEmpty()) {
+                    ChemicalStack<?> chemicalStack = MekanismStatics.getFirstChemicalOnItemStack(itemStack, keyType);
+                    if (!chemicalStack.isEmpty() && key == chemicalStack.getType()) {
+                        return FilterCount.getSlotAmount(filterCard, i);
+                    }
                 }
-
             }
-        }
-        filterCountsChemical.put(key, 0);
-        return 0; //Should never get here in theory
+            return 0;//Should never get here in theory
+        });
     }
 }
