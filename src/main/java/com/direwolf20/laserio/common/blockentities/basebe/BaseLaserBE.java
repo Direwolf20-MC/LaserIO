@@ -10,6 +10,7 @@ import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -76,7 +77,10 @@ public class BaseLaserBE extends BlockEntity {
             DimBlockPos posToCheck = nodesToCheck.remove(); //Pop the stack
             if (!checkedNodes.add(posToCheck))
                 continue; //Don't check nodes we've checked before
-            BlockEntity be = posToCheck.getLevel(getLevel().getServer()).getBlockEntity(posToCheck.blockPos);
+            Level nodeLevel = posToCheck.getLevel(getLevel().getServer());
+            if (nodeLevel == null)
+                continue; //Never seen this before but Shartte found a way!
+            BlockEntity be = nodeLevel.getBlockEntity(posToCheck.blockPos);
             if (be instanceof BaseLaserBE baseLaserBE) {
                 Set<DimBlockPos> connectedNodes = baseLaserBE.getWorldConnections(); //Get all the nodes this node is connected to
                 if (be instanceof LaserConnectorAdvBE laserConnectorAdvBE && (laserConnectorAdvBE.getPartnerDimBlockPos() != null))
