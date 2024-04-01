@@ -13,6 +13,7 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
+import net.neoforged.neoforge.items.ItemStackHandler;
 import org.slf4j.Logger;
 
 // The value here should match an entry in the META-INF/mods.toml file
@@ -48,10 +49,14 @@ public class LaserIO {
 
     private void registerCapabilities(RegisterCapabilitiesEvent event) {
         event.registerBlock(Capabilities.ItemHandler.BLOCK,
-                (level, pos, state, be, side) -> ((LaserNodeBE) be).nodeSideCaches[side.ordinal()].itemHandler,
+                (level, pos, state, be, side) -> {
+                    if (side != null)
+                        return ((LaserNodeBE) be).nodeSideCaches[side.ordinal()].itemHandler;
+                    else
+                        return new ItemStackHandler(0);
+                },
                 // blocks to register for
                 Registration.LaserNode.get());
-        //TODO PORT -- Register and fix Card Holder
         event.registerItem(Capabilities.ItemHandler.ITEM, (itemStack, context) -> {
                     if (itemStack.getItem() instanceof CardHolder holder)
                         return holder.getItemHandler(itemStack);
