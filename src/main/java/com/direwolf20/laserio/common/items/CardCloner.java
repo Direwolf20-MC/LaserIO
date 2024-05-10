@@ -111,6 +111,7 @@ public class CardCloner extends Item {
     }
 
     public static void saveSettings(ItemStack stack, DataComponentPatch dataComponentPatch) {
+        stack.getComponentsPatch().entrySet().forEach(k -> stack.remove(k.getKey()));
         stack.applyComponents(dataComponentPatch);
     }
 

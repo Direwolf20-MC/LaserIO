@@ -114,6 +114,7 @@ public class PacketCopyPasteCard {
                             }
                         }
                         ItemStack tempStack = slotStack.copy();
+                        tempStack.getComponentsPatch().entrySet().forEach(k -> tempStack.remove(k.getKey()));
                         DataComponentPatch dataComponentPatch = CardCloner.getSettings(clonerStack);
                         tempStack.applyComponents(dataComponentPatch);
                         container.getSlot(payload.slot()).set(tempStack);
@@ -177,8 +178,10 @@ public class PacketCopyPasteCard {
                 //In *THEORY* this should never be needed but who knows!
                 possibleReturnStack = container.getSlot(entry.getKey()).getItem();
                 possibleReturnStack.setCount(entry.getValue());
+                container.getSlot(entry.getKey()).setByPlayer(possibleReturnStack);
             } else {
                 possibleReturnStack.grow(entry.getValue());
+                container.getSlot(entry.getKey()).setByPlayer(possibleReturnStack);
             }
         }
         return true; //Since we got here we can assume we updated everything
@@ -208,6 +211,7 @@ public class PacketCopyPasteCard {
         for (Map.Entry<Integer, Integer> entry : findStackMap.entrySet()) {
             ItemStack possibleStack = container.getSlot(entry.getKey()).getItem();
             possibleStack.shrink(entry.getValue());
+            container.getSlot(entry.getKey()).setByPlayer(possibleStack);
         }
         return true; //Since we got here we can assume we updated everything
     }
