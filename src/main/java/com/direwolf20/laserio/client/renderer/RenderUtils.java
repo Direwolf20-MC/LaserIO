@@ -159,7 +159,7 @@ public class RenderUtils {
                 drawLaser(builder, positionMatrix, endLaser, startLaser, color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, alpha / 255f, 0.025f, v, v + diffY * 1.5, be);
             }
 
-            if (be instanceof LaserConnectorAdvBE laserConnectorAdvBE && laserConnectorAdvBE.getPartnerDimBlockPos() != null && level.getBlockState(be.getBlockPos()).getBlock().equals(Registration.LaserConnectorAdv.get())) {
+            if (be instanceof LaserConnectorAdvBE laserConnectorAdvBE && laserConnectorAdvBE.getPartnerGlobalPos() != null && level.getBlockState(be.getBlockPos()).getBlock().equals(Registration.LaserConnectorAdv.get())) {
                 Direction facing = level.getBlockState(be.getBlockPos()).getValue(BlockStateProperties.FACING).getOpposite();
                 BlockPos endBlock = laserConnectorAdvBE.getBlockPos().relative(facing);
                 Color color = be.getColor();
@@ -286,7 +286,7 @@ public class RenderUtils {
             Matrix4f positionMatrix = matrixStackIn.last().pose();
             matrixStackIn.translate(startBlock.getX() - projectedView.x, startBlock.getY() - projectedView.y, startBlock.getZ() - projectedView.z);
 
-            for (Direction direction : Direction.values()) { //Todo Improve
+            for (Direction direction : Direction.values()) {
                 IItemHandler h = level.getCapability(Capabilities.ItemHandler.BLOCK, be.getBlockPos(), direction);
                 if (h == null) continue;
                 for (int slot = 0; slot < h.getSlots(); slot++) {
@@ -338,7 +338,7 @@ public class RenderUtils {
             Matrix4f positionMatrix = matrixStackIn.last().pose();
             matrixStackIn.translate(startBlock.getX() - projectedView.x, startBlock.getY() - projectedView.y, startBlock.getZ() - projectedView.z);
 
-            for (Direction direction : Direction.values()) { //Todo Improve
+            for (Direction direction : Direction.values()) {
                 IItemHandler h = level.getCapability(Capabilities.ItemHandler.BLOCK, be.getBlockPos(), direction);
                 if (h == null) continue;
                 for (int slot = 0; slot < h.getSlots(); slot++) {
@@ -400,7 +400,7 @@ public class RenderUtils {
 
 
         builder = buffer.getBuffer(MyRenderType.LASER_MAIN_BEAM);
-        for (Direction direction : Direction.values()) { //Todo Improve
+        for (Direction direction : Direction.values()) {
             IItemHandler h = level.getCapability(Capabilities.ItemHandler.BLOCK, be.getBlockPos(), direction);
             if (h == null) continue;
             for (int slot = 0; slot < h.getSlots(); slot++) {
@@ -438,7 +438,7 @@ public class RenderUtils {
         buffer.endBatch(MyRenderType.LASER_MAIN_BEAM); //This apparently is needed in RenderWorldLast
 
         builder = buffer.getBuffer(MyRenderType.LASER_MAIN_CORE);
-        for (Direction direction : Direction.values()) { //Todo Improve
+        for (Direction direction : Direction.values()) {
             IItemHandler h = level.getCapability(Capabilities.ItemHandler.BLOCK, be.getBlockPos(), direction);
             if (h == null) continue;
             for (int slot = 0; slot < h.getSlots(); slot++) {

@@ -5,9 +5,7 @@
       "conditions": {
         "items": [
           {
-            "items": [
-              "laserio:filter_basic"
-            ]
+            "items": "laserio:filter_basic"
           }
         ]
       },

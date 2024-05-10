@@ -7,16 +7,16 @@
       "item": "laserio:laser_connector"
     },
     "d": {
-      "tag": "forge:gems/diamond"
+      "tag": "c:gems/diamond"
     },
     "e": {
-      "tag": "forge:ender_pearls"
+      "tag": "c:ender_pearls"
     },
     "i": {
-      "tag": "forge:ingots/gold"
+      "tag": "c:ingots/gold"
     },
     "r": {
-      "tag": "forge:dusts/redstone"
+      "tag": "c:dusts/redstone"
     }
   },
   "pattern": [
@@ -25,6 +25,7 @@
     "iii"
   ],
   "result": {
-    "item": "laserio:laser_connector_advanced"
+    "count": 1,
+    "id": "laserio:laser_connector_advanced"
   }
 }

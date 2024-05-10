@@ -2,8 +2,10 @@ package com.direwolf20.laserio.common.blockentities;
 
 import com.direwolf20.laserio.common.blockentities.basebe.BaseLaserBE;
 import com.direwolf20.laserio.setup.Registration;
-import com.direwolf20.laserio.util.DimBlockPos;
+import com.direwolf20.laserio.util.MiscTools;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.GlobalPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
@@ -11,27 +13,27 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
 public class LaserConnectorAdvBE extends BaseLaserBE {
-    protected DimBlockPos partnerDimBlockPos;
+    protected GlobalPos partnerGlobalPos;
 
     public LaserConnectorAdvBE(BlockPos pos, BlockState state) {
         super(Registration.LaserConnectorAdv_BE.get(), pos, state);
     }
 
-    public DimBlockPos getPartnerDimBlockPos() {
-        return partnerDimBlockPos;
+    public GlobalPos getPartnerGlobalPos() {
+        return partnerGlobalPos;
     }
 
-    public void setPartnerDimBlockPos(DimBlockPos partnerDimBlockPos) {
-        this.partnerDimBlockPos = partnerDimBlockPos;
+    public void setPartnerGlobalPos(GlobalPos partnerGlobalPos) {
+        this.partnerGlobalPos = partnerGlobalPos;
         markDirtyClient();
     }
 
-    public boolean isPartnerNodeConnected(DimBlockPos pos) {
-        return partnerDimBlockPos != null && partnerDimBlockPos.equals(pos);
+    public boolean isPartnerNodeConnected(GlobalPos pos) {
+        return partnerGlobalPos != null && partnerGlobalPos.equals(pos);
     }
 
     public void handleAdvancedConnection(LaserConnectorAdvBE be) {
-        DimBlockPos connectingDimPos = new DimBlockPos(be.getLevel(), be.getBlockPos());
+        GlobalPos connectingDimPos = new GlobalPos(be.getLevel().dimension(), be.getBlockPos());
         if (isPartnerNodeConnected(connectingDimPos)) { //If these nodes are already connected, disconnect them
             removePartnerConnection();
         } else {
@@ -45,17 +47,17 @@ public class LaserConnectorAdvBE extends BaseLaserBE {
      *                         Connects This Pos -> Target Pos, and connects Target Pos -> This pos
      */
 
-    public void addPartnerConnection(DimBlockPos connectingDimPos, LaserConnectorAdvBE be) {
-        if (getPartnerDimBlockPos() != null) { //Advanced Connections are 1-1
+    public void addPartnerConnection(GlobalPos connectingDimPos, LaserConnectorAdvBE be) {
+        if (getPartnerGlobalPos() != null) { //Advanced Connections are 1-1
             removePartnerConnection();
         }
 
-        if (be.getPartnerDimBlockPos() != null) { //Advanced Connections are 1-1
+        if (be.getPartnerGlobalPos() != null) { //Advanced Connections are 1-1
             be.removePartnerConnection();
         }
 
-        setPartnerDimBlockPos(connectingDimPos); // Add that node to this one
-        be.setPartnerDimBlockPos(new DimBlockPos(getLevel(), getBlockPos())); // Add this node to that one
+        setPartnerGlobalPos(connectingDimPos); // Add that node to this one
+        be.setPartnerGlobalPos(new GlobalPos(getLevel().dimension(), getBlockPos())); // Add this node to that one
         if (getColor().equals(getDefaultColor()) && !(be.getColor().equals(be.getDefaultColor())))
             setColor(be.getColor(), getWrenchAlpha());
         else if (be.getColor().equals(be.getDefaultColor()) && !(getColor().equals(getDefaultColor())))
@@ -71,15 +73,15 @@ public class LaserConnectorAdvBE extends BaseLaserBE {
      */
 
     public void removePartnerConnection() {
-        if (getPartnerDimBlockPos() != null) {
-            DimBlockPos partnerDimPos = getPartnerDimBlockPos();
-            BlockEntity partnerBE = partnerDimPos.getLevel(level.getServer()).getBlockEntity(partnerDimPos.blockPos);
+        if (getPartnerGlobalPos() != null) {
+            GlobalPos partnerDimPos = getPartnerGlobalPos();
+            BlockEntity partnerBE = MiscTools.getLevel(level.getServer(), partnerDimPos).getBlockEntity(partnerDimPos.pos());
             if (partnerBE instanceof LaserConnectorAdvBE be) {
-                be.setPartnerDimBlockPos(null); // Remove this node from that one
+                be.setPartnerGlobalPos(null); // Remove this node from that one
                 be.discoverAllNodes();
             }
         }
-        setPartnerDimBlockPos(null); // Remove that node from this one
+        setPartnerGlobalPos(null); // Remove that node from this one
         discoverAllNodes(); //Re discover on both nodes in case we have separated 2 networks
     }
 
@@ -94,13 +96,13 @@ public class LaserConnectorAdvBE extends BaseLaserBE {
     @Override
     public void validateConnections(BlockPos originalPos) {
         //If we got here, it means the Adv Laser connector was moved, and so we assume it needs to update its partner
-        DimBlockPos partner = getPartnerDimBlockPos();
+        GlobalPos partner = getPartnerGlobalPos();
         if (partner == null) {
             removePartnerConnection();
             super.validateConnections(originalPos);
             return;
         }
-        BlockEntity be = partner.getLevel(getLevel().getServer()).getBlockEntity(partner.blockPos);
+        BlockEntity be = MiscTools.getLevel(getLevel().getServer(), partner).getBlockEntity(partner.pos());
         if (be instanceof LaserConnectorAdvBE laserConnectorAdvBE) {
             addPartnerConnection(partner, laserConnectorAdvBE); //If the partner still exists at the old spot, connect them, else remove
         } else {
@@ -111,19 +113,19 @@ public class LaserConnectorAdvBE extends BaseLaserBE {
 
     /** Misc Methods for TE's */
     @Override
-    public void load(CompoundTag tag) {
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         if (tag.contains("partnerDimPos"))
-            setPartnerDimBlockPos(new DimBlockPos(tag.getCompound("partnerDimPos")));
+            setPartnerGlobalPos(MiscTools.nbtToGlobalPos(tag.getCompound("partnerDimPos")));
         else
-            setPartnerDimBlockPos(null);
-        super.load(tag);
+            setPartnerGlobalPos(null);
+        super.loadAdditional(tag, provider);
     }
 
     @Override
-    public void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
-        if (getPartnerDimBlockPos() != null)
-            tag.put("partnerDimPos", getPartnerDimBlockPos().toNBT());
+    public void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.saveAdditional(tag, provider);
+        if (getPartnerGlobalPos() != null)
+            tag.put("partnerDimPos", MiscTools.globalPosToNBT(getPartnerGlobalPos()));
     }
 
     @Override
@@ -133,20 +135,20 @@ public class LaserConnectorAdvBE extends BaseLaserBE {
     }
 
     @Override
-    public void handleUpdateTag(CompoundTag tag) {
-        this.load(tag);
+    public void handleUpdateTag(CompoundTag tag, HolderLookup.Provider lookupProvider) {
+        this.loadAdditional(tag, lookupProvider);
     }
 
     @Override
-    public CompoundTag getUpdateTag() {
+    public CompoundTag getUpdateTag(HolderLookup.Provider provider) {
         CompoundTag tag = new CompoundTag();
-        saveAdditional(tag);
+        saveAdditional(tag, provider);
         return tag;
     }
 
     @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
-        this.load(pkt.getTag());
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, HolderLookup.Provider lookupProvider) {
+        this.loadAdditional(pkt.getTag(), lookupProvider);
     }
 
 }

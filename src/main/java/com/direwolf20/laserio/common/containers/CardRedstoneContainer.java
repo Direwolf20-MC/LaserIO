@@ -3,7 +3,7 @@ package com.direwolf20.laserio.common.containers;
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import com.direwolf20.laserio.setup.Registration;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -24,8 +24,8 @@ public class CardRedstoneContainer extends AbstractContainerMenu {
     public BlockPos sourceContainer = BlockPos.ZERO;
     public byte direction = -1;
 
-    public CardRedstoneContainer(int windowId, Inventory playerInventory, Player player, FriendlyByteBuf extraData) {
-        this(windowId, playerInventory, player, extraData.readItem());
+    public CardRedstoneContainer(int windowId, Inventory playerInventory, Player player, RegistryFriendlyByteBuf extraData) {
+        this(windowId, playerInventory, player, ItemStack.OPTIONAL_STREAM_CODEC.decode(extraData));
         this.direction = extraData.readByte();
     }
 
@@ -46,7 +46,6 @@ public class CardRedstoneContainer extends AbstractContainerMenu {
     @Override
     public boolean stillValid(Player playerIn) {
         return true;
-        //return playerIn.getMainHandItem().equals(cardItem); //TODO Validate this and check offhand?
     }
 
     @Override
@@ -102,7 +101,7 @@ public class CardRedstoneContainer extends AbstractContainerMenu {
     }
 
     @Override
-    public void removed(Player playerIn) { //Todo see if we can send the player back to their last container screen?
+    public void removed(Player playerIn) {
         Level world = playerIn.level();
         if (!sourceContainer.equals(BlockPos.ZERO)) {
             BlockEntity blockEntity = world.getBlockEntity(sourceContainer);

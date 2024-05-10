@@ -7,10 +7,10 @@
       "item": "laserio:laser_connector"
     },
     "g": {
-      "tag": "forge:glass_panes"
+      "tag": "c:glass_panes"
     },
     "i": {
-      "tag": "forge:ingots/iron"
+      "tag": "c:ingots/iron"
     }
   },
   "pattern": [
@@ -19,6 +19,7 @@
     "igi"
   ],
   "result": {
-    "item": "laserio:laser_node"
+    "count": 1,
+    "id": "laserio:laser_node"
   }
 }

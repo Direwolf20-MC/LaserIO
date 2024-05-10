@@ -11,9 +11,7 @@
       "conditions": {
         "items": [
           {
-            "items": [
-              "laserio:logic_chip"
-            ]
+            "items": "laserio:logic_chip"
           }
         ]
       },

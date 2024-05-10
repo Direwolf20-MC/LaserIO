@@ -4,11 +4,12 @@ import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.setup.Registration;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.util.ExtraCodecs;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.entity.player.StackedContents;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.Item;
@@ -44,7 +45,7 @@ public class CardClearRecipe implements CraftingRecipe {
     }
 
     @Override
-    public ItemStack getResultItem(RegistryAccess pRegistryAccess) {
+    public ItemStack getResultItem(HolderLookup.Provider provider) {
         return this.result;
     }
 
@@ -76,7 +77,7 @@ public class CardClearRecipe implements CraftingRecipe {
         return i == this.ingredients.size() && (isSimple ? stackedcontents.canCraft(this, null) : net.neoforged.neoforge.common.util.RecipeMatcher.findMatches(inputs, this.ingredients) != null);
     }
 
-    public ItemStack assemble(CraftingContainer pContainer, RegistryAccess pRegistryAccess) {
+    public ItemStack assemble(CraftingContainer pContainer, HolderLookup.Provider provider) {
         return this.result.copy();
     }
 
@@ -121,11 +122,11 @@ public class CardClearRecipe implements CraftingRecipe {
 
     public static class Serializer implements RecipeSerializer<CardClearRecipe> {
         private static final net.minecraft.resources.ResourceLocation NAME = new net.minecraft.resources.ResourceLocation("laserio", "cardclear");
-        private static final Codec<CardClearRecipe> CODEC = RecordCodecBuilder.create(
+        private static final MapCodec<CardClearRecipe> CODEC = RecordCodecBuilder.mapCodec(
                 p_311734_ -> p_311734_.group(
-                                ExtraCodecs.strictOptionalField(Codec.STRING, "group", "").forGetter(p_301127_ -> p_301127_.group),
+                                Codec.STRING.fieldOf("group").forGetter(p_301127_ -> p_301127_.group),
                                 CraftingBookCategory.CODEC.fieldOf("category").orElse(CraftingBookCategory.MISC).forGetter(p_301133_ -> p_301133_.category),
-                                ItemStack.ITEM_WITH_COUNT_CODEC.fieldOf("result").forGetter(p_301142_ -> p_301142_.result),
+                                ItemStack.CODEC.fieldOf("result").forGetter(p_301142_ -> p_301142_.result),
                                 Ingredient.CODEC_NONEMPTY
                                         .listOf()
                                         .fieldOf("ingredients")
@@ -148,35 +149,42 @@ public class CardClearRecipe implements CraftingRecipe {
                         .apply(p_311734_, CardClearRecipe::new)
         );
 
+        public static final StreamCodec<RegistryFriendlyByteBuf, CardClearRecipe> STREAM_CODEC = StreamCodec.of(
+                CardClearRecipe.Serializer::toNetwork, CardClearRecipe.Serializer::fromNetwork
+        );
+
         @Override
-        public Codec<CardClearRecipe> codec() {
+        public MapCodec<CardClearRecipe> codec() {
             return CODEC;
         }
 
-        public CardClearRecipe fromNetwork(FriendlyByteBuf pBuffer) {
+        @Override
+        public StreamCodec<RegistryFriendlyByteBuf, CardClearRecipe> streamCodec() {
+            return STREAM_CODEC;
+        }
+
+        public static CardClearRecipe fromNetwork(RegistryFriendlyByteBuf pBuffer) {
             String s = pBuffer.readUtf();
             CraftingBookCategory craftingbookcategory = pBuffer.readEnum(CraftingBookCategory.class);
             int i = pBuffer.readVarInt();
             NonNullList<Ingredient> nonnulllist = NonNullList.withSize(i, Ingredient.EMPTY);
 
-            for (int j = 0; j < nonnulllist.size(); ++j) {
-                nonnulllist.set(j, Ingredient.fromNetwork(pBuffer));
-            }
+            nonnulllist.replaceAll(p_319733_ -> Ingredient.CONTENTS_STREAM_CODEC.decode(pBuffer));
 
-            ItemStack itemstack = pBuffer.readItem();
+            ItemStack itemstack = ItemStack.OPTIONAL_STREAM_CODEC.decode(pBuffer);
             return new CardClearRecipe(s, craftingbookcategory, itemstack, nonnulllist);
         }
 
-        public void toNetwork(FriendlyByteBuf pBuffer, CardClearRecipe pRecipe) {
+        public static void toNetwork(RegistryFriendlyByteBuf pBuffer, CardClearRecipe pRecipe) {
             pBuffer.writeUtf(pRecipe.group);
             pBuffer.writeEnum(pRecipe.category);
             pBuffer.writeVarInt(pRecipe.ingredients.size());
 
             for (Ingredient ingredient : pRecipe.ingredients) {
-                ingredient.toNetwork(pBuffer);
+                Ingredient.CONTENTS_STREAM_CODEC.encode(pBuffer, ingredient);
             }
 
-            pBuffer.writeItem(pRecipe.result);
+            ItemStack.OPTIONAL_STREAM_CODEC.encode(pBuffer, pRecipe.result);
         }
     }
 }

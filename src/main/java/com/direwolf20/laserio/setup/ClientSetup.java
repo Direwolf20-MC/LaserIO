@@ -15,7 +15,6 @@ import com.direwolf20.laserio.common.items.cards.CardRedstone;
 import com.direwolf20.laserio.integration.mekanism.CardChemical;
 import com.direwolf20.laserio.integration.mekanism.MekanismIntegration;
 import net.minecraft.client.color.item.ItemColors;
-import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.item.ItemProperties;
@@ -23,16 +22,17 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FastColor;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterClientTooltipComponentFactoriesEvent;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
+import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.common.NeoForge;
 
 import java.awt.*;
 
-@Mod.EventBusSubscriber(modid = LaserIO.MODID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = LaserIO.MODID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
 public class ClientSetup {
     public static void init(final FMLClientSetupEvent event) {
         ItemBlockRenderTypes.setRenderLayer(Registration.LaserNode.get(), RenderType.cutout());
@@ -43,21 +43,6 @@ public class ClientSetup {
 
         //Register our Render Events Class
         NeoForge.EVENT_BUS.register(ClientEvents.class);
-
-        //Screens
-        event.enqueueWork(() -> {
-            MenuScreens.register(Registration.LaserNode_Container.get(), LaserNodeScreen::new);           // Attach our container to the screen
-            MenuScreens.register(Registration.CardItem_Container.get(), CardItemScreen::new);           // Attach our container to the screen
-            MenuScreens.register(Registration.CardFluid_Container.get(), CardFluidScreen::new);           // Attach our container to the screen
-            MenuScreens.register(Registration.CardEnergy_Container.get(), CardEnergyScreen::new);           // Attach our container to the screen
-            MenuScreens.register(Registration.CardRedstone_Container.get(), CardRedstoneScreen::new);           // Attach our container to the screen
-            MenuScreens.register(Registration.CardChemical_Container.get(), CardChemicalScreen::new);           // Attach our container to the screen
-            MenuScreens.register(Registration.CardHolder_Container.get(), CardHolderScreen::new);           // Attach our container to the screen
-            MenuScreens.register(Registration.FilterBasic_Container.get(), FilterBasicScreen::new);           // Attach our container to the screen
-            MenuScreens.register(Registration.FilterCount_Container.get(), FilterCountScreen::new);           // Attach our container to the screen
-            MenuScreens.register(Registration.FilterTag_Container.get(), FilterTagScreen::new);           // Attach our container to the screen
-            MenuScreens.register(Registration.FilterNBT_Container.get(), FilterNBTScreen::new);           // Attach our container to the screen
-        });
 
         //Item Properties -- For giving the Cards an Insert/Extract on the itemstack
         event.enqueueWork(() -> {
@@ -92,6 +77,21 @@ public class ClientSetup {
                         });
             });
         }
+    }
+
+    @SubscribeEvent
+    public static void registerScreens(RegisterMenuScreensEvent event) {
+        event.register(Registration.LaserNode_Container.get(), LaserNodeScreen::new);
+        event.register(Registration.CardItem_Container.get(), CardItemScreen::new);
+        event.register(Registration.CardFluid_Container.get(), CardFluidScreen::new);
+        event.register(Registration.CardEnergy_Container.get(), CardEnergyScreen::new);
+        event.register(Registration.CardRedstone_Container.get(), CardRedstoneScreen::new);
+        event.register(Registration.CardChemical_Container.get(), CardChemicalScreen::new);
+        event.register(Registration.CardHolder_Container.get(), CardHolderScreen::new);
+        event.register(Registration.FilterBasic_Container.get(), FilterBasicScreen::new);
+        event.register(Registration.FilterCount_Container.get(), FilterCountScreen::new);
+        event.register(Registration.FilterTag_Container.get(), FilterTagScreen::new);
+        event.register(Registration.FilterNBT_Container.get(), FilterNBTScreen::new);
     }
 
     @SubscribeEvent

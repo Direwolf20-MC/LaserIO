@@ -1,7 +1,8 @@
 package com.direwolf20.laserio.common.network.handler;
 
-import com.direwolf20.laserio.common.containers.*;
-import com.direwolf20.laserio.common.containers.customhandler.FilterBasicHandler;
+import com.direwolf20.laserio.common.containers.CardItemContainer;
+import com.direwolf20.laserio.common.containers.FilterBasicContainer;
+import com.direwolf20.laserio.common.containers.FilterCountContainer;
 import com.direwolf20.laserio.common.items.filters.FilterBasic;
 import com.direwolf20.laserio.common.items.filters.FilterCount;
 import com.direwolf20.laserio.common.items.filters.FilterNBT;
@@ -16,9 +17,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
-
-import java.util.Optional;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import static com.direwolf20.laserio.common.blocks.LaserNode.SCREEN_LASERNODE;
 
@@ -31,7 +30,6 @@ public class PacketOpenFilter {
 
     public static void doOpenFilter(ItemStack filterItem, ItemStack cardItem, ServerPlayer sender, BlockPos sourcePos) {
         if (filterItem.getItem() instanceof FilterBasic) {
-            FilterBasicHandler handler = FilterBasic.getInventory(filterItem);
             MenuProvider containerProvider = new MenuProvider() {
                 @Override
                 public Component getDisplayName() {
@@ -45,12 +43,12 @@ public class PacketOpenFilter {
 
                 @Override
                 public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player playerEntity) {
-                    return new FilterBasicContainer(windowId, playerInventory, sender, handler, sourcePos, filterItem, cardItem);
+                    return new FilterBasicContainer(windowId, playerInventory, sender, sourcePos, filterItem, cardItem);
                 }
             };
             sender.openMenu(containerProvider, (buf -> {
-                buf.writeItem(filterItem);
-                buf.writeItem(cardItem);
+                ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, filterItem);
+                ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, cardItem);
             }));
         }
         if (filterItem.getItem() instanceof FilterCount) {
@@ -71,13 +69,13 @@ public class PacketOpenFilter {
                 }
             };
             sender.openMenu(containerProvider, (buf -> {
-                buf.writeItem(filterItem);
-                buf.writeItem(cardItem);
+                ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, filterItem);
+                ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, cardItem);
             }));
         }
         if (filterItem.getItem() instanceof FilterTag) {
-            FilterBasicHandler handler = FilterBasic.getInventory(filterItem);
-            MenuProvider containerProvider = new MenuProvider() {
+            //TODO Bring Back somehow
+            /*MenuProvider containerProvider = new MenuProvider() {
                 @Override
                 public Component getDisplayName() {
                     return Component.translatable(SCREEN_LASERNODE);
@@ -90,16 +88,16 @@ public class PacketOpenFilter {
 
                 @Override
                 public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player playerEntity) {
-                    return new FilterTagContainer(windowId, playerInventory, sender, handler, sourcePos, filterItem, cardItem);
+                    return new FilterTagContainer(windowId, playerInventory, sender, sourcePos, filterItem, cardItem);
                 }
             };
             sender.openMenu(containerProvider, (buf -> {
-                buf.writeItem(filterItem);
-                buf.writeItem(ItemStack.EMPTY);
-            }));
+                ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, filterItem);
+                ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, ItemStack.EMPTY);
+            }));*/
         }
         if (filterItem.getItem() instanceof FilterNBT) {
-            FilterBasicHandler handler = FilterBasic.getInventory(filterItem);
+            /*FilterBasicHandler handler = FilterBasic.getInventory(filterItem);
             MenuProvider containerProvider = new MenuProvider() {
                 @Override
                 public Component getDisplayName() {
@@ -117,18 +115,15 @@ public class PacketOpenFilter {
                 }
             };
             sender.openMenu(containerProvider, (buf -> {
-                buf.writeItem(filterItem);
-                buf.writeItem(ItemStack.EMPTY);
-            }));
+                ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, filterItem);
+                ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, ItemStack.EMPTY);
+            }));*/
         }
     }
 
-    public void handle(final OpenFilterPayload payload, final PlayPayloadContext context) {
-        context.workHandler().submitAsync(() -> {
-            Optional<Player> senderOptional = context.player();
-            if (senderOptional.isEmpty())
-                return;
-            ServerPlayer sender = (ServerPlayer) senderOptional.get();
+    public void handle(final OpenFilterPayload payload, final IPayloadContext context) {
+        context.enqueueWork(() -> {
+            Player sender = context.player();
 
             AbstractContainerMenu container = sender.containerMenu;
             if (container == null || !(container instanceof CardItemContainer))
@@ -137,7 +132,7 @@ public class PacketOpenFilter {
             Slot slot = container.slots.get(payload.slotNumber());
 
             ItemStack itemStack = slot.getItem();
-            doOpenFilter(itemStack, ((CardItemContainer) container).cardItem, sender, ((CardItemContainer) container).sourceContainer);
+            doOpenFilter(itemStack, ((CardItemContainer) container).cardItem, (ServerPlayer) sender, ((CardItemContainer) container).sourceContainer);
         });
     }
 }

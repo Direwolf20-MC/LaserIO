@@ -1,13 +1,11 @@
 package com.direwolf20.laserio.common.containers;
 
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
-import com.direwolf20.laserio.common.containers.customhandler.CardItemHandler;
 import com.direwolf20.laserio.common.containers.customhandler.FilterBasicHandler;
 import com.direwolf20.laserio.common.containers.customslot.FilterBasicSlot;
-import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.setup.Registration;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -17,7 +15,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
 import net.neoforged.neoforge.items.SlotItemHandler;
 import net.neoforged.neoforge.items.wrapper.InvWrapper;
 
@@ -31,16 +28,16 @@ public class FilterBasicContainer extends AbstractContainerMenu {
     private IItemHandler playerInventory;
     public BlockPos sourceContainer = BlockPos.ZERO;
 
-    public FilterBasicContainer(int windowId, Inventory playerInventory, Player player, FriendlyByteBuf extraData) {
-        this(windowId, playerInventory, player, new FilterBasicHandler(SLOTS, ItemStack.EMPTY), ItemStack.EMPTY);
-        filterItem = extraData.readItem();
-        this.sourceCard = extraData.readItem();
+    public FilterBasicContainer(int windowId, Inventory playerInventory, Player player, RegistryFriendlyByteBuf extraData) {
+        this(windowId, playerInventory, player, ItemStack.OPTIONAL_STREAM_CODEC.decode(extraData));
+        this.sourceCard = ItemStack.OPTIONAL_STREAM_CODEC.decode(extraData);
     }
 
-    public FilterBasicContainer(int windowId, Inventory playerInventory, Player player, FilterBasicHandler handler, ItemStack filterItem) {
+    public FilterBasicContainer(int windowId, Inventory playerInventory, Player player, ItemStack filterItem) {
         super(Registration.FilterBasic_Container.get(), windowId);
         playerEntity = player;
-        this.handler = handler;
+        this.handler = new FilterBasicHandler(SLOTS, filterItem);
+        ;
         this.playerInventory = new InvWrapper(playerInventory);
         this.filterItem = filterItem;
         if (handler != null)
@@ -49,8 +46,8 @@ public class FilterBasicContainer extends AbstractContainerMenu {
         layoutPlayerInventorySlots(8, 84);
     }
 
-    public FilterBasicContainer(int windowId, Inventory playerInventory, Player player, FilterBasicHandler handler, BlockPos sourcePos, ItemStack filterItem, ItemStack sourceCard) {
-        this(windowId, playerInventory, player, handler, filterItem);
+    public FilterBasicContainer(int windowId, Inventory playerInventory, Player player, BlockPos sourcePos, ItemStack filterItem, ItemStack sourceCard) {
+        this(windowId, playerInventory, player, filterItem);
         this.sourceContainer = sourcePos;
         this.sourceCard = sourceCard;
     }
@@ -58,7 +55,6 @@ public class FilterBasicContainer extends AbstractContainerMenu {
     @Override
     public boolean stillValid(Player playerIn) {
         return true;
-        //return playerIn.getMainHandItem().equals(cardItem); //TODO Validate this and check offhand?
     }
 
     @Override
@@ -76,12 +72,12 @@ public class FilterBasicContainer extends AbstractContainerMenu {
         Slot slot = this.slots.get(index);
         if (slot != null && slot.hasItem()) {
             ItemStack currentStack = slot.getItem().copy();
-            if (ItemHandlerHelper.canItemStacksStack(currentStack, filterItem)) return ItemStack.EMPTY;
+            if (ItemStack.isSameItemSameComponents(currentStack, filterItem)) return ItemStack.EMPTY;
             currentStack.setCount(1);
             //Only do this if we click from the players inventory
             if (index >= SLOTS) {
                 for (int i = 0; i < SLOTS; i++) { //Prevents the same item from going in there more than once.
-                    if (ItemStack.isSameItemSameTags(this.slots.get(i).getItem(), currentStack)) //Don't limit tags
+                    if (ItemStack.isSameItemSameComponents(this.slots.get(i).getItem(), currentStack)) //Don't limit tags
                         return ItemStack.EMPTY;
                 }
                 if (!this.moveItemStackTo(currentStack, 0, SLOTS, false)) {
@@ -123,16 +119,9 @@ public class FilterBasicContainer extends AbstractContainerMenu {
     }
 
     @Override
-    public void removed(Player playerIn) { //Todo see if we can send the player back to their last container screen?
+    public void removed(Player playerIn) {
         Level world = playerIn.level();
         if (!world.isClientSide) {
-            if (!sourceCard.isEmpty()) { //Workaround to the card not always saving...
-                ItemStack overclockerStack = BaseCard.getInventory(sourceCard).getStackInSlot(1);
-                CardItemHandler cardHandler = new CardItemHandler(CardItemContainer.SLOTS, sourceCard);
-                cardHandler.setStackInSlot(0, filterItem);
-                cardHandler.setStackInSlot(1, overclockerStack);
-                BaseCard.setInventory(sourceCard, cardHandler);
-            }
             if (!sourceContainer.equals(BlockPos.ZERO)) {
                 BlockEntity blockEntity = world.getBlockEntity(sourceContainer);
                 if (blockEntity instanceof LaserNodeBE)

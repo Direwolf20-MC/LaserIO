@@ -1,13 +1,14 @@
 package com.direwolf20.laserio.common.items;
 
 import com.direwolf20.laserio.common.containers.CardHolderContainer;
+import com.direwolf20.laserio.common.containers.customhandler.DataComponentHandler;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.common.items.filters.BaseFilter;
 import com.direwolf20.laserio.common.items.upgrades.OverclockerCard;
 import com.direwolf20.laserio.common.items.upgrades.OverclockerNode;
-import net.minecraft.nbt.CompoundTag;
+import com.direwolf20.laserio.setup.LaserIODataComponents;
+import com.direwolf20.laserio.util.CardHolderItemStackHandler;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
@@ -17,7 +18,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.items.IItemHandler;
 import org.jetbrains.annotations.NotNull;
 
@@ -25,15 +25,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static com.direwolf20.laserio.setup.Registration.CARD_HOLDER_HANDLER;
-
 public class CardHolder extends Item {
     public CardHolder() {
         super(new Item.Properties()
                 .stacksTo(1));
     }
-
-    //TODO PORT - Fix CardHolder!
 
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
@@ -45,13 +41,11 @@ public class CardHolder extends Item {
             return new InteractionResultHolder<>(InteractionResult.PASS, itemstack);
         }
 
-        IItemHandler itemHandler = itemstack.getCapability(Capabilities.ItemHandler.ITEM, null);
-        if (itemHandler != null) {
-            ((ServerPlayer) player).openMenu(new SimpleMenuProvider(
-                    (windowId, playerInventory, playerEntity) -> new CardHolderContainer(windowId, playerInventory, player, itemstack, itemHandler), Component.translatable("")), (buf -> {
-                buf.writeItem(itemstack);
-            }));
-        }
+        player.openMenu(new SimpleMenuProvider(
+                (windowId, playerInventory, playerEntity) -> new CardHolderContainer(windowId, playerInventory, player, itemstack), Component.translatable("")), (buf -> {
+            ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, itemstack);
+        }));
+
 
         return new InteractionResultHolder<>(InteractionResult.PASS, itemstack);
     }
@@ -62,7 +56,7 @@ public class CardHolder extends Item {
     }
 
     public IItemHandler getItemHandler(ItemStack stack) {
-        return stack.getData(CARD_HOLDER_HANDLER);
+        return new CardHolderItemStackHandler(CardHolderContainer.SLOTS, stack);
     }
 
     @Override
@@ -78,23 +72,25 @@ public class CardHolder extends Item {
     }
 
     public static ItemStack addCardToInventory(ItemStack cardHolder, ItemStack card) {
-        if (card.getItem() instanceof BaseFilter && card.hasTag())
+        if (card.getItem() instanceof BaseFilter && !card.isComponentsPatchEmpty())
             return card;
-        IItemHandler handler = cardHolder.getCapability(Capabilities.ItemHandler.ITEM, null);
+        DataComponentHandler handler = new DataComponentHandler(cardHolder, CardHolderContainer.SLOTS);
         if (handler == null) return card;
         List<Integer> emptySlots = new ArrayList<>();
         for (int i = 0; i < handler.getSlots(); i++) {
             ItemStack stackInSlot = handler.getStackInSlot(i);
             if (stackInSlot.isEmpty()) emptySlots.add(i);
-            if (!stackInSlot.isEmpty() && ItemStack.isSameItemSameTags(stackInSlot, card)) {
+            if (!stackInSlot.isEmpty() && ItemStack.isSameItemSameComponents(stackInSlot, card)) {
                 int j = stackInSlot.getCount() + card.getCount();
                 int maxSize = 64;
                 if (j <= maxSize) {
                     card.setCount(0);
                     stackInSlot.setCount(j);
+                    handler.setStackInSlot(i, stackInSlot);
                 } else if (stackInSlot.getCount() < maxSize) {
                     card.shrink(maxSize - stackInSlot.getCount());
                     stackInSlot.setCount(maxSize);
+                    handler.setStackInSlot(i, stackInSlot);
                 }
                 if (card.isEmpty()) {
                     return card;
@@ -107,26 +103,23 @@ public class CardHolder extends Item {
     }
 
     public static UUID getUUID(ItemStack stack) {
-        CompoundTag nbt = stack.getOrCreateTag();
-        if (!nbt.hasUUID("UUID")) {
+        if (!stack.has(LaserIODataComponents.CARD_HOLDER_UUID)) {
             UUID newId = UUID.randomUUID();
-            nbt.putUUID("UUID", newId);
+            stack.set(LaserIODataComponents.CARD_HOLDER_UUID, newId);
             return newId;
         }
-        return nbt.getUUID("UUID");
+        return stack.get(LaserIODataComponents.CARD_HOLDER_UUID);
     }
 
     public static boolean getActive(ItemStack stack) {
-        CompoundTag compound = stack.getTag();
-        if (compound == null || !compound.contains("active")) return false;
-        return compound.getBoolean("active");
+        return stack.getOrDefault(LaserIODataComponents.CARD_HOLDER_ACTIVE, false);
     }
 
     public static boolean setActive(ItemStack stack, boolean active) {
         if (!active)
-            stack.removeTagKey("active");
+            stack.remove(LaserIODataComponents.CARD_HOLDER_ACTIVE);
         else
-            stack.getOrCreateTag().putBoolean("active", active);
+            stack.set(LaserIODataComponents.CARD_HOLDER_ACTIVE, active);
         return active;
     }
 }

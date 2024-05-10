@@ -94,7 +94,7 @@ public class MekanismCache {
                     ChemicalStack<?> chemicalStack = iter.next();
                     for (int tank = 0; tank < chemicalHandler.getTanks(); tank++) { //Loop through all the tanks
                         ChemicalStack<?> stackInTank = chemicalHandler.getChemicalInTank(tank);
-                        if (chemicalStack.getType() == stackInTank.getType()) {
+                        if (chemicalStack.getChemical() == stackInTank.getChemical()) {
                             iter.remove();
                             if (andMode) {
                                 //Skip to next chemical type
@@ -123,7 +123,7 @@ public class MekanismCache {
                     int desiredAmt = sensorCardCache.mekanismCardCache.getFilterAmt(chemicalStack);
                     for (int tank = 0; tank < chemicalHandler.getTanks(); tank++) { //Loop through all the tanks
                         ChemicalStack<?> stackInTank = chemicalHandler.getChemicalInTank(tank);
-                        if (chemicalStack.getType() == stackInTank.getType()) {
+                        if (chemicalStack.getChemical() == stackInTank.getChemical()) {
                             long amtHad = stackInTank.getAmount();
                             if (amtHad >= desiredAmt && (!sensorCardCache.exact || amtHad <= desiredAmt)) {
                                 iter.remove();
@@ -150,7 +150,7 @@ public class MekanismCache {
                 if (chemicalHandler == null) continue;
                 for (int tank = 0; tank < chemicalHandler.getTanks(); tank++) { //Loop through all the tanks
                     ChemicalStack<?> stackInTank = chemicalHandler.getChemicalInTank(tank);
-                    for (TagKey<?> tagKey : stackInTank.getType().getTags().toList()) {
+                    for (TagKey<?> tagKey : stackInTank.getChemical().getTags().toList()) {
                         String chemicalTag = tagKey.location().toString().toLowerCase(Locale.ROOT);
                         if (tags.contains(chemicalTag)) {
                             tags.remove(chemicalTag);
@@ -234,7 +234,7 @@ public class MekanismCache {
             for (STACK chemicalStack : filteredChemicalsList) { //Remove all the items from the list that we already have enough of
                 for (int tank = 0; tank < stockerTank.getTanks(); tank++) {
                     STACK tankStack = stockerTank.getChemicalInTank(tank);
-                    if (tankStack.isEmpty() || chemicalStack.isTypeEqual(tankStack)) {
+                    if (tankStack.isEmpty() || chemicalStack.is(tankStack.getChemical())) {
                         int filterAmt = stockerCardCache.mekanismCardCache.getFilterAmt(chemicalStack);
                         long amtHad = tankStack.getAmount();
                         long amtNeeded = filterAmt - amtHad;
@@ -301,7 +301,7 @@ public class MekanismCache {
             long amtHad = 0;
             for (int tank = 0; tank < stockerTank.getTanks(); tank++) { //Loop through all the tanks
                 STACK stackInTank = stockerTank.getChemicalInTank(tank);
-                if (chemicalStack.isTypeEqual(stackInTank))
+                if (chemicalStack.is(stackInTank.getChemical()))
                     amtHad += stackInTank.getAmount();
             }
             if (amtHad > desiredAmt) { //If we have too much of this fluid, remove the difference.
@@ -379,7 +379,7 @@ public class MekanismCache {
                 int filterCount = inserterCardCache.mekanismCardCache.getFilterAmt(extractStack);
                 for (int tank = 0; tank < handler.getTanks(); tank++) {
                     STACK chemicalStack = handler.getChemicalInTank(tank);
-                    if (chemicalStack.isEmpty() || chemicalStack.isTypeEqual(extractStack)) {
+                    if (chemicalStack.isEmpty() || chemicalStack.is(extractStack.getChemical())) {
                         long currentAmt = chemicalStack.getAmount();
                         long neededAmt = filterCount - currentAmt;
                         if (neededAmt < extractStack.getAmount()) {
@@ -442,7 +442,7 @@ public class MekanismCache {
                 int filterCount = inserterCardCache.mekanismCardCache.getFilterAmt(extractStack);
                 for (int tank = 0; tank < handler.getTanks(); tank++) {
                     STACK chemicalStack = handler.getChemicalInTank(tank);
-                    if (chemicalStack.isEmpty() || chemicalStack.isTypeEqual(extractStack)) {
+                    if (chemicalStack.isEmpty() || chemicalStack.is(extractStack.getChemical())) {
                         long currentAmt = chemicalStack.getAmount();
                         long neededAmt = filterCount - currentAmt;
                         if (neededAmt < totalAmtNeeded) {
@@ -491,12 +491,12 @@ public class MekanismCache {
     /** Finds all inserters that can be extracted to **/
     private List<InserterCardCache> getPossibleInserters(ExtractorCardCache extractorCardCache, ChemicalStack<?> stack) {
         return inserterCacheChemical.computeIfAbsent(extractorCardCache, cache -> new Reference2ObjectOpenHashMap<>())
-              .computeIfAbsent(stack.getType(), k -> laserNodeBE.getInserterNodes().stream()
+                .computeIfAbsent(stack.getChemical(), k -> laserNodeBE.getInserterNodes().stream()
                     .filter(p -> (p.channel == extractorCardCache.channel)
                             && (p.cardType == extractorCardCache.cardType)
                             && (p.enabled)
                             && (p.mekanismCardCache.isStackValidForCard(stack))
-                            && (!(p.relativePos.blockPos.equals(BlockPos.ZERO) && p.direction == extractorCardCache.direction)))
+                            && (!(p.relativePos.pos().equals(BlockPos.ZERO) && p.direction == extractorCardCache.direction)))
                     .toList()
               );
     }

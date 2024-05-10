@@ -62,7 +62,7 @@ public class LaserGuiGraphicsFluid extends GuiGraphics {
             int slot = ((5 * sloty) + slotx);
             ItemStack filter = ((CardFluidScreen) screen).filter;
             int totalmbAmt = FilterCount.getSlotAmount(filter, slot);
-            int count = (int) Math.floor(totalmbAmt / 1000);
+            int count = FilterCount.getSlotCount(filter, slot);
             int mbAmt = totalmbAmt % 1000;
             PoseStack posestack = pose();
             if (count != 0 || mbAmt != 0) {

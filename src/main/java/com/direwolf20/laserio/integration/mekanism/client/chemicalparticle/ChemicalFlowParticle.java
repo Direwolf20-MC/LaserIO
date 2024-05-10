@@ -33,7 +33,7 @@ public class ChemicalFlowParticle extends BreakingItemParticle {
         this.zd += path.z / speedAdjust;
         this.lifetime = (int) (distance * speedAdjust);
         this.scale(partSize);
-        this.setSprite(Minecraft.getInstance().getTextureAtlas(TextureAtlas.LOCATION_BLOCKS).apply(chemicalStack.getType().getIcon()));
+        this.setSprite(Minecraft.getInstance().getTextureAtlas(TextureAtlas.LOCATION_BLOCKS).apply(chemicalStack.getChemical().getIcon()));
         int i = chemicalStack.getChemicalColorRepresentation();
         this.rCol *= (float) (i >> 16 & 255) / 255.0F;
         this.gCol *= (float) (i >> 8 & 255) / 255.0F;
@@ -55,5 +55,5 @@ public class ChemicalFlowParticle extends BreakingItemParticle {
     }
 
     public static ParticleProvider<ChemicalFlowParticleData> FACTORY = (data, world, x, y, z, xSpeed, ySpeed, zSpeed) ->
-          new ChemicalFlowParticle(world, x, y, z, data.target, data.getChemicalStack(), data.ticksPerBlock);
+            new ChemicalFlowParticle(world, x, y, z, data.target, data.getChemicalStack().getChemicalStack(), data.ticksPerBlock);
 }

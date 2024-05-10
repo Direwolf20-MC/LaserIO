@@ -1,8 +1,11 @@
 package com.direwolf20.laserio.common.containers.customslot;
 
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.SlotItemHandler;
+
+import javax.annotation.Nonnull;
 
 
 public class FilterBasicSlot extends SlotItemHandler {
@@ -17,6 +20,11 @@ public class FilterBasicSlot extends SlotItemHandler {
 
     @Override
     public int getMaxStackSize() {
+        return isCount ? Integer.MAX_VALUE : 1;
+    }
+
+    @Override
+    public int getMaxStackSize(@Nonnull ItemStack stack) {
         return isCount ? Integer.MAX_VALUE : 1;
     }
 

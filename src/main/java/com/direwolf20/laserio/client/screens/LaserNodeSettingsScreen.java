@@ -90,7 +90,7 @@ public class LaserNodeSettingsScreen extends Screen {
 
         if (container.side != -1) {
             Button returnButton = new ExtendedButton(getGuiLeft() - 25, getGuiTop() + 1, 25, 20, Component.literal("<--"), (button) -> {
-                PacketDistributor.SERVER.noArg().send(new OpenNodePayload(container.tile.getBlockPos(), (byte) container.side));
+                PacketDistributor.sendToServer(new OpenNodePayload(container.tile.getBlockPos(), (byte) container.side));
                 Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
             });
             leftWidgets.add(returnButton);
@@ -188,7 +188,7 @@ public class LaserNodeSettingsScreen extends Screen {
     }
 
     private void syncColors() {
-        PacketDistributor.SERVER.noArg().send(new ChangeColorPayload(container.tile.getBlockPos(), new Color(laserRed, laserGreen, laserBlue, laserAlpha).getRGB(), wrenchAlpha));
+        PacketDistributor.sendToServer(new ChangeColorPayload(container.tile.getBlockPos(), new Color(laserRed, laserGreen, laserBlue, laserAlpha).getRGB(), wrenchAlpha));
     }
 
     protected void renderLabels(GuiGraphics guiGraphics, int mouseX, int mouseY) {
@@ -238,32 +238,32 @@ public class LaserNodeSettingsScreen extends Screen {
     @Override
     public boolean mouseClicked(double x, double y, int btn) {
         if (MiscTools.inBounds(getGuiLeft() + tabs[1].x, getGuiTop() + tabs[1].y, 24, 12, x, y)) {
-            PacketDistributor.SERVER.noArg().send(new OpenNodePayload(container.tile.getBlockPos(), (byte) 1));
+            PacketDistributor.sendToServer(new OpenNodePayload(container.tile.getBlockPos(), (byte) 1));
             Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
             return true;
         }
         if (MiscTools.inBounds(getGuiLeft() + tabs[0].x, getGuiTop() + tabs[0].y, 24, 12, x, y)) {
-            PacketDistributor.SERVER.noArg().send(new OpenNodePayload(container.tile.getBlockPos(), (byte) 0));
+            PacketDistributor.sendToServer(new OpenNodePayload(container.tile.getBlockPos(), (byte) 0));
             Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
             return true;
         }
         if (MiscTools.inBounds(getGuiLeft() + tabs[2].x, getGuiTop() + tabs[2].y, 24, 12, x, y)) {
-            PacketDistributor.SERVER.noArg().send(new OpenNodePayload(container.tile.getBlockPos(), (byte) 2));
+            PacketDistributor.sendToServer(new OpenNodePayload(container.tile.getBlockPos(), (byte) 2));
             Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
             return true;
         }
         if (MiscTools.inBounds(getGuiLeft() + tabs[3].x, getGuiTop() + tabs[3].y, 24, 12, x, y)) {
-            PacketDistributor.SERVER.noArg().send(new OpenNodePayload(container.tile.getBlockPos(), (byte) 3));
+            PacketDistributor.sendToServer(new OpenNodePayload(container.tile.getBlockPos(), (byte) 3));
             Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
             return true;
         }
         if (MiscTools.inBounds(getGuiLeft() + tabs[4].x, getGuiTop() + tabs[4].y, 24, 12, x, y)) {
-            PacketDistributor.SERVER.noArg().send(new OpenNodePayload(container.tile.getBlockPos(), (byte) 4));
+            PacketDistributor.sendToServer(new OpenNodePayload(container.tile.getBlockPos(), (byte) 4));
             Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
             return true;
         }
         if (MiscTools.inBounds(getGuiLeft() + tabs[5].x, getGuiTop() + tabs[5].y, 24, 12, x, y)) {
-            PacketDistributor.SERVER.noArg().send(new OpenNodePayload(container.tile.getBlockPos(), (byte) 5));
+            PacketDistributor.sendToServer(new OpenNodePayload(container.tile.getBlockPos(), (byte) 5));
             Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
             return true;
         }

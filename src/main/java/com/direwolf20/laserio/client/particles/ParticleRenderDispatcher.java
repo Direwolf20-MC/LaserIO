@@ -8,11 +8,11 @@ import com.direwolf20.laserio.integration.mekanism.client.chemicalparticle.Chemi
 import com.direwolf20.laserio.integration.mekanism.client.chemicalparticle.MekanismModParticles;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 
 
-@Mod.EventBusSubscriber(modid = LaserIO.MODID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = LaserIO.MODID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
 public class ParticleRenderDispatcher {
 
     @SubscribeEvent

@@ -6,5 +6,8 @@
   "ingredient": {
     "item": "laserio:logic_chip_raw"
   },
-  "result": "laserio:logic_chip"
+  "result": {
+    "count": 1,
+    "id": "laserio:logic_chip"
+  }
 }

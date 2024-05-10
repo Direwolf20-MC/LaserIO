@@ -1,13 +1,11 @@
 package com.direwolf20.laserio.common.containers;
 
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
-import com.direwolf20.laserio.common.containers.customhandler.CardItemHandler;
 import com.direwolf20.laserio.common.containers.customhandler.FilterBasicHandler;
 import com.direwolf20.laserio.common.containers.customslot.FilterBasicSlot;
-import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.setup.Registration;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -30,16 +28,15 @@ public class FilterTagContainer extends AbstractContainerMenu {
     private IItemHandler playerInventory;
     public BlockPos sourceContainer = BlockPos.ZERO;
 
-    public FilterTagContainer(int windowId, Inventory playerInventory, Player player, FriendlyByteBuf extraData) {
-        this(windowId, playerInventory, player, new FilterBasicHandler(SLOTS, ItemStack.EMPTY), ItemStack.EMPTY);
-        filterItem = extraData.readItem();
-        this.sourceCard = extraData.readItem();
+    public FilterTagContainer(int windowId, Inventory playerInventory, Player player, RegistryFriendlyByteBuf extraData) {
+        this(windowId, playerInventory, player, ItemStack.OPTIONAL_STREAM_CODEC.decode(extraData));
+        this.sourceCard = ItemStack.OPTIONAL_STREAM_CODEC.decode(extraData);
     }
 
-    public FilterTagContainer(int windowId, Inventory playerInventory, Player player, FilterBasicHandler handler, ItemStack filterItem) {
+    public FilterTagContainer(int windowId, Inventory playerInventory, Player player, ItemStack filterItem) {
         super(Registration.FilterTag_Container.get(), windowId);
         playerEntity = player;
-        this.handler = handler;
+        this.handler = new FilterBasicHandler(SLOTS, filterItem);
         this.playerInventory = new InvWrapper(playerInventory);
         this.filterItem = filterItem;
         if (handler != null)
@@ -48,8 +45,8 @@ public class FilterTagContainer extends AbstractContainerMenu {
         layoutPlayerInventorySlots(8, 172);
     }
 
-    public FilterTagContainer(int windowId, Inventory playerInventory, Player player, FilterBasicHandler handler, BlockPos sourcePos, ItemStack filterItem, ItemStack sourceCard) {
-        this(windowId, playerInventory, player, handler, filterItem);
+    public FilterTagContainer(int windowId, Inventory playerInventory, Player player, BlockPos sourcePos, ItemStack filterItem, ItemStack sourceCard) {
+        this(windowId, playerInventory, player, filterItem);
         this.sourceContainer = sourcePos;
         this.sourceCard = sourceCard;
     }
@@ -57,7 +54,6 @@ public class FilterTagContainer extends AbstractContainerMenu {
     @Override
     public boolean stillValid(Player playerIn) {
         return true;
-        //return playerIn.getMainHandItem().equals(cardItem); //TODO Validate this and check offhand?
     }
 
     @Override
@@ -120,17 +116,10 @@ public class FilterTagContainer extends AbstractContainerMenu {
     }
 
     @Override
-    public void removed(Player playerIn) { //Todo see if we can send the player back to their last container screen?
+    public void removed(Player playerIn) {
         Level world = playerIn.level();
         if (!world.isClientSide) {
             handler.setStackInSlot(0, ItemStack.EMPTY); //Clear the current slot
-            if (!sourceCard.isEmpty()) { //Workaround to the card not always saving...
-                ItemStack overclockerStack = BaseCard.getInventory(sourceCard).getStackInSlot(1);
-                CardItemHandler cardHandler = new CardItemHandler(CardItemContainer.SLOTS, sourceCard);
-                cardHandler.setStackInSlot(0, filterItem);
-                cardHandler.setStackInSlot(1, overclockerStack);
-                BaseCard.setInventory(sourceCard, cardHandler);
-            }
             if (!sourceContainer.equals(BlockPos.ZERO)) {
                 BlockEntity blockEntity = world.getBlockEntity(sourceContainer);
                 if (blockEntity instanceof LaserNodeBE)

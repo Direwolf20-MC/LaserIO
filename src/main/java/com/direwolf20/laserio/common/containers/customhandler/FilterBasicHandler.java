@@ -1,23 +1,15 @@
 package com.direwolf20.laserio.common.containers.customhandler;
 
-import com.direwolf20.laserio.common.items.filters.FilterBasic;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
 
-public class FilterBasicHandler extends ItemStackHandler {
+public class FilterBasicHandler extends DataComponentHandler {
     public ItemStack stack;
 
     public FilterBasicHandler(int size, ItemStack itemStack) {
-        super(size);
+        super(itemStack, size);
         this.stack = itemStack;
-    }
-
-    @Override
-    protected void onContentsChanged(int slot) {
-        if (!stack.isEmpty())
-            FilterBasic.setInventory(stack, this);
     }
 
     @Override

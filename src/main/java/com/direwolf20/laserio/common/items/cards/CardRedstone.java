@@ -1,9 +1,8 @@
 package com.direwolf20.laserio.common.items.cards;
 
 import com.direwolf20.laserio.common.containers.CardRedstoneContainer;
-import net.minecraft.nbt.CompoundTag;
+import com.direwolf20.laserio.setup.LaserIODataComponents;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
@@ -25,13 +24,12 @@ public class CardRedstone extends BaseCard {
         ItemStack itemstack = player.getItemInHand(hand);
         if (level.isClientSide()) return new InteractionResultHolder<>(InteractionResult.PASS, itemstack);
 
-        ((ServerPlayer) player).openMenu(new SimpleMenuProvider(
+        player.openMenu(new SimpleMenuProvider(
                 (windowId, playerInventory, playerEntity) -> new CardRedstoneContainer(windowId, playerInventory, player, itemstack), Component.translatable("")), (buf -> {
-            buf.writeItem(itemstack);
+            ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, itemstack);
             buf.writeByte(-1);
         }));
 
-        //System.out.println(itemstack.getItem().getRegistryName()+""+itemstack.getTag());
         return new InteractionResultHolder<>(InteractionResult.PASS, itemstack);
     }
 
@@ -41,16 +39,14 @@ public class CardRedstone extends BaseCard {
     }
 
     public static boolean getStrong(ItemStack stack) {
-        CompoundTag compound = stack.getTag();
-        if (compound == null || !compound.contains("redstonestrong")) return false;
-        return compound.getBoolean("redstonestrong");
+        return stack.getOrDefault(LaserIODataComponents.REDSTONE_CARD_STRONG, false);
     }
 
     public static boolean setStrong(ItemStack stack, boolean strong) {
         if (!strong)
-            stack.removeTagKey("redstonestrong");
+            stack.remove(LaserIODataComponents.REDSTONE_CARD_STRONG);
         else
-            stack.getOrCreateTag().putBoolean("redstonestrong", strong);
+            stack.set(LaserIODataComponents.REDSTONE_CARD_STRONG, strong);
         return strong;
     }
 }

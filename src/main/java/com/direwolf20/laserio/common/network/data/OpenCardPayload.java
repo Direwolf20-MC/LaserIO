@@ -3,6 +3,8 @@ package com.direwolf20.laserio.common.network.data;
 import com.direwolf20.laserio.common.LaserIO;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 
@@ -11,21 +13,17 @@ public record OpenCardPayload(
         BlockPos sourcePos,
         boolean hasShiftDown
 ) implements CustomPacketPayload {
-    public static final ResourceLocation ID = new ResourceLocation(LaserIO.MODID, "open_card");
-
-    public OpenCardPayload(final FriendlyByteBuf buffer) {
-        this(buffer.readInt(), buffer.readBlockPos(), buffer.readBoolean());
-    }
+    public static final Type<OpenCardPayload> TYPE = new Type<>(new ResourceLocation(LaserIO.MODID, "open_card"));
 
     @Override
-    public void write(FriendlyByteBuf buffer) {
-        buffer.writeInt(slotNumber());
-        buffer.writeBlockPos(sourcePos());
-        buffer.writeBoolean(hasShiftDown());
+    public Type<OpenCardPayload> type() {
+        return TYPE;
     }
 
-    @Override
-    public ResourceLocation id() {
-        return ID;
-    }
+    public static final StreamCodec<FriendlyByteBuf, OpenCardPayload> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.INT, OpenCardPayload::slotNumber,
+            BlockPos.STREAM_CODEC, OpenCardPayload::sourcePos,
+            ByteBufCodecs.BOOL, OpenCardPayload::hasShiftDown,
+            OpenCardPayload::new
+    );
 }

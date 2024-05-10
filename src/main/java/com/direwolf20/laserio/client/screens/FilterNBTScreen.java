@@ -22,6 +22,7 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -31,8 +32,10 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
-import java.util.*;
+import java.util.Locale;
 
 public class FilterNBTScreen extends AbstractContainerScreen<FilterNBTContainer> {
     private final ResourceLocation GUI = new ResourceLocation(LaserIO.MODID, "textures/gui/filtertag.png");
@@ -133,9 +136,11 @@ public class FilterNBTScreen extends AbstractContainerScreen<FilterNBTContainer>
                 RenderSystem.disableDepthTest();
                 RenderSystem.colorMask(true, true, true, false);
                 guiGraphics.fillGradient(availableItemsstartX - 1, tagStartY - 2, availableItemsstartX + 160, tagStartY + 8, color, color);
-                Tag tempTag = stackInSlot.getOrCreateTag().get(displayTags.get(overSlot));
-                if (tempTag != null) {
-                    String tooltip = Objects.requireNonNull(stackInSlot.getOrCreateTag().get(displayTags.get(overSlot))).toString();
+                //Tag tempTag = stackInSlot.getOrCreateTag().get(displayTags.get(overSlot));
+                Tag tempTag = new CompoundTag();
+                if (tempTag != null) { //Todo Revisit
+                    //String tooltip = Objects.requireNonNull(stackInSlot.getOrCreateTag().get(displayTags.get(overSlot))).toString();
+                    String tooltip = "";
                     if (tooltip.length() > 60) tooltip = tooltip.substring(0, 60) + "...";
                     guiGraphics.renderTooltip(font, Component.literal(tooltip), mouseX, mouseY);
                 }
@@ -169,12 +174,12 @@ public class FilterNBTScreen extends AbstractContainerScreen<FilterNBTContainer>
     protected void populateStackInSlotTags() {
         stackInSlotTags = new ArrayList<>();
         ItemStack stackInSlot = container.handler.getStackInSlot(0);
-        if (!stackInSlot.isEmpty()) {
+        /*if (!stackInSlot.isEmpty()) {//Todo Revisit
             stackInSlot.getOrCreateTag().getAllKeys().forEach(t -> {
                 if (!stackInSlotTags.contains(t) && !tags.contains(t))
                     stackInSlotTags.add(t);
             });
-        }
+        }*/
     }
 
     @Override
@@ -283,7 +288,7 @@ public class FilterNBTScreen extends AbstractContainerScreen<FilterNBTContainer>
 
     @Override
     public void onClose() {
-        PacketDistributor.SERVER.noArg().send(new UpdateFilterTagPayload(isAllowList, tags));
+        PacketDistributor.sendToServer(new UpdateFilterTagPayload(isAllowList, tags));
         super.onClose();
     }
 
@@ -357,7 +362,7 @@ public class FilterNBTScreen extends AbstractContainerScreen<FilterNBTContainer>
             ItemStack stack = this.menu.getCarried();// getMinecraft().player.inventoryMenu.getCarried();
             stack = stack.copy().split(hoveredSlot.getMaxStackSize()); // Limit to slot limit
             hoveredSlot.set(stack); // Temporarily update the client for continuity purposes
-            PacketDistributor.SERVER.noArg().send(new GhostSlotPayload(hoveredSlot.index, stack, stack.getCount(), -1));
+            PacketDistributor.sendToServer(new GhostSlotPayload(hoveredSlot.index, stack, stack.getCount(), -1));
             return true;
         }
         return super.mouseClicked(x, y, btn);

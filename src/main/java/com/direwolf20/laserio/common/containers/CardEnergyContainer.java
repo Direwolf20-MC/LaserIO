@@ -3,7 +3,7 @@ package com.direwolf20.laserio.common.containers;
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import com.direwolf20.laserio.setup.Registration;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -14,7 +14,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
 import net.neoforged.neoforge.items.SlotItemHandler;
 import net.neoforged.neoforge.items.wrapper.InvWrapper;
 
@@ -31,8 +30,8 @@ public class CardEnergyContainer extends AbstractContainerMenu {
         super(pMenuType, pContainerId);
     }
 
-    public CardEnergyContainer(int windowId, Inventory playerInventory, Player player, FriendlyByteBuf extraData) {
-        this(windowId, playerInventory, player, extraData.readItem());
+    public CardEnergyContainer(int windowId, Inventory playerInventory, Player player, RegistryFriendlyByteBuf extraData) {
+        this(windowId, playerInventory, player, ItemStack.OPTIONAL_STREAM_CODEC.decode(extraData));
         this.direction = extraData.readByte();
     }
 
@@ -70,7 +69,7 @@ public class CardEnergyContainer extends AbstractContainerMenu {
         if (slot != null && slot.hasItem()) {
             ItemStack stack = slot.getItem();
             itemstack = stack.copy();
-            if (ItemHandlerHelper.canItemStacksStack(itemstack, cardItem)) return ItemStack.EMPTY;
+            if (ItemStack.isSameItemSameComponents(itemstack, cardItem)) return ItemStack.EMPTY;
             //If its one of the 3 slots at the top try to move it into your inventory
 
             if (stack.isEmpty()) {

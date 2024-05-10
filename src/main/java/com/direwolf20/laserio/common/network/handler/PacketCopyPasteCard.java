@@ -6,7 +6,7 @@ import com.direwolf20.laserio.common.items.CardCloner;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.common.network.data.CopyPasteCardPayload;
 import net.minecraft.core.Holder;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.network.protocol.game.ClientboundSoundPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -17,11 +17,10 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 public class PacketCopyPasteCard {
     public static final PacketCopyPasteCard INSTANCE = new PacketCopyPasteCard();
@@ -30,12 +29,9 @@ public class PacketCopyPasteCard {
         return INSTANCE;
     }
 
-    public void handle(final CopyPasteCardPayload payload, final PlayPayloadContext context) {
-        context.workHandler().submitAsync(() -> {
-            Optional<Player> senderOptional = context.player();
-            if (senderOptional.isEmpty())
-                return;
-            ServerPlayer player = (ServerPlayer) senderOptional.get();
+    public void handle(final CopyPasteCardPayload payload, final IPayloadContext context) {
+        context.enqueueWork(() -> {
+            Player player = context.player();
 
             AbstractContainerMenu container = player.containerMenu;
             if (container == null)
@@ -52,10 +48,10 @@ public class PacketCopyPasteCard {
             ItemStack slotStack = container.getSlot(payload.slot()).getItem();
             ItemStack clonerStack = container.getCarried();
             if (payload.copy()) { //copy mode
+                DataComponentPatch dataComponentPatch = slotStack.getComponentsPatch();
+                CardCloner.saveSettings(clonerStack, dataComponentPatch);
                 CardCloner.setItemType(clonerStack, slotStack.getItem().toString());
-                CompoundTag compoundTag = slotStack.getTag() == null ? new CompoundTag() : slotStack.getTag();
-                CardCloner.saveSettings(clonerStack, compoundTag);
-                playSound(player, Holder.direct(SoundEvent.createVariableRangeEvent(new ResourceLocation(SoundEvents.UI_CARTOGRAPHY_TABLE_TAKE_RESULT.getLocation().toString()))));
+                playSound((ServerPlayer) player, Holder.direct(SoundEvent.createVariableRangeEvent(new ResourceLocation(SoundEvents.UI_CARTOGRAPHY_TABLE_TAKE_RESULT.getLocation().toString()))));
             } else {
                 if (slotStack.getItem().toString().equals(CardCloner.getItemType(clonerStack))) {
                     CardItemHandler cardItemHandler = BaseCard.getInventory(slotStack);
@@ -118,19 +114,16 @@ public class PacketCopyPasteCard {
                             }
                         }
                         ItemStack tempStack = slotStack.copy();
-                        CompoundTag compoundTag = CardCloner.getSettings(clonerStack);
-                        if (compoundTag.equals(new CompoundTag()))
-                            tempStack.setTag(null);
-                        else
-                            tempStack.setTag(CardCloner.getSettings(clonerStack));
+                        DataComponentPatch dataComponentPatch = CardCloner.getSettings(clonerStack);
+                        tempStack.applyComponents(dataComponentPatch);
                         container.getSlot(payload.slot()).set(tempStack);
-                        playSound(player, Holder.direct(SoundEvent.createVariableRangeEvent(new ResourceLocation(SoundEvents.ENCHANTMENT_TABLE_USE.getLocation().toString()))));
+                        playSound((ServerPlayer) player, Holder.direct(SoundEvent.createVariableRangeEvent(new ResourceLocation(SoundEvents.ENCHANTMENT_TABLE_USE.getLocation().toString()))));
                         ((LaserNodeContainer) container).tile.updateThisNode();
                     } else {
-                        playSound(player, Holder.direct(SoundEvent.createVariableRangeEvent(new ResourceLocation(SoundEvents.WAXED_SIGN_INTERACT_FAIL.getLocation().toString()))));
+                        playSound((ServerPlayer) player, Holder.direct(SoundEvent.createVariableRangeEvent(new ResourceLocation(SoundEvents.WAXED_SIGN_INTERACT_FAIL.getLocation().toString()))));
                     }
                 } else {
-                    playSound(player, Holder.direct(SoundEvent.createVariableRangeEvent(new ResourceLocation(SoundEvents.WAXED_SIGN_INTERACT_FAIL.getLocation().toString()))));
+                    playSound((ServerPlayer) player, Holder.direct(SoundEvent.createVariableRangeEvent(new ResourceLocation(SoundEvents.WAXED_SIGN_INTERACT_FAIL.getLocation().toString()))));
                 }
             }
         });

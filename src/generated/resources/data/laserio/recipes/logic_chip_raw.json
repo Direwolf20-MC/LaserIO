@@ -7,13 +7,13 @@
       "item": "minecraft:clay_ball"
     },
     "g": {
-      "tag": "forge:nuggets/gold"
+      "tag": "c:nuggets/gold"
     },
     "q": {
-      "tag": "forge:storage_blocks/quartz"
+      "item": "minecraft:quartz_block"
     },
     "r": {
-      "tag": "forge:dusts/redstone"
+      "tag": "c:dusts/redstone"
     }
   },
   "pattern": [
@@ -23,6 +23,6 @@
   ],
   "result": {
     "count": 4,
-    "item": "laserio:logic_chip_raw"
+    "id": "laserio:logic_chip_raw"
   }
 }

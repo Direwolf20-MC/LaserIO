@@ -5,9 +5,7 @@
       "conditions": {
         "items": [
           {
-            "items": [
-              "laserio:filter_tag"
-            ]
+            "items": "laserio:filter_tag"
           }
         ]
       },

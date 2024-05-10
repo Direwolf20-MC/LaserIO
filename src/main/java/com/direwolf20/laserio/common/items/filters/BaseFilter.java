@@ -1,21 +1,19 @@
 package com.direwolf20.laserio.common.items.filters;
 
 import com.direwolf20.laserio.client.events.EventTooltip;
+import com.direwolf20.laserio.setup.LaserIODataComponents;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,12 +26,10 @@ public class BaseFilter extends Item {
 
     @OnlyIn(Dist.CLIENT)
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level world, List<Component> tooltip, TooltipFlag flag) {
-        super.appendHoverText(stack, world, tooltip, flag);
-
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flagIn) {
+        super.appendHoverText(stack, context, tooltip, flagIn);
         Minecraft mc = Minecraft.getInstance();
-
-        if (world == null || mc.player == null) {
+        if (mc.level == null || mc.player == null) {
             return;
         }
 
@@ -76,22 +72,26 @@ public class BaseFilter extends Item {
     }
 
     public static boolean getAllowList(ItemStack stack) {
-        CompoundTag compound = stack.getOrCreateTag();
-        return !compound.contains("allowList") ? setAllowList(stack, true) : compound.getBoolean("allowList");
+        return stack.getOrDefault(LaserIODataComponents.FILTER_ALLOW, true);
     }
 
     public static boolean setAllowList(ItemStack stack, boolean allowList) {
-        stack.getOrCreateTag().putBoolean("allowList", allowList);
+        if (allowList)
+            stack.remove(LaserIODataComponents.FILTER_ALLOW);
+        else
+            stack.set(LaserIODataComponents.FILTER_ALLOW, allowList);
         return allowList;
     }
 
     public static boolean getCompareNBT(ItemStack stack) {
-        CompoundTag compound = stack.getOrCreateTag();
-        return !compound.contains("compareNBT") ? setCompareNBT(stack, false) : compound.getBoolean("compareNBT");
+        return stack.getOrDefault(LaserIODataComponents.FILTER_COMPARE, false);
     }
 
     public static boolean setCompareNBT(ItemStack stack, boolean compareNBT) {
-        stack.getOrCreateTag().putBoolean("compareNBT", compareNBT);
+        if (!compareNBT)
+            stack.remove(LaserIODataComponents.FILTER_COMPARE);
+        else
+            stack.set(LaserIODataComponents.FILTER_COMPARE, compareNBT);
         return compareNBT;
     }
 }

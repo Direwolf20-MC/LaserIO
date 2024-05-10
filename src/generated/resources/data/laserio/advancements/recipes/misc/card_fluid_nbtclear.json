@@ -5,9 +5,7 @@
       "conditions": {
         "items": [
           {
-            "items": [
-              "laserio:card_fluid"
-            ]
+            "items": "laserio:card_fluid"
           }
         ]
       },

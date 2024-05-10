@@ -3,14 +3,16 @@ package com.direwolf20.laserio.client.renderer;
 import com.direwolf20.laserio.client.screens.CardFluidScreen;
 import com.direwolf20.laserio.util.MiscTools;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.*;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.BufferUploader;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.color.item.ItemColors;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.entity.ItemRenderer;
-import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.model.ModelManager;
@@ -237,7 +239,7 @@ public class LaserIOItemRendererFluid extends ItemRenderer {
         return !reverseBounds;
     }
 
-    public void renderFluid(FluidStack fluidStack, int pX, int pY, int size) {
+    /*public void renderFluid(FluidStack fluidStack, int pX, int pY, int size) {
         Fluid fluid = fluidStack.getFluid();
         ResourceLocation fluidStill = IClientFluidTypeExtensions.of(fluid).getStillTexture();
         TextureAtlasSprite fluidStillSprite = Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(fluidStill);
@@ -269,7 +271,7 @@ public class LaserIOItemRendererFluid extends ItemRenderer {
         tessellator.end();
         posestack.popPose();
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-    }
+    }*/
 
     /*@Override
     public void renderGuiItem(ItemStack pStack, int pX, int pY, BakedModel pBakedmodel) {

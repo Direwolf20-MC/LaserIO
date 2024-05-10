@@ -3,10 +3,11 @@ package com.direwolf20.laserio.common.items;
 import com.direwolf20.laserio.common.blockentities.LaserConnectorAdvBE;
 import com.direwolf20.laserio.common.blockentities.basebe.BaseLaserBE;
 import com.direwolf20.laserio.common.blocks.baseblocks.BaseLaserBlock;
-import com.direwolf20.laserio.util.DimBlockPos;
+import com.direwolf20.laserio.setup.LaserIODataComponents;
+import com.direwolf20.laserio.util.MiscTools;
 import com.direwolf20.laserio.util.VectorHelper;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.GlobalPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -38,16 +39,17 @@ public class LaserWrench extends Item {
         return dim;
     }*/
 
-    public static DimBlockPos storeConnectionPos(ItemStack wrench, Level level, BlockPos pos) {
-        DimBlockPos dimBlockPos = new DimBlockPos(level, pos);
-        wrench.getOrCreateTag().put("connectiondimpos", dimBlockPos.toNBT());
-        return dimBlockPos;
+    public static GlobalPos storeConnectionPos(ItemStack wrench, Level level, BlockPos pos) {
+        GlobalPos globalPos = new GlobalPos(level.dimension(), pos);
+        wrench.set(LaserIODataComponents.BOUND_GLOBAL_POS, globalPos);
+        return globalPos;
     }
 
-    public static DimBlockPos getConnectionPos(ItemStack wrench, Level level) {
-        CompoundTag compound = wrench.getOrCreateTag();
+    public static GlobalPos getConnectionPos(ItemStack wrench, Level level) {
         if (level == null) return null;
-        return !compound.contains("connectiondimpos") ? storeConnectionPos(wrench, level, BlockPos.ZERO) : new DimBlockPos(compound.getCompound("connectiondimpos"));
+        if (!wrench.has(LaserIODataComponents.BOUND_GLOBAL_POS))
+            return storeConnectionPos(wrench, level, BlockPos.ZERO);
+        return wrench.get(LaserIODataComponents.BOUND_GLOBAL_POS);
     }
 
     @Override
@@ -81,8 +83,8 @@ public class LaserWrench extends Item {
             storeConnectionPos(wrench, level, targetPos);
             return InteractionResultHolder.pass(wrench);
         } else {
-            DimBlockPos sourceDimPos = getConnectionPos(wrench, level);
-            BlockEntity sourceBE = sourceDimPos.getLevel(level.getServer()).getBlockEntity(sourceDimPos.blockPos);
+            GlobalPos sourceDimPos = getConnectionPos(wrench, level);
+            BlockEntity sourceBE = MiscTools.getLevel(level.getServer(), sourceDimPos).getBlockEntity(sourceDimPos.pos());
             //If the Source TE is not one of ours, erase it
             if (!(sourceBE instanceof BaseLaserBE)) {
                 storeConnectionPos(wrench, level, BlockPos.ZERO);
@@ -94,7 +96,7 @@ public class LaserWrench extends Item {
                 return InteractionResultHolder.success(wrench);
             }
             //If we're too far away - send an error to the client
-            if (!targetPos.closerThan(sourceDimPos.blockPos, maxDistance) || !level.equals(sourceDimPos.getLevel(level.getServer()))) {
+            if (!targetPos.closerThan(sourceDimPos.pos(), maxDistance) || !level.equals(MiscTools.getLevel(level.getServer(), sourceDimPos))) {
                 player.displayClientMessage(Component.translatable("message.laserio.wrenchrange", maxDistance), true);
                 return InteractionResultHolder.pass(wrench);
             }

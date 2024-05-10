@@ -11,6 +11,7 @@
     }
   ],
   "result": {
-    "item": "laserio:filter_count"
+    "count": 1,
+    "id": "laserio:filter_count"
   }
 }

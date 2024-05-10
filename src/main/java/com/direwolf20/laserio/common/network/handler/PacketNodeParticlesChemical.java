@@ -8,7 +8,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.core.Direction;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import java.util.List;
 
@@ -19,8 +19,8 @@ public class PacketNodeParticlesChemical {
         return INSTANCE;
     }
 
-    public void handle(final NodeParticlesChemicalPayload payload, final PlayPayloadContext context) {
-        context.workHandler().submitAsync(() -> {
+    public void handle(final NodeParticlesChemicalPayload payload, final IPayloadContext context) {
+        context.enqueueWork(() -> {
             List<ParticleDataChemical> tempList = payload.particleList();
             for (ParticleDataChemical data : tempList) {
                 //Extract

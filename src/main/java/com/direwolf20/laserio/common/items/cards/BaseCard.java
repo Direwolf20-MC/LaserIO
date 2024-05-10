@@ -3,22 +3,22 @@ package com.direwolf20.laserio.common.items.cards;
 import com.direwolf20.laserio.client.blockentityrenders.LaserNodeBERender;
 import com.direwolf20.laserio.common.containers.CardItemContainer;
 import com.direwolf20.laserio.common.containers.customhandler.CardItemHandler;
+import com.direwolf20.laserio.common.containers.customhandler.DireItemContainerContents;
+import com.direwolf20.laserio.setup.LaserIODataComponents;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
-import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -55,12 +55,10 @@ public class BaseCard extends Item {
 
     @OnlyIn(Dist.CLIENT)
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level world, List<Component> tooltip, TooltipFlag flag) {
-        super.appendHoverText(stack, world, tooltip, flag);
-
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flagIn) {
+        super.appendHoverText(stack, context, tooltip, flagIn);
         Minecraft mc = Minecraft.getInstance();
-
-        if (world == null || mc.player == null) {
+        if (mc.level == null || mc.player == null) {
             return;
         }
 
@@ -142,38 +140,29 @@ public class BaseCard extends Item {
     }
 
     public static CardItemHandler getInventory(ItemStack stack) {
-        CompoundTag compound = stack.getTag();
-        if (compound == null || !compound.contains("inv")) return new CardItemHandler(CardItemContainer.SLOTS, stack);
-        CardItemHandler handler = new CardItemHandler(CardItemContainer.SLOTS, stack);
-        handler.deserializeNBT(compound.getCompound("inv"));
-        if (handler.getSlots() < CardItemContainer.SLOTS)
-            handler.reSize(CardItemContainer.SLOTS);
-        return handler;
+        CardItemHandler cardItemHandler = new CardItemHandler(CardItemContainer.SLOTS, stack);
+        return cardItemHandler;
     }
 
     public static CardItemHandler setInventory(ItemStack stack, CardItemHandler handler) {
+        List<ItemStack> stacklist = new ArrayList<>();
         for (int i = 0; i < handler.getSlots(); i++) {
-            if (!handler.getStackInSlot(i).isEmpty()) {
-                stack.getOrCreateTag().put("inv", handler.serializeNBT());
-                return handler;
-            }
+            stacklist.add(handler.getStackInSlot(i));
         }
-        stack.removeTagKey("inv");
+        stack.set(LaserIODataComponents.ITEMSTACK_HANDLER, DireItemContainerContents.fromItems(stacklist));
         return handler;
     }
 
     public static byte setTransferMode(ItemStack card, byte mode) {
         if (mode == 0)
-            card.removeTagKey("mode");
+            card.remove(LaserIODataComponents.CARD_TRANSFER_MODE);
         else
-            card.getOrCreateTag().putByte("mode", mode);
+            card.set(LaserIODataComponents.CARD_TRANSFER_MODE, mode);
         return mode;
     }
 
     public static byte getTransferMode(ItemStack card) {
-        CompoundTag compound = card.getTag();
-        if (compound == null || !compound.contains("mode")) return (byte) 0;
-        return compound.getByte("mode");
+        return card.getOrDefault(LaserIODataComponents.CARD_TRANSFER_MODE, 0).byteValue();
     }
 
     public static byte nextTransferMode(ItemStack card) {
@@ -187,16 +176,14 @@ public class BaseCard extends Item {
 
     public static byte setChannel(ItemStack card, byte channel) {
         if (channel == 0)
-            card.removeTagKey("channel");
+            card.remove(LaserIODataComponents.CARD_CHANNEL);
         else
-            card.getOrCreateTag().putByte("channel", channel);
+            card.set(LaserIODataComponents.CARD_CHANNEL, channel);
         return channel;
     }
 
     public static byte getChannel(ItemStack card) {
-        CompoundTag compound = card.getTag();
-        if (compound == null || !compound.contains("channel")) return (byte) 0;
-        return compound.getByte("channel");
+        return card.getOrDefault(LaserIODataComponents.CARD_CHANNEL, 0).byteValue();
     }
 
     public static byte nextChannel(ItemStack card) {
@@ -211,30 +198,26 @@ public class BaseCard extends Item {
 
     public static int setExtractSpeed(ItemStack card, int itemextractspeed) {
         if (itemextractspeed == 20)
-            card.removeTagKey("itemextractspeed");
+            card.remove(LaserIODataComponents.CARD_EXTRACT_SPEED);
         else
-            card.getOrCreateTag().putInt("itemextractspeed", itemextractspeed);
+            card.set(LaserIODataComponents.CARD_EXTRACT_SPEED, itemextractspeed);
         return itemextractspeed;
     }
 
     public static int getExtractSpeed(ItemStack card) {
-        CompoundTag compound = card.getTag();
-        if (compound == null || !compound.contains("itemextractspeed")) return 20;
-        return compound.getInt("itemextractspeed");
+        return card.getOrDefault(LaserIODataComponents.CARD_EXTRACT_SPEED, 20);
     }
 
     public static short setPriority(ItemStack card, short priority) {
         if (priority == 0)
-            card.removeTagKey("priority");
+            card.remove(LaserIODataComponents.CARD_PRIORITY);
         else
-            card.getOrCreateTag().putShort("priority", priority);
+            card.set(LaserIODataComponents.CARD_PRIORITY, priority);
         return priority;
     }
 
     public static short getPriority(ItemStack card) {
-        CompoundTag compound = card.getTag();
-        if (compound == null || !compound.contains("priority")) return (short) 0;
-        return compound.getShort("priority");
+        return card.getOrDefault(LaserIODataComponents.CARD_PRIORITY, 0).shortValue();
     }
 
     public static ItemStack getFilter(ItemStack card) {
@@ -244,16 +227,14 @@ public class BaseCard extends Item {
 
     public static byte setSneaky(ItemStack card, byte sneaky) {
         if (sneaky == -1)
-            card.removeTagKey("sneaky");
+            card.remove(LaserIODataComponents.CARD_SNEAKY);
         else
-            card.getOrCreateTag().putByte("sneaky", sneaky);
+            card.set(LaserIODataComponents.CARD_SNEAKY, sneaky);
         return sneaky;
     }
 
     public static byte getSneaky(ItemStack card) {
-        CompoundTag compound = card.getTag();
-        if (compound == null || !compound.contains("sneaky")) return (byte) -1;
-        return compound.getByte("sneaky");
+        return card.getOrDefault(LaserIODataComponents.CARD_SNEAKY, -1).byteValue();
     }
 
     public static byte nextSneaky(ItemStack card) {
@@ -267,44 +248,38 @@ public class BaseCard extends Item {
     }
 
     public static boolean getRegulate(ItemStack stack) {
-        CompoundTag compound = stack.getTag();
-        if (compound == null || !compound.contains("regulate")) return false;
-        return compound.getBoolean("regulate");
+        return stack.getOrDefault(LaserIODataComponents.CARD_REGULATE, false);
     }
 
     public static boolean setRegulate(ItemStack stack, boolean regulate) {
         if (!regulate)
-            stack.removeTagKey("regulate");
+            stack.remove(LaserIODataComponents.CARD_REGULATE);
         else
-            stack.getOrCreateTag().putBoolean("regulate", regulate);
+            stack.set(LaserIODataComponents.CARD_REGULATE, regulate);
         return regulate;
     }
 
     public static int getRoundRobin(ItemStack stack) {
-        CompoundTag compound = stack.getTag();
-        if (compound == null || !compound.contains("roundRobin")) return 0;
-        return compound.getInt("roundRobin");
+        return stack.getOrDefault(LaserIODataComponents.CARD_ROUND_ROBIN, 0);
     }
 
     public static int setRoundRobin(ItemStack stack, int roundRobin) {
         if (roundRobin == 0)
-            stack.removeTagKey("roundRobin");
+            stack.remove(LaserIODataComponents.CARD_ROUND_ROBIN);
         else
-            stack.getOrCreateTag().putInt("roundRobin", roundRobin);
+            stack.set(LaserIODataComponents.CARD_ROUND_ROBIN, roundRobin);
         return roundRobin;
     }
 
     public static byte getRedstoneMode(ItemStack stack) {
-        CompoundTag compound = stack.getTag();
-        if (compound == null || !compound.contains("redstoneMode")) return 0;
-        return compound.getByte("redstoneMode");
+        return stack.getOrDefault(LaserIODataComponents.CARD_REDSTONE_MODE, 0).byteValue();
     }
 
     public static byte setRedstoneMode(ItemStack stack, byte redstoneMode) {
         if (redstoneMode == 0)
-            stack.removeTagKey("redstoneMode");
+            stack.remove(LaserIODataComponents.CARD_REDSTONE_MODE);
         else
-            stack.getOrCreateTag().putByte("redstoneMode", redstoneMode);
+            stack.set(LaserIODataComponents.CARD_REDSTONE_MODE, redstoneMode);
         return redstoneMode;
     }
 
@@ -314,31 +289,27 @@ public class BaseCard extends Item {
     }
 
     public static boolean getExact(ItemStack stack) {
-        CompoundTag compound = stack.getTag();
-        if (compound == null || !compound.contains("exact")) return false;
-        return compound.getBoolean("exact");
+        return stack.getOrDefault(LaserIODataComponents.CARD_EXACT, false);
     }
 
     public static boolean setExact(ItemStack stack, boolean exact) {
         if (!exact)
-            stack.removeTagKey("exact");
+            stack.remove(LaserIODataComponents.CARD_EXACT);
         else
-            stack.getOrCreateTag().putBoolean("exact", exact);
+            stack.set(LaserIODataComponents.CARD_EXACT, exact);
         return exact;
     }
 
     public static byte setRedstoneChannel(ItemStack card, byte redstonechannel) {
         if (redstonechannel == 0)
-            card.removeTagKey("redstonechannel");
+            card.remove(LaserIODataComponents.CARD_REDSTONE_CHANNEL);
         else
-            card.getOrCreateTag().putByte("redstonechannel", redstonechannel);
+            card.set(LaserIODataComponents.CARD_REDSTONE_CHANNEL, redstonechannel);
         return redstonechannel;
     }
 
     public static byte getRedstoneChannel(ItemStack card) {
-        CompoundTag compound = card.getTag();
-        if (compound == null || !compound.contains("redstonechannel")) return (byte) 0;
-        return compound.getByte("redstonechannel");
+        return card.getOrDefault(LaserIODataComponents.CARD_REDSTONE_CHANNEL, 0).byteValue();
     }
 
     public static byte nextRedstoneChannel(ItemStack card) {
@@ -352,16 +323,14 @@ public class BaseCard extends Item {
     }
 
     public static boolean getAnd(ItemStack stack) {
-        CompoundTag compound = stack.getTag();
-        if (compound == null || !compound.contains("and")) return false;
-        return compound.getBoolean("and");
+        return stack.getOrDefault(LaserIODataComponents.CARD_AND_MODE, false);
     }
 
     public static boolean setAnd(ItemStack stack, boolean and) {
         if (!and)
-            stack.removeTagKey("and");
+            stack.remove(LaserIODataComponents.CARD_AND_MODE);
         else
-            stack.getOrCreateTag().putBoolean("and", and);
+            stack.set(LaserIODataComponents.CARD_AND_MODE, and);
         return and;
     }
 }

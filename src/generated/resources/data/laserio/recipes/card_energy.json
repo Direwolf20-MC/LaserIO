@@ -4,19 +4,19 @@
   "group": "laserio",
   "key": {
     "g": {
-      "tag": "forge:nuggets/gold"
+      "tag": "c:nuggets/gold"
     },
     "l": {
-      "tag": "forge:storage_blocks/redstone"
+      "tag": "c:storage_blocks/redstone"
     },
     "p": {
       "item": "laserio:logic_chip"
     },
     "q": {
-      "tag": "forge:gems/quartz"
+      "tag": "c:gems/quartz"
     },
     "r": {
-      "tag": "forge:dusts/redstone"
+      "tag": "c:dusts/redstone"
     }
   },
   "pattern": [
@@ -25,6 +25,7 @@
     "ggg"
   ],
   "result": {
-    "item": "laserio:card_energy"
+    "count": 1,
+    "id": "laserio:card_energy"
   }
 }

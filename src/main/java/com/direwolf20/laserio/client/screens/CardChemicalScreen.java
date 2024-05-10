@@ -115,20 +115,21 @@ public class CardChemicalScreen extends CardItemScreen {
         if (!MekanismStatics.doesItemStackHoldChemicals(slotStack))
             return super.filterSlot(btn);
         if (slotStack.isEmpty()) return true;
-        if (btn == GLFW.GLFW_MOUSE_BUTTON_MIDDLE) { //Todo IMC Inventory Sorter so this works
+        if (btn == GLFW.GLFW_MOUSE_BUTTON_MIDDLE) {
             slotStack.setCount(0);
-            PacketDistributor.SERVER.noArg().send(new GhostSlotPayload(hoveredSlot.index, slotStack, slotStack.getCount(), 0));
+            PacketDistributor.sendToServer(new GhostSlotPayload(hoveredSlot.index, slotStack, slotStack.getCount(), 0));
             return true;
         }
         int amt = (btn == GLFW.GLFW_MOUSE_BUTTON_LEFT) ? 1 : -1;
         int filterSlot = hoveredSlot.index - CardItemContainer.SLOTS;
-        int currentMBAmt = FilterCount.getSlotAmount(filter, filterSlot);
+        int currentMBAmt = FilterCount.getSlotAmount(filter, filterSlot) + (FilterCount.getSlotCount(filter, filterSlot) * 1000);
         if (Screen.hasShiftDown()) amt *= 10;
         if (Screen.hasControlDown()) amt *= 100;
         int newMBAmt = currentMBAmt + amt;
         if (newMBAmt < 0) newMBAmt = 0;
         if (newMBAmt > 4096000) newMBAmt = 4096000;
-        PacketDistributor.SERVER.noArg().send(new GhostSlotPayload(hoveredSlot.index, slotStack, slotStack.getCount(), newMBAmt));
+        FilterCount.setSlotAmount(slotStack, filterSlot, newMBAmt);
+        PacketDistributor.sendToServer(new GhostSlotPayload(hoveredSlot.index, slotStack, 1, newMBAmt));
         return true;
     }
 
@@ -145,7 +146,7 @@ public class CardChemicalScreen extends CardItemScreen {
     @Override
     public void openNode() {
         saveSettings();
-        PacketDistributor.SERVER.noArg().send(new OpenNodePayload(container.sourceContainer, container.direction));
+        PacketDistributor.sendToServer(new OpenNodePayload(container.sourceContainer, container.direction));
         Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
     }
 
@@ -157,7 +158,7 @@ public class CardChemicalScreen extends CardItemScreen {
     @Override
     public void saveSettings() {
         if (showFilter)
-            PacketDistributor.SERVER.noArg().send(new UpdateFilterPayload(isAllowList == 1, isCompareNBT == 1));
-        PacketDistributor.SERVER.noArg().send(new UpdateCardPayload(currentMode, currentChannel, currentChemicalExtractAmt, currentPriority, currentSneaky, (short) currentTicks, currentExact, currentRegulate, (byte) currentRoundRobin, 0, 0, currentRedstoneMode, currentRedstoneChannel, currentAndMode));
+            PacketDistributor.sendToServer(new UpdateFilterPayload(isAllowList == 1, isCompareNBT == 1));
+        PacketDistributor.sendToServer(new UpdateCardPayload(currentMode, currentChannel, currentChemicalExtractAmt, currentPriority, currentSneaky, (short) currentTicks, currentExact, currentRegulate, (byte) currentRoundRobin, 0, 0, currentRedstoneMode, currentRedstoneChannel, currentAndMode));
     }
 }

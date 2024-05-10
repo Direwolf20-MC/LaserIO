@@ -19,7 +19,6 @@ import com.direwolf20.laserio.common.items.upgrades.OverclockerNode;
 import com.direwolf20.laserio.datagen.customrecipes.CardClearRecipe;
 import com.direwolf20.laserio.integration.mekanism.CardChemical;
 import com.direwolf20.laserio.integration.mekanism.MekanismIntegration;
-import com.direwolf20.laserio.util.CardHolderItemStackHandler;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.BlockItem;
@@ -65,6 +64,7 @@ public class Registration {
         PARTICLE_TYPES.register(eventBus);
         RECIPE_SERIALIZERS.register(eventBus);
         ATTACHMENT_TYPES.register(eventBus);
+        LaserIODataComponents.COMPONENTS.register(eventBus);
     }
 
     // Some common properties for our blocks and items
@@ -134,11 +134,6 @@ public class Registration {
             () -> IMenuTypeExtension.create((windowId, inv, data) -> new FilterTagContainer(windowId, inv, inv.player, data)));
     public static final DeferredHolder<MenuType<?>, MenuType<FilterNBTContainer>> FilterNBT_Container = CONTAINERS.register("filternbt",
             () -> IMenuTypeExtension.create((windowId, inv, data) -> new FilterNBTContainer(windowId, inv, inv.player, data)));
-
-    //Data attachments
-    public static final Supplier<AttachmentType<CardHolderItemStackHandler>> CARD_HOLDER_HANDLER = ATTACHMENT_TYPES.register(
-            "handler", () -> AttachmentType.serializable(() -> new CardHolderItemStackHandler(CardHolderContainer.SLOTS)).build());
-
 
     // Conveniance function: Take a RegistryObject<Block> and make a corresponding RegistryObject<Item> from it
     /*public static <B extends Block> RegistryObject<Item> fromBlock(RegistryObject<B> block) {

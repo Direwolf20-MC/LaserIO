@@ -6,12 +6,9 @@ import com.google.common.collect.ArrayListMultimap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.core.NonNullList;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -59,7 +56,7 @@ public class ItemHandlerUtil {
                 int extractAmt = Math.min(amount, stackInSlot.getCount());
                 if (tempStack.isEmpty()) //If this is our first pass, make the temp stack == the extracted stack
                     tempStack = source.extractItem(i, extractAmt, simulate);
-                else if (ItemHandlerHelper.canItemStacksStack(tempStack, stackInSlot)) //If this is our 2nd pass, the 2 itemstacks should stack, so do a grow()
+                else if (ItemStack.isSameItemSameComponents(tempStack, stackInSlot)) //If this is our 2nd pass, the 2 itemstacks should stack, so do a grow()
                     tempStack.grow(source.extractItem(i, extractAmt, simulate).getCount());
                 else //This in theory should never happen but who knows
                     return new ExtractResult(tempStack, i);
@@ -86,7 +83,7 @@ public class ItemHandlerUtil {
                 int extractAmt = Math.min(amount, stackInSlot.getCount());
                 if (tempStack.isEmpty()) //If this is our first pass, make the temp stack == the extracted stack
                     tempStack = source.extractItem(i, extractAmt, simulate);
-                else if (ItemHandlerHelper.canItemStacksStack(tempStack, stackInSlot)) //If this is our 2nd pass, the 2 itemstacks should stack, so do a grow()
+                else if (ItemStack.isSameItemSameComponents(tempStack, stackInSlot)) //If this is our 2nd pass, the 2 itemstacks should stack, so do a grow()
                     tempStack.grow(source.extractItem(i, extractAmt, simulate).getCount());
                 else //This in theory should never happen but who knows
                     return new ExtractResult(tempStack, i);
@@ -224,21 +221,21 @@ public class ItemHandlerUtil {
     }
 
     public static boolean doItemsMatch(ItemStack a, ItemStack b, boolean isCompareNBT) {
-        return isCompareNBT ? ItemHandlerHelper.canItemStacksStack(a, b) : ItemStack.isSameItem(a, b);
+        return isCompareNBT ? ItemStack.isSameItemSameComponents(a, b) : ItemStack.isSameItem(a, b);
     }
 
     public static boolean areItemsStackable(ItemStack toInsert, ItemStack inSlot) {
         if (toInsert.isEmpty() || inSlot.isEmpty()) {
             return true;
         }
-        return ItemHandlerHelper.canItemStacksStack(inSlot, toInsert);
+        return ItemStack.isSameItemSameComponents(inSlot, toInsert);
     }
 
     public static ItemStack size(ItemStack stack, int size) {
         if (size <= 0 || stack.isEmpty()) {
             return ItemStack.EMPTY;
         }
-        return ItemHandlerHelper.copyStackWithSize(stack, size);
+        return stack.copyWithCount(size);
     }
 
     public static class InventoryInfo {
@@ -275,16 +272,16 @@ public class ItemHandlerUtil {
             }
         }
 
-        public InventoryCounts(ListTag nbtList) {
+        /*public InventoryCounts(ListTag nbtList) {
             for (int i = 0; i < nbtList.size(); i++) {
                 CompoundTag nbt = nbtList.getCompound(i);
                 ItemStack stack = ItemStack.of(nbt);
                 stack.setCount(nbt.getInt("count"));
                 setCount(stack);
             }
-        }
+        }*/
 
-        public ListTag serialize() {
+        /*public ListTag serialize() {
             ListTag nbtList = new ListTag();
             int i = 0;
             for (ItemStack stack : itemMap.values()) {
@@ -295,7 +292,7 @@ public class ItemHandlerUtil {
                 i++;
             }
             return nbtList;
-        }
+        }*/
 
         public void addHandler(IItemHandler handler) {
             for (int i = 0; i < handler.getSlots(); i++) {
@@ -322,7 +319,7 @@ public class ItemHandlerUtil {
         public void setCount(ItemStack stack) {
             if (stack.isEmpty()) return;
             for (ItemStack cacheStack : itemMap.get(stack.getItem())) {
-                boolean sameItems = isCompareNBT ? ItemHandlerHelper.canItemStacksStack(cacheStack, stack) : ItemStack.isSameItem(cacheStack, stack);
+                boolean sameItems = isCompareNBT ? ItemStack.isSameItemSameComponents(cacheStack, stack) : ItemStack.isSameItem(cacheStack, stack);
                 if (sameItems) {
                     cacheStack.grow(stack.getCount());
                     totalCount += stack.getCount();
@@ -336,7 +333,7 @@ public class ItemHandlerUtil {
         public ItemStack removeStack(ItemStack stack, int count) {
             ItemStack returnStack = ItemStack.EMPTY;
             for (ItemStack cacheStack : itemMap.get(stack.getItem())) {
-                if (ItemHandlerHelper.canItemStacksStack(cacheStack, stack)) {
+                if (ItemStack.isSameItemSameComponents(cacheStack, stack)) {
                     returnStack = cacheStack.split(count);
                     break;
                 }
@@ -350,7 +347,7 @@ public class ItemHandlerUtil {
 
         public int getCount(ItemStack stack) {
             for (ItemStack cacheStack : itemMap.get(stack.getItem())) {
-                boolean sameItems = isCompareNBT ? ItemHandlerHelper.canItemStacksStack(cacheStack, stack) : ItemStack.isSameItem(cacheStack, stack);
+                boolean sameItems = isCompareNBT ? ItemStack.isSameItemSameComponents(cacheStack, stack) : ItemStack.isSameItem(cacheStack, stack);
                 if (sameItems)
                     return cacheStack.getCount();
             }
