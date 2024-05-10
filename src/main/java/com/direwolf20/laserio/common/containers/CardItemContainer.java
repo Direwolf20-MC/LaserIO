@@ -162,6 +162,73 @@ public class CardItemContainer extends AbstractContainerMenu {
     }
 
     @Override
+    protected boolean moveItemStackTo(ItemStack pStack, int pStartIndex, int pEndIndex, boolean pReverseDirection) {
+        boolean flag = false;
+        int i = pStartIndex;
+        if (pReverseDirection) {
+            i = pEndIndex - 1;
+        }
+
+        if (pStack.isStackable()) {
+            while (!pStack.isEmpty() && (pReverseDirection ? i >= pStartIndex : i < pEndIndex)) {
+                Slot slot = this.slots.get(i);
+                ItemStack itemstack = slot.getItem();
+                if (!itemstack.isEmpty() && ItemStack.isSameItemSameComponents(pStack, itemstack)) {
+                    int j = itemstack.getCount() + pStack.getCount();
+                    int k = slot.getMaxStackSize(itemstack);
+                    if (j <= k) {
+                        pStack.setCount(0);
+                        itemstack.setCount(j);
+                        slot.setChanged();
+                        slot.setByPlayer(itemstack);
+                        flag = true;
+                    } else if (itemstack.getCount() < k) {
+                        pStack.shrink(k - itemstack.getCount());
+                        itemstack.setCount(k);
+                        slot.setChanged();
+                        slot.setByPlayer(itemstack);
+                        flag = true;
+                    }
+                }
+
+                if (pReverseDirection) {
+                    i--;
+                } else {
+                    i++;
+                }
+            }
+        }
+
+        if (!pStack.isEmpty()) {
+            if (pReverseDirection) {
+                i = pEndIndex - 1;
+            } else {
+                i = pStartIndex;
+            }
+
+            while (pReverseDirection ? i >= pStartIndex : i < pEndIndex) {
+                Slot slot1 = this.slots.get(i);
+                ItemStack itemstack1 = slot1.getItem();
+                if (itemstack1.isEmpty() && slot1.mayPlace(pStack)) {
+                    int l = slot1.getMaxStackSize(pStack);
+                    slot1.setByPlayer(pStack.split(Math.min(pStack.getCount(), l)));
+                    slot1.setChanged();
+                    flag = true;
+                    break;
+                }
+
+                if (pReverseDirection) {
+                    i--;
+                } else {
+                    i++;
+                }
+            }
+        }
+
+        return flag;
+    }
+
+    @Override
     public ItemStack quickMoveStack(Player playerIn, int index) {
         if (cardItem.getCount() > 1) return ItemStack.EMPTY; // Don't let quickMove happen in multistack cards
         ItemStack itemstack = ItemStack.EMPTY;
@@ -173,16 +240,17 @@ public class CardItemContainer extends AbstractContainerMenu {
             //If its one of the 3 slots at the top try to move it into your inventory
             if (index < SLOTS) {
                 if (!cardHolder.isEmpty()) { //Do the below set of logic if we have a card holder, otherwise just try to move to inventory
-                    if (!this.moveItemStackTo(stack, SLOTS + FILTERSLOTS, SLOTS + FILTERSLOTS + CardHolderContainer.SLOTS, false)) { //Try the CardHolder First!
-                        return ItemStack.EMPTY;
-                    } else {
+                    if (this.moveItemStackTo(stack, SLOTS + FILTERSLOTS, SLOTS + FILTERSLOTS + CardHolderContainer.SLOTS, false)) { //Try the CardHolder First!
                         slot.setByPlayer(stack);
+                        return ItemStack.EMPTY;
                     }
-                    if (!this.moveItemStackTo(stack, SLOTS + FILTERSLOTS + CardHolderContainer.SLOTS, 36 + SLOTS + FILTERSLOTS + CardHolderContainer.SLOTS, true)) {
+                    if (this.moveItemStackTo(stack, SLOTS + FILTERSLOTS + CardHolderContainer.SLOTS, 36 + SLOTS + FILTERSLOTS + CardHolderContainer.SLOTS, true)) {
+                        slot.setByPlayer(stack);
                         return ItemStack.EMPTY;
                     }
                 } else { //If no card holder, the slot targets are different.
-                    if (!this.moveItemStackTo(stack, SLOTS + FILTERSLOTS, 36 + SLOTS + FILTERSLOTS, true)) {
+                    if (this.moveItemStackTo(stack, SLOTS + FILTERSLOTS, 36 + SLOTS + FILTERSLOTS, true)) {
+                        slot.setByPlayer(stack);
                         return ItemStack.EMPTY;
                     }
                 }
@@ -193,7 +261,8 @@ public class CardItemContainer extends AbstractContainerMenu {
             } else { //From player inventory (or Card Holder) TO something
                 ItemStack currentStack = slot.getItem().copy();
                 if (slots.get(0).mayPlace(currentStack) || slots.get(1).mayPlace(currentStack)) {
-                    if (!this.moveItemStackTo(stack, 0, SLOTS, false)) {
+                    if (this.moveItemStackTo(stack, 0, SLOTS, false)) {
+                        slot.setByPlayer(stack);
                         return ItemStack.EMPTY;
                     }
                 } else if (slots.get(0).getItem().getItem() instanceof BaseFilter) {
@@ -203,7 +272,8 @@ public class CardItemContainer extends AbstractContainerMenu {
                         if (ItemStack.isSameItemSameComponents(this.slots.get(i).getItem(), currentStack)) //Don't limit tags
                             return ItemStack.EMPTY;
                     }
-                    if (!this.moveItemStackTo(currentStack, SLOTS, SLOTS + FILTERSLOTS, false)) {
+                    if (this.moveItemStackTo(currentStack, SLOTS, SLOTS + FILTERSLOTS, false)) {
+                        slot.setByPlayer(stack);
                         return ItemStack.EMPTY;
                     }
                 }

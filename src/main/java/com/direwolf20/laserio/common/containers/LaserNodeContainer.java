@@ -129,11 +129,13 @@ public class LaserNodeContainer extends AbstractContainerMenu {
                 if (j <= maxSize) {
                     itemStack.setCount(0);
                     itemstack.setCount(j);
+                    slot.setByPlayer(itemstack);
                     slot.setChanged();
                     flag = true;
                 } else if (itemstack.getCount() < maxSize) {
                     itemStack.shrink(maxSize - itemstack.getCount());
                     itemstack.setCount(maxSize);
+                    slot.setByPlayer(itemstack);
                     slot.setChanged();
                     flag = true;
                 }
@@ -208,8 +210,10 @@ public class LaserNodeContainer extends AbstractContainerMenu {
                 stackToMove = stack;
             //Try to move 1 card to the node slots first, failing that, to the inventory!
             if (this.moveItemStackTo(stackToMove, 0, CARDSLOTS + 1, false)) {
+                slot.set(stack);
                 return ItemStack.EMPTY;
             } else if (this.moveItemStackTo(stackToMove, SLOTS, 36 + SLOTS, true)) {
+                slot.set(stack);
                 return ItemStack.EMPTY;
             } else {
                 stack.grow(1);
