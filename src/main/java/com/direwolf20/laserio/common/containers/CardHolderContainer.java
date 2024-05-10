@@ -84,11 +84,13 @@ public class CardHolderContainer extends AbstractContainerMenu {
                 if (j <= maxSize) {
                     itemStack.setCount(0);
                     itemstack.setCount(j);
+                    slot.setByPlayer(itemstack);
                     slot.setChanged();
                     flag = true;
                 } else if (itemstack.getCount() < maxSize) {
                     itemStack.shrink(maxSize - itemstack.getCount());
                     itemstack.setCount(maxSize);
+                    slot.setByPlayer(itemstack);
                     slot.setChanged();
                     flag = true;
                 }
@@ -121,9 +123,9 @@ public class CardHolderContainer extends AbstractContainerMenu {
                 ItemStack itemstack1 = slot1.getItem();
                 if (itemstack1.isEmpty() && slot1.mayPlace(itemStack) && slot1.getItem().getCount() < slot1.getMaxStackSize(itemStack)) {
                     if (itemStack.getCount() > slot1.getMaxStackSize()) {
-                        slot1.set(itemStack.split(slot1.getMaxStackSize()));
+                        slot1.setByPlayer(itemStack.split(slot1.getMaxStackSize()));
                     } else {
-                        slot1.set(itemStack.split(slot1.getMaxStackSize(itemStack)));
+                        slot1.setByPlayer(itemStack.split(slot1.getMaxStackSize(itemStack)));
                     }
 
                     slot1.setChanged();
@@ -155,15 +157,16 @@ public class CardHolderContainer extends AbstractContainerMenu {
         Slot slot = this.slots.get(index);
         if (slot.hasItem()) {
             ItemStack stack = slot.getItem();
-            itemstack = stack.copy();
+            //itemstack = stack.copy();
             //If its one of the 20 slots at the top try to move it into your inventory
             if (index < SLOTS) {
                 if (playerIn.getInventory().getFreeSlot() != -1) {
                     // moveItemStackTo() always moves the item, no matter the return value. fixes #87
-                    if (stack.getMaxStackSize() == 1)
-                        this.moveItemStackTo(stack.split(1), SLOTS, 36 + SLOTS, true);
-                    else
-                        this.moveItemStackTo(stack, SLOTS, 36 + SLOTS, true);
+                    //if (stack.getMaxStackSize() == 1)
+                    //    this.moveItemStackTo(stack.split(1), SLOTS, 36 + SLOTS, true);
+                    //else
+                    this.moveItemStackTo(stack, SLOTS, 36 + SLOTS, true);
+                    slot.setByPlayer(stack);
                 } else {
                     return ItemStack.EMPTY;
                 }
