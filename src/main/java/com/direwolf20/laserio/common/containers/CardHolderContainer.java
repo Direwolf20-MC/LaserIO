@@ -1,5 +1,6 @@
 package com.direwolf20.laserio.common.containers;
 
+import com.direwolf20.laserio.common.containers.customhandler.DataComponentHandler;
 import com.direwolf20.laserio.common.containers.customslot.CardHolderSlot;
 import com.direwolf20.laserio.setup.Registration;
 import net.minecraft.core.BlockPos;
@@ -11,7 +12,6 @@ import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemStackHandler;
 import net.neoforged.neoforge.items.SlotItemHandler;
 import net.neoforged.neoforge.items.wrapper.InvWrapper;
 
@@ -22,20 +22,20 @@ public class CardHolderContainer extends AbstractContainerMenu {
     public Player playerEntity;
     private IItemHandler playerInventory;
     public BlockPos sourceContainer = BlockPos.ZERO;
-    public IItemHandler iItemHandler;
+    public DataComponentHandler cardHolderHandler;
 
     public CardHolderContainer(int windowId, Inventory playerInventory, Player player, RegistryFriendlyByteBuf extraData) {
-        this(windowId, playerInventory, player, ItemStack.OPTIONAL_STREAM_CODEC.decode(extraData), new ItemStackHandler(SLOTS));
+        this(windowId, playerInventory, player, ItemStack.OPTIONAL_STREAM_CODEC.decode(extraData));
     }
 
-    public CardHolderContainer(int windowId, Inventory playerInventory, Player player, ItemStack cardHolder, IItemHandler iItemHandler) {
+    public CardHolderContainer(int windowId, Inventory playerInventory, Player player, ItemStack cardHolder) {
         super(Registration.CardHolder_Container.get(), windowId);
         playerEntity = player;
-        this.iItemHandler = iItemHandler;
+        this.cardHolderHandler = new DataComponentHandler(cardHolder, SLOTS);
         this.playerInventory = new InvWrapper(playerInventory);
         this.cardHolder = cardHolder;
-        if (iItemHandler != null) {
-            addSlotBox(iItemHandler, 0, 44, 17, 5, 18, 3, 18);
+        if (cardHolderHandler != null) {
+            addSlotBox(cardHolderHandler, 0, 44, 17, 5, 18, 3, 18);
         }
 
         layoutPlayerInventorySlots(8, 84);
