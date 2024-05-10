@@ -38,7 +38,7 @@ public class LaserGuiGraphicsChemical extends GuiGraphics {
             int slot = ((5 * sloty) + slotx);
             ItemStack filter = ((CardChemicalScreen) screen).filter;
             int totalmbAmt = FilterCount.getSlotAmount(filter, slot);
-            int count = Mth.floor(totalmbAmt / 1000D);
+            int count = FilterCount.getSlotCount(filter, slot);
             int mbAmt = totalmbAmt % 1000;
             PoseStack posestack = pose();
             if (count != 0 || mbAmt != 0) {

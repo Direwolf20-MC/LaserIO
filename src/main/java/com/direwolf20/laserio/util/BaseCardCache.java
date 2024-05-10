@@ -146,7 +146,7 @@ public class BaseCardCache {
                 for (int tank = 0; tank < fluidHandler.getTanks(); tank++) {
                     FluidStack fluidStack = fluidHandler.getFluidInTank(tank);
                     if (key.equals(new FluidStackKey(fluidStack, isCompareNBT))) {
-                        int mbAmt = FilterCount.getSlotAmount(filterCard, i);
+                        int mbAmt = FilterCount.getSlotAmount(filterCard, i) + (FilterCount.getSlotCount(filterCard, i) * 1000);
                         filterCountsFluid.put(key, mbAmt);
                         return mbAmt;
                     }

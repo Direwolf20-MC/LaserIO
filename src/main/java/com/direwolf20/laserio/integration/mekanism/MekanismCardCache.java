@@ -106,7 +106,7 @@ public class MekanismCardCache {
                 if (!itemStack.isEmpty()) {
                     ChemicalStack<?> chemicalStack = MekanismStatics.getFirstChemicalOnItemStack(itemStack, keyType);
                     if (!chemicalStack.isEmpty() && key == chemicalStack.getChemical()) {
-                        return FilterCount.getSlotAmount(filterCard, i);
+                        return FilterCount.getSlotAmount(filterCard, i) + (FilterCount.getSlotCount(filterCard, i) * 1000);
                     }
                 }
             }

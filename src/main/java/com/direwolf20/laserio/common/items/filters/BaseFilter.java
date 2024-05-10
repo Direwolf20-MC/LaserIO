@@ -72,11 +72,11 @@ public class BaseFilter extends Item {
     }
 
     public static boolean getAllowList(ItemStack stack) {
-        return stack.getOrDefault(LaserIODataComponents.FILTER_ALLOW, false);
+        return stack.getOrDefault(LaserIODataComponents.FILTER_ALLOW, true);
     }
 
     public static boolean setAllowList(ItemStack stack, boolean allowList) {
-        if (!allowList)
+        if (allowList)
             stack.remove(LaserIODataComponents.FILTER_ALLOW);
         else
             stack.set(LaserIODataComponents.FILTER_ALLOW, allowList);
