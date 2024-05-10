@@ -30,8 +30,8 @@ public class PacketHandler {
 
         //Mekanism Packets Only
         if (MekanismIntegration.isLoaded()) {
-            //Client Side //TODO Mekanism
-            //registrar.playToClient(NodeParticlesChemicalPayload.TYPE, NodeParticlesChemicalPayload.STREAM_CODEC, PacketNodeParticlesChemical.get()::handle);
+            //Client Side
+            registrar.playToClient(NodeParticlesChemicalPayload.TYPE, NodeParticlesChemicalPayload.STREAM_CODEC, PacketNodeParticlesChemical.get()::handle);
         }
     }
 }

@@ -118,7 +118,8 @@ public class DataComponentHandler implements IItemHandlerModifiable {
     @Override
     public void setStackInSlot(int slot, ItemStack stack) {
         validateSlotIndex(slot);
-        if (!isItemValid(slot, stack)) throw new RuntimeException("Invalid stack " + stack + " for slot " + slot + ")");
+        if (!stack.isEmpty() && !isItemValid(slot, stack))
+            throw new RuntimeException("Invalid stack " + stack + " for slot " + slot + ")");
         NonNullList<ItemStack> itemStacks = getItemList();
         itemStacks.set(slot, stack);
         setItemList(itemStacks);

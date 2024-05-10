@@ -10,19 +10,19 @@
   "group": "laserio",
   "key": {
     "g": {
-      "tag": "forge:nuggets/gold"
+      "tag": "c:nuggets/gold"
     },
     "l": {
-      "tag": "forge:circuits/basic"
+      "tag": "c:circuits/basic"
     },
     "p": {
       "item": "laserio:logic_chip"
     },
     "q": {
-      "tag": "forge:gems/quartz"
+      "tag": "c:gems/quartz"
     },
     "r": {
-      "tag": "forge:dusts/redstone"
+      "tag": "c:dusts/redstone"
     }
   },
   "pattern": [
@@ -31,6 +31,7 @@
     "ggg"
   ],
   "result": {
-    "item": "laserio:card_chemical"
+    "count": 1,
+    "id": "laserio:card_chemical"
   }
 }

@@ -4,13 +4,13 @@
   "group": "laserio",
   "key": {
     "g": {
-      "tag": "forge:ingots/gold"
+      "tag": "c:ingots/gold"
     },
     "p": {
       "item": "laserio:logic_chip"
     },
     "r": {
-      "tag": "forge:dusts/redstone"
+      "tag": "c:dusts/redstone"
     }
   },
   "pattern": [
@@ -19,6 +19,7 @@
     "ggg"
   ],
   "result": {
-    "item": "laserio:overclocker_card"
+    "count": 1,
+    "id": "laserio:overclocker_card"
   }
 }

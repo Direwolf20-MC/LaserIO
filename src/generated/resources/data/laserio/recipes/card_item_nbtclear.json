@@ -8,6 +8,7 @@
     }
   ],
   "result": {
-    "item": "laserio:card_item"
+    "count": 1,
+    "id": "laserio:card_item"
   }
 }

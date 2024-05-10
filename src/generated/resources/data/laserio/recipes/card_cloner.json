@@ -10,7 +10,7 @@
       "item": "minecraft:paper"
     },
     "i": {
-      "tag": "forge:ingots/iron"
+      "tag": "c:ingots/iron"
     }
   },
   "pattern": [
@@ -19,6 +19,7 @@
     "i i"
   ],
   "result": {
-    "item": "laserio:card_cloner"
+    "count": 1,
+    "id": "laserio:card_cloner"
   }
 }

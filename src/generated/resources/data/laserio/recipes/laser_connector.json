@@ -7,13 +7,13 @@
       "item": "laserio:logic_chip"
     },
     "g": {
-      "tag": "forge:glass"
+      "tag": "c:glass_blocks"
     },
     "i": {
-      "tag": "forge:ingots/iron"
+      "tag": "c:ingots/iron"
     },
     "r": {
-      "tag": "forge:dusts/redstone"
+      "tag": "c:dusts/redstone"
     }
   },
   "pattern": [
@@ -22,6 +22,7 @@
     "iii"
   ],
   "result": {
-    "item": "laserio:laser_connector"
+    "count": 1,
+    "id": "laserio:laser_connector"
   }
 }

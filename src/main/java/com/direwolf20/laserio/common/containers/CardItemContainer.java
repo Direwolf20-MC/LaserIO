@@ -138,6 +138,9 @@ public class CardItemContainer extends AbstractContainerMenu {
                 }
             }
         }
+        //The below ensures that when you nake a change to the filter data ,it gets saved to the card's Data Components
+        if (!ItemStack.isSameItemSameComponents(handler.getStackInSlot(0), filterHandler.stack))
+            handler.setStackInSlot(0, filterHandler.stack);
         if (sourceContainer.equals(BlockPos.ZERO))
             return playerIn.getMainHandItem().equals(cardItem) || playerIn.getOffhandItem().equals(cardItem);
         return true;

@@ -1,7 +1,16 @@
 package com.direwolf20.laserio.common.network.handler;
 
+import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import com.direwolf20.laserio.common.network.data.NodeParticlesChemicalPayload;
+import com.direwolf20.laserio.integration.mekanism.client.chemicalparticle.ParticleDataChemical;
+import com.direwolf20.laserio.integration.mekanism.client.chemicalparticle.ParticleRenderDataChemical;
+import net.minecraft.client.Minecraft;
+import net.minecraft.core.Direction;
+import net.minecraft.core.GlobalPos;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
+
+import java.util.List;
 
 public class PacketNodeParticlesChemical {
     public static final PacketNodeParticlesChemical INSTANCE = new PacketNodeParticlesChemical();
@@ -11,8 +20,8 @@ public class PacketNodeParticlesChemical {
     }
 
     public void handle(final NodeParticlesChemicalPayload payload, final IPayloadContext context) {
-        context.enqueueWork(() -> { //TODO Mekanism
-            /*List<ParticleDataChemical> tempList = payload.particleList();
+        context.enqueueWork(() -> {
+            List<ParticleDataChemical> tempList = payload.particleList();
             for (ParticleDataChemical data : tempList) {
                 //Extract
                 if (data.fromData != null) {
@@ -32,7 +41,7 @@ public class PacketNodeParticlesChemical {
                         ((LaserNodeBE) toTE).addParticleDataChemical(new ParticleRenderDataChemical(data.chemicalStack, data.toData.node().pos(), data.toData.direction(), toPos.pos().relative(Direction.values()[data.toData.direction()]), data.toData.position()));
                     }
                 }
-            }*/
+            }
         });
     }
 }

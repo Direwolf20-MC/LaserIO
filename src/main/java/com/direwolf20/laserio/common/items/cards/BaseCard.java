@@ -3,6 +3,7 @@ package com.direwolf20.laserio.common.items.cards;
 import com.direwolf20.laserio.client.blockentityrenders.LaserNodeBERender;
 import com.direwolf20.laserio.common.containers.CardItemContainer;
 import com.direwolf20.laserio.common.containers.customhandler.CardItemHandler;
+import com.direwolf20.laserio.common.containers.customhandler.DireItemContainerContents;
 import com.direwolf20.laserio.setup.LaserIODataComponents;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -17,6 +18,7 @@ import net.minecraft.world.item.TooltipFlag;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -142,17 +144,14 @@ public class BaseCard extends Item {
         return cardItemHandler;
     }
 
-    /*public static CardItemHandler setInventory(ItemStack stack, CardItemHandler handler) {
-        stack.set(LaserIODataComponents.ITEMSTACK_HANDLER, handler);
+    public static CardItemHandler setInventory(ItemStack stack, CardItemHandler handler) {
+        List<ItemStack> stacklist = new ArrayList<>();
         for (int i = 0; i < handler.getSlots(); i++) {
-            if (!handler.getStackInSlot(i).isEmpty()) {
-                stack.getOrCreateTag().put("inv", handler.serializeNBT());
-                return handler;
-            }
+            stacklist.add(handler.getStackInSlot(i));
         }
-        stack.removeTagKey("inv");
+        stack.set(LaserIODataComponents.ITEMSTACK_HANDLER, DireItemContainerContents.fromItems(stacklist));
         return handler;
-    }*/
+    }
 
     public static byte setTransferMode(ItemStack card, byte mode) {
         if (mode == 0)

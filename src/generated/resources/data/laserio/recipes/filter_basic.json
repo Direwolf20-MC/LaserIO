@@ -4,7 +4,7 @@
   "group": "laserio",
   "key": {
     "g": {
-      "tag": "forge:glass_panes"
+      "tag": "c:glass_panes"
     },
     "i": {
       "item": "minecraft:iron_bars"
@@ -20,6 +20,6 @@
   ],
   "result": {
     "count": 4,
-    "item": "laserio:filter_basic"
+    "id": "laserio:filter_basic"
   }
 }

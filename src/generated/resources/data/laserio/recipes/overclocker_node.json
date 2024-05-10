@@ -4,13 +4,13 @@
   "group": "laserio",
   "key": {
     "g": {
-      "tag": "forge:gems/diamond"
+      "tag": "c:gems/diamond"
     },
     "p": {
       "item": "laserio:logic_chip"
     },
     "r": {
-      "tag": "forge:dusts/redstone"
+      "tag": "c:dusts/redstone"
     }
   },
   "pattern": [
@@ -19,6 +19,7 @@
     "ggg"
   ],
   "result": {
-    "item": "laserio:overclocker_node"
+    "count": 1,
+    "id": "laserio:overclocker_node"
   }
 }

@@ -26,11 +26,12 @@ public class PacketUpdateFilter {
             if (container == null)
                 return;
 
-            if (container instanceof CardItemContainer) {
-                ItemStack stack = container.slots.get(0).getItem();
+            if (container instanceof CardItemContainer cardItemContainer) {
+                ItemStack stack = cardItemContainer.handler.getStackInSlot(0);
                 if (stack.isEmpty()) return;
                 FilterBasic.setAllowList(stack, payload.allowList());
                 FilterBasic.setCompareNBT(stack, payload.compareNBT());
+                cardItemContainer.handler.setStackInSlot(0, stack);
             }
             if (container instanceof FilterBasicContainer) {
                 ItemStack stack = ((FilterBasicContainer) container).filterItem;

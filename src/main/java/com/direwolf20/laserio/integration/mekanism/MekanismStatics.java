@@ -75,7 +75,7 @@ public class MekanismStatics {
     }
 
     public static ChemicalStack<?> getFirstChemicalOnItemStack(ItemStack itemStack) {
-        if (itemStack.isEmpty()) return GasStack.EMPTY; //TODO Should I change this to something more generic?
+        if (itemStack.isEmpty()) return GasStack.EMPTY;
         for (ChemicalType chemicalType : ChemicalType.values()) {
             ChemicalStack<?> chemicalStack = getFirstChemicalOnItemStack(itemStack, chemicalType);
             if (!chemicalStack.isEmpty())

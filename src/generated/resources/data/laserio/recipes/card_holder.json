@@ -7,10 +7,10 @@
       "item": "laserio:logic_chip"
     },
     "c": {
-      "tag": "forge:chests"
+      "tag": "c:chests"
     },
     "i": {
-      "tag": "forge:ingots/iron"
+      "tag": "c:ingots/iron"
     }
   },
   "pattern": [
@@ -19,6 +19,7 @@
     "i i"
   ],
   "result": {
-    "item": "laserio:card_holder"
+    "count": 1,
+    "id": "laserio:card_holder"
   }
 }

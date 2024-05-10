@@ -7,7 +7,7 @@
       "item": "laserio:logic_chip"
     },
     "i": {
-      "tag": "forge:ingots/iron"
+      "tag": "c:ingots/iron"
     }
   },
   "pattern": [
@@ -16,6 +16,7 @@
     " i "
   ],
   "result": {
-    "item": "laserio:laser_wrench"
+    "count": 1,
+    "id": "laserio:laser_wrench"
   }
 }

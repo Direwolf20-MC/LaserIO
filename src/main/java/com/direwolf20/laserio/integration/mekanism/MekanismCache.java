@@ -1,11 +1,13 @@
 package com.direwolf20.laserio.integration.mekanism;
 
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
+import com.direwolf20.laserio.common.blocks.LaserNode;
 import com.direwolf20.laserio.common.events.ServerTickHandler;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.common.items.filters.FilterBasic;
 import com.direwolf20.laserio.common.items.filters.FilterCount;
 import com.direwolf20.laserio.common.items.filters.FilterTag;
+import com.direwolf20.laserio.integration.mekanism.client.chemicalparticle.ChemicalFlowParticleData;
 import com.direwolf20.laserio.integration.mekanism.client.chemicalparticle.ParticleDataChemical;
 import com.direwolf20.laserio.integration.mekanism.client.chemicalparticle.ParticleRenderDataChemical;
 import com.direwolf20.laserio.util.*;
@@ -16,6 +18,7 @@ import mekanism.api.chemical.ChemicalStack;
 import mekanism.api.chemical.ChemicalType;
 import mekanism.api.chemical.IChemicalHandler;
 import mekanism.api.chemical.merged.BoxedChemicalStack;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.GlobalPos;
@@ -24,12 +27,19 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Vector3f;
 
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
+
+import static com.direwolf20.laserio.client.blockentityrenders.LaserNodeBERender.offsets;
+import static com.direwolf20.laserio.util.MiscTools.findOffset;
 
 public class MekanismCache {
 
@@ -555,9 +565,9 @@ public class MekanismCache {
         ServerTickHandler.addToListFluid(new ParticleDataChemical(BoxedChemicalStack.box(chemicalStack), GlobalPos.of(sourceBE.getLevel().dimension(), sourceBE.getBlockPos()), (byte) fromDirection.ordinal(), GlobalPos.of(destinationBE.getLevel().dimension(), destinationBE.getBlockPos()), (byte) destinationDirection.ordinal(), (byte) extractPosition, (byte) insertPosition));
     }
 
-    public void drawParticlesClient(ParticleRenderDataChemical partData) { //TODO Mekanism-API
+    public void drawParticlesClient(ParticleRenderDataChemical partData) {
         //if (particlesDrawnThisTick > 64) return;
-        /*Level level = laserNodeBE.getLevel();
+        Level level = laserNodeBE.getLevel();
         ClientLevel clientLevel = (ClientLevel) level;
         BoxedChemicalStack chemicalStack = partData.chemicalStack;
         if (chemicalStack.isEmpty()) return; //I managed to crash without this, so added it :)
@@ -597,6 +607,6 @@ public class MekanismCache {
                 double d5 = this.random.nextGaussian() * (double) randomSpread;
                 clientLevel.addParticle(data, fromPos.getX() + extractOffset.x() + d1, fromPos.getY() + extractOffset.y() + d3, fromPos.getZ() + extractOffset.z() + d5, 0, 0, 0);
             }
-        }*/
+        }
     }
 }
