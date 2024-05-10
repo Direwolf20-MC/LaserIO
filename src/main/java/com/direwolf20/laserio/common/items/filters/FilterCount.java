@@ -57,8 +57,8 @@ public class FilterCount extends BaseFilter {
             stack.set(LaserIODataComponents.FILTER_COUNT_MBAMT, list);
         }
         List<Integer> slotAmts = stack.get(LaserIODataComponents.FILTER_COUNT_MBAMT);
-        int amtToPut = setMBAmount == 0 ? 0 : Math.max(1, (int) Math.floor(setMBAmount / 1000));
-        slotAmts.add(getSlot, amtToPut);
+        int amtToPut = setMBAmount % 1000;
+        slotAmts.set(getSlot, amtToPut);
 
         //Now check if they are all zeros, and remove if so
         boolean allZeros = true;
@@ -95,7 +95,7 @@ public class FilterCount extends BaseFilter {
         int mbCount = (int) Math.floor(mbAmt / 1000);
 
         //Todo: Clean up this mess!
-        slotAmts.add(getSlot, setCount);
+        slotAmts.set(getSlot, setCount);
         if (!(mbCount == setCount || mbAmt == 0)) {
             setSlotAmount(stack, getSlot, setCount * 1000 + (mbAmt % 1000));
         }

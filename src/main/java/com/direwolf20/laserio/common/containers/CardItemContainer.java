@@ -175,6 +175,8 @@ public class CardItemContainer extends AbstractContainerMenu {
                 if (!cardHolder.isEmpty()) { //Do the below set of logic if we have a card holder, otherwise just try to move to inventory
                     if (!this.moveItemStackTo(stack, SLOTS + FILTERSLOTS, SLOTS + FILTERSLOTS + CardHolderContainer.SLOTS, false)) { //Try the CardHolder First!
                         return ItemStack.EMPTY;
+                    } else {
+                        slot.setByPlayer(stack);
                     }
                     if (!this.moveItemStackTo(stack, SLOTS + FILTERSLOTS + CardHolderContainer.SLOTS, 36 + SLOTS + FILTERSLOTS + CardHolderContainer.SLOTS, true)) {
                         return ItemStack.EMPTY;
@@ -215,6 +217,7 @@ public class CardItemContainer extends AbstractContainerMenu {
             if (stack.isEmpty()) {
                 slot.set(ItemStack.EMPTY);
             } else {
+                slot.setByPlayer(stack);
                 slot.setChanged();
             }
 

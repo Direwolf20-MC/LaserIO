@@ -24,6 +24,7 @@ public class FilterCountHandler extends FilterBasicHandler {
     public void setStackInSlotSave(int slot, @Nonnull ItemStack incomingStack) {
         if (this.getStackInSlot(slot).isEmpty()) {
             this.setStackInSlot(slot, incomingStack);
+            FilterCount.setSlotCount(this.stack, slot, incomingStack.getCount());
             //FilterCount.setInventory(this.stack, this);
         } else {
             this.setStackInSlot(slot, incomingStack);

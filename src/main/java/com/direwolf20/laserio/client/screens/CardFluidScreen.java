@@ -135,13 +135,15 @@ public class CardFluidScreen extends CardItemScreen {
         }
         int amt = (btn == 0) ? 1 : -1;
         int filterSlot = hoveredSlot.index - CardItemContainer.SLOTS;
-        int currentMBAmt = FilterCount.getSlotAmount(filter, filterSlot);
+        int currentMBAmt = FilterCount.getSlotAmount(filter, filterSlot) + (FilterCount.getSlotCount(filter, filterSlot) * 1000);
         if (Screen.hasShiftDown()) amt *= 10;
         if (Screen.hasControlDown()) amt *= 100;
         int newMBAmt = currentMBAmt + amt;
         if (newMBAmt < 0) newMBAmt = 0;
         if (newMBAmt > 4096000) newMBAmt = 4096000;
-        PacketDistributor.sendToServer(new GhostSlotPayload(hoveredSlot.index, slotStack, slotStack.getCount(), newMBAmt));
+        int stackSize = newMBAmt / 1000;
+        FilterCount.setSlotAmount(slotStack, filterSlot, newMBAmt);
+        PacketDistributor.sendToServer(new GhostSlotPayload(hoveredSlot.index, slotStack, stackSize, newMBAmt));
         return true;
     }
 
