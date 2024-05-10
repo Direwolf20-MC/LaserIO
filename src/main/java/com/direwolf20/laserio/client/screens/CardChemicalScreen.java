@@ -130,7 +130,7 @@ public class CardChemicalScreen extends CardItemScreen {
         if (newMBAmt > 4096000) newMBAmt = 4096000;
         int stackSize = newMBAmt / 1000;
         FilterCount.setSlotAmount(slotStack, filterSlot, newMBAmt);
-        PacketDistributor.sendToServer(new GhostSlotPayload(hoveredSlot.index, slotStack, stackSize, newMBAmt));
+        PacketDistributor.sendToServer(new GhostSlotPayload(hoveredSlot.index, slotStack, 1, newMBAmt));
         return true;
     }
 

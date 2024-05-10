@@ -38,7 +38,7 @@ public class PacketGhostSlot {
                 if (mbAmt == 0 && (container instanceof CardFluidContainer || container instanceof CardChemicalContainer)) {
                     stack.setCount(0);
                 } else {
-                    stack.setCount(1);
+                    stack.setCount(payload.count());
                 }
                 handler.setStackInSlotSave(payload.slotNumber() - CardItemContainer.SLOTS, stack);
 
