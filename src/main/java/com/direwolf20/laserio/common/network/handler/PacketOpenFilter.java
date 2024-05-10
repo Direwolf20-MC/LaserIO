@@ -29,7 +29,6 @@ public class PacketOpenFilter {
 
     public static void doOpenFilter(ItemStack filterItem, ItemStack cardItem, ServerPlayer sender, BlockPos sourcePos) {
         if (filterItem.getItem() instanceof FilterBasic) {
-            FilterBasicHandler handler = FilterBasic.getInventory(filterItem);
             MenuProvider containerProvider = new MenuProvider() {
                 @Override
                 public Component getDisplayName() {
@@ -43,7 +42,7 @@ public class PacketOpenFilter {
 
                 @Override
                 public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player playerEntity) {
-                    return new FilterBasicContainer(windowId, playerInventory, sender, handler, sourcePos, filterItem, cardItem);
+                    return new FilterBasicContainer(windowId, playerInventory, sender, sourcePos, filterItem, cardItem);
                 }
             };
             sender.openMenu(containerProvider, (buf -> {

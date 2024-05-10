@@ -22,9 +22,8 @@ public class FilterBasic extends BaseFilter {
         ItemStack itemstack = player.getItemInHand(hand);
         if (level.isClientSide()) return new InteractionResultHolder<>(InteractionResult.PASS, itemstack);
 
-        FilterBasicHandler handler = getInventory(itemstack);
         player.openMenu(new SimpleMenuProvider(
-                (windowId, playerInventory, playerEntity) -> new FilterBasicContainer(windowId, playerInventory, player, handler, itemstack), Component.translatable("")), (buf -> {
+                (windowId, playerInventory, playerEntity) -> new FilterBasicContainer(windowId, playerInventory, player, itemstack), Component.translatable("")), (buf -> {
             ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, itemstack);
             ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, ItemStack.EMPTY);
         }));
