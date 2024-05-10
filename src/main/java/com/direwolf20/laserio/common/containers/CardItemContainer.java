@@ -277,8 +277,6 @@ public class CardItemContainer extends AbstractContainerMenu {
                         return ItemStack.EMPTY;
                     }
                 }
-                //if (!playerIn.level().isClientSide()) //TODO Validate still not needed?
-                //    BaseCard.setInventory(cardItem, handler);
                 if (filterHandler instanceof FilterCountHandler) {
                     ((FilterCountHandler) filterHandler).syncSlots();
                 }
@@ -359,7 +357,6 @@ public class CardItemContainer extends AbstractContainerMenu {
     public void removed(Player playerIn) {
         Level world = playerIn.level();
         if (!world.isClientSide) {
-            //BaseCard.setInventory(cardItem, handler); //TODO Validate still not needed?
             if (!sourceContainer.equals(BlockPos.ZERO)) {
                 BlockEntity blockEntity = world.getBlockEntity(sourceContainer);
                 if (blockEntity instanceof LaserNodeBE)

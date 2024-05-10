@@ -129,14 +129,7 @@ public class FilterCountContainer extends AbstractContainerMenu {
     @Override
     public void removed(Player playerIn) {
         Level world = playerIn.level();
-        if (!world.isClientSide) { //TODO Determine if still necessary
-            /*if (!sourceCard.isEmpty()) { //Workaround to the card not always saving...
-                ItemStack overclockerStack = BaseCard.getInventory(sourceCard).getStackInSlot(1);
-                CardItemHandler cardHandler = new CardItemHandler(CardItemContainer.SLOTS, sourceCard);
-                cardHandler.setStackInSlot(0, filterItem);
-                cardHandler.setStackInSlot(1, overclockerStack);
-                BaseCard.setInventory(sourceCard, cardHandler);
-            }*/
+        if (!world.isClientSide) {
             if (!sourceContainer.equals(BlockPos.ZERO)) {
                 BlockEntity blockEntity = world.getBlockEntity(sourceContainer);
                 if (blockEntity instanceof LaserNodeBE)

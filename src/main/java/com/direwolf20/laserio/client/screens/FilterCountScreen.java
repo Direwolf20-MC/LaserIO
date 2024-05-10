@@ -144,7 +144,7 @@ public class FilterCountScreen extends AbstractContainerScreen<FilterCountContai
         } else {
             ItemStack slotStack = hoveredSlot.getItem();
             if (slotStack.isEmpty()) return true;
-            if (btn == 2) { //Todo IMC Inventory Sorter so this works
+            if (btn == 2) {
                 slotStack.setCount(0);
                 PacketDistributor.sendToServer(new GhostSlotPayload(hoveredSlot.index, slotStack, slotStack.getCount(), -1));
                 return true;

@@ -22,9 +22,4 @@ public class CardHolderItemStackHandler extends DataComponentHandler {
     public int getSlotLimit(int slot) {
         return 64;
     }
-
-    /*@Override //TODO Still Needed?
-    protected int getStackLimit(int slot, @Nonnull ItemStack stack) {
-        return 64;
-    }*/
 }

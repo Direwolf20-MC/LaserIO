@@ -28,8 +28,6 @@ public class NodeSideCache {
     }
 
     public void invalidateEnergy() {
-        //TODO PORT - Is this needed now?
-        //laserEnergyStorage.invalidate();
         laserEnergyStorage = energyStorage;
     }
 

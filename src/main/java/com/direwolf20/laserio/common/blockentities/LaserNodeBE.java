@@ -2027,7 +2027,7 @@ public class LaserNodeBE extends BaseLaserBE {
         GlobalPos relativePos = new GlobalPos(be.level.dimension(), getRelativePos(pos.pos()));
         //Remove this position from all caches, so we can repopulate below
         inserterNodes.removeIf(p -> p.relativePos.equals(relativePos));
-        inserterCache.clear(); //TODO maybe just remove destinations that match this blockPos
+        inserterCache.clear();
         inserterCacheFluid.clear();
         if (mekanismCache != null) {
             mekanismCache.inserterCacheChemical.clear();

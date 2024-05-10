@@ -115,7 +115,7 @@ public class CardChemicalScreen extends CardItemScreen {
         if (!MekanismStatics.doesItemStackHoldChemicals(slotStack))
             return super.filterSlot(btn);
         if (slotStack.isEmpty()) return true;
-        if (btn == GLFW.GLFW_MOUSE_BUTTON_MIDDLE) { //Todo IMC Inventory Sorter so this works
+        if (btn == GLFW.GLFW_MOUSE_BUTTON_MIDDLE) {
             slotStack.setCount(0);
             PacketDistributor.sendToServer(new GhostSlotPayload(hoveredSlot.index, slotStack, slotStack.getCount(), 0));
             return true;
@@ -128,7 +128,6 @@ public class CardChemicalScreen extends CardItemScreen {
         int newMBAmt = currentMBAmt + amt;
         if (newMBAmt < 0) newMBAmt = 0;
         if (newMBAmt > 4096000) newMBAmt = 4096000;
-        int stackSize = newMBAmt / 1000;
         FilterCount.setSlotAmount(slotStack, filterSlot, newMBAmt);
         PacketDistributor.sendToServer(new GhostSlotPayload(hoveredSlot.index, slotStack, 1, newMBAmt));
         return true;

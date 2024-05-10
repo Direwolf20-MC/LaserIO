@@ -128,7 +128,7 @@ public class CardFluidScreen extends CardItemScreen {
         if (!FilterCount.doesItemStackHoldFluids(slotStack))
             return super.filterSlot(btn);
         if (slotStack.isEmpty()) return true;
-        if (btn == 2) { //Todo IMC Inventory Sorter so this works
+        if (btn == 2) {
             slotStack.setCount(0);
             PacketDistributor.sendToServer(new GhostSlotPayload(hoveredSlot.index, slotStack, slotStack.getCount(), 0));
             return true;
@@ -141,7 +141,6 @@ public class CardFluidScreen extends CardItemScreen {
         int newMBAmt = currentMBAmt + amt;
         if (newMBAmt < 0) newMBAmt = 0;
         if (newMBAmt > 4096000) newMBAmt = 4096000;
-        int stackSize = newMBAmt / 1000;
         FilterCount.setSlotAmount(slotStack, filterSlot, newMBAmt);
         PacketDistributor.sendToServer(new GhostSlotPayload(hoveredSlot.index, slotStack, 1, newMBAmt));
         return true;

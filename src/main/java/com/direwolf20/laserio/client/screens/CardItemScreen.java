@@ -713,7 +713,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
     public boolean filterSlot(int btn) {
         ItemStack slotStack = hoveredSlot.getItem();
         if (slotStack.isEmpty()) return true;
-        if (btn == 2) { //Todo IMC Inventory Sorter so this works
+        if (btn == 2) {
             slotStack.setCount(0);
             PacketDistributor.sendToServer(new GhostSlotPayload(hoveredSlot.index, slotStack, slotStack.getCount(), -1));
             return true;
@@ -804,20 +804,6 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
                     PacketDistributor.sendToServer(new GhostSlotPayload(hoveredSlot.index, stack, stack.getCount(), -1));
                 } else {
                     filterSlot(btn);
-                    /*ItemStack slotStack = hoveredSlot.getItem();
-                    if (slotStack.isEmpty()) return true;
-                    if (btn == 2) { //Todo IMC Inventory Sorter so this works
-                        slotStack.setCount(0);
-                        PacketHandler.sendToServer(new PacketGhostSlot(hoveredSlot.index, slotStack, slotStack.getCount()));
-                        return true;
-                    }
-                    int amt = (btn == 0) ? 1 : -1;
-                    if (Screen.hasShiftDown()) amt *= 10;
-                    if (Screen.hasControlDown()) amt *= 64;
-                    if (amt + slotStack.getCount() > 4096) amt = 4096 - slotStack.getCount();
-                    //slotStack.grow(amt);
-
-                    PacketHandler.sendToServer(new PacketGhostSlot(hoveredSlot.index, slotStack, slotStack.getCount() + amt));*/
                 }
             }
             return true;

@@ -30,7 +30,7 @@ public class TransferResult {
     }
 
     public void addRemainingStack(ItemStack stack) {
-        this.remainingStack = stack; //TODO Copy?
+        this.remainingStack = stack;
     }
 
     public int getTotalItemCounts() {
