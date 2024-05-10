@@ -1,5 +1,6 @@
 package com.direwolf20.laserio.integration.mekanism;
 
+import com.direwolf20.laserio.common.containers.customhandler.DataComponentHandler;
 import com.direwolf20.laserio.common.containers.customhandler.FilterCountHandler;
 import com.direwolf20.laserio.common.items.filters.FilterBasic;
 import com.direwolf20.laserio.common.items.filters.FilterCount;
@@ -10,19 +11,14 @@ import it.unimi.dsi.fastutil.objects.Reference2BooleanMap;
 import it.unimi.dsi.fastutil.objects.Reference2BooleanOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Reference2IntMap;
 import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
-import java.util.EnumMap;
-import java.util.function.Predicate;
 import mekanism.api.chemical.Chemical;
 import mekanism.api.chemical.ChemicalStack;
 import mekanism.api.chemical.ChemicalType;
 import mekanism.api.chemical.IChemicalHandler;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.items.ItemStackHandler;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
+import java.util.function.Predicate;
 
 public class MekanismCardCache {
     private final BaseCardCache baseCardCache;
@@ -46,7 +42,7 @@ public class MekanismCardCache {
     public Map<ChemicalType, List<ChemicalStack<?>>> getFilteredChemicals() {
         //Note: We can use an enum map instead of having to use a linked map because the iteration order is already the same as what we want
         Map<ChemicalType, List<ChemicalStack<?>>> filteredChemicalsMap = new EnumMap<>(ChemicalType.class);
-        ItemStackHandler filterSlotHandler;
+        DataComponentHandler filterSlotHandler;
         ItemStack filterCard = baseCardCache.filterCard;
         if (filterCard.getItem() instanceof FilterBasic)
             filterSlotHandler = FilterBasic.getInventory(filterCard);
@@ -77,7 +73,7 @@ public class MekanismCardCache {
     public boolean isStackValidForCard(ChemicalStack<?> testStack) {
         ItemStack filterCard = baseCardCache.filterCard;
         if (filterCard.isEmpty()) return true; //If theres no filter in the card
-        return filterCacheChemical.computeIfAbsent(testStack.getType(), (Chemical<?> key) -> {
+        return filterCacheChemical.computeIfAbsent(testStack.getChemical(), (Chemical<?> key) -> {
             boolean matches;
             if (filterCard.getItem() instanceof FilterTag) {
                 matches = key.getTags().map(tagKey -> tagKey.location().toString().toLowerCase(Locale.ROOT)).anyMatch(baseCardCache.filterTags::contains);
@@ -86,7 +82,7 @@ public class MekanismCardCache {
                 if (filterCard.getItem() instanceof FilterMod) {
                     validityPredicate = stack -> stack.getTypeRegistryName().getNamespace().equals(key.getRegistryName().getNamespace());
                 } else {
-                    validityPredicate = stack -> key == stack.getType();
+                    validityPredicate = stack -> key == stack.getChemical();
                 }
                 matches = filteredChemicals.getOrDefault(ChemicalType.getTypeFor(key), List.of()).stream().anyMatch(validityPredicate);
             }
@@ -102,14 +98,14 @@ public class MekanismCardCache {
             return -1;
         }
         //If we've already tested this, get it from the cache
-        return filterCountsChemical.computeIfAbsent(testStack.getType(), (Chemical<?> key) -> {
+        return filterCountsChemical.computeIfAbsent(testStack.getChemical(), (Chemical<?> key) -> {
             ChemicalType keyType = ChemicalType.getTypeFor(key);
             FilterCountHandler filterSlotHandler = FilterCount.getInventory(filterCard);
             for (int i = 0; i < filterSlotHandler.getSlots(); i++) { //Gotta iterate the card's NBT because of the way we store amounts (in the MBAmt tag)
                 ItemStack itemStack = filterSlotHandler.getStackInSlot(i);
                 if (!itemStack.isEmpty()) {
                     ChemicalStack<?> chemicalStack = MekanismStatics.getFirstChemicalOnItemStack(itemStack, keyType);
-                    if (!chemicalStack.isEmpty() && key == chemicalStack.getType()) {
+                    if (!chemicalStack.isEmpty() && key == chemicalStack.getChemical()) {
                         return FilterCount.getSlotAmount(filterCard, i);
                     }
                 }

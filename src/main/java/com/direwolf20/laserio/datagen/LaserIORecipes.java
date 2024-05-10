@@ -5,19 +5,23 @@ import com.direwolf20.laserio.setup.Registration;
 import mekanism.common.tags.MekanismTags;
 import net.minecraft.advancements.critereon.InventoryChangeTrigger;
 import net.minecraft.advancements.critereon.ItemPredicate;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.*;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.conditions.ModLoadedCondition;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.concurrent.CompletableFuture;
+
 
 public class LaserIORecipes extends RecipeProvider {
 
-    public LaserIORecipes(PackOutput packOutput) {
-        super(packOutput);
+    public LaserIORecipes(PackOutput packOutput, CompletableFuture<HolderLookup.Provider> lookupProvider) {
+        super(packOutput, lookupProvider);
     }
 
     @Override
@@ -30,7 +34,7 @@ public class LaserIORecipes extends RecipeProvider {
                 .pattern("cqc")
                 .pattern("rgr")
                 .define('r', Tags.Items.DUSTS_REDSTONE)
-                .define('q', Tags.Items.STORAGE_BLOCKS_QUARTZ)
+                .define('q', Blocks.QUARTZ_BLOCK)
                 .define('g', Tags.Items.NUGGETS_GOLD)
                 .define('c', Items.CLAY_BALL)
                 .group("laserio")
@@ -46,7 +50,7 @@ public class LaserIORecipes extends RecipeProvider {
                 .pattern(" g ")
                 .pattern("rbr")
                 .pattern("iii")
-                .define('g', Tags.Items.GLASS)
+                .define('g', Tags.Items.GLASS_BLOCKS)
                 .define('i', Tags.Items.INGOTS_IRON)
                 .define('r', Tags.Items.DUSTS_REDSTONE)
                 .define('b', Registration.Logic_Chip.get())

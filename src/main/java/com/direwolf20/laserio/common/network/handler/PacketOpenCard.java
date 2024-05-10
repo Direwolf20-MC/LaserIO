@@ -17,9 +17,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
-
-import java.util.Optional;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import static com.direwolf20.laserio.common.blocks.LaserNode.SCREEN_LASERNODE;
 import static com.direwolf20.laserio.common.items.cards.BaseCard.getInventory;
@@ -31,13 +29,9 @@ public class PacketOpenCard {
         return INSTANCE;
     }
 
-    public void handle(final OpenCardPayload payload, final PlayPayloadContext context) {
-        context.workHandler().submitAsync(() -> {
-            Optional<Player> senderOptional = context.player();
-            if (senderOptional.isEmpty())
-                return;
-            ServerPlayer sender = (ServerPlayer) senderOptional.get();
-
+    public void handle(final OpenCardPayload payload, final IPayloadContext context) {
+        context.enqueueWork(() -> {
+            Player sender = context.player();
 
             AbstractContainerMenu container = sender.containerMenu;
             if (container == null)
@@ -69,13 +63,13 @@ public class PacketOpenCard {
                         }
                     };
                     sender.openMenu(containerProvider, (buf -> {
-                        buf.writeItem(itemStack);
+                        ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, itemStack);
                         buf.writeByte(side);
                     }));
                 } else {
                     ItemStack filterItem = handler.getStackInSlot(0);
                     if (filterItem.getItem() instanceof BaseFilter)
-                        PacketOpenFilter.doOpenFilter(filterItem, itemStack, sender, payload.sourcePos());
+                        PacketOpenFilter.doOpenFilter(filterItem, itemStack, (ServerPlayer) sender, payload.sourcePos());
                 }
             } else if (itemStack.getItem() instanceof CardFluid) {
                 if (!payload.hasShiftDown()) {
@@ -96,13 +90,13 @@ public class PacketOpenCard {
                         }
                     };
                     sender.openMenu(containerProvider, (buf -> {
-                        buf.writeItem(itemStack);
+                        ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, itemStack);
                         buf.writeByte(side);
                     }));
                 } else {
                     ItemStack filterItem = handler.getStackInSlot(0);
                     if (filterItem.getItem() instanceof BaseFilter)
-                        PacketOpenFilter.doOpenFilter(filterItem, itemStack, sender, payload.sourcePos());
+                        PacketOpenFilter.doOpenFilter(filterItem, itemStack, (ServerPlayer) sender, payload.sourcePos());
                 }
             } else if (itemStack.getItem() instanceof CardEnergy) {
                 MenuProvider containerProvider = new MenuProvider() {
@@ -122,7 +116,7 @@ public class PacketOpenCard {
                     }
                 };
                 sender.openMenu(containerProvider, (buf -> {
-                    buf.writeItem(itemStack);
+                    ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, itemStack);
                     buf.writeByte(side);
                 }));
             } else if (itemStack.getItem() instanceof CardRedstone) {
@@ -143,7 +137,7 @@ public class PacketOpenCard {
                     }
                 };
                 sender.openMenu(containerProvider, (buf -> {
-                    buf.writeItem(itemStack);
+                    ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, itemStack);
                     buf.writeByte(side);
                 }));
             } else if (itemStack.getItem() instanceof CardChemical) {
@@ -165,13 +159,13 @@ public class PacketOpenCard {
                         }
                     };
                     sender.openMenu(containerProvider, (buf -> {
-                        buf.writeItem(itemStack);
+                        ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, itemStack);
                         buf.writeByte(side);
                     }));
                 } else {
                     ItemStack filterItem = handler.getStackInSlot(0);
                     if (filterItem.getItem() instanceof BaseFilter)
-                        PacketOpenFilter.doOpenFilter(filterItem, itemStack, sender, payload.sourcePos());
+                        PacketOpenFilter.doOpenFilter(filterItem, itemStack, (ServerPlayer) sender, payload.sourcePos());
                 }
             }
         });

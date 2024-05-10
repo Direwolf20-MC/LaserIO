@@ -35,7 +35,7 @@ public class GhostFilterBasic implements IGhostIngredientHandler<FilterBasicScre
                     @Override
                     public void accept(I ingredient) {
                         slot.set((ItemStack) ingredient);
-                        PacketDistributor.SERVER.noArg().send(new GhostSlotPayload(slot.index, (ItemStack) ingredient, ((ItemStack) ingredient).getCount(), -1));
+                        PacketDistributor.sendToServer(new GhostSlotPayload(slot.index, (ItemStack) ingredient, ((ItemStack) ingredient).getCount(), -1));
                         //RS.NETWORK_HANDLER.sendToServer(new SetFilterSlotMessage(slot.index, (ItemStack) ingredient));
                     }
                 });

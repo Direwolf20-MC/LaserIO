@@ -21,7 +21,7 @@ public class LaserConnectorAdvBERender extends BaseLaserBERender<LaserConnectorA
     @Override
     public void render(LaserConnectorAdvBE blockentity, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightsIn, int combinedOverlayIn) {
         long gameTime = blockentity.getLevel().getGameTime();
-        if (blockentity.getPartnerDimBlockPos() != null) {
+        if (blockentity.getPartnerGlobalPos() != null) {
             Matrix4f matrix4f = matrixStackIn.last().pose();
             this.renderCube(blockentity, matrix4f, bufferIn.getBuffer(this.renderType()), gameTime, partialTicks);
             DelayedRenderer.add(blockentity);

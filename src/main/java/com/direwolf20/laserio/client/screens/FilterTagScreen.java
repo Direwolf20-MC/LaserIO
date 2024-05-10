@@ -334,7 +334,7 @@ public class FilterTagScreen extends AbstractContainerScreen<FilterTagContainer>
 
     @Override
     public void onClose() {
-        PacketDistributor.SERVER.noArg().send(new UpdateFilterTagPayload(isAllowList, tags));
+        PacketDistributor.sendToServer(new UpdateFilterTagPayload(isAllowList, tags));
         super.onClose();
     }
 
@@ -408,7 +408,7 @@ public class FilterTagScreen extends AbstractContainerScreen<FilterTagContainer>
             ItemStack stack = this.menu.getCarried();// getMinecraft().player.inventoryMenu.getCarried();
             stack = stack.copy().split(hoveredSlot.getMaxStackSize()); // Limit to slot limit
             hoveredSlot.set(stack); // Temporarily update the client for continuity purposes
-            PacketDistributor.SERVER.noArg().send(new GhostSlotPayload(hoveredSlot.index, stack, stack.getCount(), -1));
+            PacketDistributor.sendToServer(new GhostSlotPayload(hoveredSlot.index, stack, stack.getCount(), -1));
             return true;
         }
         return super.mouseClicked(x, y, btn);

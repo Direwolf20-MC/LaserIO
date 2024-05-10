@@ -10,7 +10,7 @@ import com.direwolf20.laserio.common.items.filters.BaseFilter;
 import com.direwolf20.laserio.common.items.upgrades.OverclockerCard;
 import com.direwolf20.laserio.common.items.upgrades.OverclockerNode;
 import com.direwolf20.laserio.setup.Registration;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -42,8 +42,8 @@ public class LaserNodeContainer extends AbstractContainerMenu {
     public LaserNodeBE tile;
     public byte side;
 
-    public LaserNodeContainer(int windowId, Inventory playerInventory, Player player, FriendlyByteBuf extraData) {
-        this((LaserNodeBE) playerInventory.player.level().getBlockEntity(extraData.readBlockPos()), windowId, extraData.readByte(), playerInventory, player, new LaserNodeItemHandler(SLOTS), ContainerLevelAccess.NULL, extraData.readItem());
+    public LaserNodeContainer(int windowId, Inventory playerInventory, Player player, RegistryFriendlyByteBuf extraData) {
+        this((LaserNodeBE) playerInventory.player.level().getBlockEntity(extraData.readBlockPos()), windowId, extraData.readByte(), playerInventory, player, new LaserNodeItemHandler(SLOTS), ContainerLevelAccess.NULL, ItemStack.OPTIONAL_STREAM_CODEC.decode(extraData));
     }
 
     public LaserNodeContainer(@Nullable LaserNodeBE tile, int windowId, byte side, Inventory playerInventory, Player player, LaserNodeItemHandler handler, ContainerLevelAccess containerLevelAccess, ItemStack cardHolder) {
@@ -74,7 +74,7 @@ public class LaserNodeContainer extends AbstractContainerMenu {
                 ItemStack carriedItem = getCarried();
                 ItemStack stackInSlot = slots.get(slotId).getItem();
                 if (stackInSlot.getMaxStackSize() == 1 && stackInSlot.getCount() > 1) {
-                    if (!carriedItem.isEmpty() && !stackInSlot.isEmpty() && !ItemStack.isSameItemSameTags(carriedItem, stackInSlot))
+                    if (!carriedItem.isEmpty() && !stackInSlot.isEmpty() && !ItemStack.isSameItemSameComponents(carriedItem, stackInSlot))
                         return;
                 }
             } else {
@@ -123,7 +123,7 @@ public class LaserNodeContainer extends AbstractContainerMenu {
 
             Slot slot = this.slots.get(i);
             ItemStack itemstack = slot.getItem();
-            if (!itemstack.isEmpty() && ItemStack.isSameItemSameTags(itemStack, itemstack)) {
+            if (!itemstack.isEmpty() && ItemStack.isSameItemSameComponents(itemStack, itemstack)) {
                 int j = itemstack.getCount() + itemStack.getCount();
                 int maxSize = Math.min(slot.getMaxStackSize(), slot.getMaxStackSize(itemStack));
                 if (j <= maxSize) {

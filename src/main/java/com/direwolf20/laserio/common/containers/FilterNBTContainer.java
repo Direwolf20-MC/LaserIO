@@ -1,13 +1,11 @@
 package com.direwolf20.laserio.common.containers;
 
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
-import com.direwolf20.laserio.common.containers.customhandler.CardItemHandler;
 import com.direwolf20.laserio.common.containers.customhandler.FilterBasicHandler;
 import com.direwolf20.laserio.common.containers.customslot.FilterBasicSlot;
-import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.setup.Registration;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -30,10 +28,10 @@ public class FilterNBTContainer extends AbstractContainerMenu {
     private IItemHandler playerInventory;
     public BlockPos sourceContainer = BlockPos.ZERO;
 
-    public FilterNBTContainer(int windowId, Inventory playerInventory, Player player, FriendlyByteBuf extraData) {
+    public FilterNBTContainer(int windowId, Inventory playerInventory, Player player, RegistryFriendlyByteBuf extraData) {
         this(windowId, playerInventory, player, new FilterBasicHandler(SLOTS, ItemStack.EMPTY), ItemStack.EMPTY);
-        filterItem = extraData.readItem();
-        this.sourceCard = extraData.readItem();
+        filterItem = ItemStack.OPTIONAL_STREAM_CODEC.decode(extraData);
+        this.sourceCard = ItemStack.OPTIONAL_STREAM_CODEC.decode(extraData);
     }
 
     public FilterNBTContainer(int windowId, Inventory playerInventory, Player player, FilterBasicHandler handler, ItemStack filterItem) {
@@ -124,13 +122,13 @@ public class FilterNBTContainer extends AbstractContainerMenu {
         Level world = playerIn.level();
         if (!world.isClientSide) {
             handler.setStackInSlot(0, ItemStack.EMPTY); //Clear the current slot
-            if (!sourceCard.isEmpty()) { //Workaround to the card not always saving...
+            /*if (!sourceCard.isEmpty()) { //Workaround to the card not always saving... //TODO Still needed?
                 ItemStack overclockerStack = BaseCard.getInventory(sourceCard).getStackInSlot(1);
                 CardItemHandler cardHandler = new CardItemHandler(CardItemContainer.SLOTS, sourceCard);
                 cardHandler.setStackInSlot(0, filterItem);
                 cardHandler.setStackInSlot(1, overclockerStack);
                 BaseCard.setInventory(sourceCard, cardHandler);
-            }
+            }*/
             if (!sourceContainer.equals(BlockPos.ZERO)) {
                 BlockEntity blockEntity = world.getBlockEntity(sourceContainer);
                 if (blockEntity instanceof LaserNodeBE)

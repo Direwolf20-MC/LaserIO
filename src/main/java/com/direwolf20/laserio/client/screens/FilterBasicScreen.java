@@ -19,7 +19,6 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.ArrayList;
@@ -117,7 +116,7 @@ public class FilterBasicScreen extends AbstractContainerScreen<FilterBasicContai
 
     @Override
     public void onClose() {
-        PacketDistributor.SERVER.noArg().send(new UpdateFilterPayload(isAllowList, isCompareNBT));
+        PacketDistributor.sendToServer(new UpdateFilterPayload(isAllowList, isCompareNBT));
         super.onClose();
     }
 
@@ -141,9 +140,9 @@ public class FilterBasicScreen extends AbstractContainerScreen<FilterBasicContai
         // By splitting the stack we can get air easily :) perfect removal basically
         ItemStack stack = this.menu.getCarried();// getMinecraft().player.inventoryMenu.getCarried();
         stack = stack.copy().split(hoveredSlot.getMaxStackSize()); // Limit to slot limit
-        if (ItemHandlerHelper.canItemStacksStack(stack, container.filterItem)) return true;
+        if (ItemStack.isSameItemSameComponents(stack, container.filterItem)) return true;
         hoveredSlot.set(stack); // Temporarily update the client for continuity purposes
-        PacketDistributor.SERVER.noArg().send(new GhostSlotPayload(hoveredSlot.index, stack, stack.getCount(), -1));
+        PacketDistributor.sendToServer(new GhostSlotPayload(hoveredSlot.index, stack, stack.getCount(), -1));
 
         return true;
     }

@@ -93,7 +93,7 @@ public class CardFluidScreen extends CardItemScreen {
                             break;
                     }
                     if (!fluidStack.isEmpty()) {
-                        pGuiGraphics.renderTooltip(this.font, fluidStack.getDisplayName(), pX, pY);
+                        pGuiGraphics.renderTooltip(this.font, fluidStack.getHoverName(), pX, pY);
                         return;
                     }
                 }
@@ -130,7 +130,7 @@ public class CardFluidScreen extends CardItemScreen {
         if (slotStack.isEmpty()) return true;
         if (btn == 2) { //Todo IMC Inventory Sorter so this works
             slotStack.setCount(0);
-            PacketDistributor.SERVER.noArg().send(new GhostSlotPayload(hoveredSlot.index, slotStack, slotStack.getCount(), 0));
+            PacketDistributor.sendToServer(new GhostSlotPayload(hoveredSlot.index, slotStack, slotStack.getCount(), 0));
             return true;
         }
         int amt = (btn == 0) ? 1 : -1;
@@ -141,7 +141,7 @@ public class CardFluidScreen extends CardItemScreen {
         int newMBAmt = currentMBAmt + amt;
         if (newMBAmt < 0) newMBAmt = 0;
         if (newMBAmt > 4096000) newMBAmt = 4096000;
-        PacketDistributor.SERVER.noArg().send(new GhostSlotPayload(hoveredSlot.index, slotStack, slotStack.getCount(), newMBAmt));
+        PacketDistributor.sendToServer(new GhostSlotPayload(hoveredSlot.index, slotStack, slotStack.getCount(), newMBAmt));
         return true;
     }
 
@@ -158,7 +158,7 @@ public class CardFluidScreen extends CardItemScreen {
     @Override
     public void openNode() {
         saveSettings();
-        PacketDistributor.SERVER.noArg().send(new OpenNodePayload(container.sourceContainer, container.direction));
+        PacketDistributor.sendToServer(new OpenNodePayload(container.sourceContainer, container.direction));
         Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
     }
 
@@ -170,7 +170,7 @@ public class CardFluidScreen extends CardItemScreen {
     @Override
     public void saveSettings() {
         if (showFilter)
-            PacketDistributor.SERVER.noArg().send(new UpdateFilterPayload(isAllowList == 1, isCompareNBT == 1));
-        PacketDistributor.SERVER.noArg().send(new UpdateCardPayload(currentMode, currentChannel, currentFluidExtractAmt, currentPriority, currentSneaky, (short) currentTicks, currentExact, currentRegulate, (byte) currentRoundRobin, 0, 0, currentRedstoneMode, currentRedstoneChannel, currentAndMode));
+            PacketDistributor.sendToServer(new UpdateFilterPayload(isAllowList == 1, isCompareNBT == 1));
+        PacketDistributor.sendToServer(new UpdateCardPayload(currentMode, currentChannel, currentFluidExtractAmt, currentPriority, currentSneaky, (short) currentTicks, currentExact, currentRegulate, (byte) currentRoundRobin, 0, 0, currentRedstoneMode, currentRedstoneChannel, currentAndMode));
     }
 }

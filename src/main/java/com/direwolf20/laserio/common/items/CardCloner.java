@@ -2,22 +2,21 @@ package com.direwolf20.laserio.common.items;
 
 import com.direwolf20.laserio.client.blockentityrenders.LaserNodeBERender;
 import com.direwolf20.laserio.common.containers.CardItemContainer;
+import com.direwolf20.laserio.common.containers.customhandler.CardItemHandler;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
+import com.direwolf20.laserio.setup.LaserIODataComponents;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.items.ItemStackHandler;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
 import static com.direwolf20.laserio.util.MiscTools.tooltipMaker;
@@ -31,12 +30,10 @@ public class CardCloner extends Item {
 
     @OnlyIn(Dist.CLIENT)
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level world, List<Component> tooltip, TooltipFlag flag) {
-        super.appendHoverText(stack, world, tooltip, flag);
-
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flagIn) {
+        super.appendHoverText(stack, context, tooltip, flagIn);
         Minecraft mc = Minecraft.getInstance();
-
-        if (world == null || mc.player == null) {
+        if (mc.level == null || mc.player == null) {
             return;
         }
 
@@ -65,9 +62,8 @@ public class CardCloner extends Item {
             if (cardType.equals(""))
                 return;
 
-            CompoundTag compoundTag = stack.getOrCreateTag().getCompound("settings");
-            int mode = !compoundTag.contains("mode") ? 0 : compoundTag.getByte("mode");
-            ;
+            int mode = stack.getOrDefault(LaserIODataComponents.CARD_TRANSFER_MODE, 0).intValue();
+
             String currentMode = BaseCard.TransferMode.values()[mode].toString();
             toWrite = tooltipMaker("laserio.tooltip.item.card.mode", ChatFormatting.GRAY.getColor());
             int modeColor = ChatFormatting.GRAY.getColor();
@@ -83,8 +79,8 @@ public class CardCloner extends Item {
             tooltip.add(toWrite);
 
             toWrite = tooltipMaker("laserio.tooltip.item.card.channel", ChatFormatting.GRAY.getColor());
-            int channel = !compoundTag.contains("channel") ? 0 : compoundTag.getByte("channel");
-            ;
+            int channel = stack.getOrDefault(LaserIODataComponents.CARD_CHANNEL, 0).intValue();
+
             toWrite.append(tooltipMaker(String.valueOf(channel), LaserNodeBERender.colors[channel].getRGB()));
             tooltip.add(toWrite);
 
@@ -107,44 +103,30 @@ public class CardCloner extends Item {
     }
 
     public static void setItemType(ItemStack stack, String itemType) {
-        stack.getOrCreateTag().putString("itemType", itemType);
+        stack.set(LaserIODataComponents.CARD_CLONER_ITEM_TYPE, itemType);
     }
 
     public static String getItemType(ItemStack stack) {
-        return stack.getOrCreateTag().getString("itemType");
+        return stack.getOrDefault(LaserIODataComponents.CARD_CLONER_ITEM_TYPE, "");
     }
 
-    public static void saveSettings(ItemStack stack, CompoundTag tag) {
-        stack.getOrCreateTag().put("settings", tag);
+    public static void saveSettings(ItemStack stack, DataComponentPatch dataComponentPatch) {
+        stack.applyComponents(dataComponentPatch);
     }
 
-    public static CompoundTag getSettings(ItemStack stack) {
-        return stack.getOrCreateTag().getCompound("settings");
-    }
-
-    public static String getFilterType(ItemStack stack) {
-        CompoundTag compoundTag = getSettings(stack);
-        ItemStackHandler itemStackHandler = new ItemStackHandler(CardItemContainer.SLOTS);
-        itemStackHandler.deserializeNBT(compoundTag.getCompound("inv"));
-        ItemStack filterStack = itemStackHandler.getStackInSlot(0);
-        if (filterStack.isEmpty()) return "";
-
-        return filterStack.getItem().toString();
+    public static DataComponentPatch getSettings(ItemStack stack) {
+        return stack.getComponentsPatch();
     }
 
     public static ItemStack getFilter(ItemStack stack) {
-        CompoundTag compoundTag = getSettings(stack);
-        ItemStackHandler itemStackHandler = new ItemStackHandler(CardItemContainer.SLOTS);
-        itemStackHandler.deserializeNBT(compoundTag.getCompound("inv"));
-        ItemStack filterStack = itemStackHandler.getStackInSlot(0);
+        CardItemHandler cardItemHandler = new CardItemHandler(CardItemContainer.SLOTS, stack);
+        ItemStack filterStack = cardItemHandler.getStackInSlot(0);
         return filterStack;
     }
 
     public static int getOverclockCount(ItemStack stack) {
-        CompoundTag compoundTag = getSettings(stack);
-        ItemStackHandler itemStackHandler = new ItemStackHandler(CardItemContainer.SLOTS);
-        itemStackHandler.deserializeNBT(compoundTag.getCompound("inv"));
-        ItemStack overclockStack = itemStackHandler.getStackInSlot(1);
+        CardItemHandler cardItemHandler = new CardItemHandler(CardItemContainer.SLOTS, stack);
+        ItemStack overclockStack = cardItemHandler.getStackInSlot(1);
         if (overclockStack.isEmpty()) return 0;
 
         return overclockStack.getCount();
@@ -152,14 +134,12 @@ public class CardCloner extends Item {
 
     public static ItemStack getOverclocker(ItemStack stack) {
         String cardType = getItemType(stack);
-        CompoundTag compoundTag = getSettings(stack);
-        ItemStackHandler itemStackHandler = new ItemStackHandler(CardItemContainer.SLOTS);
-        itemStackHandler.deserializeNBT(compoundTag.getCompound("inv"));
+        CardItemHandler cardItemHandler = new CardItemHandler(CardItemContainer.SLOTS, stack);
         ItemStack overclockStack;
         if (cardType.equals("card_energy"))
-            overclockStack = itemStackHandler.getStackInSlot(0);
+            overclockStack = cardItemHandler.getStackInSlot(0);
         else
-            overclockStack = itemStackHandler.getStackInSlot(1);
+            overclockStack = cardItemHandler.getStackInSlot(1);
         return overclockStack;
     }
 }

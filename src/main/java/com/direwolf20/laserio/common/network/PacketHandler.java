@@ -4,37 +4,34 @@ import com.direwolf20.laserio.common.LaserIO;
 import com.direwolf20.laserio.common.network.data.*;
 import com.direwolf20.laserio.common.network.handler.*;
 import com.direwolf20.laserio.integration.mekanism.MekanismIntegration;
-import net.neoforged.neoforge.network.event.RegisterPayloadHandlerEvent;
-import net.neoforged.neoforge.network.registration.IPayloadRegistrar;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
 
 public class PacketHandler {
-    public static void registerNetworking(final RegisterPayloadHandlerEvent event) {
-        final IPayloadRegistrar registrar = event.registrar(LaserIO.MODID);
+    public static void registerNetworking(final RegisterPayloadHandlersEvent event) {
+        final PayloadRegistrar registrar = event.registrar(LaserIO.MODID);
 
         // Server side
-        registrar.play(UpdateCardPayload.ID, UpdateCardPayload::new, handler -> handler.server(PacketUpdateCard.get()::handle));
-        registrar.play(UpdateRedstoneCardPayload.ID, UpdateRedstoneCardPayload::new, handler -> handler.server(PacketUpdateRedstoneCard.get()::handle));
-        registrar.play(UpdateFilterPayload.ID, UpdateFilterPayload::new, handler -> handler.server(PacketUpdateFilter.get()::handle));
-        registrar.play(OpenCardPayload.ID, OpenCardPayload::new, handler -> handler.server(PacketOpenCard.get()::handle));
-        registrar.play(OpenFilterPayload.ID, OpenFilterPayload::new, handler -> handler.server(PacketOpenFilter.get()::handle));
-        registrar.play(GhostSlotPayload.ID, GhostSlotPayload::new, handler -> handler.server(PacketGhostSlot.get()::handle));
-        registrar.play(OpenNodePayload.ID, OpenNodePayload::new, handler -> handler.server(PacketOpenNode.get()::handle));
-        registrar.play(UpdateFilterTagPayload.ID, UpdateFilterTagPayload::new, handler -> handler.server(PacketUpdateFilterTag.get()::handle));
-        registrar.play(ChangeColorPayload.ID, ChangeColorPayload::new, handler -> handler.server(PacketChangeColor.get()::handle));
-        registrar.play(CopyPasteCardPayload.ID, CopyPasteCardPayload::new, handler -> handler.server(PacketCopyPasteCard.get()::handle));
-        //HANDLER.registerMessage(id++, PacketExtractUpgrade.class,     PacketExtractUpgrade::encode,       PacketExtractUpgrade::decode,       PacketExtractUpgrade.Handler::handle);
+        registrar.playToServer(UpdateCardPayload.TYPE, UpdateCardPayload.STREAM_CODEC, PacketUpdateCard.get()::handle);
+        registrar.playToServer(UpdateRedstoneCardPayload.TYPE, UpdateRedstoneCardPayload.STREAM_CODEC, PacketUpdateRedstoneCard.get()::handle);
+        registrar.playToServer(UpdateFilterPayload.TYPE, UpdateFilterPayload.STREAM_CODEC, PacketUpdateFilter.get()::handle);
+        registrar.playToServer(OpenCardPayload.TYPE, OpenCardPayload.STREAM_CODEC, PacketOpenCard.get()::handle);
+        registrar.playToServer(OpenFilterPayload.TYPE, OpenFilterPayload.STREAM_CODEC, PacketOpenFilter.get()::handle);
+        registrar.playToServer(GhostSlotPayload.TYPE, GhostSlotPayload.STREAM_CODEC, PacketGhostSlot.get()::handle);
+        registrar.playToServer(OpenNodePayload.TYPE, OpenNodePayload.STREAM_CODEC, PacketOpenNode.get()::handle);
+        registrar.playToServer(UpdateFilterTagPayload.TYPE, UpdateFilterTagPayload.STREAM_CODEC, PacketUpdateFilterTag.get()::handle);
+        registrar.playToServer(ChangeColorPayload.TYPE, ChangeColorPayload.STREAM_CODEC, PacketChangeColor.get()::handle);
+        registrar.playToServer(CopyPasteCardPayload.TYPE, CopyPasteCardPayload.STREAM_CODEC, PacketCopyPasteCard.get()::handle);
 
         //Client Side
-        registrar.play(NodeParticlesPayload.ID, NodeParticlesPayload::new, handler -> handler.client(PacketNodeParticles.get()::handle));
-        registrar.play(NodeParticlesFluidPayload.ID, NodeParticlesFluidPayload::new, handler -> handler.client(PacketNodeParticlesFluid.get()::handle));
-        //HANDLER.registerMessage(id++, PacketDurabilitySync.class,     PacketDurabilitySync::encode,       PacketDurabilitySync::decode,       PacketDurabilitySync.Handler::handle);
-
+        registrar.playToClient(NodeParticlesPayload.TYPE, NodeParticlesPayload.STREAM_CODEC, PacketNodeParticles.get()::handle);
+        registrar.playToClient(NodeParticlesFluidPayload.TYPE, NodeParticlesFluidPayload.STREAM_CODEC, PacketNodeParticlesFluid.get()::handle);
 
         //Mekanism Packets Only
         if (MekanismIntegration.isLoaded()) {
-            //Client Side
-            registrar.play(NodeParticlesChemicalPayload.ID, NodeParticlesChemicalPayload::new, handler -> handler.client(PacketNodeParticlesChemical.get()::handle));
+            //Client Side //TODO Mekanism
+            //registrar.playToClient(NodeParticlesChemicalPayload.TYPE, NodeParticlesChemicalPayload.STREAM_CODEC, PacketNodeParticlesChemical.get()::handle);
         }
     }
 }

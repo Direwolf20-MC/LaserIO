@@ -1,18 +1,6 @@
 package com.direwolf20.laserio.util;
 
-import com.direwolf20.laserio.common.items.cards.BaseCard;
-import com.direwolf20.laserio.common.items.filters.BaseFilter;
-import com.direwolf20.laserio.common.items.upgrades.OverclockerCard;
-import com.direwolf20.laserio.common.items.upgrades.OverclockerNode;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.common.util.INBTSerializable;
-import net.neoforged.neoforge.items.ItemStackHandler;
-import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nonnull;
-
-public class ItemStackHandlerProvider implements INBTSerializable<CompoundTag> {
+/*public class ItemStackHandlerProvider implements INBTSerializable<CompoundTag> {
     private final ItemStackHandler holder;
 
     public ItemStackHandlerProvider(int nSlots) {
@@ -40,7 +28,7 @@ public class ItemStackHandlerProvider implements INBTSerializable<CompoundTag> {
         return ForgeCapabilities.ITEM_HANDLER.orEmpty(cap, holder.cast());
     }*/
 
-    @Override
+    /*@Override
     public CompoundTag serializeNBT() {
         return holder.serializeNBT();
     }
@@ -49,4 +37,4 @@ public class ItemStackHandlerProvider implements INBTSerializable<CompoundTag> {
     public void deserializeNBT(CompoundTag nbt) {
         holder.deserializeNBT(nbt);
     }
-}
+}*/

@@ -108,7 +108,7 @@ public class LaserGuiGraphicsChemical extends GuiGraphics {
             return false;
         }
         ChemicalStack<?> chemicalStack = getFirstChemicalOnItemStack(pStack);
-        return !chemicalStack.isEmpty() && Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(chemicalStack.getType().getIcon()) != null;
+        return !chemicalStack.isEmpty() && Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(chemicalStack.getChemical().getIcon()) != null;
     }
 
     @Override
@@ -118,7 +118,7 @@ public class LaserGuiGraphicsChemical extends GuiGraphics {
             return;
         }
         ChemicalStack<?> chemicalStack = getFirstChemicalOnItemStack(pStack); //We checked above to ensure this isn't empty
-        TextureAtlasSprite chemicalSprite = Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(chemicalStack.getType().getIcon());
+        TextureAtlasSprite chemicalSprite = Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(chemicalStack.getChemical().getIcon());
         int chemicalColor = chemicalStack.getChemicalColorRepresentation();
 
         float red = (float) (chemicalColor >> 16 & 255) / 255.0F;

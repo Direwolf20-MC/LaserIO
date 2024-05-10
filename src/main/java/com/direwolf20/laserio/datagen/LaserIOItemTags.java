@@ -19,7 +19,7 @@ public class LaserIOItemTags extends ItemTagsProvider {
     public static final TagKey<Item> TOOLS_WRENCH = forgeTag("tools/wrench");
 
     private static TagKey<Item> forgeTag(String name) {
-        return ItemTags.create(new ResourceLocation("forge", name));
+        return ItemTags.create(new ResourceLocation("c", name));
     }
 
     public LaserIOItemTags(PackOutput packOutput, CompletableFuture<HolderLookup.Provider> lookupProvider, BlockTagsProvider blockTags, ExistingFileHelper helper) {

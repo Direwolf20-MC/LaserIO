@@ -12,9 +12,7 @@ import com.direwolf20.laserio.setup.Config;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
-
-import java.util.Optional;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public class PacketUpdateCard {
     public static final PacketUpdateCard INSTANCE = new PacketUpdateCard();
@@ -23,12 +21,9 @@ public class PacketUpdateCard {
         return INSTANCE;
     }
 
-    public void handle(final UpdateCardPayload payload, final PlayPayloadContext context) {
-        context.workHandler().submitAsync(() -> {
-            Optional<Player> senderOptional = context.player();
-            if (senderOptional.isEmpty())
-                return;
-            Player sender = senderOptional.get();
+    public void handle(final UpdateCardPayload payload, final IPayloadContext context) {
+        context.enqueueWork(() -> {
+            Player sender = context.player();
 
             AbstractContainerMenu container = sender.containerMenu;
             if (container == null)

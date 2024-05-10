@@ -41,7 +41,7 @@ public class TransferResult {
         results.addAll(newResult.results);
         if (remainingStack.isEmpty())
             remainingStack = newResult.remainingStack;
-        else if (ItemHandlerHelper.canItemStacksStack(remainingStack, newResult.remainingStack))
+        else if (ItemStack.isSameItemSameComponents(remainingStack, newResult.remainingStack))
             remainingStack.grow(newResult.remainingStack.getCount());
     }
 

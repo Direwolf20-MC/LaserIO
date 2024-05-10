@@ -1,6 +1,7 @@
 package com.direwolf20.laserio.util;
 
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
+import com.direwolf20.laserio.common.containers.customhandler.DataComponentHandler;
 import com.direwolf20.laserio.common.containers.customhandler.FilterCountHandler;
 import com.direwolf20.laserio.common.items.cards.*;
 import com.direwolf20.laserio.common.items.filters.*;
@@ -16,7 +17,6 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidUtil;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
-import net.neoforged.neoforge.items.ItemStackHandler;
 
 import java.util.*;
 
@@ -159,7 +159,7 @@ public class BaseCardCache {
 
     public List<ItemStack> getFilteredItems() {
         List<ItemStack> filteredItems = new ArrayList<>();
-        ItemStackHandler filterSlotHandler;
+        DataComponentHandler filterSlotHandler;
         if (filterCard.getItem() instanceof FilterBasic)
             filterSlotHandler = FilterBasic.getInventory(filterCard);
         else
@@ -174,7 +174,7 @@ public class BaseCardCache {
 
     public List<FluidStack> getFilteredFluids() {
         List<FluidStack> filteredFluids = new ArrayList<>();
-        ItemStackHandler filterSlotHandler;
+        DataComponentHandler filterSlotHandler;
         if (filterCard.getItem() instanceof FilterBasic)
             filterSlotHandler = FilterBasic.getInventory(filterCard);
         else
@@ -230,14 +230,14 @@ public class BaseCardCache {
                     return isAllowList;
                 }
             }
-        } else if (filterCard.getItem() instanceof FilterNBT) {
+        } /*else if (filterCard.getItem() instanceof FilterNBT) { //TODO Review FilterNBT Filter
             for (String tag : testStack.getOrCreateTag().getAllKeys()) {
                 if (filterNBTs.contains(tag)) {
                     filterCache.put(key, isAllowList);
                     return isAllowList;
                 }
             }
-        } else {
+        }*/ else {
             for (ItemStack stack : filteredItems) {
                 if (key.equals(new ItemStackKey(stack, isCompareNBT))) {
                     filterCache.put(key, isAllowList);

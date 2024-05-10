@@ -22,9 +22,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
-
-import java.util.Optional;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import static com.direwolf20.laserio.common.blocks.LaserNode.SCREEN_LASERNODE;
 import static com.direwolf20.laserio.common.blocks.LaserNode.findCardHolders;
@@ -36,12 +34,9 @@ public class PacketOpenNode {
         return INSTANCE;
     }
 
-    public void handle(final OpenNodePayload payload, final PlayPayloadContext context) {
-        context.workHandler().submitAsync(() -> {
-            Optional<Player> senderOptional = context.player();
-            if (senderOptional.isEmpty())
-                return;
-            ServerPlayer sender = (ServerPlayer) senderOptional.get();
+    public void handle(final OpenNodePayload payload, final IPayloadContext context) {
+        context.enqueueWork(() -> {
+            Player sender = context.player();
 
             AbstractContainerMenu container = sender.containerMenu;
             if (container == null)
@@ -91,12 +86,12 @@ public class PacketOpenNode {
             sender.openMenu(containerProvider, (buf -> {
                 buf.writeBlockPos(pos);
                 buf.writeByte(payload.side());
-                buf.writeItem(cardHolder);
+                ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, cardHolder);
             }));
 
             if (!heldStack.isEmpty()) {
                 sender.containerMenu.setCarried(heldStack);
-                sender.connection.send(new ClientboundContainerSetSlotPacket(-1, -1, -1, heldStack));
+                ((ServerPlayer) sender).connection.send(new ClientboundContainerSetSlotPacket(-1, -1, -1, heldStack));
             }
         });
     }

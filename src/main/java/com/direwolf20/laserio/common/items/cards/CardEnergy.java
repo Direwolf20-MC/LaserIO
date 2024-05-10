@@ -2,9 +2,8 @@ package com.direwolf20.laserio.common.items.cards;
 
 import com.direwolf20.laserio.common.containers.CardEnergyContainer;
 import com.direwolf20.laserio.setup.Config;
-import net.minecraft.nbt.CompoundTag;
+import com.direwolf20.laserio.setup.LaserIODataComponents;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
@@ -24,90 +23,60 @@ public class CardEnergy extends BaseCard {
         ItemStack itemstack = player.getItemInHand(hand);
         if (level.isClientSide()) return new InteractionResultHolder<>(InteractionResult.PASS, itemstack);
 
-        ((ServerPlayer) player).openMenu(new SimpleMenuProvider(
+        player.openMenu(new SimpleMenuProvider(
                 (windowId, playerInventory, playerEntity) -> new CardEnergyContainer(windowId, playerInventory, player, itemstack), Component.translatable("")), (buf -> {
-            buf.writeItem(itemstack);
+            ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, itemstack);
             buf.writeByte(-1);
         }));
 
-        //System.out.println(itemstack.getItem().getRegistryName()+""+itemstack.getTag());
         return new InteractionResultHolder<>(InteractionResult.PASS, itemstack);
     }
 
-    /*public static CardItemHandler getInventory(ItemStack stack) {
-        CompoundTag compound = stack.getTag();
-        if (compound == null || !compound.contains("inv")) return new CardItemHandler(CardEnergyContainer.SLOTS, stack);
-        CardItemHandler handler = new CardItemHandler(CardEnergyContainer.SLOTS, stack);
-        handler.deserializeNBT(compound.getCompound("inv"));
-        if (handler.getSlots() < CardEnergyContainer.SLOTS)
-            handler.reSize(CardEnergyContainer.SLOTS);
-        return handler;
-    }
-
-    public static CardItemHandler setInventory(ItemStack stack, CardItemHandler handler) {
-        for (int i = 0; i < handler.getSlots(); i++) {
-            if (!handler.getStackInSlot(i).isEmpty()) {
-                stack.getOrCreateTag().put("inv", handler.serializeNBT());
-                return handler;
-            }
-        }
-        stack.removeTagKey("inv");
-        return handler;
-    }*/
-
     public static int setEnergyExtractAmt(ItemStack card, int energyextractamt) {
         if (energyextractamt == Config.MAX_FE_TICK.get())
-            card.removeTagKey("energyextractamt");
+            card.remove(LaserIODataComponents.ENERGY_CARD_EXTRACT_AMT);
         else
-            card.getOrCreateTag().putInt("energyextractamt", energyextractamt);
+            card.set(LaserIODataComponents.ENERGY_CARD_EXTRACT_AMT, energyextractamt);
         return energyextractamt;
     }
 
     public static int getEnergyExtractAmt(ItemStack card) {
-        CompoundTag compound = card.getTag();
-        if (compound == null || !compound.contains("energyextractamt")) return Config.MAX_FE_TICK.get();
-        return compound.getInt("energyextractamt");
+        return card.getOrDefault(LaserIODataComponents.ENERGY_CARD_EXTRACT_AMT, Config.MAX_FE_TICK.get());
     }
 
-    public static int setExtractSpeed(ItemStack card, int itemextractspeed) {
-        if (itemextractspeed == 1)
-            card.removeTagKey("itemextractspeed");
+    public static int setExtractSpeed(ItemStack card, int energyextractspeed) {
+        if (energyextractspeed == 1)
+            card.remove(LaserIODataComponents.ENERGY_CARD_EXTRACT_SPEED);
         else
-            card.getOrCreateTag().putInt("itemextractspeed", itemextractspeed);
-        return itemextractspeed;
+            card.set(LaserIODataComponents.ENERGY_CARD_EXTRACT_SPEED, energyextractspeed);
+        return energyextractspeed;
     }
 
     public static int getExtractSpeed(ItemStack card) {
-        CompoundTag compound = card.getTag();
-        if (compound == null || !compound.contains("itemextractspeed")) return 1;
-        return compound.getInt("itemextractspeed");
+        return card.getOrDefault(LaserIODataComponents.ENERGY_CARD_EXTRACT_SPEED, 1);
     }
 
     public static int setInsertLimitPercent(ItemStack card, int limitpercent) {
         if (limitpercent == 100)
-            card.removeTagKey("limitinsertpercent");
+            card.remove(LaserIODataComponents.ENERGY_CARD_INSERT_LIMIT);
         else
-            card.getOrCreateTag().putInt("limitinsertpercent", limitpercent);
+            card.set(LaserIODataComponents.ENERGY_CARD_INSERT_LIMIT, limitpercent);
         return limitpercent;
     }
 
     public static int getInsertLimitPercent(ItemStack card) {
-        CompoundTag compound = card.getTag();
-        if (compound == null || !compound.contains("limitinsertpercent")) return 100;
-        return compound.getInt("limitinsertpercent");
+        return card.getOrDefault(LaserIODataComponents.ENERGY_CARD_INSERT_LIMIT, 100);
     }
 
     public static int setExtractLimitPercent(ItemStack card, int limitextractpercent) {
         if (limitextractpercent == 0)
-            card.removeTagKey("limitextractpercent");
+            card.remove(LaserIODataComponents.ENERGY_CARD_EXTRACT_LIMIT);
         else
-            card.getOrCreateTag().putInt("limitextractpercent", limitextractpercent);
+            card.set(LaserIODataComponents.ENERGY_CARD_EXTRACT_LIMIT, limitextractpercent);
         return limitextractpercent;
     }
 
     public static int getExtractLimitPercent(ItemStack card) {
-        CompoundTag compound = card.getTag();
-        if (compound == null || !compound.contains("limitextractpercent")) return 0;
-        return compound.getInt("limitextractpercent");
+        return card.getOrDefault(LaserIODataComponents.ENERGY_CARD_EXTRACT_LIMIT, 0);
     }
 }

@@ -1,11 +1,9 @@
 package com.direwolf20.laserio.common.items.filters;
 
+import com.direwolf20.laserio.common.containers.FilterBasicContainer;
 import com.direwolf20.laserio.common.containers.FilterTagContainer;
 import com.direwolf20.laserio.common.containers.customhandler.FilterBasicHandler;
-import com.direwolf20.laserio.util.MiscTools;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
+import com.direwolf20.laserio.setup.LaserIODataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -34,26 +32,24 @@ public class FilterTag extends BaseFilter {
         FilterBasicHandler handler = getInventory(itemstack);
         ((ServerPlayer) player).openMenu(new SimpleMenuProvider(
                 (windowId, playerInventory, playerEntity) -> new FilterTagContainer(windowId, playerInventory, player, handler, itemstack), Component.translatable("")), (buf -> {
-            buf.writeItem(itemstack);
-            buf.writeItem(ItemStack.EMPTY);
+            ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, itemstack);
+            ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, ItemStack.EMPTY);
         }));
 
         return new InteractionResultHolder<>(InteractionResult.PASS, itemstack);
     }
 
     public static FilterBasicHandler getInventory(ItemStack stack) {
-        CompoundTag compound = stack.getOrCreateTag();
-        FilterBasicHandler handler = new FilterBasicHandler(FilterTagContainer.SLOTS, stack);
-        handler.deserializeNBT(compound.getCompound("inv"));
-        return !compound.contains("inv") ? setInventory(stack, new FilterBasicHandler(FilterTagContainer.SLOTS, stack)) : handler;
-    }
-
-    public static FilterBasicHandler setInventory(ItemStack stack, FilterBasicHandler handler) {
-        stack.getOrCreateTag().put("inv", handler.serializeNBT());
+        FilterBasicHandler handler = new FilterBasicHandler(FilterBasicContainer.SLOTS, stack);
         return handler;
     }
 
-    public static void addTag(ItemStack card, String tag) {
+    /*public static FilterBasicHandler setInventory(ItemStack stack, FilterBasicHandler handler) {
+        stack.getOrCreateTag().put("inv", handler.serializeNBT());
+        return handler;
+    }*/
+
+    /*public static void addTag(ItemStack card, String tag) {
         List<String> tags = getTags(card);
         if (!tags.contains(tag)) {
             tags.add(tag);
@@ -75,27 +71,15 @@ public class FilterTag extends BaseFilter {
         List<String> tags = new ArrayList();
         CompoundTag compound = card.getOrCreateTag();
         compound.put("tags", MiscTools.stringListToNBT(tags));
-    }
+    }*/
+
+
 
     public static void setTags(ItemStack card, List<String> tagsIn) {
-        CompoundTag compound = card.getOrCreateTag();
-        compound.put("tags", MiscTools.stringListToNBT(tagsIn));
-    }
-
-    public static void setTags(ItemStack card, CompoundTag tagsTag) {
-        CompoundTag compound = card.getOrCreateTag();
-        compound.put("tags", tagsTag.getList("tags", Tag.TAG_COMPOUND));
+        card.set(LaserIODataComponents.FILTER_TAG_TAGS, tagsIn);
     }
 
     public static List<String> getTags(ItemStack card) {
-        List<String> tags = new ArrayList();
-        CompoundTag compound = card.getOrCreateTag();
-        if (compound.contains("tags")) {
-            ListTag listNBT = compound.getList("tags", Tag.TAG_COMPOUND);
-            tags = new ArrayList<>(MiscTools.NBTToStringList(listNBT));
-        } else {
-            compound.put("tags", MiscTools.stringListToNBT(tags));
-        }
-        return tags;
+        return card.getOrDefault(LaserIODataComponents.FILTER_TAG_TAGS, new ArrayList<>());
     }
 }

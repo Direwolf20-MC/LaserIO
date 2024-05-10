@@ -4,13 +4,14 @@ import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.GlobalPos;
 import net.minecraft.world.item.ItemStack;
 
 public class InserterCardCache extends BaseCardCache {
-    public final DimBlockPos relativePos;
+    public final GlobalPos relativePos;
     public final short priority;
 
-    public InserterCardCache(DimBlockPos relativePos, Direction direction, ItemStack cardItem, LaserNodeBE be, int cardSlot) {
+    public InserterCardCache(GlobalPos relativePos, Direction direction, ItemStack cardItem, LaserNodeBE be, int cardSlot) {
         super(direction, cardItem, cardSlot, be);
         this.relativePos = relativePos;
         this.priority = BaseCard.getPriority(cardItem);
@@ -21,6 +22,6 @@ public class InserterCardCache extends BaseCardCache {
     }
 
     public double getDistance() {
-        return relativePos.blockPos.distSqr(BlockPos.ZERO);
+        return relativePos.pos().distSqr(BlockPos.ZERO);
     }
 }

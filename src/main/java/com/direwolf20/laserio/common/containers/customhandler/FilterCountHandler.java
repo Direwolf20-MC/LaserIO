@@ -12,11 +12,6 @@ public class FilterCountHandler extends FilterBasicHandler {
     }
 
     @Override
-    protected void onContentsChanged(int slot) {
-
-    }
-
-    @Override
     public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
         return super.isItemValid(slot, stack);
     }
@@ -29,12 +24,12 @@ public class FilterCountHandler extends FilterBasicHandler {
     public void setStackInSlotSave(int slot, @Nonnull ItemStack incomingStack) {
         if (this.getStackInSlot(slot).isEmpty()) {
             this.setStackInSlot(slot, incomingStack);
-            FilterCount.setInventory(this.stack, this);
+            //FilterCount.setInventory(this.stack, this);
         } else {
             this.setStackInSlot(slot, incomingStack);
             FilterCount.setSlotCount(this.stack, slot, incomingStack.getCount());
             //if (stack.isEmpty())
-            FilterCount.setInventory(this.stack, this);
+            //FilterCount.setInventory(this.stack, this);
         }
     }
 
@@ -48,6 +43,6 @@ public class FilterCountHandler extends FilterBasicHandler {
             if (FilterCount.getSlotAmount(this.stack, i) == 0)
                 FilterCount.setSlotCount(this.stack, i, this.getStackInSlot(i).getCount());
         }
-        FilterCount.setInventory(this.stack, this);
+        //FilterCount.setInventory(this.stack, this);
     }
 }

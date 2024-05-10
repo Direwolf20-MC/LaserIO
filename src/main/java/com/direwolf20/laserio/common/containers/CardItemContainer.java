@@ -15,7 +15,7 @@ import com.direwolf20.laserio.common.items.filters.FilterBasic;
 import com.direwolf20.laserio.common.items.filters.FilterCount;
 import com.direwolf20.laserio.setup.Registration;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -27,7 +27,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
 import net.neoforged.neoforge.items.SlotItemHandler;
 import net.neoforged.neoforge.items.wrapper.InvWrapper;
 
@@ -54,8 +53,8 @@ public class CardItemContainer extends AbstractContainerMenu {
         super(pMenuType, pContainerId);
     }
 
-    public CardItemContainer(int windowId, Inventory playerInventory, Player player, FriendlyByteBuf extraData) {
-        this(windowId, playerInventory, player, extraData.readItem());
+    public CardItemContainer(int windowId, Inventory playerInventory, Player player, RegistryFriendlyByteBuf extraData) {
+        this(windowId, playerInventory, player, ItemStack.OPTIONAL_STREAM_CODEC.decode(extraData));
         this.direction = extraData.readByte();
         cardHolder = findCardHolders(player);
     }
@@ -97,7 +96,7 @@ public class CardItemContainer extends AbstractContainerMenu {
                 ItemStack carriedItem = getCarried();
                 ItemStack stackInSlot = slots.get(slotId).getItem();
                 if (stackInSlot.getMaxStackSize() == 1 && stackInSlot.getCount() > 1) {
-                    if (!carriedItem.isEmpty() && !stackInSlot.isEmpty() && !ItemStack.isSameItemSameTags(carriedItem, stackInSlot))
+                    if (!carriedItem.isEmpty() && !stackInSlot.isEmpty() && !ItemStack.isSameItemSameComponents(carriedItem, stackInSlot))
                         return;
                 }
             } else {
@@ -167,7 +166,7 @@ public class CardItemContainer extends AbstractContainerMenu {
         if (slot != null && slot.hasItem()) {
             ItemStack stack = slot.getItem();
             itemstack = stack.copy();
-            if (ItemHandlerHelper.canItemStacksStack(itemstack, cardItem)) return ItemStack.EMPTY;
+            if (ItemStack.isSameItemSameComponents(itemstack, cardItem)) return ItemStack.EMPTY;
             //If its one of the 3 slots at the top try to move it into your inventory
             if (index < SLOTS) {
                 if (!cardHolder.isEmpty()) { //Do the below set of logic if we have a card holder, otherwise just try to move to inventory
@@ -196,15 +195,15 @@ public class CardItemContainer extends AbstractContainerMenu {
                     if (!(slots.get(0).getItem().getItem() instanceof FilterCount))
                         currentStack.setCount(1);
                     for (int i = SLOTS; i < SLOTS + FILTERSLOTS; i++) { //Prevents the same item from going in there more than once.
-                        if (ItemHandlerHelper.canItemStacksStack(this.slots.get(i).getItem(), currentStack)) //Don't limit tags
+                        if (ItemStack.isSameItemSameComponents(this.slots.get(i).getItem(), currentStack)) //Don't limit tags
                             return ItemStack.EMPTY;
                     }
                     if (!this.moveItemStackTo(currentStack, SLOTS, SLOTS + FILTERSLOTS, false)) {
                         return ItemStack.EMPTY;
                     }
                 }
-                if (!playerIn.level().isClientSide())
-                    BaseCard.setInventory(cardItem, handler);
+                //if (!playerIn.level().isClientSide()) //TODO Validate still not needed?
+                //    BaseCard.setInventory(cardItem, handler);
                 if (filterHandler instanceof FilterCountHandler) {
                     ((FilterCountHandler) filterHandler).syncSlots();
                 }
@@ -284,7 +283,7 @@ public class CardItemContainer extends AbstractContainerMenu {
     public void removed(Player playerIn) {
         Level world = playerIn.level();
         if (!world.isClientSide) {
-            BaseCard.setInventory(cardItem, handler);
+            //BaseCard.setInventory(cardItem, handler); //TODO Validate still not needed?
             if (!sourceContainer.equals(BlockPos.ZERO)) {
                 BlockEntity blockEntity = world.getBlockEntity(sourceContainer);
                 if (blockEntity instanceof LaserNodeBE)

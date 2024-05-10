@@ -191,12 +191,12 @@ public class CardRedstoneScreen extends AbstractContainerScreen<CardRedstoneCont
     }
 
     public void saveSettings() {
-        PacketDistributor.SERVER.noArg().send(new UpdateRedstoneCardPayload(currentMode, currentRedstoneChannel, currentStrong));
+        PacketDistributor.sendToServer(new UpdateRedstoneCardPayload(currentMode, currentRedstoneChannel, currentStrong));
     }
 
     public void openNode() {
         saveSettings();
-        PacketDistributor.SERVER.noArg().send(new OpenNodePayload(container.sourceContainer, container.direction));
+        PacketDistributor.sendToServer(new OpenNodePayload(container.sourceContainer, container.direction));
         Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
     }
 

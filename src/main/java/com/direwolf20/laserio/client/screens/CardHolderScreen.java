@@ -47,7 +47,7 @@ public class CardHolderScreen extends AbstractContainerScreen<CardHolderContaine
     public boolean mouseClicked(double x, double y, int btn) {
         if (btn == 1 && hoveredSlot instanceof CardHolderSlot) { //Right click
             int slot = hoveredSlot.getSlotIndex();
-            PacketDistributor.SERVER.noArg().send(new OpenCardPayload(slot, new BlockPos(0, -9999, 0), false));
+            PacketDistributor.sendToServer(new OpenCardPayload(slot, new BlockPos(0, -9999, 0), false));
             return true;
         }
         return super.mouseClicked(x, y, btn);

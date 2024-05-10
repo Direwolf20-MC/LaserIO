@@ -1,8 +1,5 @@
 package com.direwolf20.laserio.integration.mekanism;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
-import java.util.stream.Stream;
 import mekanism.api.chemical.Chemical;
 import mekanism.api.chemical.ChemicalStack;
 import mekanism.api.chemical.ChemicalType;
@@ -22,6 +19,10 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.capabilities.BlockCapability;
 import net.neoforged.neoforge.capabilities.ItemCapability;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.LinkedHashSet;
+import java.util.Set;
+import java.util.stream.Stream;
 
 public class MekanismStatics {
     public static BlockCapability<IGasHandler, @Nullable Direction> GAS_CAPABILITY = BlockCapability.createSided(new ResourceLocation("mekanism", "gas_handler"), IGasHandler.class);
@@ -66,7 +67,7 @@ public class MekanismStatics {
                 for (int tank = 0; tank < handler.getTanks(); tank++) {
                     ChemicalStack<?> chemicalStack = handler.getChemicalInTank(tank);
                     if (!chemicalStack.isEmpty())
-                        chemicalList.add(chemicalStack.getType());
+                        chemicalList.add(chemicalStack.getChemical());
                 }
             }
         }

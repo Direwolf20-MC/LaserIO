@@ -37,11 +37,11 @@ public class GhostFilterCard implements IGhostIngredientHandler<CardItemScreen> 
                     public void accept(I ingredient) {
                         ItemStack itemStack = (ItemStack) ingredient;
                         slot.set(itemStack.copy());
-                        PacketDistributor.SERVER.noArg().send(new GhostSlotPayload(slot.index, itemStack, itemStack.getCount(), -1));
+                        PacketDistributor.sendToServer(new GhostSlotPayload(slot.index, itemStack, itemStack.getCount(), -1));
                         //RS.NETWORK_HANDLER.sendToServer(new SetFilterSlotMessage(slot.index, (ItemStack) ingredient));
                     }
                 });
-            } else if (ingredient instanceof FluidStack && (slot instanceof FilterBasicSlot)) {
+            } else if (ingredient.getIngredient() instanceof FluidStack && (slot instanceof FilterBasicSlot)) {
                 targets.add(new Target<I>() {
                     @Override
                     public Rect2i getArea() {
@@ -52,7 +52,7 @@ public class GhostFilterCard implements IGhostIngredientHandler<CardItemScreen> 
                     public void accept(I ingredient) {
                         ItemStack itemStack = new ItemStack(((FluidStack) ingredient).getFluid().getBucket(), 1);
                         slot.set(itemStack.copy());
-                        PacketDistributor.SERVER.noArg().send(new GhostSlotPayload(slot.index, itemStack, itemStack.getCount(), -1));
+                        PacketDistributor.sendToServer(new GhostSlotPayload(slot.index, itemStack, itemStack.getCount(), -1));
                         //RS.NETWORK_HANDLER.sendToServer(new SetFluidFilterSlotMessage(slot.index, StackUtils.copy((FluidStack) ingredient, FluidAttributes.BUCKET_VOLUME)));
                     }
                 });

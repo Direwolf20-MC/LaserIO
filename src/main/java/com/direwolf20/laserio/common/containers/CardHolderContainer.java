@@ -3,7 +3,7 @@ package com.direwolf20.laserio.common.containers;
 import com.direwolf20.laserio.common.containers.customslot.CardHolderSlot;
 import com.direwolf20.laserio.setup.Registration;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -24,8 +24,8 @@ public class CardHolderContainer extends AbstractContainerMenu {
     public BlockPos sourceContainer = BlockPos.ZERO;
     public IItemHandler iItemHandler;
 
-    public CardHolderContainer(int windowId, Inventory playerInventory, Player player, FriendlyByteBuf extraData) {
-        this(windowId, playerInventory, player, extraData.readItem(), new ItemStackHandler(SLOTS));
+    public CardHolderContainer(int windowId, Inventory playerInventory, Player player, RegistryFriendlyByteBuf extraData) {
+        this(windowId, playerInventory, player, ItemStack.OPTIONAL_STREAM_CODEC.decode(extraData), new ItemStackHandler(SLOTS));
     }
 
     public CardHolderContainer(int windowId, Inventory playerInventory, Player player, ItemStack cardHolder, IItemHandler iItemHandler) {
@@ -47,7 +47,7 @@ public class CardHolderContainer extends AbstractContainerMenu {
             ItemStack carriedItem = getCarried();
             ItemStack stackInSlot = slots.get(slotId).getItem();
             if (stackInSlot.getMaxStackSize() == 1 && stackInSlot.getCount() > 1) {
-                if (!carriedItem.isEmpty() && !stackInSlot.isEmpty() && !ItemStack.isSameItemSameTags(carriedItem, stackInSlot))
+                if (!carriedItem.isEmpty() && !stackInSlot.isEmpty() && !ItemStack.isSameItemSameComponents(carriedItem, stackInSlot))
                     return;
             }
         }
@@ -78,7 +78,7 @@ public class CardHolderContainer extends AbstractContainerMenu {
 
             Slot slot = this.slots.get(i);
             ItemStack itemstack = slot.getItem();
-            if (!itemstack.isEmpty() && ItemStack.isSameItemSameTags(itemStack, itemstack)) {
+            if (!itemstack.isEmpty() && ItemStack.isSameItemSameComponents(itemStack, itemstack)) {
                 int j = itemstack.getCount() + itemStack.getCount();
                 int maxSize = Math.min(slot.getMaxStackSize(), slot.getMaxStackSize(itemStack));
                 if (j <= maxSize) {

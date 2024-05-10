@@ -10,7 +10,6 @@ import com.direwolf20.laserio.common.items.cards.BaseCard;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -38,35 +37,6 @@ import javax.annotation.Nullable;
 
 public class LaserNode extends BaseLaserBlock implements EntityBlock {
     //This makes the shape fit the model perfectly, but introduces issues with clicking on specific sides of the block
-    /*protected static final VoxelShape SHAPE = Stream.of(
-            Block.box(5, 4, 4, 11, 5, 5),
-            Block.box(5, 5, 5, 11, 11, 11),
-            Block.box(4, 11, 5, 5, 12, 11),
-            Block.box(5, 11, 11, 11, 12, 12),
-            Block.box(5, 11, 4, 11, 12, 5),
-            Block.box(4, 12, 3, 12, 13, 4),
-            Block.box(4, 12, 12, 12, 13, 13),
-            Block.box(5, 4, 11, 11, 5, 12),
-            Block.box(4, 3, 3, 12, 4, 4),
-            Block.box(4, 3, 12, 12, 4, 13),
-            Block.box(12, 3, 4, 13, 4, 12),
-            Block.box(3, 3, 4, 4, 4, 12),
-            Block.box(3, 3, 12, 4, 13, 13),
-            Block.box(3, 3, 3, 4, 13, 4),
-            Block.box(12, 3, 12, 13, 13, 13),
-            Block.box(12, 3, 3, 13, 13, 4),
-            Block.box(12, 12, 4, 13, 13, 12),
-            Block.box(3, 12, 4, 4, 13, 12),
-            Block.box(11, 11, 5, 12, 12, 11),
-            Block.box(4, 4, 5, 5, 5, 11),
-            Block.box(11, 4, 5, 12, 5, 11),
-            Block.box(4, 4, 4, 5, 12, 5),
-            Block.box(11, 4, 4, 12, 12, 5),
-            Block.box(4, 4, 11, 5, 12, 12),
-            Block.box(11, 4, 11, 12, 12, 12)
-    ).reduce((v1, v2) -> {
-        return Shapes.join(v1, v2, BooleanOp.OR);
-    }).get();*/
     private static final VoxelShape SHAPE = Block.box(3.0D, 3.0D, 3.0D, 13.0D, 13.0D, 13.0D);
     public static final String SCREEN_LASERNODE = "screen.laserio.lasernode";
 
@@ -76,52 +46,34 @@ public class LaserNode extends BaseLaserBlock implements EntityBlock {
 
     @SuppressWarnings("deprecation")
     @Override
-    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult result) {
+    public InteractionResult useWithoutItem(BlockState blockState, Level level, BlockPos blockPos, Player player, BlockHitResult hit) {
         ItemStack heldItem = player.getMainHandItem();
         if (heldItem.getItem() instanceof LaserWrench)
             return InteractionResult.PASS;
         if (!level.isClientSide) {
-            BlockEntity be = level.getBlockEntity(pos);
+            BlockEntity be = level.getBlockEntity(blockPos);
             if (be instanceof LaserNodeBE) {
 
                 if (heldItem.getItem() instanceof BaseCard) {
-                    IItemHandler itemHandler = level.getCapability(Capabilities.ItemHandler.BLOCK, pos, result.getDirection());
+                    IItemHandler itemHandler = level.getCapability(Capabilities.ItemHandler.BLOCK, blockPos, hit.getDirection());
                     ItemStack remainingStack = insertItemToNode(itemHandler, heldItem, false);
                     player.setItemInHand(InteractionHand.MAIN_HAND, remainingStack);
                 } else {
                     Direction direction;
                     if (player.isShiftKeyDown())
-                        direction = result.getDirection().getOpposite();
+                        direction = hit.getDirection().getOpposite();
                     else
-                        direction = result.getDirection();
-                    IItemHandler itemHandler = level.getCapability(Capabilities.ItemHandler.BLOCK, pos, direction);
+                        direction = hit.getDirection();
+                    IItemHandler itemHandler = level.getCapability(Capabilities.ItemHandler.BLOCK, blockPos, direction);
                     ItemStack cardHolder = findCardHolders(player);
                     if (!cardHolder.isEmpty()) CardHolder.getUUID(cardHolder);
 
-                    ((ServerPlayer) player).openMenu(new SimpleMenuProvider(
+                    player.openMenu(new SimpleMenuProvider(
                             (windowId, playerInventory, playerEntity) -> new LaserNodeContainer((LaserNodeBE) be, windowId, (byte) direction.ordinal(), playerInventory, playerEntity, (LaserNodeItemHandler) itemHandler, ContainerLevelAccess.create(be.getLevel(), be.getBlockPos()), cardHolder), Component.translatable("")), (buf -> {
-                        buf.writeBlockPos(pos);
+                        buf.writeBlockPos(blockPos);
                         buf.writeByte((byte) direction.ordinal());
-                        buf.writeItem(cardHolder);
+                        ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, cardHolder);
                     }));
-
-                    /*MenuProvider containerProvider = new MenuProvider() {
-                        @Override
-                        public Component getDisplayName() {
-                            return Component.translatable(SCREEN_LASERNODE);
-                        }
-
-                        @Override
-                        public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player playerEntity) {
-                            return new LaserNodeContainer((LaserNodeBE) be, windowId, (byte) direction.ordinal(), playerInventory, playerEntity, (LaserNodeItemHandler) itemHandler, ContainerLevelAccess.create(be.getLevel(), be.getBlockPos()), cardHolder);
-                        }
-
-                        NetworkHooks.openScreen((ServerPlayer) player, containerProvider, (buf -> {
-                            buf.writeBlockPos(pos);
-                            buf.writeByte((byte) direction.ordinal());
-                            buf.writeItemStack(cardHolder, false);
-                        }));
-                    };*/
                 }
             } else {
                 throw new IllegalStateException("Our named container provider is missing!");

@@ -35,22 +35,9 @@ public class GhostFilterTag implements IGhostIngredientHandler<FilterTagScreen> 
                     @Override
                     public void accept(I ingredient) {
                         slot.set((ItemStack) ingredient);
-                        PacketDistributor.SERVER.noArg().send(new GhostSlotPayload(slot.index, (ItemStack) ingredient, ((ItemStack) ingredient).getCount(), -1));
-                        //RS.NETWORK_HANDLER.sendToServer(new SetFilterSlotMessage(slot.index, (ItemStack) ingredient));
+                        PacketDistributor.sendToServer(new GhostSlotPayload(slot.index, (ItemStack) ingredient, ((ItemStack) ingredient).getCount(), -1));
                     }
                 });
-           /*} else if (ingredient instanceof FluidStack && slot instanceof FluidFilterSlot) {
-                targets.add(new Target<I>() {
-                    @Override
-                    public Rect2i getArea() {
-                        return bounds;
-                    }
-
-                    @Override
-                    public void accept(I ingredient) {
-                        RS.NETWORK_HANDLER.sendToServer(new SetFluidFilterSlotMessage(slot.index, StackUtils.copy((FluidStack) ingredient, FluidAttributes.BUCKET_VOLUME)));
-                    }
-                });*/
             }
         }
         return targets;
