@@ -1,7 +1,8 @@
 package com.direwolf20.laserio.common.network.handler;
 
-import com.direwolf20.laserio.common.containers.*;
-import com.direwolf20.laserio.common.containers.customhandler.FilterBasicHandler;
+import com.direwolf20.laserio.common.containers.CardItemContainer;
+import com.direwolf20.laserio.common.containers.FilterBasicContainer;
+import com.direwolf20.laserio.common.containers.FilterCountContainer;
 import com.direwolf20.laserio.common.items.filters.FilterBasic;
 import com.direwolf20.laserio.common.items.filters.FilterCount;
 import com.direwolf20.laserio.common.items.filters.FilterNBT;
@@ -73,8 +74,8 @@ public class PacketOpenFilter {
             }));
         }
         if (filterItem.getItem() instanceof FilterTag) {
-            FilterBasicHandler handler = FilterBasic.getInventory(filterItem);
-            MenuProvider containerProvider = new MenuProvider() {
+            //TODO Bring Back somehow
+            /*MenuProvider containerProvider = new MenuProvider() {
                 @Override
                 public Component getDisplayName() {
                     return Component.translatable(SCREEN_LASERNODE);
@@ -87,16 +88,16 @@ public class PacketOpenFilter {
 
                 @Override
                 public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player playerEntity) {
-                    return new FilterTagContainer(windowId, playerInventory, sender, handler, sourcePos, filterItem, cardItem);
+                    return new FilterTagContainer(windowId, playerInventory, sender, sourcePos, filterItem, cardItem);
                 }
             };
             sender.openMenu(containerProvider, (buf -> {
                 ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, filterItem);
                 ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, ItemStack.EMPTY);
-            }));
+            }));*/
         }
         if (filterItem.getItem() instanceof FilterNBT) {
-            FilterBasicHandler handler = FilterBasic.getInventory(filterItem);
+            /*FilterBasicHandler handler = FilterBasic.getInventory(filterItem);
             MenuProvider containerProvider = new MenuProvider() {
                 @Override
                 public Component getDisplayName() {
@@ -116,7 +117,7 @@ public class PacketOpenFilter {
             sender.openMenu(containerProvider, (buf -> {
                 ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, filterItem);
                 ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, ItemStack.EMPTY);
-            }));
+            }));*/
         }
     }
 

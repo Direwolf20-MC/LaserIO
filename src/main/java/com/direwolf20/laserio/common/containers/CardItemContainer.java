@@ -115,7 +115,7 @@ public class CardItemContainer extends AbstractContainerMenu {
         else if (filterStack.getItem() instanceof FilterCount)
             filterHandler = FilterCount.getInventory(filterStack);
         else
-            filterHandler = new FilterBasicHandler(15, ItemStack.EMPTY);
+            filterHandler = new FilterBasicHandler(15, filterStack);
     }
 
     public void toggleFilterSlots() {

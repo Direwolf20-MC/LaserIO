@@ -29,15 +29,14 @@ public class FilterTagContainer extends AbstractContainerMenu {
     public BlockPos sourceContainer = BlockPos.ZERO;
 
     public FilterTagContainer(int windowId, Inventory playerInventory, Player player, RegistryFriendlyByteBuf extraData) {
-        this(windowId, playerInventory, player, new FilterBasicHandler(SLOTS, ItemStack.EMPTY), ItemStack.EMPTY);
-        filterItem = ItemStack.OPTIONAL_STREAM_CODEC.decode(extraData);
+        this(windowId, playerInventory, player, ItemStack.OPTIONAL_STREAM_CODEC.decode(extraData));
         this.sourceCard = ItemStack.OPTIONAL_STREAM_CODEC.decode(extraData);
     }
 
-    public FilterTagContainer(int windowId, Inventory playerInventory, Player player, FilterBasicHandler handler, ItemStack filterItem) {
+    public FilterTagContainer(int windowId, Inventory playerInventory, Player player, ItemStack filterItem) {
         super(Registration.FilterTag_Container.get(), windowId);
         playerEntity = player;
-        this.handler = handler;
+        this.handler = new FilterBasicHandler(SLOTS, filterItem);
         this.playerInventory = new InvWrapper(playerInventory);
         this.filterItem = filterItem;
         if (handler != null)
@@ -46,8 +45,8 @@ public class FilterTagContainer extends AbstractContainerMenu {
         layoutPlayerInventorySlots(8, 172);
     }
 
-    public FilterTagContainer(int windowId, Inventory playerInventory, Player player, FilterBasicHandler handler, BlockPos sourcePos, ItemStack filterItem, ItemStack sourceCard) {
-        this(windowId, playerInventory, player, handler, filterItem);
+    public FilterTagContainer(int windowId, Inventory playerInventory, Player player, BlockPos sourcePos, ItemStack filterItem, ItemStack sourceCard) {
+        this(windowId, playerInventory, player, filterItem);
         this.sourceContainer = sourcePos;
         this.sourceCard = sourceCard;
     }
