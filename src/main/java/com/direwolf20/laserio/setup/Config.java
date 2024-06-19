@@ -1,7 +1,7 @@
 package com.direwolf20.laserio.setup;
 
 
-import net.neoforged.fml.ModLoadingContext;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
@@ -22,26 +22,26 @@ public class Config {
     public static ModConfigSpec.IntValue MULTIPLIER_MILLI_BUCKETS_CHEMICAL;
     public static ModConfigSpec.IntValue MAX_FE_TICK;
 
-    public static void register() {
-        //registerServerConfigs();
-        registerCommonConfigs();
-        //registerClientConfigs();
+    public static void register(ModContainer container) {
+        //registerServerConfigs(container);
+        registerCommonConfigs(container);
+        //registerClientConfigs(container);
     }
 
-    private static void registerClientConfigs() {
-        ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, CLIENT_BUILDER.build());
+    private static void registerClientConfigs(ModContainer container) {
+        container.registerConfig(ModConfig.Type.CLIENT, CLIENT_BUILDER.build());
     }
 
-    private static void registerCommonConfigs() {
+    private static void registerCommonConfigs(ModContainer container) {
         COMMON_BUILDER.comment("Card settings").push(CATEGORY_CARD);
         cardConfig();
         COMMON_BUILDER.pop();
 
-        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, COMMON_BUILDER.build());
+        container.registerConfig(ModConfig.Type.COMMON, COMMON_BUILDER.build());
     }
 
-    private static void registerServerConfigs() {
-        ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, SERVER_BUILDER.build());
+    private static void registerServerConfigs(ModContainer container) {
+        container.registerConfig(ModConfig.Type.SERVER, SERVER_BUILDER.build());
     }
 
     private static void generalConfig() {

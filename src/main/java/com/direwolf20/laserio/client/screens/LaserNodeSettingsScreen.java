@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.Map;
 
 public class LaserNodeSettingsScreen extends Screen {
-    private final ResourceLocation GUI = new ResourceLocation(LaserIO.MODID, "textures/gui/laser_node_settings.png");
+    private final ResourceLocation GUI = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/laser_node_settings.png");
     protected final LaserNodeContainer container;
     protected int imageWidth = 176;
     protected int imageHeight = 166;

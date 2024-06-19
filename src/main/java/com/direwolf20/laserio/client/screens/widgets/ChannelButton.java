@@ -11,7 +11,7 @@ import net.minecraft.resources.ResourceLocation;
 import java.awt.*;
 
 public class ChannelButton extends Button {
-    private final ResourceLocation resourceLocation = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/blankbutton.png");
+    private final ResourceLocation resourceLocation = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/blankbutton.png");
     private int channel;
     private final Color colors[] = {
             new Color(0xf9ffff),

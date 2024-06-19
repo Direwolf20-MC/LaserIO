@@ -51,7 +51,7 @@ public class PacketCopyPasteCard {
                 DataComponentPatch dataComponentPatch = slotStack.getComponentsPatch();
                 CardCloner.saveSettings(clonerStack, dataComponentPatch);
                 CardCloner.setItemType(clonerStack, slotStack.getItem().toString());
-                playSound((ServerPlayer) player, Holder.direct(SoundEvent.createVariableRangeEvent(new ResourceLocation(SoundEvents.UI_CARTOGRAPHY_TABLE_TAKE_RESULT.getLocation().toString()))));
+                playSound((ServerPlayer) player, Holder.direct(SoundEvent.createVariableRangeEvent(ResourceLocation.parse(SoundEvents.UI_CARTOGRAPHY_TABLE_TAKE_RESULT.getLocation().toString()))));
             } else {
                 if (slotStack.getItem().toString().equals(CardCloner.getItemType(clonerStack))) {
                     CardItemHandler cardItemHandler = BaseCard.getInventory(slotStack);
@@ -118,13 +118,13 @@ public class PacketCopyPasteCard {
                         DataComponentPatch dataComponentPatch = CardCloner.getSettings(clonerStack);
                         tempStack.applyComponents(dataComponentPatch);
                         container.getSlot(payload.slot()).set(tempStack);
-                        playSound((ServerPlayer) player, Holder.direct(SoundEvent.createVariableRangeEvent(new ResourceLocation(SoundEvents.ENCHANTMENT_TABLE_USE.getLocation().toString()))));
+                        playSound((ServerPlayer) player, Holder.direct(SoundEvent.createVariableRangeEvent(ResourceLocation.parse(SoundEvents.ENCHANTMENT_TABLE_USE.getLocation().toString()))));
                         ((LaserNodeContainer) container).tile.updateThisNode();
                     } else {
-                        playSound((ServerPlayer) player, Holder.direct(SoundEvent.createVariableRangeEvent(new ResourceLocation(SoundEvents.WAXED_SIGN_INTERACT_FAIL.getLocation().toString()))));
+                        playSound((ServerPlayer) player, Holder.direct(SoundEvent.createVariableRangeEvent(ResourceLocation.parse(SoundEvents.WAXED_SIGN_INTERACT_FAIL.getLocation().toString()))));
                     }
                 } else {
-                    playSound((ServerPlayer) player, Holder.direct(SoundEvent.createVariableRangeEvent(new ResourceLocation(SoundEvents.WAXED_SIGN_INTERACT_FAIL.getLocation().toString()))));
+                    playSound((ServerPlayer) player, Holder.direct(SoundEvent.createVariableRangeEvent(ResourceLocation.parse(SoundEvents.WAXED_SIGN_INTERACT_FAIL.getLocation().toString()))));
                 }
             }
         });

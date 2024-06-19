@@ -85,7 +85,7 @@ public class LaserGuiGraphicsChemical extends GuiGraphics {
                 }
 
                 LocalPlayer localplayer = Minecraft.getInstance().player;
-                float f = localplayer == null ? 0.0F : localplayer.getCooldowns().getCooldownPercent(itemstack.getItem(), Minecraft.getInstance().getFrameTime());
+                float f = localplayer == null ? 0.0F : localplayer.getCooldowns().getCooldownPercent(itemstack.getItem(), Minecraft.getInstance().getFrameTimeNs());
                 if (f > 0.0F) {
                     int yMin = y + Mth.floor(16.0F * (1.0F - f));
                     int yMax = yMin + Mth.ceil(16.0F * f);

@@ -39,18 +39,14 @@ public class LaserGuiGraphicsFluid extends GuiGraphics {
         this.screen = screen;
     }
 
-    private void fillRect(BufferBuilder p_115153_, int p_115154_, int p_115155_, int p_115156_, int p_115157_, int p_115158_, int p_115159_, int p_115160_, int p_115161_) {
+    private void fillRect(int p_115154_, int p_115155_, int p_115156_, int p_115157_, int p_115158_, int p_115159_, int p_115160_, int p_115161_) {
         Matrix4f matrix4f = pose().last().pose();
         VertexConsumer vertexconsumer = bufferSource().getBuffer(RenderType.guiOverlay());
-        //RenderSystem.setShader(GameRenderer::getPositionColorShader);
-        //p_115153_.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-        vertexconsumer.vertex(matrix4f, (float) (p_115154_ + 0), (float) (p_115155_ + 0), (float) 0.0D).color(p_115158_, p_115159_, p_115160_, p_115161_).endVertex();
-        vertexconsumer.vertex(matrix4f, (float) (p_115154_ + 0), (float) (p_115155_ + p_115157_), (float) 0.0D).color(p_115158_, p_115159_, p_115160_, p_115161_).endVertex();
-        vertexconsumer.vertex(matrix4f, (float) (p_115154_ + p_115156_), (float) (p_115155_ + p_115157_), (float) 0.0D).color(p_115158_, p_115159_, p_115160_, p_115161_).endVertex();
-        vertexconsumer.vertex(matrix4f, (float) (p_115154_ + p_115156_), (float) (p_115155_ + 0), (float) 0.0D).color(p_115158_, p_115159_, p_115160_, p_115161_).endVertex();
+        vertexconsumer.addVertex(matrix4f, (float) (p_115154_ + 0), (float) (p_115155_ + 0), (float) 0.0D).setColor(p_115158_, p_115159_, p_115160_, p_115161_);
+        vertexconsumer.addVertex(matrix4f, (float) (p_115154_ + 0), (float) (p_115155_ + p_115157_), (float) 0.0D).setColor(p_115158_, p_115159_, p_115160_, p_115161_);
+        vertexconsumer.addVertex(matrix4f, (float) (p_115154_ + p_115156_), (float) (p_115155_ + p_115157_), (float) 0.0D).setColor(p_115158_, p_115159_, p_115160_, p_115161_);
+        vertexconsumer.addVertex(matrix4f, (float) (p_115154_ + p_115156_), (float) (p_115155_ + 0), (float) 0.0D).setColor(p_115158_, p_115159_, p_115160_, p_115161_);
         this.flush();
-        //p_115153_.end();
-        //BufferUploader.drawWithShader(p_115153_.end());
     }
 
     @Override
@@ -104,9 +100,7 @@ public class LaserGuiGraphicsFluid extends GuiGraphics {
                     //RenderSystem.disableTexture();
                     RenderSystem.enableBlend();
                     RenderSystem.defaultBlendFunc();
-                    Tesselator tesselator1 = Tesselator.getInstance();
-                    BufferBuilder bufferbuilder1 = tesselator1.getBuilder();
-                    this.fillRect(bufferbuilder1, x, y, 16, Mth.ceil(16.0F), 255, 0, 0, 127);
+                    this.fillRect(x, y, 16, Mth.ceil(16.0F), 255, 0, 0, 127);
                     //RenderSystem.enableTexture();
                     //RenderSystem.enableDepthTest();
                 }
@@ -115,27 +109,23 @@ public class LaserGuiGraphicsFluid extends GuiGraphics {
                     RenderSystem.disableDepthTest();
                     //RenderSystem.disableTexture();
                     RenderSystem.disableBlend();
-                    Tesselator tesselator = Tesselator.getInstance();
-                    BufferBuilder bufferbuilder = tesselator.getBuilder();
                     int i = itemstack.getBarWidth();
                     int j = itemstack.getBarColor();
-                    this.fillRect(bufferbuilder, x + 2, y + 13, 13, 2, 0, 0, 0, 255);
-                    this.fillRect(bufferbuilder, x + 2, y + 13, i, 1, j >> 16 & 255, j >> 8 & 255, j & 255, 255);
+                    this.fillRect(x + 2, y + 13, 13, 2, 0, 0, 0, 255);
+                    this.fillRect(x + 2, y + 13, i, 1, j >> 16 & 255, j >> 8 & 255, j & 255, 255);
                     //RenderSystem.enableBlend();
                     ////RenderSystem.enableTexture();
                     //RenderSystem.enableDepthTest();
                 }
 
                 LocalPlayer localplayer = Minecraft.getInstance().player;
-                float f = localplayer == null ? 0.0F : localplayer.getCooldowns().getCooldownPercent(itemstack.getItem(), Minecraft.getInstance().getFrameTime());
+                float f = localplayer == null ? 0.0F : localplayer.getCooldowns().getCooldownPercent(itemstack.getItem(), Minecraft.getInstance().getFrameTimeNs());
                 if (f > 0.0F) {
                     RenderSystem.disableDepthTest();
                     //RenderSystem.disableTexture();
                     RenderSystem.enableBlend();
                     RenderSystem.defaultBlendFunc();
-                    Tesselator tesselator1 = Tesselator.getInstance();
-                    BufferBuilder bufferbuilder1 = tesselator1.getBuilder();
-                    this.fillRect(bufferbuilder1, x, y + Mth.floor(16.0F * (1.0F - f)), 16, Mth.ceil(16.0F * f), 255, 255, 255, 127);
+                    this.fillRect(x, y + Mth.floor(16.0F * (1.0F - f)), 16, Mth.ceil(16.0F * f), 255, 255, 255, 127);
                     //RenderSystem.enableTexture();
                     RenderSystem.enableDepthTest();
                 }
@@ -143,7 +133,7 @@ public class LaserGuiGraphicsFluid extends GuiGraphics {
         }
     }
 
-    public void renderGuiItemDecorations(Font font, ItemStack itemstack, int x, int y, @Nullable String altText, float scale) {
+    /*public void renderGuiItemDecorations(Font font, ItemStack itemstack, int x, int y, @Nullable String altText, float scale) {
         if (!itemstack.isEmpty()) {
             PoseStack posestack = pose();
             if (itemstack.getCount() != 1 || altText != null) {
@@ -188,7 +178,7 @@ public class LaserGuiGraphicsFluid extends GuiGraphics {
             }
 
         }
-    }
+    }*/
 
     public boolean shouldRenderFluid(ItemStack pStack, int pX, int pY, boolean includeCarried, boolean reverseBounds) {
         if (!(screen instanceof CardFluidScreen)) {
@@ -259,14 +249,13 @@ public class LaserGuiGraphicsFluid extends GuiGraphics {
         float vMax = fluidStillSprite.getV1();
 
         Tesselator tessellator = Tesselator.getInstance();
-        BufferBuilder vertexBuffer = tessellator.getBuilder();
+        BufferBuilder vertexBuffer = tessellator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
 
-        vertexBuffer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
-        vertexBuffer.vertex(pX, pY + size, zLevel).uv(uMin, vMax).endVertex();
-        vertexBuffer.vertex(pX + size, pY + size, zLevel).uv(uMax, vMax).endVertex();
-        vertexBuffer.vertex(pX + size, pY, zLevel).uv(uMax, vMin).endVertex();
-        vertexBuffer.vertex(pX, pY, zLevel).uv(uMin, vMin).endVertex();
-        tessellator.end();
+        vertexBuffer.addVertex(pX, pY + size, zLevel).setUv(uMin, vMax);
+        vertexBuffer.addVertex(pX + size, pY + size, zLevel).setUv(uMax, vMax);
+        vertexBuffer.addVertex(pX + size, pY, zLevel).setUv(uMax, vMin);
+        vertexBuffer.addVertex(pX, pY, zLevel).setUv(uMin, vMin);
+        BufferUploader.drawWithShader(vertexBuffer.buildOrThrow());
         posestack.popPose();
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
     }
@@ -306,14 +295,13 @@ public class LaserGuiGraphicsFluid extends GuiGraphics {
         float vMax = fluidStillSprite.getV1();
 
         Tesselator tessellator = Tesselator.getInstance();
-        BufferBuilder vertexBuffer = tessellator.getBuilder();
+        BufferBuilder vertexBuffer = tessellator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
 
-        vertexBuffer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
-        vertexBuffer.vertex(posestack.last().pose(), pX, pY + 16.0F, zLevel).uv(uMin, vMax).endVertex();
-        vertexBuffer.vertex(posestack.last().pose(), pX + 16.0F, pY + 16.0F, zLevel).uv(uMax, vMax).endVertex();
-        vertexBuffer.vertex(posestack.last().pose(), pX + 16.0F, pY, zLevel).uv(uMax, vMin).endVertex();
-        vertexBuffer.vertex(posestack.last().pose(), pX, pY, zLevel).uv(uMin, vMin).endVertex();
-        tessellator.end();
+        vertexBuffer.addVertex(posestack.last().pose(), pX, pY + 16.0F, zLevel).setUv(uMin, vMax);
+        vertexBuffer.addVertex(posestack.last().pose(), pX + 16.0F, pY + 16.0F, zLevel).setUv(uMax, vMax);
+        vertexBuffer.addVertex(posestack.last().pose(), pX + 16.0F, pY, zLevel).setUv(uMax, vMin);
+        vertexBuffer.addVertex(posestack.last().pose(), pX, pY, zLevel).setUv(uMin, vMin);
+        BufferUploader.drawWithShader(vertexBuffer.buildOrThrow());
         posestack.popPose();
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.applyModelViewMatrix();

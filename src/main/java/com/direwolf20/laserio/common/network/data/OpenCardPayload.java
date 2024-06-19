@@ -13,7 +13,7 @@ public record OpenCardPayload(
         BlockPos sourcePos,
         boolean hasShiftDown
 ) implements CustomPacketPayload {
-    public static final Type<OpenCardPayload> TYPE = new Type<>(new ResourceLocation(LaserIO.MODID, "open_card"));
+    public static final Type<OpenCardPayload> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "open_card"));
 
     @Override
     public Type<OpenCardPayload> type() {

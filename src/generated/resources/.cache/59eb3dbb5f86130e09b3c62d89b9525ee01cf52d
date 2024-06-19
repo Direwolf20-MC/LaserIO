@@ -1,4 +1,4 @@
-// 1.20.6	2024-05-09T23:02:30.9570124	Loot Tables
-c5726937d6920d471a92b3b78bc18928c3075f2a data/laserio/loot_tables/blocks/laser_connector.json
-f12657c7a130011834944b79a82f612b9a7c2969 data/laserio/loot_tables/blocks/laser_connector_advanced.json
-36898cfead2a1119ea9c15f8c84710a5eee0762d data/laserio/loot_tables/blocks/laser_node.json
+// 1.21	2024-06-19T13:01:23.0467312	Loot Tables
+c5726937d6920d471a92b3b78bc18928c3075f2a data/laserio/loot_table/blocks/laser_connector.json
+f12657c7a130011834944b79a82f612b9a7c2969 data/laserio/loot_table/blocks/laser_connector_advanced.json
+36898cfead2a1119ea9c15f8c84710a5eee0762d data/laserio/loot_table/blocks/laser_node.json

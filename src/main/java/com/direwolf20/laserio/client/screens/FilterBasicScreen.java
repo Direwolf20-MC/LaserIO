@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FilterBasicScreen extends AbstractContainerScreen<FilterBasicContainer> {
-    private final ResourceLocation GUI = new ResourceLocation(LaserIO.MODID, "textures/gui/basicfilter.png");
+    private final ResourceLocation GUI = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/basicfilter.png");
 
     protected final FilterBasicContainer container;
     private ItemStack filter;
@@ -68,8 +68,8 @@ public class FilterBasicScreen extends AbstractContainerScreen<FilterBasicContai
         this.isCompareNBT = FilterBasic.getCompareNBT(filter);
 
         ResourceLocation[] allowListTextures = new ResourceLocation[2];
-        allowListTextures[0] = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/allowlistfalse.png");
-        allowListTextures[1] = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/allowlisttrue.png");
+        allowListTextures[0] = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/allowlistfalse.png");
+        allowListTextures[1] = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/allowlisttrue.png");
 
         leftWidgets.add(new ToggleButton(getGuiLeft() + 5, getGuiTop() + 5, 16, 16, allowListTextures, isAllowList ? 1 : 0, (button) -> {
             isAllowList = !isAllowList;
@@ -78,8 +78,8 @@ public class FilterBasicScreen extends AbstractContainerScreen<FilterBasicContai
 
         if (!(filter.getItem() instanceof FilterMod)) {
             ResourceLocation[] nbtTextures = new ResourceLocation[2];
-            nbtTextures[0] = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/matchnbtfalse.png");
-            nbtTextures[1] = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/matchnbttrue.png");
+            nbtTextures[0] = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/matchnbtfalse.png");
+            nbtTextures[1] = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/matchnbttrue.png");
 
             leftWidgets.add(new ToggleButton(getGuiLeft() + 5, getGuiTop() + 25, 16, 16, nbtTextures, isCompareNBT ? 1 : 0, (button) -> {
                 isCompareNBT = !isCompareNBT;

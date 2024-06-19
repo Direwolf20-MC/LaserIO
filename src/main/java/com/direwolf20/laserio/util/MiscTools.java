@@ -53,7 +53,7 @@ public class MiscTools {
     public static GlobalPos nbtToGlobalPos(CompoundTag tag) {
         ResourceKey<Level> levelKey;
         if (tag.contains("dimension"))
-            levelKey = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(tag.getString("dimension")));
+            levelKey = ResourceKey.create(Registries.DIMENSION, ResourceLocation.parse(tag.getString("dimension")));
         else
             return null;
         BlockPos blockPos = NbtUtils.readBlockPos(tag, "blockpos").orElse(BlockPos.ZERO);

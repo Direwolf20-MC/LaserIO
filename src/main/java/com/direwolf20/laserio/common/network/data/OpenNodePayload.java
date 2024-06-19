@@ -12,7 +12,7 @@ public record OpenNodePayload(
         BlockPos sourcePos,
         byte side
 ) implements CustomPacketPayload {
-    public static final Type<OpenNodePayload> TYPE = new Type<>(new ResourceLocation(LaserIO.MODID, "open_node"));
+    public static final Type<OpenNodePayload> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "open_node"));
 
     @Override
     public Type<OpenNodePayload> type() {

@@ -1,5 +1,6 @@
 package com.direwolf20.laserio.datagen.customrecipes;
 
+import com.direwolf20.laserio.common.LaserIO;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.setup.Registration;
 import com.mojang.serialization.Codec;
@@ -10,8 +11,8 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.StackedContents;
-import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.*;
@@ -59,13 +60,14 @@ public class CardClearRecipe implements CraftingRecipe {
         return true;
     }
 
-    public boolean matches(CraftingContainer pInv, Level pLevel) {
+    @Override
+    public boolean matches(CraftingInput craftingInput, Level level) {
         StackedContents stackedcontents = new StackedContents();
         java.util.List<ItemStack> inputs = new java.util.ArrayList<>();
         int i = 0;
 
-        for (int j = 0; j < pInv.getContainerSize(); ++j) {
-            ItemStack itemstack = pInv.getItem(j);
+        for (int j = 0; j < craftingInput.size(); ++j) {
+            ItemStack itemstack = craftingInput.getItem(j);
             if (!itemstack.isEmpty()) {
                 ++i;
                 if (isSimple)
@@ -77,7 +79,8 @@ public class CardClearRecipe implements CraftingRecipe {
         return i == this.ingredients.size() && (isSimple ? stackedcontents.canCraft(this, null) : net.neoforged.neoforge.common.util.RecipeMatcher.findMatches(inputs, this.ingredients) != null);
     }
 
-    public ItemStack assemble(CraftingContainer pContainer, HolderLookup.Provider provider) {
+    @Override
+    public ItemStack assemble(CraftingInput p_345149_, HolderLookup.Provider p_346030_) {
         return this.result.copy();
     }
 
@@ -90,13 +93,13 @@ public class CardClearRecipe implements CraftingRecipe {
     }
 
     @Override
-    public NonNullList<ItemStack> getRemainingItems(CraftingContainer inv) {
-        NonNullList<ItemStack> nonnulllist = NonNullList.withSize(inv.getContainerSize(), ItemStack.EMPTY); //2 spots - one for filters, one for Overclockers
+    public NonNullList<ItemStack> getRemainingItems(CraftingInput craftingInput) {
+        NonNullList<ItemStack> nonnulllist = NonNullList.withSize(craftingInput.size(), ItemStack.EMPTY); //2 spots - one for filters, one for Overclockers
 
         int position = 0;
 
-        for (int i = 0; i < inv.getContainerSize(); i++) {
-            ItemStack itemStack = inv.getItem(i);
+        for (int i = 0; i < craftingInput.size(); i++) {
+            ItemStack itemStack = craftingInput.getItem(i);
             Item item = itemStack.getItem();
             if (item instanceof BaseCard) {
                 List<ItemStack> containedItems = ((BaseCard) item).getContainerItems(itemStack);
@@ -121,7 +124,7 @@ public class CardClearRecipe implements CraftingRecipe {
 
 
     public static class Serializer implements RecipeSerializer<CardClearRecipe> {
-        private static final net.minecraft.resources.ResourceLocation NAME = new net.minecraft.resources.ResourceLocation("laserio", "cardclear");
+        private static final net.minecraft.resources.ResourceLocation NAME = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "cardclear");
         private static final MapCodec<CardClearRecipe> CODEC = RecordCodecBuilder.mapCodec(
                 p_311734_ -> p_311734_.group(
                                 Codec.STRING.fieldOf("group").forGetter(p_301127_ -> p_301127_.group),

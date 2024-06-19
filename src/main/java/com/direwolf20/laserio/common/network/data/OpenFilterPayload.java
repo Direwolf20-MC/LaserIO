@@ -10,7 +10,7 @@ import net.minecraft.resources.ResourceLocation;
 public record OpenFilterPayload(
         int slotNumber
 ) implements CustomPacketPayload {
-    public static final Type<OpenFilterPayload> TYPE = new Type<>(new ResourceLocation(LaserIO.MODID, "open_filter"));
+    public static final Type<OpenFilterPayload> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "open_filter"));
 
     @Override
     public Type<OpenFilterPayload> type() {

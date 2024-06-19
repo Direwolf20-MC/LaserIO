@@ -11,7 +11,7 @@ public record CopyPasteCardPayload(
         int slot,
         boolean copy
 ) implements CustomPacketPayload {
-    public static final Type<CopyPasteCardPayload> TYPE = new Type<>(new ResourceLocation(LaserIO.MODID, "copy_paste_card"));
+    public static final Type<CopyPasteCardPayload> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "copy_paste_card"));
 
     @Override
     public Type<CopyPasteCardPayload> type() {

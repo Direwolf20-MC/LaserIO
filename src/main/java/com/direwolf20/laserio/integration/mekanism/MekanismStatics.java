@@ -25,15 +25,15 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 public class MekanismStatics {
-    public static BlockCapability<IGasHandler, @Nullable Direction> GAS_CAPABILITY = BlockCapability.createSided(new ResourceLocation("mekanism", "gas_handler"), IGasHandler.class);
-    public static BlockCapability<IInfusionHandler, @Nullable Direction> INFUSION_CAPABILITY = BlockCapability.createSided(new ResourceLocation("mekanism", "infusion_handler"), IInfusionHandler.class);
-    public static BlockCapability<IPigmentHandler, @Nullable Direction> PIGMENT_CAPABILITY = BlockCapability.createSided(new ResourceLocation("mekanism", "pigment_handler"), IPigmentHandler.class);
-    public static BlockCapability<ISlurryHandler, @Nullable Direction> SLURRY_CAPABILITY = BlockCapability.createSided(new ResourceLocation("mekanism", "slurry_handler"), ISlurryHandler.class);
+    public static BlockCapability<IGasHandler, @Nullable Direction> GAS_CAPABILITY = BlockCapability.createSided(ResourceLocation.fromNamespaceAndPath("mekanism", "gas_handler"), IGasHandler.class);
+    public static BlockCapability<IInfusionHandler, @Nullable Direction> INFUSION_CAPABILITY = BlockCapability.createSided(ResourceLocation.fromNamespaceAndPath("mekanism", "infusion_handler"), IInfusionHandler.class);
+    public static BlockCapability<IPigmentHandler, @Nullable Direction> PIGMENT_CAPABILITY = BlockCapability.createSided(ResourceLocation.fromNamespaceAndPath("mekanism", "pigment_handler"), IPigmentHandler.class);
+    public static BlockCapability<ISlurryHandler, @Nullable Direction> SLURRY_CAPABILITY = BlockCapability.createSided(ResourceLocation.fromNamespaceAndPath("mekanism", "slurry_handler"), ISlurryHandler.class);
 
-    public static ItemCapability<IGasHandler, Void> GAS_CAPABILITY_ITEM = ItemCapability.createVoid(new ResourceLocation("mekanism", "gas_handler"), IGasHandler.class);
-    public static ItemCapability<IInfusionHandler, Void> INFUSION_CAPABILITY_ITEM = ItemCapability.createVoid(new ResourceLocation("mekanism", "infusion_handler"), IInfusionHandler.class);
-    public static ItemCapability<IPigmentHandler, Void> PIGMENT_CAPABILITY_ITEM = ItemCapability.createVoid(new ResourceLocation("mekanism", "pigment_handler"), IPigmentHandler.class);
-    public static ItemCapability<ISlurryHandler, Void> SLURRY_CAPABILITY_ITEM = ItemCapability.createVoid(new ResourceLocation("mekanism", "slurry_handler"), ISlurryHandler.class);
+    public static ItemCapability<IGasHandler, Void> GAS_CAPABILITY_ITEM = ItemCapability.createVoid(ResourceLocation.fromNamespaceAndPath("mekanism", "gas_handler"), IGasHandler.class);
+    public static ItemCapability<IInfusionHandler, Void> INFUSION_CAPABILITY_ITEM = ItemCapability.createVoid(ResourceLocation.fromNamespaceAndPath("mekanism", "infusion_handler"), IInfusionHandler.class);
+    public static ItemCapability<IPigmentHandler, Void> PIGMENT_CAPABILITY_ITEM = ItemCapability.createVoid(ResourceLocation.fromNamespaceAndPath("mekanism", "pigment_handler"), IPigmentHandler.class);
+    public static ItemCapability<ISlurryHandler, Void> SLURRY_CAPABILITY_ITEM = ItemCapability.createVoid(ResourceLocation.fromNamespaceAndPath("mekanism", "slurry_handler"), ISlurryHandler.class);
 
 
     public static BlockCapability<? extends IChemicalHandler<?, ?>, @Nullable Direction> getCapabilityForChemical(ChemicalType chemicalType) {

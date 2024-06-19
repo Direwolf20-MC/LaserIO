@@ -53,7 +53,7 @@ public class LaserGuiGraphics extends GuiGraphics {
             }
 
             LocalPlayer localplayer = this.minecraft.player;
-            float f = localplayer == null ? 0.0F : localplayer.getCooldowns().getCooldownPercent(itemStack.getItem(), this.minecraft.getFrameTime());
+            float f = localplayer == null ? 0.0F : localplayer.getCooldowns().getCooldownPercent(itemStack.getItem(), this.minecraft.getFrameTimeNs());
             if (f > 0.0F) {
                 int i1 = y + Mth.floor(16.0F * (1.0F - f));
                 int j1 = i1 + Mth.ceil(16.0F * f);
