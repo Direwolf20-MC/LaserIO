@@ -94,7 +94,7 @@ public class CardClearRecipe implements CraftingRecipe {
 
     @Override
     public NonNullList<ItemStack> getRemainingItems(CraftingInput craftingInput) {
-        NonNullList<ItemStack> nonnulllist = NonNullList.withSize(craftingInput.size(), ItemStack.EMPTY); //2 spots - one for filters, one for Overclockers
+        NonNullList<ItemStack> nonnulllist = NonNullList.withSize(2, ItemStack.EMPTY); //2 spots - one for filters, one for Overclockers
 
         int position = 0;
 
