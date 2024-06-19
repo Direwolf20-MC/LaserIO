@@ -1,0 +1,14 @@
+{
+  "type": "laserio:cardclear",
+  "category": "misc",
+  "group": "laserio",
+  "ingredients": [
+    {
+      "item": "laserio:card_redstone"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "laserio:card_redstone"
+  }
+}

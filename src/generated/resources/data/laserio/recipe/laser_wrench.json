@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "group": "laserio",
+  "key": {
+    "b": {
+      "item": "laserio:logic_chip"
+    },
+    "i": {
+      "tag": "c:ingots/iron"
+    }
+  },
+  "pattern": [
+    "i i",
+    " b ",
+    " i "
+  ],
+  "result": {
+    "count": 1,
+    "id": "laserio:laser_wrench"
+  }
+}

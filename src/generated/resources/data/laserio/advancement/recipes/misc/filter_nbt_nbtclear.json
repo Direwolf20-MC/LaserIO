@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_nbt_tag": {
+      "conditions": {
+        "items": [
+          {
+            "items": "laserio:filter_nbt"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "laserio:filter_nbt_nbtclear"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_nbt_tag"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "laserio:filter_nbt_nbtclear"
+    ]
+  }
+}
