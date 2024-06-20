@@ -11,7 +11,7 @@ public record UpdateFilterPayload(
         boolean allowList,
         boolean compareNBT
 ) implements CustomPacketPayload {
-    public static final Type<UpdateFilterPayload> TYPE = new Type<>(new ResourceLocation(LaserIO.MODID, "update_filter"));
+    public static final Type<UpdateFilterPayload> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "update_filter"));
 
     @Override
     public Type<UpdateFilterPayload> type() {

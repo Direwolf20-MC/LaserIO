@@ -47,32 +47,32 @@ public class ClientSetup {
         //Item Properties -- For giving the Cards an Insert/Extract on the itemstack
         event.enqueueWork(() -> {
             ItemProperties.register(Registration.Card_Item.get(),
-                    new ResourceLocation(LaserIO.MODID, "mode"), (stack, level, living, id) -> {
+                    ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "mode"), (stack, level, living, id) -> {
                         return (int) BaseCard.getTransferMode(stack);
                     });
         });
         event.enqueueWork(() -> {
             ItemProperties.register(Registration.Card_Fluid.get(),
-                    new ResourceLocation(LaserIO.MODID, "mode"), (stack, level, living, id) -> {
+                    ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "mode"), (stack, level, living, id) -> {
                         return (int) BaseCard.getTransferMode(stack);
                     });
         });
         event.enqueueWork(() -> {
             ItemProperties.register(Registration.Card_Energy.get(),
-                    new ResourceLocation(LaserIO.MODID, "mode"), (stack, level, living, id) -> {
+                    ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "mode"), (stack, level, living, id) -> {
                         return (int) BaseCard.getTransferMode(stack);
                     });
         });
         event.enqueueWork(() -> {
             ItemProperties.register(Registration.Card_Redstone.get(),
-                    new ResourceLocation(LaserIO.MODID, "mode"), (stack, level, living, id) -> {
+                    ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "mode"), (stack, level, living, id) -> {
                         return (int) CardRedstone.getTransferMode(stack);
                     });
         });
         if (MekanismIntegration.isLoaded()) {
             event.enqueueWork(() -> {
                 ItemProperties.register(Registration.Card_Chemical.get(),
-                        new ResourceLocation(LaserIO.MODID, "mode"), (stack, level, living, id) -> {
+                        ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "mode"), (stack, level, living, id) -> {
                             return (int) CardChemical.getTransferMode(stack);
                         });
             });

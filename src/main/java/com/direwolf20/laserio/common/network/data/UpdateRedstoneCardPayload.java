@@ -12,7 +12,7 @@ public record UpdateRedstoneCardPayload(
         byte channel,
         boolean strong
 ) implements CustomPacketPayload {
-    public static final Type<UpdateRedstoneCardPayload> TYPE = new Type<>(new ResourceLocation(LaserIO.MODID, "update_redstone_card"));
+    public static final Type<UpdateRedstoneCardPayload> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "update_redstone_card"));
 
     @Override
     public Type<UpdateRedstoneCardPayload> type() {

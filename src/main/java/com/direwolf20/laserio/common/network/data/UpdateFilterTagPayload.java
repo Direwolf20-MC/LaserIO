@@ -13,7 +13,7 @@ public record UpdateFilterTagPayload(
         boolean allowList,
         List<String> tags
 ) implements CustomPacketPayload {
-    public static final Type<UpdateFilterTagPayload> TYPE = new Type<>(new ResourceLocation(LaserIO.MODID, "update_filter_tag"));
+    public static final Type<UpdateFilterTagPayload> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "update_filter_tag"));
 
     @Override
     public Type<UpdateFilterTagPayload> type() {

@@ -60,10 +60,10 @@ public class CardChemicalScreen extends CardItemScreen {
     @Override
     public void addModeButton() {
         ResourceLocation[] modeTextures = {
-              new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/modeinserter.png"),
-              new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/modeextractor.png"),
-              new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/modestocker.png"),
-              new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/modesensor.png")
+                ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/modeinserter.png"),
+                ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/modeextractor.png"),
+                ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/modestocker.png"),
+                ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/modesensor.png")
         };
         buttons.put("mode", new ToggleButton(getGuiLeft() + 5, getGuiTop() + 5, 16, 16, modeTextures, currentMode, (button) -> {
             currentMode = BaseCard.nextTransferMode(card);

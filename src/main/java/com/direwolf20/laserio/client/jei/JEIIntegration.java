@@ -32,7 +32,7 @@ public class JEIIntegration implements IModPlugin {
     @Nonnull
     @Override
     public ResourceLocation getPluginUid() {
-        return new ResourceLocation(LaserIO.MODID, "jei_plugin");
+        return ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "jei_plugin");
     }
 
     @Override
@@ -40,15 +40,15 @@ public class JEIIntegration implements IModPlugin {
         IRecipeManager recipeRegistry = jeiRuntime.getRecipeManager();
         RecipeManager recipeManager = Minecraft.getInstance().level.getRecipeManager();
         List<RecipeHolder<CraftingRecipe>> hiddenRecipes = new ArrayList<>();
-        hiddenRecipes.add((RecipeHolder<CraftingRecipe>) recipeManager.byKey(new ResourceLocation(Registration.Card_Item.getId() + "_nbtclear")).get());
-        hiddenRecipes.add((RecipeHolder<CraftingRecipe>) recipeManager.byKey(new ResourceLocation(Registration.Card_Fluid.getId() + "_nbtclear")).get());
-        hiddenRecipes.add((RecipeHolder<CraftingRecipe>) recipeManager.byKey(new ResourceLocation(Registration.Card_Energy.getId() + "_nbtclear")).get());
-        hiddenRecipes.add((RecipeHolder<CraftingRecipe>) recipeManager.byKey(new ResourceLocation(Registration.Card_Redstone.getId() + "_nbtclear")).get());
-        hiddenRecipes.add((RecipeHolder<CraftingRecipe>) recipeManager.byKey(new ResourceLocation(Registration.Filter_Basic.getId() + "_nbtclear")).get());
-        hiddenRecipes.add((RecipeHolder<CraftingRecipe>) recipeManager.byKey(new ResourceLocation(Registration.Filter_Count.getId() + "_nbtclear")).get());
-        hiddenRecipes.add((RecipeHolder<CraftingRecipe>) recipeManager.byKey(new ResourceLocation(Registration.Filter_Tag.getId() + "_nbtclear")).get());
-        hiddenRecipes.add((RecipeHolder<CraftingRecipe>) recipeManager.byKey(new ResourceLocation(Registration.Filter_NBT.getId() + "_nbtclear")).get());
-        hiddenRecipes.add((RecipeHolder<CraftingRecipe>) recipeManager.byKey(new ResourceLocation(Registration.Filter_Mod.getId() + "_nbtclear")).get());
+        hiddenRecipes.add((RecipeHolder<CraftingRecipe>) recipeManager.byKey(ResourceLocation.parse(Registration.Card_Item.getId() + "_nbtclear")).get());
+        hiddenRecipes.add((RecipeHolder<CraftingRecipe>) recipeManager.byKey(ResourceLocation.parse(Registration.Card_Fluid.getId() + "_nbtclear")).get());
+        hiddenRecipes.add((RecipeHolder<CraftingRecipe>) recipeManager.byKey(ResourceLocation.parse(Registration.Card_Energy.getId() + "_nbtclear")).get());
+        hiddenRecipes.add((RecipeHolder<CraftingRecipe>) recipeManager.byKey(ResourceLocation.parse(Registration.Card_Redstone.getId() + "_nbtclear")).get());
+        hiddenRecipes.add((RecipeHolder<CraftingRecipe>) recipeManager.byKey(ResourceLocation.parse(Registration.Filter_Basic.getId() + "_nbtclear")).get());
+        hiddenRecipes.add((RecipeHolder<CraftingRecipe>) recipeManager.byKey(ResourceLocation.parse(Registration.Filter_Count.getId() + "_nbtclear")).get());
+        hiddenRecipes.add((RecipeHolder<CraftingRecipe>) recipeManager.byKey(ResourceLocation.parse(Registration.Filter_Tag.getId() + "_nbtclear")).get());
+        hiddenRecipes.add((RecipeHolder<CraftingRecipe>) recipeManager.byKey(ResourceLocation.parse(Registration.Filter_NBT.getId() + "_nbtclear")).get());
+        hiddenRecipes.add((RecipeHolder<CraftingRecipe>) recipeManager.byKey(ResourceLocation.parse(Registration.Filter_Mod.getId() + "_nbtclear")).get());
         recipeRegistry.hideRecipes(RecipeTypes.CRAFTING, hiddenRecipes);
     }
 

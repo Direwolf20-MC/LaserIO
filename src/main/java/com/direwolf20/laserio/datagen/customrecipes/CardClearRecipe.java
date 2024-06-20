@@ -1,5 +1,7 @@
 package com.direwolf20.laserio.datagen.customrecipes;
 
+import com.direwolf20.laserio.common.LaserIO;
+import com.direwolf20.laserio.common.containers.customhandler.CardItemHandler;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.setup.Registration;
 import com.mojang.serialization.Codec;
@@ -10,14 +12,11 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.StackedContents;
-import net.minecraft.world.inventory.CraftingContainer;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
-
-import java.util.List;
 
 public class CardClearRecipe implements CraftingRecipe {
     final String group;
@@ -59,13 +58,14 @@ public class CardClearRecipe implements CraftingRecipe {
         return true;
     }
 
-    public boolean matches(CraftingContainer pInv, Level pLevel) {
+    @Override
+    public boolean matches(CraftingInput craftingInput, Level level) {
         StackedContents stackedcontents = new StackedContents();
         java.util.List<ItemStack> inputs = new java.util.ArrayList<>();
         int i = 0;
 
-        for (int j = 0; j < pInv.getContainerSize(); ++j) {
-            ItemStack itemstack = pInv.getItem(j);
+        for (int j = 0; j < craftingInput.size(); ++j) {
+            ItemStack itemstack = craftingInput.getItem(j);
             if (!itemstack.isEmpty()) {
                 ++i;
                 if (isSimple)
@@ -77,7 +77,17 @@ public class CardClearRecipe implements CraftingRecipe {
         return i == this.ingredients.size() && (isSimple ? stackedcontents.canCraft(this, null) : net.neoforged.neoforge.common.util.RecipeMatcher.findMatches(inputs, this.ingredients) != null);
     }
 
-    public ItemStack assemble(CraftingContainer pContainer, HolderLookup.Provider provider) {
+    @Override
+    public ItemStack assemble(CraftingInput craftingInput, HolderLookup.Provider provider) {
+        ItemStack itemStack = craftingInput.getItem(0);
+        if (itemStack.getItem() instanceof BaseCard) {
+            CardItemHandler cardItemHandler = BaseCard.getInventory(itemStack);
+            if (!cardItemHandler.getStackInSlot(0).isEmpty()) {
+                return cardItemHandler.getStackInSlot(0);
+            } else if (!cardItemHandler.getStackInSlot(1).isEmpty()) {
+                return cardItemHandler.getStackInSlot(1);
+            }
+        }
         return this.result.copy();
     }
 
@@ -89,28 +99,32 @@ public class CardClearRecipe implements CraftingRecipe {
         return pWidth * pHeight >= this.ingredients.size();
     }
 
+    /**
+     * Since this crafting type is always clearing a single card, we make a lot of assumptions like its a single card in the crafting window
+     */
     @Override
-    public NonNullList<ItemStack> getRemainingItems(CraftingContainer inv) {
-        NonNullList<ItemStack> nonnulllist = NonNullList.withSize(inv.getContainerSize(), ItemStack.EMPTY); //2 spots - one for filters, one for Overclockers
+    public NonNullList<ItemStack> getRemainingItems(CraftingInput craftingInput) {
+        NonNullList<ItemStack> nonnulllist = NonNullList.withSize(1, ItemStack.EMPTY);
 
-        int position = 0;
-
-        for (int i = 0; i < inv.getContainerSize(); i++) {
-            ItemStack itemStack = inv.getItem(i);
-            Item item = itemStack.getItem();
-            if (item instanceof BaseCard) {
-                List<ItemStack> containedItems = ((BaseCard) item).getContainerItems(itemStack);
-                nonnulllist.set(position, containedItems.get(0));
-                nonnulllist.set(position + 1, containedItems.get(1));
-                position = position + 2;
-            } else {
-                if (itemStack.hasCraftingRemainingItem()) {
-                    nonnulllist.set(position, itemStack.getCraftingRemainingItem());
-                    position++;
-                }
+        ItemStack itemStack = craftingInput.getItem(0);
+        if (itemStack.getItem() instanceof BaseCard) {
+            CardItemHandler cardItemHandler = BaseCard.getInventory(itemStack);
+            if (!cardItemHandler.getStackInSlot(0).isEmpty()) {
+                ItemStack returnStack = itemStack.copy();
+                BaseCard.getInventory(returnStack).setStackInSlot(0, ItemStack.EMPTY);
+                nonnulllist.set(0, returnStack);
+                return nonnulllist;
+            } else if (!cardItemHandler.getStackInSlot(1).isEmpty()) {
+                ItemStack returnStack = itemStack.copy();
+                BaseCard.getInventory(returnStack).setStackInSlot(1, ItemStack.EMPTY);
+                nonnulllist.set(0, returnStack);
+                return nonnulllist;
+            }
+        } else {
+            if (itemStack.hasCraftingRemainingItem()) {
+                nonnulllist.set(0, itemStack.getCraftingRemainingItem());
             }
         }
-
         return nonnulllist;
     }
 
@@ -121,7 +135,7 @@ public class CardClearRecipe implements CraftingRecipe {
 
 
     public static class Serializer implements RecipeSerializer<CardClearRecipe> {
-        private static final net.minecraft.resources.ResourceLocation NAME = new net.minecraft.resources.ResourceLocation("laserio", "cardclear");
+        private static final net.minecraft.resources.ResourceLocation NAME = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "cardclear");
         private static final MapCodec<CardClearRecipe> CODEC = RecordCodecBuilder.mapCodec(
                 p_311734_ -> p_311734_.group(
                                 Codec.STRING.fieldOf("group").forGetter(p_301127_ -> p_301127_.group),

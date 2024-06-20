@@ -28,7 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FilterCountScreen extends AbstractContainerScreen<FilterCountContainer> {
-    private final ResourceLocation GUI = new ResourceLocation(LaserIO.MODID, "textures/gui/filtercount.png");
+    private final ResourceLocation GUI = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/filtercount.png");
 
     protected final FilterCountContainer container;
     private ItemStack filter;
@@ -75,8 +75,8 @@ public class FilterCountScreen extends AbstractContainerScreen<FilterCountContai
         this.isCompareNBT = FilterCount.getCompareNBT(filter);
 
         ResourceLocation[] nbtTextures = new ResourceLocation[2];
-        nbtTextures[0] = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/matchnbtfalse.png");
-        nbtTextures[1] = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/matchnbttrue.png");
+        nbtTextures[0] = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/matchnbtfalse.png");
+        nbtTextures[1] = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/matchnbttrue.png");
 
         leftWidgets.add(new ToggleButton(getGuiLeft() + 5, getGuiTop() + 25, 16, 16, nbtTextures, isCompareNBT ? 1 : 0, (button) -> {
             isCompareNBT = !isCompareNBT;

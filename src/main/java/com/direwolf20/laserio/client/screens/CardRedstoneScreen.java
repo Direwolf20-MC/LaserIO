@@ -28,7 +28,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class CardRedstoneScreen extends AbstractContainerScreen<CardRedstoneContainer> {
-    private final ResourceLocation GUI = new ResourceLocation(LaserIO.MODID, "textures/gui/redstonecard.png");
+    private final ResourceLocation GUI = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/redstonecard.png");
 
     protected final CardRedstoneContainer container;
     protected byte currentMode;
@@ -72,8 +72,8 @@ public class CardRedstoneScreen extends AbstractContainerScreen<CardRedstoneCont
 
     public void addModeButton() {
         ResourceLocation[] modeTextures = new ResourceLocation[2];
-        modeTextures[0] = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/redstoneinput.png");
-        modeTextures[1] = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/redstoneoutput.png");
+        modeTextures[0] = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/redstoneinput.png");
+        modeTextures[1] = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/redstoneoutput.png");
         buttons.put("mode", new ToggleButton(getGuiLeft() + 5, getGuiTop() + 5, 16, 16, modeTextures, currentMode, (button) -> {
             currentMode = CardRedstone.nextTransferMode(card);
             ((ToggleButton) button).setTexturePosition(currentMode);
@@ -83,8 +83,8 @@ public class CardRedstoneScreen extends AbstractContainerScreen<CardRedstoneCont
 
     public void addStrongButton() {
         ResourceLocation[] strongTextures = new ResourceLocation[2];
-        strongTextures[0] = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/redstonelow.png");
-        strongTextures[1] = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/redstonehigh.png");
+        strongTextures[0] = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/redstonelow.png");
+        strongTextures[1] = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/redstonehigh.png");
         buttons.put("strong", new ToggleButton(getGuiLeft() + 5, getGuiTop() + 25, 16, 16, strongTextures, currentStrong ? 1 : 0, (button) -> {
             currentStrong = !currentStrong;
             ((ToggleButton) button).setTexturePosition(currentStrong ? 1 : 0);

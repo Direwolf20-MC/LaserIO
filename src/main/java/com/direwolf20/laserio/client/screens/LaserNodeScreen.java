@@ -37,7 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LaserNodeScreen extends AbstractContainerScreen<LaserNodeContainer> {
-    private final ResourceLocation GUI = new ResourceLocation(LaserIO.MODID, "textures/gui/laser_node.png");
+    private final ResourceLocation GUI = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/laser_node.png");
     protected final LaserNodeContainer container;
     private boolean showCardHolderUI;
     private final MutableComponent[] sides = {
@@ -70,7 +70,7 @@ public class LaserNodeScreen extends AbstractContainerScreen<LaserNodeContainer>
     public void init() {
         super.init();
         List<AbstractWidget> leftWidgets = new ArrayList<>();
-        ResourceLocation settings = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/settings.png");
+        ResourceLocation settings = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/settings.png");
         Button settingsButton = new IconButton(getGuiLeft() + 155, getGuiTop() + 25, 16, 16, settings, (button) -> {
             Minecraft.getInstance().setScreen(new LaserNodeSettingsScreen(container, Component.translatable("screen.laserio.settings")));
         });
@@ -133,7 +133,7 @@ public class LaserNodeScreen extends AbstractContainerScreen<LaserNodeContainer>
         int relY = (this.height - this.imageHeight) / 2;
         guiGraphics.blit(GUI, relX, relY, 0, 0, this.imageWidth, this.imageHeight);
         if (showCardHolderUI) {
-            ResourceLocation CardHolderGUI = new ResourceLocation(LaserIO.MODID, "textures/gui/cardholder_node.png");
+            ResourceLocation CardHolderGUI = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/cardholder_node.png");
             RenderSystem.setShaderTexture(0, CardHolderGUI);
             guiGraphics.blit(CardHolderGUI, getGuiLeft() - 100, getGuiTop() + 24, 0, 0, this.imageWidth, this.imageHeight);
         }

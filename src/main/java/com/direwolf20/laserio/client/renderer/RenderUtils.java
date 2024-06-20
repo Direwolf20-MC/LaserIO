@@ -11,6 +11,7 @@ import com.direwolf20.laserio.util.CardRender;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
@@ -40,92 +41,40 @@ public class RenderUtils {
         float startX = 0 + (1 - scale) / 2, startY = 0 + (1 - scale) / 2, startZ = -1 + (1 - scale) / 2, endX = 1 - (1 - scale) / 2, endY = 1 - (1 - scale) / 2, endZ = 0 - (1 - scale) / 2;
 
         //down
-        builder.vertex(matrix, startX, startY, startZ).color(red, green, blue, alpha).endVertex();
-        builder.vertex(matrix, endX, startY, startZ).color(red, green, blue, alpha).endVertex();
-        builder.vertex(matrix, endX, startY, endZ).color(red, green, blue, alpha).endVertex();
-        builder.vertex(matrix, startX, startY, endZ).color(red, green, blue, alpha).endVertex();
+        builder.addVertex(matrix, startX, startY, startZ).setColor(red, green, blue, alpha);
+        builder.addVertex(matrix, endX, startY, startZ).setColor(red, green, blue, alpha);
+        builder.addVertex(matrix, endX, startY, endZ).setColor(red, green, blue, alpha);
+        builder.addVertex(matrix, startX, startY, endZ).setColor(red, green, blue, alpha);
 
         //up
-        builder.vertex(matrix, startX, endY, startZ).color(red, green, blue, alpha).endVertex();
-        builder.vertex(matrix, startX, endY, endZ).color(red, green, blue, alpha).endVertex();
-        builder.vertex(matrix, endX, endY, endZ).color(red, green, blue, alpha).endVertex();
-        builder.vertex(matrix, endX, endY, startZ).color(red, green, blue, alpha).endVertex();
+        builder.addVertex(matrix, startX, endY, startZ).setColor(red, green, blue, alpha);
+        builder.addVertex(matrix, startX, endY, endZ).setColor(red, green, blue, alpha);
+        builder.addVertex(matrix, endX, endY, endZ).setColor(red, green, blue, alpha);
+        builder.addVertex(matrix, endX, endY, startZ).setColor(red, green, blue, alpha);
 
         //east
-        builder.vertex(matrix, startX, startY, startZ).color(red, green, blue, alpha).endVertex();
-        builder.vertex(matrix, startX, endY, startZ).color(red, green, blue, alpha).endVertex();
-        builder.vertex(matrix, endX, endY, startZ).color(red, green, blue, alpha).endVertex();
-        builder.vertex(matrix, endX, startY, startZ).color(red, green, blue, alpha).endVertex();
+        builder.addVertex(matrix, startX, startY, startZ).setColor(red, green, blue, alpha);
+        builder.addVertex(matrix, startX, endY, startZ).setColor(red, green, blue, alpha);
+        builder.addVertex(matrix, endX, endY, startZ).setColor(red, green, blue, alpha);
+        builder.addVertex(matrix, endX, startY, startZ).setColor(red, green, blue, alpha);
 
         //west
-        builder.vertex(matrix, startX, startY, endZ).color(red, green, blue, alpha).endVertex();
-        builder.vertex(matrix, endX, startY, endZ).color(red, green, blue, alpha).endVertex();
-        builder.vertex(matrix, endX, endY, endZ).color(red, green, blue, alpha).endVertex();
-        builder.vertex(matrix, startX, endY, endZ).color(red, green, blue, alpha).endVertex();
+        builder.addVertex(matrix, startX, startY, endZ).setColor(red, green, blue, alpha);
+        builder.addVertex(matrix, endX, startY, endZ).setColor(red, green, blue, alpha);
+        builder.addVertex(matrix, endX, endY, endZ).setColor(red, green, blue, alpha);
+        builder.addVertex(matrix, startX, endY, endZ).setColor(red, green, blue, alpha);
 
         //south
-        builder.vertex(matrix, endX, startY, startZ).color(red, green, blue, alpha).endVertex();
-        builder.vertex(matrix, endX, endY, startZ).color(red, green, blue, alpha).endVertex();
-        builder.vertex(matrix, endX, endY, endZ).color(red, green, blue, alpha).endVertex();
-        builder.vertex(matrix, endX, startY, endZ).color(red, green, blue, alpha).endVertex();
+        builder.addVertex(matrix, endX, startY, startZ).setColor(red, green, blue, alpha);
+        builder.addVertex(matrix, endX, endY, startZ).setColor(red, green, blue, alpha);
+        builder.addVertex(matrix, endX, endY, endZ).setColor(red, green, blue, alpha);
+        builder.addVertex(matrix, endX, startY, endZ).setColor(red, green, blue, alpha);
 
         //north
-        builder.vertex(matrix, startX, startY, startZ).color(red, green, blue, alpha).endVertex();
-        builder.vertex(matrix, startX, startY, endZ).color(red, green, blue, alpha).endVertex();
-        builder.vertex(matrix, startX, endY, endZ).color(red, green, blue, alpha).endVertex();
-        builder.vertex(matrix, startX, endY, startZ).color(red, green, blue, alpha).endVertex();
-    }
-
-    public static void drawLasersTile(BlockEntity be, BlockPos startBlock, BlockPos endBlock, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightsIn, int combinedOverlayIn) {
-        Level level = be.getLevel();
-        long gameTime = level.getGameTime();
-        double v = gameTime * 0.04;
-
-        float diffX = endBlock.getX() + .5f - startBlock.getX();
-        float diffY = endBlock.getY() + .5f - startBlock.getY();
-        float diffZ = endBlock.getZ() + .5f - startBlock.getZ();
-
-        VertexConsumer builder;
-
-        matrixStackIn.pushPose();
-        Matrix4f positionMatrix = matrixStackIn.last().pose();
-
-        builder = bufferIn.getBuffer(MyRenderType.LASER_MAIN_BEAM);
-
-        Vector3f startLaser = new Vector3f(0.5f, .5f, 0.5f);
-        Vector3f endLaser = new Vector3f(diffX, diffY, diffZ);
-
-        drawLaser(builder, positionMatrix, endLaser, startLaser, 1, 0, 0, 0.5f, 0.025f, v, v + diffY * 1.5, be);
-
-        matrixStackIn.popPose();
-    }
-
-    public static void drawLasersLast(BlockEntity be, BlockPos startBlock, BlockPos endBlock, PoseStack matrixStackIn) {
-        Level level = be.getLevel();
-        long gameTime = level.getGameTime();
-        double v = gameTime * 0.04;
-        MultiBufferSource.BufferSource buffer = Minecraft.getInstance().renderBuffers().bufferSource();
-        float diffX = endBlock.getX() + .5f - startBlock.getX();
-        float diffY = endBlock.getY() + .5f - startBlock.getY();
-        float diffZ = endBlock.getZ() + .5f - startBlock.getZ();
-
-
-        VertexConsumer builder;
-        Vec3 projectedView = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
-        matrixStackIn.pushPose();
-        Matrix4f positionMatrix = matrixStackIn.last().pose();
-
-        matrixStackIn.translate(startBlock.getX() - projectedView.x, startBlock.getY() - projectedView.y, startBlock.getZ() - projectedView.z);
-
-        builder = buffer.getBuffer(MyRenderType.CONNECTING_LASER);
-
-        Vector3f startLaser = new Vector3f(0.5f, .5f, 0.5f);
-        Vector3f endLaser = new Vector3f(diffX, diffY, diffZ);
-
-        drawLaser(builder, positionMatrix, endLaser, startLaser, 1, 0, 0, 0.33f, 0.025f, v, v + diffY * 1.5, be);
-
-        matrixStackIn.popPose();
-        buffer.endBatch(MyRenderType.CONNECTING_LASER); //This apparently is needed in RenderWorldLast
+        builder.addVertex(matrix, startX, startY, startZ).setColor(red, green, blue, alpha);
+        builder.addVertex(matrix, startX, startY, endZ).setColor(red, green, blue, alpha);
+        builder.addVertex(matrix, startX, endY, endZ).setColor(red, green, blue, alpha);
+        builder.addVertex(matrix, startX, endY, startZ).setColor(red, green, blue, alpha);
     }
 
     public static void drawLasersLast2(Queue<BaseLaserBE> beRenders, PoseStack matrixStackIn) {
@@ -264,294 +213,6 @@ public class RenderUtils {
         buffer.endBatch(MyRenderType.LASER_MAIN_CORE); //This apparently is needed in RenderWorldLast
     }
 
-    public static void drawConnectingLasersLast3(Set<LaserNodeBE> beConnectingRenders, PoseStack matrixStackIn) {
-        MultiBufferSource.BufferSource buffer = Minecraft.getInstance().renderBuffers().bufferSource();
-        Vec3 projectedView = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
-        VertexConsumer builder;
-        float r = 0f;
-        float g = 1f;
-        float b = 0f;
-        float alpha = 1f;
-        float thickness = 0.0175f;
-
-        builder = buffer.getBuffer(MyRenderType.LASER_MAIN_BEAM);
-        for (LaserNodeBE be : beConnectingRenders) {
-            Level level = be.getLevel();
-            long gameTime = level.getGameTime();
-            double v = gameTime * 0.04;
-
-            BlockPos startBlock = be.getBlockPos();
-
-            matrixStackIn.pushPose();
-            Matrix4f positionMatrix = matrixStackIn.last().pose();
-            matrixStackIn.translate(startBlock.getX() - projectedView.x, startBlock.getY() - projectedView.y, startBlock.getZ() - projectedView.z);
-
-            for (Direction direction : Direction.values()) {
-                IItemHandler h = level.getCapability(Capabilities.ItemHandler.BLOCK, be.getBlockPos(), direction);
-                if (h == null) continue;
-                for (int slot = 0; slot < h.getSlots(); slot++) {
-                    ItemStack card = h.getStackInSlot(slot);
-                    if (card.getItem() instanceof BaseCard) {
-                        if (((BaseCard) card.getItem()).getCardType() == BaseCard.CardType.ITEM) {
-                            if (be.getAttachedInventoryNoCache(direction, (byte) -1) == null)
-                                continue;
-                            boolean reverse = !direction.equals(Direction.DOWN);
-                            if (BaseCard.getNamedTransferMode(card) != BaseCard.TransferMode.EXTRACT)
-                                reverse = !reverse;
-
-                            BlockPos endBlock = startBlock.relative(direction);
-                            Vector3f offset = findOffset(direction, slot, LaserNodeBERender.offsets);
-                            float diffX = endBlock.getX() + offset.x() - startBlock.getX();
-                            float diffY = endBlock.getY() + offset.y() - startBlock.getY();
-                            float diffZ = endBlock.getZ() + offset.z() - startBlock.getZ();
-
-                            Vector3f endLaser;
-                            Vector3f startLaser;
-
-                            if (reverse) {
-                                endLaser = new Vector3f(offset.x(), offset.y(), offset.z());
-                                startLaser = new Vector3f(diffX, diffY, diffZ);
-                            } else {
-                                startLaser = new Vector3f(offset.x(), offset.y(), offset.z());
-                                endLaser = new Vector3f(diffX, diffY, diffZ);
-                            }
-
-                            drawLaser(builder, positionMatrix, endLaser, startLaser, r, g, b, alpha, thickness, v, v + diffY * 4.5, be);
-                        }
-                    }
-                }
-            }
-            matrixStackIn.popPose();
-        }
-        buffer.endBatch(MyRenderType.LASER_MAIN_BEAM); //This apparently is needed in RenderWorldLast
-
-        builder = buffer.getBuffer(MyRenderType.LASER_MAIN_CORE);
-        for (LaserNodeBE be : beConnectingRenders) {
-            Level level = be.getLevel();
-            long gameTime = level.getGameTime();
-            double v = gameTime * 0.04;
-
-
-            BlockPos startBlock = be.getBlockPos();
-
-            matrixStackIn.pushPose();
-            Matrix4f positionMatrix = matrixStackIn.last().pose();
-            matrixStackIn.translate(startBlock.getX() - projectedView.x, startBlock.getY() - projectedView.y, startBlock.getZ() - projectedView.z);
-
-            for (Direction direction : Direction.values()) {
-                IItemHandler h = level.getCapability(Capabilities.ItemHandler.BLOCK, be.getBlockPos(), direction);
-                if (h == null) continue;
-                for (int slot = 0; slot < h.getSlots(); slot++) {
-                    ItemStack card = h.getStackInSlot(slot);
-                    if (card.getItem() instanceof BaseCard) {
-                        if (((BaseCard) card.getItem()).getCardType() == BaseCard.CardType.ITEM) {
-                            if (be.getAttachedInventoryNoCache(direction, (byte) -1) == null)
-                                continue;
-                            float[] floatcolors = LaserNodeBERender.colors[BaseCard.getChannel(card)].getColorComponents(new float[3]);
-                            boolean reverse = !direction.equals(Direction.DOWN);
-                            if (BaseCard.getNamedTransferMode(card) != BaseCard.TransferMode.EXTRACT)
-                                reverse = !reverse;
-
-                            BlockPos endBlock = startBlock.relative(direction);
-                            Vector3f offset = findOffset(direction, slot, LaserNodeBERender.offsets);
-                            float diffX = endBlock.getX() + offset.x() - startBlock.getX();
-                            float diffY = endBlock.getY() + offset.y() - startBlock.getY();
-                            float diffZ = endBlock.getZ() + offset.z() - startBlock.getZ();
-
-                            Vector3f endLaser;
-                            Vector3f startLaser;
-
-                            if (reverse) {
-                                endLaser = new Vector3f(offset.x(), offset.y(), offset.z());
-                                startLaser = new Vector3f(diffX, diffY, diffZ);
-                            } else {
-                                startLaser = new Vector3f(offset.x(), offset.y(), offset.z());
-                                endLaser = new Vector3f(diffX, diffY, diffZ);
-                            }
-
-                            drawLaser(builder, positionMatrix, endLaser, startLaser, floatcolors[0], floatcolors[1], floatcolors[2], 1f, 0.0125f, v, v + diffY * 1.5, be);
-                        }
-                    }
-                }
-            }
-            matrixStackIn.popPose();
-        }
-        buffer.endBatch(MyRenderType.LASER_MAIN_CORE); //This apparently is needed in RenderWorldLast
-    }
-
-    public static void drawConnectingLasersLast2(LaserNodeBE be, PoseStack matrixStackIn) {
-        Level level = be.getLevel();
-        long gameTime = level.getGameTime();
-        double v = gameTime * 0.04;
-        MultiBufferSource.BufferSource buffer = Minecraft.getInstance().renderBuffers().bufferSource();
-        Vec3 projectedView = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
-        VertexConsumer builder;
-
-        float r = 0f;
-        float g = 1f;
-        float b = 0f;
-        float alpha = 1f;
-        float thickness = 0.0175f;
-        BlockPos startBlock = be.getBlockPos();
-
-        matrixStackIn.pushPose();
-        Matrix4f positionMatrix = matrixStackIn.last().pose();
-        matrixStackIn.translate(startBlock.getX() - projectedView.x, startBlock.getY() - projectedView.y, startBlock.getZ() - projectedView.z);
-
-
-        builder = buffer.getBuffer(MyRenderType.LASER_MAIN_BEAM);
-        for (Direction direction : Direction.values()) {
-            IItemHandler h = level.getCapability(Capabilities.ItemHandler.BLOCK, be.getBlockPos(), direction);
-            if (h == null) continue;
-            for (int slot = 0; slot < h.getSlots(); slot++) {
-                ItemStack card = h.getStackInSlot(slot);
-                if (card.getItem() instanceof BaseCard) {
-                    if (((BaseCard) card.getItem()).getCardType() == BaseCard.CardType.ITEM) {
-                        if (be.getAttachedInventoryNoCache(direction, (byte) -1) == null)
-                            continue;
-                        boolean reverse = direction.equals(Direction.DOWN) ? false : true;
-                        if (BaseCard.getNamedTransferMode(card) != BaseCard.TransferMode.EXTRACT)
-                            reverse = !reverse;
-
-                        BlockPos endBlock = startBlock.relative(direction);
-                        Vector3f offset = findOffset(direction, slot, LaserNodeBERender.offsets);
-                        float diffX = endBlock.getX() + offset.x() - startBlock.getX();
-                        float diffY = endBlock.getY() + offset.y() - startBlock.getY();
-                        float diffZ = endBlock.getZ() + offset.z() - startBlock.getZ();
-
-                        Vector3f endLaser;
-                        Vector3f startLaser;
-
-                        if (reverse) {
-                            endLaser = new Vector3f(offset.x(), offset.y(), offset.z());
-                            startLaser = new Vector3f(diffX, diffY, diffZ);
-                        } else {
-                            startLaser = new Vector3f(offset.x(), offset.y(), offset.z());
-                            endLaser = new Vector3f(diffX, diffY, diffZ);
-                        }
-
-                        drawLaser(builder, positionMatrix, endLaser, startLaser, r, g, b, alpha, thickness, v, v + diffY * 4.5, be);
-                    }
-                }
-            }
-        }
-        buffer.endBatch(MyRenderType.LASER_MAIN_BEAM); //This apparently is needed in RenderWorldLast
-
-        builder = buffer.getBuffer(MyRenderType.LASER_MAIN_CORE);
-        for (Direction direction : Direction.values()) {
-            IItemHandler h = level.getCapability(Capabilities.ItemHandler.BLOCK, be.getBlockPos(), direction);
-            if (h == null) continue;
-            for (int slot = 0; slot < h.getSlots(); slot++) {
-                ItemStack card = h.getStackInSlot(slot);
-                if (card.getItem() instanceof BaseCard) {
-                    if (((BaseCard) card.getItem()).getCardType() == BaseCard.CardType.ITEM) {
-                        if (be.getAttachedInventoryNoCache(direction, (byte) -1) == null)
-                            continue;
-                        float[] floatcolors = LaserNodeBERender.colors[BaseCard.getChannel(card)].getColorComponents(new float[3]);
-                        boolean reverse = direction.equals(Direction.DOWN) ? false : true;
-                        if (BaseCard.getNamedTransferMode(card) != BaseCard.TransferMode.EXTRACT)
-                            reverse = !reverse;
-
-                        BlockPos endBlock = startBlock.relative(direction);
-                        Vector3f offset = findOffset(direction, slot, LaserNodeBERender.offsets);
-                        float diffX = endBlock.getX() + offset.x() - startBlock.getX();
-                        float diffY = endBlock.getY() + offset.y() - startBlock.getY();
-                        float diffZ = endBlock.getZ() + offset.z() - startBlock.getZ();
-
-                        Vector3f endLaser;
-                        Vector3f startLaser;
-
-                        if (reverse) {
-                            endLaser = new Vector3f(offset.x(), offset.y(), offset.z());
-                            startLaser = new Vector3f(diffX, diffY, diffZ);
-                        } else {
-                            startLaser = new Vector3f(offset.x(), offset.y(), offset.z());
-                            endLaser = new Vector3f(diffX, diffY, diffZ);
-                        }
-
-                        drawLaser(builder, positionMatrix, endLaser, startLaser, floatcolors[0], floatcolors[1], floatcolors[2], 1f, 0.0125f, v, v + diffY * 1.5, be);
-                    }
-                }
-            }
-        }
-        buffer.endBatch(MyRenderType.LASER_MAIN_CORE); //This apparently is needed in RenderWorldLast
-
-        matrixStackIn.popPose();
-    }
-
-    public static void drawConnectingLasersLast(BlockEntity be, BlockPos startBlock, BlockPos endBlock, PoseStack matrixStackIn, MultiBufferSource bufferIn, Vector3f offset, float r, float g, float b, float alpha, float thickness, float r2, float g2, float b2, float alpha2, float thickness2, boolean reverse) {
-        Level level = be.getLevel();
-        long gameTime = level.getGameTime();
-        double v = gameTime * 0.04;
-
-        float diffX = endBlock.getX() + offset.x() - startBlock.getX();
-        float diffY = endBlock.getY() + offset.y() - startBlock.getY();
-        float diffZ = endBlock.getZ() + offset.z() - startBlock.getZ();
-
-        VertexConsumer builder;
-        Vec3 projectedView = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
-        MultiBufferSource.BufferSource buffer = Minecraft.getInstance().renderBuffers().bufferSource();
-        matrixStackIn.pushPose();
-        Matrix4f positionMatrix = matrixStackIn.last().pose();
-
-        matrixStackIn.translate(startBlock.getX() - projectedView.x, startBlock.getY() - projectedView.y, startBlock.getZ() - projectedView.z);
-
-        Vector3f endLaser;
-        Vector3f startLaser;
-
-        if (reverse) {
-            endLaser = new Vector3f(offset.x(), offset.y(), offset.z());
-            startLaser = new Vector3f(diffX, diffY, diffZ);
-        } else {
-            startLaser = new Vector3f(offset.x(), offset.y(), offset.z());
-            endLaser = new Vector3f(diffX, diffY, diffZ);
-        }
-        //MyRenderType.updateRenders();
-        builder = buffer.getBuffer(MyRenderType.LASER_MAIN_BEAM);
-        drawLaser(builder, positionMatrix, endLaser, startLaser, r, g, b, alpha, thickness, v, v + diffY * 4.5, be);
-        buffer.endBatch(MyRenderType.LASER_MAIN_BEAM); //This apparently is needed in RenderWorldLast
-
-        builder = buffer.getBuffer(MyRenderType.LASER_MAIN_CORE);
-        drawLaser(builder, positionMatrix, endLaser, startLaser, r2, g2, b2, alpha2, thickness2, v, v + diffY * 1.5, be);
-        buffer.endBatch(MyRenderType.LASER_MAIN_CORE); //This apparently is needed in RenderWorldLast
-
-        matrixStackIn.popPose();
-    }
-
-    public static void drawConnectingLasers(BlockEntity be, BlockPos startBlock, BlockPos endBlock, PoseStack matrixStackIn, MultiBufferSource bufferIn, Vector3f offset, float r, float g, float b, float alpha, float thickness, float r2, float g2, float b2, float alpha2, float thickness2, boolean reverse) {
-        Level level = be.getLevel();
-        long gameTime = level.getGameTime();
-        double v = gameTime * 0.04;
-
-        float diffX = endBlock.getX() + offset.x() - startBlock.getX();
-        float diffY = endBlock.getY() + offset.y() - startBlock.getY();
-        float diffZ = endBlock.getZ() + offset.z() - startBlock.getZ();
-
-        VertexConsumer builder;
-
-        matrixStackIn.pushPose();
-        Matrix4f positionMatrix = matrixStackIn.last().pose();
-
-        Vector3f endLaser;
-        Vector3f startLaser;
-
-        if (reverse) {
-            endLaser = new Vector3f(offset.x(), offset.y(), offset.z());
-            startLaser = new Vector3f(diffX, diffY, diffZ);
-        } else {
-            startLaser = new Vector3f(offset.x(), offset.y(), offset.z());
-            endLaser = new Vector3f(diffX, diffY, diffZ);
-        }
-        //MyRenderType.updateRenders();
-        builder = bufferIn.getBuffer(MyRenderType.LASER_MAIN_BEAM);
-        drawLaser(builder, positionMatrix, endLaser, startLaser, r, g, b, alpha, thickness, v, v + diffY * 4.5, be);
-
-        builder = bufferIn.getBuffer(MyRenderType.LASER_MAIN_CORE);
-        drawLaser(builder, positionMatrix, endLaser, startLaser, r2, g2, b2, alpha2, thickness2, v, v + diffY * 1.5, be);
-
-        matrixStackIn.popPose();
-    }
-
     public static Vector3f adjustBeamToEyes(Vector3f from, Vector3f to, BlockEntity be) {
         //This method takes the player's position into account, and adjusts the beam so that its rendered properly whereever you stand
         Player player = Minecraft.getInstance().player;
@@ -581,29 +242,29 @@ public class RenderUtils {
         Vector3f p4 = new Vector3f(to);
         p4.sub(adjustedVec);
 
-        builder.vertex(positionMatrix, p1.x(), p1.y(), p1.z())
-                .color(r, g, b, alpha)
-                .uv(1, (float) v1)
-                .overlayCoords(OverlayTexture.NO_OVERLAY)
-                .uv2(15728880)
-                .endVertex();
-        builder.vertex(positionMatrix, p3.x(), p3.y(), p3.z())
-                .color(r, g, b, alpha)
-                .uv(1, (float) v2)
-                .overlayCoords(OverlayTexture.NO_OVERLAY)
-                .uv2(15728880)
-                .endVertex();
-        builder.vertex(positionMatrix, p4.x(), p4.y(), p4.z())
-                .color(r, g, b, alpha)
-                .uv(0, (float) v2)
-                .overlayCoords(OverlayTexture.NO_OVERLAY)
-                .uv2(15728880)
-                .endVertex();
-        builder.vertex(positionMatrix, p2.x(), p2.y(), p2.z())
-                .color(r, g, b, alpha)
-                .uv(0, (float) v1)
-                .overlayCoords(OverlayTexture.NO_OVERLAY)
-                .uv2(15728880)
-                .endVertex();
+        builder.addVertex(positionMatrix, p1.x(), p1.y(), p1.z())
+                .setColor(r, g, b, alpha)
+                .setUv(1, (float) v1)
+                .setOverlay(OverlayTexture.NO_OVERLAY)
+                .setLight(LightTexture.FULL_BRIGHT)
+        ;
+        builder.addVertex(positionMatrix, p3.x(), p3.y(), p3.z())
+                .setColor(r, g, b, alpha)
+                .setUv(1, (float) v2)
+                .setOverlay(OverlayTexture.NO_OVERLAY)
+                .setLight(LightTexture.FULL_BRIGHT)
+        ;
+        builder.addVertex(positionMatrix, p4.x(), p4.y(), p4.z())
+                .setColor(r, g, b, alpha)
+                .setUv(0, (float) v2)
+                .setOverlay(OverlayTexture.NO_OVERLAY)
+                .setLight(LightTexture.FULL_BRIGHT)
+        ;
+        builder.addVertex(positionMatrix, p2.x(), p2.y(), p2.z())
+                .setColor(r, g, b, alpha)
+                .setUv(0, (float) v1)
+                .setOverlay(OverlayTexture.NO_OVERLAY)
+                .setLight(LightTexture.FULL_BRIGHT)
+        ;
     }
 }

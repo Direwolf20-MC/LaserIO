@@ -13,7 +13,7 @@ public record ChangeColorPayload(
         int color,
         int wrenchAlpha
 ) implements CustomPacketPayload {
-    public static final Type<ChangeColorPayload> TYPE = new Type<>(new ResourceLocation(LaserIO.MODID, "change_color"));
+    public static final Type<ChangeColorPayload> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "change_color"));
 
     @Override
     public Type<ChangeColorPayload> type() {

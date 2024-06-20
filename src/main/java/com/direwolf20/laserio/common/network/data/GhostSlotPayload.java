@@ -14,7 +14,7 @@ public record GhostSlotPayload(
         int count,
         int mbAmt
 ) implements CustomPacketPayload {
-    public static final Type<GhostSlotPayload> TYPE = new Type<>(new ResourceLocation(LaserIO.MODID, "ghost_slot"));
+    public static final Type<GhostSlotPayload> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "ghost_slot"));
 
     @Override
     public Type<GhostSlotPayload> type() {

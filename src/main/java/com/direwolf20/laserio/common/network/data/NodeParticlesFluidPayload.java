@@ -13,7 +13,7 @@ import java.util.List;
 public record NodeParticlesFluidPayload(
         List<ParticleDataFluid> particleList
 ) implements CustomPacketPayload {
-    public static final Type<NodeParticlesFluidPayload> TYPE = new Type<>(new ResourceLocation(LaserIO.MODID, "node_particles_fluid"));
+    public static final Type<NodeParticlesFluidPayload> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "node_particles_fluid"));
 
     @Override
     public Type<NodeParticlesFluidPayload> type() {

@@ -11,7 +11,7 @@ import net.minecraft.resources.ResourceLocation;
 import java.awt.*;
 
 public class NumberButton extends Button {
-    private final ResourceLocation resourceLocation = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/blankbutton.png");
+    private final ResourceLocation resourceLocation = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/blankbutton.png");
     private int value;
 
     public NumberButton(int x, int y, int width, int height, int value, OnPress onPress) {

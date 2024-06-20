@@ -1,7 +1,5 @@
 package com.direwolf20.laserio.client.screens;
 
-import com.direwolf20.laserio.client.renderer.LaserIOItemRenderer;
-import com.direwolf20.laserio.client.renderer.LaserIOItemRendererFluid;
 import com.direwolf20.laserio.client.screens.widgets.IconButton;
 import com.direwolf20.laserio.client.screens.widgets.ToggleButton;
 import com.direwolf20.laserio.common.LaserIO;
@@ -15,13 +13,11 @@ import com.direwolf20.laserio.util.MiscTools;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
@@ -38,7 +34,7 @@ import java.util.List;
 import java.util.Locale;
 
 public class FilterNBTScreen extends AbstractContainerScreen<FilterNBTContainer> {
-    private final ResourceLocation GUI = new ResourceLocation(LaserIO.MODID, "textures/gui/filtertag.png");
+    private final ResourceLocation GUI = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/filtertag.png");
 
     protected final FilterNBTContainer container;
     private ItemStack filter;
@@ -52,8 +48,6 @@ public class FilterNBTScreen extends AbstractContainerScreen<FilterNBTContainer>
     List<String> tags = new ArrayList<>();
     List<String> stackInSlotTags = new ArrayList<>();
     int cycleRenders = 0;
-    LaserIOItemRenderer tagItemRenderer;
-    LaserIOItemRendererFluid tagFluidRenderer;
 
 
     public FilterNBTScreen(FilterNBTContainer container, Inventory inv, Component name) {
@@ -63,10 +57,6 @@ public class FilterNBTScreen extends AbstractContainerScreen<FilterNBTContainer>
         this.imageWidth = 200;
         this.imageHeight = 254;
         this.tags = FilterTag.getTags(filter);
-        Minecraft minecraft = Minecraft.getInstance();
-        BlockEntityWithoutLevelRenderer blockentitywithoutlevelrenderer = new BlockEntityWithoutLevelRenderer(minecraft.getBlockEntityRenderDispatcher(), minecraft.getEntityModels());
-        tagItemRenderer = new LaserIOItemRenderer(Minecraft.getInstance(), minecraft.getTextureManager(), minecraft.getModelManager(), minecraft.getItemColors(), blockentitywithoutlevelrenderer);
-        tagFluidRenderer = new LaserIOItemRendererFluid(minecraft, minecraft.getTextureManager(), minecraft.getModelManager(), minecraft.getItemColors(), blockentitywithoutlevelrenderer, this);
     }
 
     @Override
@@ -190,15 +180,15 @@ public class FilterNBTScreen extends AbstractContainerScreen<FilterNBTContainer>
         this.isAllowList = FilterTag.getAllowList(filter);
 
         ResourceLocation[] allowListTextures = new ResourceLocation[2];
-        allowListTextures[0] = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/allowlistfalse.png");
-        allowListTextures[1] = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/allowlisttrue.png");
+        allowListTextures[0] = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/allowlistfalse.png");
+        allowListTextures[1] = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/allowlisttrue.png");
 
         leftWidgets.add(new ToggleButton(getGuiLeft() + 5, getGuiTop() + 5, 16, 16, allowListTextures, isAllowList ? 1 : 0, (button) -> {
             isAllowList = !isAllowList;
             ((ToggleButton) button).setTexturePosition(isAllowList ? 1 : 0);
         }));
 
-        ResourceLocation add = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/add.png");
+        ResourceLocation add = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/add.png");
         Button addButton = new IconButton(getGuiLeft() + 155, getGuiTop() + 5, 16, 16, add, (button) -> {
             if (!tagField.getValue().isEmpty()) {
                 String tag = tagField.getValue().toLowerCase(Locale.ROOT);
@@ -230,7 +220,7 @@ public class FilterNBTScreen extends AbstractContainerScreen<FilterNBTContainer>
         });
         leftWidgets.add(addButton);
 
-        ResourceLocation remove = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/remove.png");
+        ResourceLocation remove = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/remove.png");
         Button removeButton = new IconButton(getGuiLeft() + 135, getGuiTop() + 5, 16, 16, remove, (button) -> {
             if (selectedSlot != -1 && !tags.isEmpty()) {
                 tags.remove(displayTags.get(selectedSlot));
@@ -239,19 +229,19 @@ public class FilterNBTScreen extends AbstractContainerScreen<FilterNBTContainer>
         });
         leftWidgets.add(removeButton);
 
-        ResourceLocation clear = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/clear.png");
+        ResourceLocation clear = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/clear.png");
         Button clearButton = new IconButton(getGuiLeft() + 115, getGuiTop() + 5, 16, 16, clear, (button) -> {
             tags.clear();
         });
         leftWidgets.add(clearButton);
 
-        ResourceLocation pageup = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/pageup.png");
+        ResourceLocation pageup = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/pageup.png");
         Button pageUp = new IconButton(getGuiLeft() + 100, getGuiTop() + 157, 12, 12, pageup, (button) -> {
             if (page < maxPages) page++;
         });
         leftWidgets.add(pageUp);
 
-        ResourceLocation pagedown = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/pagedown.png");
+        ResourceLocation pagedown = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/pagedown.png");
         Button pageDown = new IconButton(getGuiLeft() + 58, getGuiTop() + 157, 12, 12, pagedown, (button) -> {
             if (page > 0) page--;
         });
