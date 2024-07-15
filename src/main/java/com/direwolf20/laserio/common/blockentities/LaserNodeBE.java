@@ -37,6 +37,7 @@ import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.TagKey;
+import net.minecraft.util.Mth;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -209,37 +210,44 @@ public class LaserNodeBE extends BaseLaserBE {
                 if (extractorCardCache.decrementSleep() == 0) {
                     if (!extractorCardCache.enabled) continue;
                     if (countCardsHandled > nodeSideCache.overClocker) continue;
+                    boolean handledCard = false;
                     if (extractorCardCache instanceof StockerCardCache stockerCardCache) {
                         if (extractorCardCache.cardType.equals(BaseCard.CardType.ITEM)) {
-                            if (stockItems(stockerCardCache))
-                                countCardsHandled++;
+                            handledCard = stockItems(stockerCardCache);
                         } else if (extractorCardCache.cardType.equals(BaseCard.CardType.FLUID)) {
-                            if (stockFluids(stockerCardCache))
-                                countCardsHandled++;
+                            handledCard = stockFluids(stockerCardCache);
                         } else if (extractorCardCache.cardType.equals(BaseCard.CardType.ENERGY)) {
-                            if (stockEnergy(stockerCardCache))
-                                countCardsHandled++;
+                            handledCard = stockEnergy(stockerCardCache);
                         } else if (extractorCardCache.cardType.equals(BaseCard.CardType.CHEMICAL)) {
-                            if (mekanismCache.stockChemicals(stockerCardCache))
-                                countCardsHandled++;
+                            handledCard = mekanismCache.stockChemicals(stockerCardCache);
                         }
                     } else {
                         if (extractorCardCache.cardType.equals(BaseCard.CardType.ITEM)) {
-                            if (sendItems(extractorCardCache))
-                                countCardsHandled++;
+                            handledCard = sendItems(extractorCardCache);
                         } else if (extractorCardCache.cardType.equals(BaseCard.CardType.FLUID)) {
-                            if (sendFluids(extractorCardCache))
-                                countCardsHandled++;
+                            handledCard = sendFluids(extractorCardCache);
                         } else if (extractorCardCache.cardType.equals(BaseCard.CardType.ENERGY)) {
-                            if (sendEnergy(extractorCardCache))
-                                countCardsHandled++;
+                            handledCard = sendEnergy(extractorCardCache);
                         } else if (extractorCardCache.cardType.equals(BaseCard.CardType.CHEMICAL)) {
-                            if (mekanismCache.sendChemicals(extractorCardCache))
-                                countCardsHandled++;
+                            handledCard = mekanismCache.sendChemicals(extractorCardCache);
                         }
                     }
+
+                    if (handledCard)
+                        countCardsHandled++;
+
                     if (extractorCardCache.remainingSleep <= 0) {
-                        extractorCardCache.remainingSleep = extractorCardCache.tickSpeed;
+                        int sleep = extractorCardCache.tickSpeed;
+                        if (extractorCardCache.maxBackoff > 0) {
+                            if (handledCard) {
+                                extractorCardCache.backoff--;
+                            } else {
+                                extractorCardCache.backoff++;
+                            }
+                            extractorCardCache.backoff = (byte) Mth.clamp(extractorCardCache.backoff, 0, extractorCardCache.maxBackoff);
+                            sleep *= (int) Math.pow(2, extractorCardCache.backoff);
+                        }
+                        extractorCardCache.remainingSleep = sleep;
                     }
                 }
             }

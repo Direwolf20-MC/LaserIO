@@ -12,7 +12,9 @@ import net.minecraft.world.item.ItemStack;
 public class ExtractorCardCache extends BaseCardCache {
     public final int extractAmt;
     public final int tickSpeed;
+    public final byte maxBackoff;
     public int remainingSleep;
+    public byte backoff;
     public boolean exact;
     public int roundRobin;
 
@@ -34,6 +36,7 @@ public class ExtractorCardCache extends BaseCardCache {
             this.tickSpeed = BaseCard.getExtractSpeed(cardItem);
         this.exact = BaseCard.getExact(cardItem);
         this.roundRobin = BaseCard.getRoundRobin(cardItem);
+        this.maxBackoff = BaseCard.getMaxBackoff(cardItem);
     }
 
     public int getRemainingSleep() {

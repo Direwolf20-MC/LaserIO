@@ -38,6 +38,7 @@ public class LaserIOLanguageProvider extends LanguageProvider {
 
         add("screen.laserio.extractamt", "Transfer Amount");
         add("screen.laserio.tickSpeed", "Speed (Ticks)");
+        add("screen.laserio.maxBackoff", "Maximum Speed Backoff (Power of 2)");
 
         add("screen.laserio.priority", "Priority");
         add("screen.laserio.channel", "Channel: ");

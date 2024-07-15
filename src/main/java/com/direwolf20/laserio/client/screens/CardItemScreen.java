@@ -30,6 +30,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
@@ -46,6 +47,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
     protected final CardItemContainer container;
     protected byte currentMode;
     protected byte currentChannel;
+    protected byte currentMaxBackoff;
     protected byte currentRedstoneChannel;
     protected byte currentItemExtractAmt;
     protected short currentPriority;
@@ -170,6 +172,12 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
                 guiGraphics.renderTooltip(font, Component.translatable("screen.laserio.tickSpeed"), mouseX, mouseY);
             }
         }
+        Button backoffButton = buttons.get("backoff");
+        if (MiscTools.inBounds(backoffButton.getX(), backoffButton.getY(), backoffButton.getWidth(), backoffButton.getHeight(), mouseX, mouseY)) {
+            if (renderables.contains(backoffButton)) {
+                guiGraphics.renderTooltip(font, Component.translatable("screen.laserio.maxBackoff"), mouseX, mouseY);
+            }
+        }
         if (showAllow) {
             Button allowList = buttons.get("allowList");
             if (MiscTools.inBounds(allowList.getX(), allowList.getY(), allowList.getWidth(), allowList.getHeight(), mouseX, mouseY)) {
@@ -285,6 +293,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
         BlockEntityWithoutLevelRenderer blockentitywithoutlevelrenderer = new BlockEntityWithoutLevelRenderer(minecraft.getBlockEntityRenderDispatcher(), minecraft.getEntityModels());
         currentMode = BaseCard.getTransferMode(card);
         currentChannel = BaseCard.getChannel(card);
+        currentMaxBackoff = BaseCard.getMaxBackoff(card);
         currentItemExtractAmt = CardItem.getItemExtractAmt(card);
         currentPriority = BaseCard.getPriority(card);
         currentSneaky = BaseCard.getSneaky(card);
@@ -342,6 +351,10 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
 
         buttons.put("speed", new NumberButton(getGuiLeft() + 147, getGuiTop() + 39, 24, 12, currentTicks, (button) -> {
             changeTick(-1);
+        }));
+
+        buttons.put("backoff", new NumberButton(getGuiLeft() + 147, getGuiTop() + 53, 24, 12, currentMaxBackoff, (button) -> {
+            changeMaxBackoff(-1);
         }));
 
         ResourceLocation[] exactTextures = new ResourceLocation[2];
@@ -437,6 +450,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
         Button regulateButton = buttons.get("regulate");
         Button channelButton = buttons.get("channel");
         Button amountButton = buttons.get("amount");
+        Button backoffButton = buttons.get("backoff");
         Button andButton = buttons.get("and");
         Button redstoneModeButton = buttons.get("redstoneMode");
         if (currentMode == 0) { //insert
@@ -447,6 +461,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
             if (!renderables.contains(redstoneModeButton))
                 addRenderableWidget(redstoneModeButton);
             removeWidget(speedButton);
+            removeWidget(backoffButton);
             removeWidget(exactButton);
             removeWidget(rrButton);
             removeWidget(regulateButton);
@@ -458,6 +473,8 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
                 addRenderableWidget(amountButton);
             if (!renderables.contains(speedButton))
                 addRenderableWidget(speedButton);
+            if (!renderables.contains(backoffButton))
+                addRenderableWidget(backoffButton);
             if (!renderables.contains(exactButton))
                 addRenderableWidget(exactButton);
             if (!renderables.contains(rrButton))
@@ -481,6 +498,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
                 addRenderableWidget(redstoneModeButton);
             removeWidget(rrButton);
             removeWidget(andButton);
+            removeWidget(backoffButton);
         } else if (currentMode == 3) { //sensor
             if (!renderables.contains(speedButton))
                 addRenderableWidget(speedButton);
@@ -497,6 +515,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
             } else {
                 removeWidget(exactButton);
             }
+            removeWidget(backoffButton);
         }
     }
 
@@ -516,6 +535,10 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
                 currentItemExtractAmt = (byte) (Math.min(currentItemExtractAmt + change, Math.max(container.getSlot(1).getItem().getCount() * 16, 8)));
             }
         }
+    }
+
+    public void changeMaxBackoff(int change) {
+        currentMaxBackoff = (byte) Mth.clamp(currentMaxBackoff + change, 0, 16);
     }
 
     public void changeTick(int change) {
@@ -707,7 +730,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
     public void saveSettings() {
         if (showFilter)
             PacketDistributor.sendToServer(new UpdateFilterPayload(isAllowList == 1, isCompareNBT == 1));
-        PacketDistributor.sendToServer(new UpdateCardPayload(currentMode, currentChannel, currentItemExtractAmt, currentPriority, currentSneaky, (short) currentTicks, currentExact, currentRegulate, (byte) currentRoundRobin, 0, 0, currentRedstoneMode, currentRedstoneChannel, currentAndMode));
+        PacketDistributor.sendToServer(new UpdateCardPayload(currentMode, currentChannel, currentItemExtractAmt, currentPriority, currentSneaky, (short) currentTicks, currentExact, currentRegulate, (byte) currentRoundRobin, 0, 0, currentRedstoneMode, currentRedstoneChannel, currentAndMode, currentMaxBackoff));
     }
 
     public boolean filterSlot(int btn) {
@@ -782,6 +805,16 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
                 changeTick(-1);
             speedButton.setValue(currentTicks);
             speedButton.playDownSound(Minecraft.getInstance().getSoundManager());
+            return true;
+        }
+        NumberButton backoffButton = ((NumberButton) buttons.get("backoff"));
+        if (MiscTools.inBounds(backoffButton.getX(), backoffButton.getY(), backoffButton.getWidth(), backoffButton.getHeight(), x, y)) {
+            if (btn == 0)
+                changeMaxBackoff(1);
+            else if (btn == 1)
+                changeMaxBackoff(-1);
+            backoffButton.setValue(currentMaxBackoff);
+            backoffButton.playDownSound(Minecraft.getInstance().getSoundManager());
             return true;
         }
         if (hoveredSlot == null)
