@@ -87,7 +87,7 @@
   "screen.laserio.stock": "Stock",
   "screen.laserio.strong": "Strong",
   "screen.laserio.tickSpeed": "Speed (Ticks)",
-  "screen.laserio.maxBackoff": "Maximum Speed Backoff (Power of 2)",
+  "screen.laserio.maxBackoff": "Maximum Speed Backoff (Tick multiplier)",
   "screen.laserio.true": "True",
   "screen.laserio.up": "Up",
   "screen.laserio.weak": "Weak",

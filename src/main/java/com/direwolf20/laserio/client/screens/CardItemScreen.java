@@ -353,9 +353,11 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
             changeTick(-1);
         }));
 
-        buttons.put("backoff", new NumberButton(getGuiLeft() + 147, getGuiTop() + 53, 24, 12, currentMaxBackoff, (button) -> {
+        NumberButton backoffButton = new NumberButton(getGuiLeft() + 147, getGuiTop() + 53, 24, 12, currentMaxBackoff, (button) -> {
             changeMaxBackoff(-1);
-        }));
+        });
+        backoffButton.setDisplayTransform(i -> (int) Math.pow(2, i));
+        buttons.put("backoff", backoffButton);
 
         ResourceLocation[] exactTextures = new ResourceLocation[2];
         exactTextures[0] = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/exactfalse.png");
