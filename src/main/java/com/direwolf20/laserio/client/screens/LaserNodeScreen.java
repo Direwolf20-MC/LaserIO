@@ -21,6 +21,7 @@ import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -29,6 +30,8 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.network.PacketDistributor;
 
@@ -121,8 +124,16 @@ public class LaserNodeScreen extends AbstractContainerScreen<LaserNodeContainer>
     }
 
     protected ItemStack getAdjacentBlock(Direction direction) {
-        BlockState blockState = container.playerEntity.level().getBlockState(this.container.tile.getBlockPos().relative(direction));
+        BlockPos blockPos = this.container.tile.getBlockPos().relative(direction);
+        Level level = this.container.playerEntity.level();
+        BlockState blockState = level.getBlockState(blockPos);
         ItemStack itemStack = blockState.getBlock().asItem().getDefaultInstance();
+        if (blockState.hasBlockEntity()) {
+            BlockEntity blockEntity = level.getBlockEntity(blockPos);
+            if (blockEntity != null) {
+                blockEntity.saveToItem(itemStack, level.registryAccess());
+            }
+        }
         return itemStack;
     }
 
