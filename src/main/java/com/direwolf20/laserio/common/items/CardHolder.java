@@ -81,22 +81,18 @@ public class CardHolder extends Item {
 
 	@Override
 	public boolean overrideStackedOnOther(ItemStack holderStack, Slot cardSlot, ClickAction pAction, Player pPlayer) {
-		ItemStack cardStack = cardSlot.getItem();
-		return handleStackedWithCard(holderStack, pAction, cardStack, pPlayer);
+		return handleStackedWithCard(holderStack, cardSlot, pAction, cardSlot.getItem(), pPlayer);
 	}
 
 	@Override
 	public boolean overrideOtherStackedOnMe(
 			ItemStack holderStack, ItemStack cardStack, Slot pSlot, ClickAction pAction, Player pPlayer, SlotAccess pAccess
 	) {
-		if (pSlot.allowModification(pPlayer)) {
-			return handleStackedWithCard(holderStack, pAction, cardStack, pPlayer);
-		}
-		return false;
+		return handleStackedWithCard(holderStack, pSlot, pAction, cardStack, pPlayer);
 	}
 
-	private static boolean handleStackedWithCard(ItemStack holderStack, ClickAction pAction, ItemStack cardStack, Player pPlayer) {
-		if (!isCard(cardStack)) {
+	private static boolean handleStackedWithCard(ItemStack holderStack, Slot slot, ClickAction pAction, ItemStack cardStack, Player pPlayer) {
+		if (!isCard(cardStack) || !slot.allowModification(pPlayer)) {
 			return false;
 		}
 		if (holderStack.getCount() != 1 || pAction != ClickAction.SECONDARY) {
