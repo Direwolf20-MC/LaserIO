@@ -9,12 +9,16 @@ import com.direwolf20.laserio.common.items.upgrades.OverclockerNode;
 import com.direwolf20.laserio.setup.LaserIODataComponents;
 import com.direwolf20.laserio.util.CardHolderItemStackHandler;
 import net.minecraft.network.chat.Component;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.SlotAccess;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.ClickAction;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -65,11 +69,44 @@ public class CardHolder extends Item {
         if (entity instanceof Player player && getActive(stack)) {
             for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
                 ItemStack cardStack = player.getInventory().getItem(i);
-                if (cardStack.getItem() instanceof BaseCard || cardStack.getItem() instanceof BaseFilter || cardStack.getItem() instanceof OverclockerCard || cardStack.getItem() instanceof OverclockerNode)
+                if (isCard(cardStack))
                     addCardToInventory(stack, cardStack);
             }
         }
     }
+
+	private static boolean isCard(ItemStack cardStack) {
+		return cardStack.getItem() instanceof BaseCard || cardStack.getItem() instanceof BaseFilter || cardStack.getItem() instanceof OverclockerCard || cardStack.getItem() instanceof OverclockerNode;
+	}
+
+	@Override
+	public boolean overrideStackedOnOther(ItemStack holderStack, Slot cardSlot, ClickAction pAction, Player pPlayer) {
+		ItemStack cardStack = cardSlot.getItem();
+		return handleStackedWithCard(holderStack, pAction, cardStack, pPlayer);
+	}
+
+	@Override
+	public boolean overrideOtherStackedOnMe(
+			ItemStack holderStack, ItemStack cardStack, Slot pSlot, ClickAction pAction, Player pPlayer, SlotAccess pAccess
+	) {
+		if (pSlot.allowModification(pPlayer)) {
+			return handleStackedWithCard(holderStack, pAction, cardStack, pPlayer);
+		}
+		return false;
+	}
+
+	private static boolean handleStackedWithCard(ItemStack holderStack, ClickAction pAction, ItemStack cardStack, Player pPlayer) {
+		if (!isCard(cardStack)) {
+			return false;
+		}
+		if (holderStack.getCount() != 1 || pAction != ClickAction.SECONDARY) {
+			return false;
+		}
+
+		addCardToInventory(holderStack, cardStack);
+		pPlayer.playSound(SoundEvents.BUNDLE_INSERT, 0.8F, 0.8F + pPlayer.level().getRandom().nextFloat() * 0.4F);
+		return true;
+	}
 
     public static ItemStack addCardToInventory(ItemStack cardHolder, ItemStack card) {
         if (card.getItem() instanceof BaseFilter && !card.isComponentsPatchEmpty())
