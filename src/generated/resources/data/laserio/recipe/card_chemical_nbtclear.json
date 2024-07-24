@@ -1,0 +1,20 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "mekanism"
+    }
+  ],
+  "type": "laserio:cardclear",
+  "category": "misc",
+  "group": "laserio",
+  "ingredients": [
+    {
+      "item": "laserio:card_chemical"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "laserio:card_chemical"
+  }
+}

@@ -17,6 +17,7 @@ import java.util.concurrent.CompletableFuture;
 public class LaserIOItemTags extends ItemTagsProvider {
     public static final TagKey<Item> WRENCHES = forgeTag("wrenches");
     public static final TagKey<Item> TOOLS_WRENCH = forgeTag("tools/wrench");
+    public static final TagKey<Item> CIRCUITS_BASIC = forgeTag("circuits/basic");
 
     private static TagKey<Item> forgeTag(String name) {
         return ItemTags.create(ResourceLocation.fromNamespaceAndPath("c", name));

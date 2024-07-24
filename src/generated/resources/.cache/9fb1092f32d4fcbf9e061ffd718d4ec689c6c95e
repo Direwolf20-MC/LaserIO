@@ -1,5 +1,6 @@
-// 1.21	2024-06-19T13:01:23.0472318	Recipes
+// 1.21	2024-07-24T18:58:34.073988	Recipes
 2bfe7ae02c3b8f3e2ba4b4b230cd9138a3716e05 data/laserio/advancement/recipes/misc/card_chemical.json
+731ad1bf1e8f5267014620275e52cef2e50da371 data/laserio/advancement/recipes/misc/card_chemical_nbtclear.json
 7ef2ab2b3bae7b8e07e3a805c87c11c2f9b1ec26 data/laserio/advancement/recipes/misc/card_cloner.json
 e4e83c1928b7fdaf2cd31d2bf2c05dfe190e6707 data/laserio/advancement/recipes/misc/card_energy.json
 d69a311998c0cfb9711ae2001111bd13412504a1 data/laserio/advancement/recipes/misc/card_energy_nbtclear.json
@@ -29,6 +30,7 @@ f1bf2c57f08247ecc934c28f66472a7c0e31a307 data/laserio/advancement/recipes/misc/l
 fe7f4c87fde4dfcb15467bca84f3abc172109659 data/laserio/advancement/recipes/misc/overclocker_card.json
 ba85de522b8e695d3d5b8a939a27b33fc3b1bcea data/laserio/advancement/recipes/misc/overclocker_node.json
 e89bbd6c5f5689a39b4d2cb07ce466017ece3088 data/laserio/recipe/card_chemical.json
+cf1267a676da4875e1f763333985212046207da8 data/laserio/recipe/card_chemical_nbtclear.json
 0955bf0dd67e997e535b30c9bfbc17af747705a1 data/laserio/recipe/card_cloner.json
 2e59b3deebe77f99a0685d290c326de4cdefc84e data/laserio/recipe/card_energy.json
 137c1fb81f43c10337c51c9fc6429514832caaf8 data/laserio/recipe/card_energy_nbtclear.json

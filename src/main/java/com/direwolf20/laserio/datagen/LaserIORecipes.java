@@ -11,6 +11,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.common.Tags;
+import net.neoforged.neoforge.common.conditions.ModLoadedCondition;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.CompletableFuture;
@@ -157,18 +158,18 @@ public class LaserIORecipes extends RecipeProvider {
                 .group("laserio")
                 .unlockedBy("has_logic_chip", InventoryChangeTrigger.TriggerInstance.hasItems(Registration.Logic_Chip.get()))
                 .save(recipeOutput);
-        /**ShapedRecipeBuilder.shaped(RecipeCategory.MISC, Registration.Card_Chemical.get(), 1)
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, Registration.Card_Chemical.get(), 1)
                 .pattern("rlr")
                 .pattern("qpq")
                 .pattern("ggg")
                 .define('r', Tags.Items.DUSTS_REDSTONE)
                 .define('p', Registration.Logic_Chip.get())
                 .define('g', Tags.Items.NUGGETS_GOLD)
-                .define('l', MekanismTags.Items.CIRCUITS_BASIC)
+                .define('l', LaserIOItemTags.CIRCUITS_BASIC)
                 .define('q', Tags.Items.GEMS_QUARTZ)
                 .group("laserio")
                 .unlockedBy("has_logic_chip", InventoryChangeTrigger.TriggerInstance.hasItems(Registration.Logic_Chip.get()))
-         .save(recipeOutput.withConditions(new ModLoadedCondition("mekanism")));*/
+                .save(recipeOutput.withConditions(new ModLoadedCondition("mekanism")));
 
         //Filters
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, Registration.Filter_Basic.get(), 4)
@@ -249,6 +250,12 @@ public class LaserIORecipes extends RecipeProvider {
                 .group("laserio")
                 .unlockedBy("has_card_redstone", InventoryChangeTrigger.TriggerInstance.hasItems(Registration.Card_Redstone.get()))
                 .save(recipeOutput, Registration.Card_Redstone.getId() + "_nbtclear");
+        CardClearRecipeBuilder.shapeless(Registration.Card_Chemical.get())
+                .requires(Registration.Card_Chemical.get())
+                .group("laserio")
+                .unlockedBy("has_card_chemical", InventoryChangeTrigger.TriggerInstance.hasItems(Registration.Card_Chemical.get()))
+                .save(recipeOutput.withConditions(new ModLoadedCondition("mekanism")), Registration.Card_Chemical.getId() + "_nbtclear");
+
         ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, Registration.Filter_Basic.get())
                 .requires(Registration.Filter_Basic.get())
                 .group("laserio")
