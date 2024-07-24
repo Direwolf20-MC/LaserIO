@@ -92,7 +92,7 @@ public class FilterCount extends BaseFilter {
             }
             stack.set(LaserIODataComponents.FILTER_COUNT_SLOT_COUNTS, list);
         }
-        List<Integer> slotAmts = stack.get(LaserIODataComponents.FILTER_COUNT_SLOT_COUNTS);
+        List<Integer> slotAmts = new ArrayList<>(stack.get(LaserIODataComponents.FILTER_COUNT_SLOT_COUNTS));
 
         slotAmts.set(getSlot, setCount);
         /*if (!(mbCount == setCount || mbAmt == 0)) {
@@ -115,11 +115,11 @@ public class FilterCount extends BaseFilter {
 
     public static FilterCountHandler getInventory(ItemStack stack) {
         FilterCountHandler handler = new FilterCountHandler(FilterCountContainer.SLOTS, stack);
-        for (int i = 0; i < FilterCountContainer.SLOTS; i++) {
+        /*for (int i = 0; i < FilterCountContainer.SLOTS; i++) {
             ItemStack itemStack = handler.getStackInSlot(i);
             //itemStack.setCount(getSlotCount(stack, i));
             handler.setStackInSlot(i, itemStack);
-        }
+        }*/
         return handler;
     }
 
