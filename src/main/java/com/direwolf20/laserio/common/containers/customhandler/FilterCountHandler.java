@@ -21,6 +21,24 @@ public class FilterCountHandler extends FilterBasicHandler {
         return 1;
     }
 
+    @Override
+    public ItemStack getStackInSlot(int slot) {
+        ItemStack returnStack = super.getStackInSlot(slot);
+        int amt = FilterCount.getSlotCount(this.stack, slot);
+        if (amt != returnStack.getCount())
+            returnStack.setCount(amt);
+        return returnStack;
+    }
+
+    @Override
+    public void setStackInSlot(int slot, ItemStack stack) {
+        ItemStack stackCopy = stack.copy();
+        int amt = stackCopy.getCount();
+        stackCopy.setCount(1);
+        super.setStackInSlot(slot, stackCopy);
+        FilterCount.setSlotCount(this.stack, slot, amt);
+    }
+
     public void setStackInSlotSave(int slot, @Nonnull ItemStack incomingStack) {
         if (this.getStackInSlot(slot).isEmpty()) {
             this.setStackInSlot(slot, incomingStack);
@@ -29,6 +47,19 @@ public class FilterCountHandler extends FilterBasicHandler {
         } else {
             this.setStackInSlot(slot, incomingStack);
             FilterCount.setSlotCount(this.stack, slot, incomingStack.getCount());
+            //if (stack.isEmpty())
+            //FilterCount.setInventory(this.stack, this);
+        }
+    }
+
+    public void setStackInSlotSave(int slot, @Nonnull ItemStack incomingStack, int amt) {
+        if (this.getStackInSlot(slot).isEmpty()) {
+            this.setStackInSlot(slot, incomingStack);
+            FilterCount.setSlotCount(this.stack, slot, amt);
+            //FilterCount.setInventory(this.stack, this);
+        } else {
+            this.setStackInSlot(slot, incomingStack);
+            FilterCount.setSlotCount(this.stack, slot, amt);
             //if (stack.isEmpty())
             //FilterCount.setInventory(this.stack, this);
         }

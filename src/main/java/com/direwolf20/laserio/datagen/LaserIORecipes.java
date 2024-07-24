@@ -2,7 +2,6 @@ package com.direwolf20.laserio.datagen;
 
 import com.direwolf20.laserio.datagen.customrecipes.CardClearRecipeBuilder;
 import com.direwolf20.laserio.setup.Registration;
-import mekanism.common.tags.MekanismTags;
 import net.minecraft.advancements.critereon.InventoryChangeTrigger;
 import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.core.HolderLookup;
@@ -12,7 +11,6 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.common.Tags;
-import net.neoforged.neoforge.common.conditions.ModLoadedCondition;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.CompletableFuture;
@@ -159,7 +157,7 @@ public class LaserIORecipes extends RecipeProvider {
                 .group("laserio")
                 .unlockedBy("has_logic_chip", InventoryChangeTrigger.TriggerInstance.hasItems(Registration.Logic_Chip.get()))
                 .save(recipeOutput);
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, Registration.Card_Chemical.get(), 1)
+        /**ShapedRecipeBuilder.shaped(RecipeCategory.MISC, Registration.Card_Chemical.get(), 1)
                 .pattern("rlr")
                 .pattern("qpq")
                 .pattern("ggg")
@@ -170,7 +168,7 @@ public class LaserIORecipes extends RecipeProvider {
                 .define('q', Tags.Items.GEMS_QUARTZ)
                 .group("laserio")
                 .unlockedBy("has_logic_chip", InventoryChangeTrigger.TriggerInstance.hasItems(Registration.Logic_Chip.get()))
-                .save(recipeOutput.withConditions(new ModLoadedCondition("mekanism")));
+         .save(recipeOutput.withConditions(new ModLoadedCondition("mekanism")));*/
 
         //Filters
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, Registration.Filter_Basic.get(), 4)
