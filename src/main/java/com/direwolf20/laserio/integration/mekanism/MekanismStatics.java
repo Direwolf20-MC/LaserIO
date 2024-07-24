@@ -76,8 +76,11 @@ public class MekanismStatics {
 
     public static ChemicalStack<?> getFirstChemicalOnItemStack(ItemStack itemStack) {
         if (itemStack.isEmpty()) return GasStack.EMPTY;
+        ItemStack testStack = itemStack.copy();
+        if (testStack.getCount() > 1)
+            testStack.setCount(1);
         for (ChemicalType chemicalType : ChemicalType.values()) {
-            ChemicalStack<?> chemicalStack = getFirstChemicalOnItemStack(itemStack, chemicalType);
+            ChemicalStack<?> chemicalStack = getFirstChemicalOnItemStack(testStack, chemicalType);
             if (!chemicalStack.isEmpty())
                 return chemicalStack;
         }
