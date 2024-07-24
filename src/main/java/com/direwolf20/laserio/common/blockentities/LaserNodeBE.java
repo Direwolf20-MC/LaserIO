@@ -549,7 +549,8 @@ public class LaserNodeBE extends BaseLaserBE {
         } else {
             List<InserterCardCache> nodes = inserterNodes.stream().filter(p -> (p.channel == extractorCardCache.channel)
                             && (p.enabled)
-                            && (!(p.relativePos.pos().equals(BlockPos.ZERO) && p.direction.equals(extractorCardCache.direction) && (p.cardType.equals(extractorCardCache.cardType)))))
+                            && (p.cardType == extractorCardCache.cardType)
+                            && (!(p.relativePos.pos().equals(BlockPos.ZERO) && p.direction.equals(extractorCardCache.direction))))
                     .toList();
             channelOnlyCache.put(extractorCardCache, nodes);
             return nodes;
