@@ -35,7 +35,7 @@ public class GhostFilterCount implements IGhostIngredientHandler<FilterCountScre
                     @Override
                     public void accept(I ingredient) {
                         slot.set((ItemStack) ingredient);
-                        gui.getMenu().handler.setStackInSlotSave(slot.index, (ItemStack) ingredient); //We do this for continuity between client/server -- not needed in cardItemScreen
+                        gui.getMenu().handler.setStackInSlot(slot.index, (ItemStack) ingredient); //We do this for continuity between client/server -- not needed in cardItemScreen
                         PacketDistributor.sendToServer(new GhostSlotPayload(slot.index, (ItemStack) ingredient, ((ItemStack) ingredient).getCount(), -1));
                     }
                 });

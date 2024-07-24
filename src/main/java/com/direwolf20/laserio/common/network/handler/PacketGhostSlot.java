@@ -40,7 +40,7 @@ public class PacketGhostSlot {
                 } else {
                     stack.setCount(payload.count());
                 }
-                handler.setStackInSlotSave(payload.slotNumber() - CardItemContainer.SLOTS, stack, payload.count());
+                handler.setStackInSlot(payload.slotNumber() - CardItemContainer.SLOTS, stack);
 
                 if (mbAmt != -1 && (container instanceof CardFluidContainer || container instanceof CardChemicalContainer)) { //MB amt is only done in CardFluidContainers
                     handler.setMBAmountInSlot(payload.slotNumber() - CardItemContainer.SLOTS, mbAmt);
@@ -49,7 +49,7 @@ public class PacketGhostSlot {
                 ItemStack stack = payload.stack();
                 stack.setCount(payload.count());
                 FilterCountHandler handler = ((FilterCountContainer) container).handler;
-                handler.setStackInSlotSave(payload.slotNumber(), stack);
+                handler.setStackInSlot(payload.slotNumber(), stack);
             } else {
                 Slot slot = container.slots.get(payload.slotNumber());
                 ItemStack stack = payload.stack();

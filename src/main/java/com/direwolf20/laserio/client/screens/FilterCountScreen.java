@@ -140,7 +140,7 @@ public class FilterCountScreen extends AbstractContainerScreen<FilterCountContai
             hoveredSlot.set(stack); // Temporarily update the client for continuity purposes
             if (ItemStack.isSameItemSameComponents(stack, container.filterItem)) return true;
             PacketDistributor.sendToServer(new GhostSlotPayload(hoveredSlot.index, stack, stack.getCount(), -1));
-            container.handler.setStackInSlotSave(hoveredSlot.index, stack); //We do this for continuity between client/server -- not needed in cardItemScreen
+            container.handler.setStackInSlot(hoveredSlot.index, stack); //We do this for continuity between client/server -- not needed in cardItemScreen
         } else {
             ItemStack slotStack = hoveredSlot.getItem();
             if (slotStack.isEmpty()) return true;
@@ -156,7 +156,7 @@ public class FilterCountScreen extends AbstractContainerScreen<FilterCountContai
             slotStack.grow(amt);
 
             PacketDistributor.sendToServer(new GhostSlotPayload(hoveredSlot.index, slotStack, slotStack.getCount(), -1));
-            container.handler.setStackInSlotSave(hoveredSlot.index, slotStack); //We do this for continuity between client/server -- not needed in cardItemScreen
+            container.handler.setStackInSlot(hoveredSlot.index, slotStack); //We do this for continuity between client/server -- not needed in cardItemScreen
         }
 
 
