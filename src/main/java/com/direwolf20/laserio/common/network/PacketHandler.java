@@ -21,6 +21,7 @@ public class PacketHandler {
         registrar.playToServer(GhostSlotPayload.TYPE, GhostSlotPayload.STREAM_CODEC, PacketGhostSlot.get()::handle);
         registrar.playToServer(OpenNodePayload.TYPE, OpenNodePayload.STREAM_CODEC, PacketOpenNode.get()::handle);
         registrar.playToServer(UpdateFilterTagPayload.TYPE, UpdateFilterTagPayload.STREAM_CODEC, PacketUpdateFilterTag.get()::handle);
+        registrar.playToServer(ToggleParticlesPayload.TYPE, ToggleParticlesPayload.STREAM_CODEC, PacketToggleParticles.get()::handle);
         registrar.playToServer(ChangeColorPayload.TYPE, ChangeColorPayload.STREAM_CODEC, PacketChangeColor.get()::handle);
         registrar.playToServer(CopyPasteCardPayload.TYPE, CopyPasteCardPayload.STREAM_CODEC, PacketCopyPasteCard.get()::handle);
 

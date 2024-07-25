@@ -1,6 +1,7 @@
 package com.direwolf20.laserio.client.screens;
 
 import com.direwolf20.laserio.client.screens.widgets.IconButton;
+import com.direwolf20.laserio.client.screens.widgets.ToggleButton;
 import com.direwolf20.laserio.common.LaserIO;
 import com.direwolf20.laserio.common.containers.CardHolderContainer;
 import com.direwolf20.laserio.common.containers.LaserNodeContainer;
@@ -12,6 +13,7 @@ import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.common.network.data.CopyPasteCardPayload;
 import com.direwolf20.laserio.common.network.data.OpenCardPayload;
 import com.direwolf20.laserio.common.network.data.OpenNodePayload;
+import com.direwolf20.laserio.common.network.data.ToggleParticlesPayload;
 import com.direwolf20.laserio.util.MiscTools;
 import com.direwolf20.laserio.util.Vec2i;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -40,6 +42,9 @@ public class LaserNodeScreen extends AbstractContainerScreen<LaserNodeContainer>
     private final ResourceLocation GUI = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/laser_node.png");
     protected final LaserNodeContainer container;
     private boolean showCardHolderUI;
+    private boolean currentParticles;
+    Button settingsButton;
+    Button particlesButton;
     private final MutableComponent[] sides = {
             Component.translatable("screen.laserio.down"),
             Component.translatable("screen.laserio.up"),
@@ -63,7 +68,7 @@ public class LaserNodeScreen extends AbstractContainerScreen<LaserNodeContainer>
         this.container = container;
         this.imageHeight = 181;
         showCardHolderUI = container.cardHolder.isEmpty();
-        //this.imageWidth = 202;
+        this.currentParticles = container.tile.getShowParticles();
     }
 
     @Override
@@ -71,10 +76,20 @@ public class LaserNodeScreen extends AbstractContainerScreen<LaserNodeContainer>
         super.init();
         List<AbstractWidget> leftWidgets = new ArrayList<>();
         ResourceLocation settings = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/settings.png");
-        Button settingsButton = new IconButton(getGuiLeft() + 155, getGuiTop() + 25, 16, 16, settings, (button) -> {
+        settingsButton = new IconButton(getGuiLeft() + 155, getGuiTop() + 25, 16, 16, settings, (button) -> {
             Minecraft.getInstance().setScreen(new LaserNodeSettingsScreen(container, Component.translatable("screen.laserio.settings")));
         });
         leftWidgets.add(settingsButton);
+
+        ResourceLocation[] regulateTextures = new ResourceLocation[2];
+        regulateTextures[0] = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/regulatefalse.png");
+        regulateTextures[1] = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/regulatetrue.png");
+        particlesButton = new ToggleButton(getGuiLeft() + 155, getGuiTop() + 45, 16, 16, regulateTextures, currentParticles ? 1 : 0, (button) -> {
+            currentParticles = !currentParticles;
+            ((ToggleButton) button).setTexturePosition(currentParticles ? 1 : 0);
+            PacketDistributor.sendToServer(new ToggleParticlesPayload(currentParticles));
+        });
+        leftWidgets.add(particlesButton);
 
         for (int i = 0; i < leftWidgets.size(); i++) {
             addRenderableWidget(leftWidgets.get(i));
@@ -95,6 +110,12 @@ public class LaserNodeScreen extends AbstractContainerScreen<LaserNodeContainer>
         //this.renderBackground(guiGraphics);
         super.render(guiGraphics, mouseX, mouseY, partialTicks);
         this.renderTooltip(guiGraphics, mouseX, mouseY);
+        if (MiscTools.inBounds(particlesButton.getX(), particlesButton.getY(), particlesButton.getWidth(), particlesButton.getHeight(), mouseX, mouseY)) {
+            MutableComponent translatableComponents[] = new MutableComponent[4];
+            translatableComponents[0] = Component.translatable("screen.laserio.showparticles");
+            translatableComponents[1] = Component.translatable("screen.laserio.hideparticles");
+            guiGraphics.renderTooltip(font, currentParticles ? translatableComponents[0] : translatableComponents[1], mouseX, mouseY);
+        }
     }
 
     @Override
