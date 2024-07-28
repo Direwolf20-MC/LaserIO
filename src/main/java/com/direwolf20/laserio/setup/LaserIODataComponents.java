@@ -1,7 +1,6 @@
 package com.direwolf20.laserio.setup;
 
 import com.direwolf20.laserio.common.LaserIO;
-import com.direwolf20.laserio.common.containers.customhandler.DireItemContainerContents;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.core.UUIDUtil;
@@ -9,6 +8,7 @@ import net.minecraft.core.component.DataComponentType;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.world.item.component.ItemContainerContents;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import org.jetbrains.annotations.NotNull;
@@ -21,7 +21,7 @@ public class LaserIODataComponents {
     public static final DeferredRegister<DataComponentType<?>> COMPONENTS = DeferredRegister.createDataComponents(LaserIO.MODID);
 
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<GlobalPos>> BOUND_GLOBAL_POS = COMPONENTS.register("bound_global_pos", () -> DataComponentType.<GlobalPos>builder().persistent(GlobalPos.CODEC).networkSynchronized(GlobalPos.STREAM_CODEC).build());
-    public static final DeferredHolder<DataComponentType<?>, DataComponentType<DireItemContainerContents>> ITEMSTACK_HANDLER = COMPONENTS.register("itemstack_handler", () -> DataComponentType.<DireItemContainerContents>builder().persistent(DireItemContainerContents.CODEC).networkSynchronized(DireItemContainerContents.STREAM_CODEC).cacheEncoding().build());
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<ItemContainerContents>> ITEMSTACK_HANDLER = COMPONENTS.register("itemstack_handler", () -> DataComponentType.<ItemContainerContents>builder().persistent(ItemContainerContents.CODEC).networkSynchronized(ItemContainerContents.STREAM_CODEC).cacheEncoding().build());
 
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Byte>> CARD_TRANSFER_MODE = COMPONENTS.register("card_transfer_mode", () -> DataComponentType.<Byte>builder().persistent(Codec.BYTE).networkSynchronized(ByteBufCodecs.BYTE).build());
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Byte>> CARD_CHANNEL = COMPONENTS.register("card_channel", () -> DataComponentType.<Byte>builder().persistent(Codec.BYTE).networkSynchronized(ByteBufCodecs.BYTE).build());

@@ -3,6 +3,7 @@ package com.direwolf20.laserio.common.network.handler;
 import com.direwolf20.laserio.common.containers.CardItemContainer;
 import com.direwolf20.laserio.common.containers.FilterBasicContainer;
 import com.direwolf20.laserio.common.containers.FilterCountContainer;
+import com.direwolf20.laserio.common.containers.FilterTagContainer;
 import com.direwolf20.laserio.common.items.filters.FilterBasic;
 import com.direwolf20.laserio.common.items.filters.FilterCount;
 import com.direwolf20.laserio.common.items.filters.FilterNBT;
@@ -74,8 +75,7 @@ public class PacketOpenFilter {
             }));
         }
         if (filterItem.getItem() instanceof FilterTag) {
-            //TODO Bring Back somehow
-            /*MenuProvider containerProvider = new MenuProvider() {
+            MenuProvider containerProvider = new MenuProvider() {
                 @Override
                 public Component getDisplayName() {
                     return Component.translatable(SCREEN_LASERNODE);
@@ -94,7 +94,7 @@ public class PacketOpenFilter {
             sender.openMenu(containerProvider, (buf -> {
                 ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, filterItem);
                 ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, ItemStack.EMPTY);
-            }));*/
+            }));
         }
         if (filterItem.getItem() instanceof FilterNBT) {
             /*FilterBasicHandler handler = FilterBasic.getInventory(filterItem);

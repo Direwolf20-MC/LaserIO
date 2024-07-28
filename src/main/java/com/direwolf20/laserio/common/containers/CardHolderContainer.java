@@ -1,7 +1,7 @@
 package com.direwolf20.laserio.common.containers;
 
-import com.direwolf20.laserio.common.containers.customhandler.DataComponentHandler;
 import com.direwolf20.laserio.common.containers.customslot.CardHolderSlot;
+import com.direwolf20.laserio.setup.LaserIODataComponents;
 import com.direwolf20.laserio.setup.Registration;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -11,6 +11,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.items.ComponentItemHandler;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.SlotItemHandler;
 import net.neoforged.neoforge.items.wrapper.InvWrapper;
@@ -22,7 +23,7 @@ public class CardHolderContainer extends AbstractContainerMenu {
     public Player playerEntity;
     private IItemHandler playerInventory;
     public BlockPos sourceContainer = BlockPos.ZERO;
-    public DataComponentHandler cardHolderHandler;
+    public ComponentItemHandler cardHolderHandler;
 
     public CardHolderContainer(int windowId, Inventory playerInventory, Player player, RegistryFriendlyByteBuf extraData) {
         this(windowId, playerInventory, player, ItemStack.OPTIONAL_STREAM_CODEC.decode(extraData));
@@ -31,7 +32,7 @@ public class CardHolderContainer extends AbstractContainerMenu {
     public CardHolderContainer(int windowId, Inventory playerInventory, Player player, ItemStack cardHolder) {
         super(Registration.CardHolder_Container.get(), windowId);
         playerEntity = player;
-        this.cardHolderHandler = new DataComponentHandler(cardHolder, SLOTS);
+        this.cardHolderHandler = new ComponentItemHandler(cardHolder, LaserIODataComponents.ITEMSTACK_HANDLER.get(), SLOTS);
         this.playerInventory = new InvWrapper(playerInventory);
         this.cardHolder = cardHolder;
         if (cardHolderHandler != null) {

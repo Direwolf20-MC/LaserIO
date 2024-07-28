@@ -10,6 +10,7 @@ import com.direwolf20.laserio.common.items.filters.BaseFilter;
 import com.direwolf20.laserio.common.items.upgrades.OverclockerCard;
 import com.direwolf20.laserio.common.items.upgrades.OverclockerNode;
 import com.direwolf20.laserio.setup.Registration;
+import com.direwolf20.laserio.util.CardHolderItemStackHandler;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -18,9 +19,7 @@ import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemStackHandler;
 import net.neoforged.neoforge.items.SlotItemHandler;
 import net.neoforged.neoforge.items.wrapper.InvWrapper;
 
@@ -35,7 +34,7 @@ public class LaserNodeContainer extends AbstractContainerMenu {
     private IItemHandler playerInventory;
     ContainerLevelAccess containerLevelAccess;
     public ItemStack cardHolder;
-    public IItemHandler cardHolderHandler;
+    public CardHolderItemStackHandler cardHolderHandler;
     public UUID cardHolderUUID;
 
     // Tile can be null and shouldn't be used for accessing any data that needs to be up to date on both sides
@@ -59,11 +58,12 @@ public class LaserNodeContainer extends AbstractContainerMenu {
         }
         this.cardHolder = cardHolder;
 
-        this.cardHolderHandler = cardHolder.getCapability(Capabilities.ItemHandler.ITEM, null);
-        if (cardHolderHandler == null) cardHolderHandler = new ItemStackHandler(CardHolderContainer.SLOTS);
-        addSlotBox(cardHolderHandler, 0, -92, 32, 5, 18, 3, 18);
-        cardHolderUUID = CardHolder.getUUID(cardHolder);
-
+        if (!cardHolder.isEmpty()) {
+            this.cardHolderHandler = new CardHolderItemStackHandler(CardHolderContainer.SLOTS, cardHolder);
+            //if (cardHolderHandler == null) cardHolderHandler = new ItemStackHandler(CardHolderContainer.SLOTS);
+            addSlotBox(cardHolderHandler, 0, -92, 32, 5, 18, 3, 18);
+            cardHolderUUID = CardHolder.getUUID(cardHolder);
+        }
         layoutPlayerInventorySlots(8, 99);
     }
 

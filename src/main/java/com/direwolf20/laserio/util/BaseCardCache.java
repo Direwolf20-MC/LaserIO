@@ -1,7 +1,6 @@
 package com.direwolf20.laserio.util;
 
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
-import com.direwolf20.laserio.common.containers.customhandler.DataComponentHandler;
 import com.direwolf20.laserio.common.containers.customhandler.FilterCountHandler;
 import com.direwolf20.laserio.common.items.cards.*;
 import com.direwolf20.laserio.common.items.filters.*;
@@ -17,6 +16,7 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidUtil;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
+import net.neoforged.neoforge.items.ComponentItemHandler;
 
 import java.util.*;
 
@@ -159,7 +159,7 @@ public class BaseCardCache {
 
     public List<ItemStack> getFilteredItems() {
         List<ItemStack> filteredItems = new ArrayList<>();
-        DataComponentHandler filterSlotHandler;
+        ComponentItemHandler filterSlotHandler;
         if (filterCard.getItem() instanceof FilterBasic)
             filterSlotHandler = FilterBasic.getInventory(filterCard);
         else
@@ -174,7 +174,7 @@ public class BaseCardCache {
 
     public List<FluidStack> getFilteredFluids() {
         List<FluidStack> filteredFluids = new ArrayList<>();
-        DataComponentHandler filterSlotHandler;
+        ComponentItemHandler filterSlotHandler;
         if (filterCard.getItem() instanceof FilterBasic)
             filterSlotHandler = FilterBasic.getInventory(filterCard);
         else

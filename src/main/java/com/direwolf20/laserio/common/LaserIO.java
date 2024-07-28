@@ -1,12 +1,14 @@
 package com.direwolf20.laserio.common;
 
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
+import com.direwolf20.laserio.common.containers.CardHolderContainer;
 import com.direwolf20.laserio.common.items.CardHolder;
 import com.direwolf20.laserio.common.network.PacketHandler;
 import com.direwolf20.laserio.setup.ClientSetup;
 import com.direwolf20.laserio.setup.Config;
 import com.direwolf20.laserio.setup.ModSetup;
 import com.direwolf20.laserio.setup.Registration;
+import com.direwolf20.laserio.util.CardHolderItemStackHandler;
 import com.mojang.logging.LogUtils;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -61,7 +63,7 @@ public class LaserIO {
                 Registration.LaserNode.get());
         event.registerItem(Capabilities.ItemHandler.ITEM, (itemStack, context) -> {
                     if (itemStack.getItem() instanceof CardHolder holder)
-                        return holder.getItemHandler(itemStack);
+                        return new CardHolderItemStackHandler(CardHolderContainer.SLOTS, itemStack);
                     return null;
                 },
                 Registration.Card_Holder.get()

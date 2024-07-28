@@ -1,7 +1,6 @@
 package com.direwolf20.laserio.client.events;
 
 import com.direwolf20.laserio.client.screens.LaserGuiGraphics;
-import com.direwolf20.laserio.common.containers.customhandler.DataComponentHandler;
 import com.direwolf20.laserio.common.items.filters.FilterBasic;
 import com.direwolf20.laserio.common.items.filters.FilterCount;
 import com.direwolf20.laserio.common.items.filters.FilterTag;
@@ -22,6 +21,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.items.ComponentItemHandler;
 import org.lwjgl.opengl.GL11;
 
 import java.util.Comparator;
@@ -86,7 +86,7 @@ public class EventTooltip {
 
         public static class Data implements TooltipComponent {
             public ItemStack stack;
-            public DataComponentHandler filterData;
+            public ComponentItemHandler filterData;
             public List<String> tags;
             public int rows = 0;
 

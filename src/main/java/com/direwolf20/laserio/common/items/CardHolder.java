@@ -1,7 +1,6 @@
 package com.direwolf20.laserio.common.items;
 
 import com.direwolf20.laserio.common.containers.CardHolderContainer;
-import com.direwolf20.laserio.common.containers.customhandler.DataComponentHandler;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.common.items.filters.BaseFilter;
 import com.direwolf20.laserio.common.items.upgrades.OverclockerCard;
@@ -18,7 +17,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ComponentItemHandler;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -55,7 +54,7 @@ public class CardHolder extends Item {
         return getActive(itemStack);
     }
 
-    public IItemHandler getItemHandler(ItemStack stack) {
+    public CardHolderItemStackHandler getItemHandler(ItemStack stack) {
         return new CardHolderItemStackHandler(CardHolderContainer.SLOTS, stack);
     }
 
@@ -74,7 +73,7 @@ public class CardHolder extends Item {
     public static ItemStack addCardToInventory(ItemStack cardHolder, ItemStack card) {
         if (card.getItem() instanceof BaseFilter && !card.isComponentsPatchEmpty())
             return card;
-        DataComponentHandler handler = new DataComponentHandler(cardHolder, CardHolderContainer.SLOTS);
+        ComponentItemHandler handler = new ComponentItemHandler(cardHolder, LaserIODataComponents.ITEMSTACK_HANDLER.get(), CardHolderContainer.SLOTS);
         if (handler == null) return card;
         List<Integer> emptySlots = new ArrayList<>();
         for (int i = 0; i < handler.getSlots(); i++) {

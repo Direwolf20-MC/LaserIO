@@ -1,8 +1,10 @@
 package com.direwolf20.laserio.common.containers;
 
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
+import com.direwolf20.laserio.common.containers.customhandler.CardItemHandler;
 import com.direwolf20.laserio.common.containers.customhandler.FilterBasicHandler;
 import com.direwolf20.laserio.common.containers.customslot.FilterBasicSlot;
+import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.setup.Registration;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -120,6 +122,10 @@ public class FilterTagContainer extends AbstractContainerMenu {
         Level world = playerIn.level();
         if (!world.isClientSide) {
             handler.setStackInSlot(0, ItemStack.EMPTY); //Clear the current slot
+            if (sourceCard != null && !sourceCard.isEmpty()) {
+                CardItemHandler cardItemHandler = BaseCard.getInventory(sourceCard);
+                cardItemHandler.setStackInSlot(0, filterItem);
+            }
             if (!sourceContainer.equals(BlockPos.ZERO)) {
                 BlockEntity blockEntity = world.getBlockEntity(sourceContainer);
                 if (blockEntity instanceof LaserNodeBE)

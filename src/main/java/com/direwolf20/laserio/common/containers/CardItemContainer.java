@@ -14,6 +14,7 @@ import com.direwolf20.laserio.common.items.filters.BaseFilter;
 import com.direwolf20.laserio.common.items.filters.FilterBasic;
 import com.direwolf20.laserio.common.items.filters.FilterCount;
 import com.direwolf20.laserio.setup.Registration;
+import com.direwolf20.laserio.util.CardHolderItemStackHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
@@ -25,7 +26,6 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.SlotItemHandler;
 import net.neoforged.neoforge.items.wrapper.InvWrapper;
@@ -46,7 +46,7 @@ public class CardItemContainer extends AbstractContainerMenu {
     public BlockPos sourceContainer = BlockPos.ZERO;
     public byte direction = -1;
     public ItemStack cardHolder;
-    public IItemHandler cardHolderHandler;
+    public CardHolderItemStackHandler cardHolderHandler;
     public UUID cardHolderUUID;
 
     protected CardItemContainer(@Nullable MenuType<?> pMenuType, int pContainerId) {
@@ -73,7 +73,7 @@ public class CardItemContainer extends AbstractContainerMenu {
         }
         cardHolder = findCardHolders(player);
         if (!cardHolder.isEmpty()) {
-            this.cardHolderHandler = cardHolder.getCapability(Capabilities.ItemHandler.ITEM, null);
+            this.cardHolderHandler = new CardHolderItemStackHandler(CardHolderContainer.SLOTS, cardHolder);
             addSlotBox(cardHolderHandler, 0, -92, 32, 5, 18, 3, 18);
             cardHolderUUID = CardHolder.getUUID(cardHolder);
         }

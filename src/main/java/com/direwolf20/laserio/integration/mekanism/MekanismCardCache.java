@@ -1,6 +1,5 @@
 package com.direwolf20.laserio.integration.mekanism;
 
-import com.direwolf20.laserio.common.containers.customhandler.DataComponentHandler;
 import com.direwolf20.laserio.common.containers.customhandler.FilterCountHandler;
 import com.direwolf20.laserio.common.items.filters.FilterBasic;
 import com.direwolf20.laserio.common.items.filters.FilterCount;
@@ -16,6 +15,7 @@ import mekanism.api.chemical.ChemicalStack;
 import mekanism.api.chemical.ChemicalType;
 import mekanism.api.chemical.IChemicalHandler;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.items.ComponentItemHandler;
 
 import java.util.*;
 import java.util.function.Predicate;
@@ -42,7 +42,7 @@ public class MekanismCardCache {
     public Map<ChemicalType, List<ChemicalStack<?>>> getFilteredChemicals() {
         //Note: We can use an enum map instead of having to use a linked map because the iteration order is already the same as what we want
         Map<ChemicalType, List<ChemicalStack<?>>> filteredChemicalsMap = new EnumMap<>(ChemicalType.class);
-        DataComponentHandler filterSlotHandler;
+        ComponentItemHandler filterSlotHandler;
         ItemStack filterCard = baseCardCache.filterCard;
         if (filterCard.getItem() instanceof FilterBasic)
             filterSlotHandler = FilterBasic.getInventory(filterCard);
