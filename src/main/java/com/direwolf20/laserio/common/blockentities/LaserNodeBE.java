@@ -769,7 +769,7 @@ public class LaserNodeBE extends BaseLaserBE {
                 filterMatched = allMatched;
             }
         } else if (filter.getItem() instanceof FilterTag) {
-            List<String> tags = sensorCardCache.filterTags;
+            List<String> tags = new ArrayList<>(sensorCardCache.filterTags);
             int tagsToMatch = tags.size();
             List<ItemStack> itemStacksInChest = inventoryCounts.getItemCounts().values().stream().toList();
             outloop:
