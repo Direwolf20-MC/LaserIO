@@ -2189,6 +2189,7 @@ public class LaserNodeBE extends BaseLaserBE {
 
     public LaserNodeEnergyHandler getLaserNodeHandlerEnergy(InserterCardCache inserterCardCache) {
         if (!inserterCardCache.cardType.equals(BaseCard.CardType.ENERGY)) return null;
+        if (level == null) return null;
         GlobalPos nodeWorldPos = new GlobalPos(MiscTools.getLevel(level.getServer(), inserterCardCache.relativePos).dimension(), getWorldPos(inserterCardCache.relativePos.pos()));
         if (!chunksLoaded(nodeWorldPos, nodeWorldPos.pos().relative(inserterCardCache.direction))) return null;
         LaserNodeBE be = getNodeAt(new GlobalPos(MiscTools.getLevel(level.getServer(), inserterCardCache.relativePos).dimension(), getWorldPos(inserterCardCache.relativePos.pos())));

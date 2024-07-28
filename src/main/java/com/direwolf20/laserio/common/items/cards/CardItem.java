@@ -32,6 +32,7 @@ public class CardItem extends BaseCard {
         return new InteractionResultHolder<>(InteractionResult.PASS, itemstack);
     }
 
+    //TODO: 1.22 Consider setting default to 8
     public static byte setItemExtractAmt(ItemStack card, byte itemextractamt) {
         if (itemextractamt == 1)
             card.remove(LaserIODataComponents.ITEM_CARD_EXTRACT_AMT);

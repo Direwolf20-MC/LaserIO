@@ -49,6 +49,7 @@ public class LaserIO {
     }
 
     private void registerCapabilities(RegisterCapabilitiesEvent event) {
+        //TODO 1.22 REMOVE
         event.registerBlock(Capabilities.ItemHandler.BLOCK,
                 (level, pos, state, be, side) -> {
                     if (side != null)
