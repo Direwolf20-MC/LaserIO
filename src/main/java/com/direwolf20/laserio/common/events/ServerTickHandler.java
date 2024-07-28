@@ -38,6 +38,8 @@ public class ServerTickHandler {
         if (!particleListFluid.isEmpty()) {
             Set<Level> levels = new HashSet<>();
             for (ParticleDataFluid data : particleListFluid) {
+                if (data.fluidStack.isEmpty())
+                    continue;
                 levels.add(MiscTools.getLevel(event.getServer(), data.fromData.node()));
                 levels.add(MiscTools.getLevel(event.getServer(), data.toData.node()));
             }
@@ -48,6 +50,8 @@ public class ServerTickHandler {
         if (!particleListChemical.isEmpty()) {
             Set<Level> levels = new HashSet<>();
             for (ParticleDataChemical data : particleListChemical) {
+                if (data.chemicalStack.isEmpty())
+                    continue;
                 levels.add(event.getServer().getLevel(data.fromData.node().dimension()));
                 levels.add(event.getServer().getLevel(data.toData.node().dimension()));
             }
