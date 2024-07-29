@@ -58,12 +58,14 @@ public class LaserNodeContainer extends AbstractContainerMenu {
         }
         this.cardHolder = cardHolder;
 
-        if (!cardHolder.isEmpty()) {
-            this.cardHolderHandler = new CardHolderItemStackHandler(CardHolderContainer.SLOTS, cardHolder);
-            //if (cardHolderHandler == null) cardHolderHandler = new ItemStackHandler(CardHolderContainer.SLOTS);
+        //if (!cardHolder.isEmpty()) {
+        if (!cardHolder.isEmpty())
+            cardHolderHandler = new CardHolderItemStackHandler(CardHolderContainer.SLOTS, cardHolder);
+        else
+            cardHolderHandler = new CardHolderItemStackHandler(CardHolderContainer.SLOTS, ItemStack.EMPTY);
             addSlotBox(cardHolderHandler, 0, -92, 32, 5, 18, 3, 18);
             cardHolderUUID = CardHolder.getUUID(cardHolder);
-        }
+        //}
         layoutPlayerInventorySlots(8, 99);
     }
 
