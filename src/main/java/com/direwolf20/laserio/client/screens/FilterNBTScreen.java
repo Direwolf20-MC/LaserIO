@@ -13,25 +13,25 @@ import com.direwolf20.laserio.util.MiscTools;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.Util;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 public class FilterNBTScreen extends AbstractContainerScreen<FilterNBTContainer> {
     private final ResourceLocation GUI = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/filtertag.png");
@@ -61,7 +61,6 @@ public class FilterNBTScreen extends AbstractContainerScreen<FilterNBTContainer>
 
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
-        //this.renderBackground(guiGraphics);
         super.render(guiGraphics, mouseX, mouseY, partialTicks);
         this.renderTooltip(guiGraphics, mouseX, mouseY);
         if (MiscTools.inBounds(getGuiLeft() + 5, getGuiTop() + 10, 16, 16, mouseX, mouseY)) {
@@ -112,38 +111,23 @@ public class FilterNBTScreen extends AbstractContainerScreen<FilterNBTContainer>
         overSlot = -1;
 
         for (String tag : displayTags) {
-            matrixStack.pushPose();
-            matrixStack.scale(0.75f, 0.75f, 0.75f);
             int fontColor = stackInSlotTags.contains(tag) ? Color.BLUE.getRGB() : Color.DARK_GRAY.getRGB();
-            guiGraphics.drawString(font, tag, availableItemsstartX / 0.75f + 16, tagStartY / 0.75f, fontColor, false);
-            matrixStack.popPose();
+            renderScrollingString(guiGraphics, font, Component.literal(tag), availableItemsstartX, tagStartY, availableItemsstartX + 152, fontColor);
 
             if (MiscTools.inBounds(availableItemsstartX, tagStartY - 2, 160, 8, mouseX, mouseY)) {
                 overSlot = slot;
                 color = -2130706433;// : 0xFF5B5B5B;
-
-                matrixStack.pushPose();
-                RenderSystem.disableDepthTest();
-                RenderSystem.colorMask(true, true, true, false);
                 guiGraphics.fillGradient(availableItemsstartX - 1, tagStartY - 2, availableItemsstartX + 160, tagStartY + 8, color, color);
-                //Tag tempTag = stackInSlot.getOrCreateTag().get(displayTags.get(overSlot));
-                Tag tempTag = new CompoundTag();
-                if (tempTag != null) { //Todo Revisit
-                    //String tooltip = Objects.requireNonNull(stackInSlot.getOrCreateTag().get(displayTags.get(overSlot))).toString();
-                    String tooltip = "";
-                    if (tooltip.length() > 60) tooltip = tooltip.substring(0, 60) + "...";
-                    guiGraphics.renderTooltip(font, Component.literal(tooltip), mouseX, mouseY);
+                String tagValue = getTagValueFor(displayTags.get(overSlot));
+                if (!tagValue.isEmpty()) {
+                    if (tagValue.length() > 60) tagValue = tagValue.substring(0, 60) + "...";
+                    guiGraphics.renderTooltip(font, Component.literal(tagValue), mouseX, mouseY);
+                    guiGraphics.flush(); //Not sure why this is necessary, but it is!
                 }
-                RenderSystem.colorMask(true, true, true, true);
-                matrixStack.popPose();
             }
 
             if (slot == selectedSlot) {
                 color = 0xFFFF0000;
-
-                matrixStack.pushPose();
-                RenderSystem.disableDepthTest();
-                RenderSystem.colorMask(true, true, true, false);
 
                 int x1 = availableItemsstartX + 160;
                 int y1 = tagStartY + 10;
@@ -151,9 +135,6 @@ public class FilterNBTScreen extends AbstractContainerScreen<FilterNBTContainer>
                 guiGraphics.hLine(availableItemsstartX - 2, x1 - 0, y1 - 3, color);
                 guiGraphics.vLine(availableItemsstartX - 2, tagStartY - 2, y1 - 2, color);
                 guiGraphics.vLine(x1 - 0, tagStartY - 2, y1 - 2, color);
-
-                RenderSystem.colorMask(true, true, true, true);
-                matrixStack.popPose();
             }
 
             tagStartY += 10;
@@ -161,15 +142,51 @@ public class FilterNBTScreen extends AbstractContainerScreen<FilterNBTContainer>
         }
     }
 
+    protected static void renderScrollingString(GuiGraphics graphics, Font fontRenderer, Component text, int xStart, int yStart, int xEnd, int textColor) {
+        int textWidth = fontRenderer.width(text);
+        int yEnd = yStart + fontRenderer.lineHeight;
+        int maxRenderWidth = xEnd - xStart;
+
+        if (textWidth > maxRenderWidth) {
+            int textOverflow = textWidth - maxRenderWidth;
+            double currentTime = (double) Util.getMillis() / 1000.0D;
+            double scrollDuration = Math.max((double) textOverflow * 0.5D, 3.0D);
+            double oscillation = Math.sin((Math.PI / 2D) * Math.cos((Math.PI * 2D) * currentTime / scrollDuration)) / 2.0D + 0.5D;
+            double scrollOffset = Mth.lerp(oscillation, 0.0D, (double) textOverflow);
+
+            graphics.enableScissor(xStart, yStart, xEnd, yEnd);
+            graphics.drawString(fontRenderer, text, xStart - (int) scrollOffset, yStart, textColor, false);
+            graphics.disableScissor();
+        } else {
+            graphics.drawString(fontRenderer, text, xStart, yStart, textColor, false);
+        }
+    }
+
     protected void populateStackInSlotTags() {
         stackInSlotTags = new ArrayList<>();
         ItemStack stackInSlot = container.handler.getStackInSlot(0);
-        /*if (!stackInSlot.isEmpty()) {//Todo Revisit
-            stackInSlot.getOrCreateTag().getAllKeys().forEach(t -> {
-                if (!stackInSlotTags.contains(t) && !tags.contains(t))
-                    stackInSlotTags.add(t);
+        if (!stackInSlot.isEmpty()) {
+            stackInSlot.getComponentsPatch().entrySet().forEach(t -> {
+                if (!stackInSlotTags.contains(t.getKey().toString()) && !tags.contains(t.getKey().toString()))
+                    stackInSlotTags.add(t.getKey().toString());
             });
-        }*/
+        }
+    }
+
+    protected String getTagValueFor(String name) {
+        ItemStack stackInSlot = container.handler.getStackInSlot(0);
+        if (!stackInSlot.isEmpty()) {
+            for (Map.Entry<DataComponentType<?>, Optional<?>> entry : stackInSlot.getComponentsPatch().entrySet()) {
+                if (entry.getKey().toString().equals(name)) {
+                    // Check if the value is present and return its string representation
+                    Optional<?> value = entry.getValue();
+                    if (value.isPresent()) {
+                        return value.get().toString();
+                    }
+                }
+            }
+        }
+        return "";
     }
 
     @Override

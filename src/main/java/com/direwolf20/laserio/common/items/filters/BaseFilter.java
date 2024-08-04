@@ -84,6 +84,8 @@ public class BaseFilter extends Item {
     }
 
     public static boolean getCompareNBT(ItemStack stack) {
+        if (stack.getItem() instanceof FilterNBT)
+            return stack.getOrDefault(LaserIODataComponents.FILTER_COMPARE, true);
         return stack.getOrDefault(LaserIODataComponents.FILTER_COMPARE, false);
     }
 

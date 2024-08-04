@@ -29,7 +29,7 @@ public class LaserIOLanguageProvider extends LanguageProvider {
         add(Registration.Filter_Count.get(), "Counting Filter");
         add(Registration.Filter_Tag.get(), "Tag Filter");
         add(Registration.Filter_Mod.get(), "Mod Filter");
-        add(Registration.Filter_NBT.get(), "NBT Filter");
+        add(Registration.Filter_NBT.get(), "Data Filter");
         add(Registration.Logic_Chip.get(), "Logic Chip");
         add(Registration.Logic_Chip_Raw.get(), "Raw Logic Chip");
         add(Registration.Overclocker_Card.get(), "Card Overclocker");
@@ -51,7 +51,7 @@ public class LaserIOLanguageProvider extends LanguageProvider {
         add("screen.laserio.and", "And");
         add("screen.laserio.or", "Or");
         add("screen.laserio.allowlist", "Allow");
-        add("screen.laserio.comparenbt", "NBT");
+        add("screen.laserio.comparenbt", "Data");
         add("screen.laserio.lasernode", "Laser Node");
         add("screen.laserio.energylimit", "Energy Limit (%)");
 
@@ -87,8 +87,8 @@ public class LaserIOLanguageProvider extends LanguageProvider {
         add("screen.laserio.hideparticles", "Hide Particles");
 
         add("screen.laserio.denylist", "Deny");
-        add("screen.laserio.nbttrue", "Match NBT");
-        add("screen.laserio.nbtfalse", "Ignore NBT");
+        add("screen.laserio.nbttrue", "Match Data");
+        add("screen.laserio.nbtfalse", "Ignore Data");
 
         add("message.laserio.wrenchrange", "Connection exceeds maximum range of %d");
 
@@ -115,7 +115,7 @@ public class LaserIOLanguageProvider extends LanguageProvider {
         add("laserio.tooltip.item.filter.type", "Type: ");
         add("laserio.tooltip.item.filter.type.allow", "Allow");
         add("laserio.tooltip.item.filter.type.deny", "Deny");
-        add("laserio.tooltip.item.filter.nbt", "Match NBT: ");
+        add("laserio.tooltip.item.filter.nbt", "Match Data: ");
         add("laserio.tooltip.item.filter.nbt.allow", "True");
         add("laserio.tooltip.item.filter.nbt.deny", "False");
 
