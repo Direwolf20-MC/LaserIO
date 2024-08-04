@@ -9,6 +9,7 @@ import com.direwolf20.laserio.integration.mekanism.MekanismCardCache;
 import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.core.Direction;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.ItemStack;
@@ -206,7 +207,7 @@ public class BaseCardCache {
     public List<String> getFilterNBTs() {
         List<String> filterNBTs = new ArrayList<>();
         if (filterCard.getItem() instanceof FilterNBT) {
-            filterNBTs = FilterTag.getTags(filterCard);
+            filterNBTs = FilterNBT.getTags(filterCard);
         }
         return filterNBTs;
     }
@@ -230,14 +231,14 @@ public class BaseCardCache {
                     return isAllowList;
                 }
             }
-        } /*else if (filterCard.getItem() instanceof FilterNBT) { //TODO Review FilterNBT Filter
-            for (String tag : testStack.getOrCreateTag().getAllKeys()) {
-                if (filterNBTs.contains(tag)) {
+        } else if (filterCard.getItem() instanceof FilterNBT) {
+            for (Map.Entry<DataComponentType<?>, Optional<?>> entry : testStack.getComponentsPatch().entrySet()) {
+                if (filterNBTs.contains(entry.getKey().toString())) {
                     filterCache.put(key, isAllowList);
                     return isAllowList;
                 }
             }
-        }*/ else {
+        } else {
             for (ItemStack stack : filteredItems) {
                 if (key.equals(new ItemStackKey(stack, isCompareNBT))) {
                     filterCache.put(key, isAllowList);

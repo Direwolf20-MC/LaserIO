@@ -42,37 +42,6 @@ public class FilterTag extends BaseFilter {
         return handler;
     }
 
-    /*public static FilterBasicHandler setInventory(ItemStack stack, FilterBasicHandler handler) {
-        stack.getOrCreateTag().put("inv", handler.serializeNBT());
-        return handler;
-    }*/
-
-    /*public static void addTag(ItemStack card, String tag) {
-        List<String> tags = getTags(card);
-        if (!tags.contains(tag)) {
-            tags.add(tag);
-            CompoundTag compound = card.getOrCreateTag();
-            compound.put("tags", MiscTools.stringListToNBT(tags));
-        }
-    }
-
-    public static void removeTag(ItemStack card, String tag) {
-        List<String> tags = getTags(card);
-        if (tags.contains(tag)) {
-            tags.remove(tag);
-            CompoundTag compound = card.getOrCreateTag();
-            compound.put("tags", MiscTools.stringListToNBT(tags));
-        }
-    }
-
-    public static void clearTags(ItemStack card) {
-        List<String> tags = new ArrayList();
-        CompoundTag compound = card.getOrCreateTag();
-        compound.put("tags", MiscTools.stringListToNBT(tags));
-    }*/
-
-
-
     public static void setTags(ItemStack card, List<String> tagsIn) {
         card.set(LaserIODataComponents.FILTER_TAG_TAGS, tagsIn);
     }
