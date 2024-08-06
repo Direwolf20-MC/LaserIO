@@ -16,7 +16,7 @@ public class FilterBasicHandler extends ComponentItemHandler {
 
     @Override
     public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
-        return super.isItemValid(slot, stack);
+        return true;
     }
 
     @Override
