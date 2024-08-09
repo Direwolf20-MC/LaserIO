@@ -2,6 +2,7 @@ package com.direwolf20.laserio.client.screens.widgets;
 
 import com.direwolf20.laserio.common.LaserIO;
 import com.mojang.blaze3d.vertex.PoseStack;
+import it.unimi.dsi.fastutil.ints.Int2IntFunction;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -13,10 +14,15 @@ import java.awt.*;
 public class NumberButton extends Button {
     private final ResourceLocation resourceLocation = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/blankbutton.png");
     private int value;
+    private Int2IntFunction displayTransform = i -> i;
 
     public NumberButton(int x, int y, int width, int height, int value, OnPress onPress) {
         super(x, y, width, height, net.minecraft.network.chat.Component.empty(), onPress, Button.DEFAULT_NARRATION);
         this.value = value;
+    }
+
+    public void setDisplayTransform(Int2IntFunction transform) {
+        this.displayTransform = transform;
     }
 
     @Override
@@ -32,8 +38,7 @@ public class NumberButton extends Button {
         stack.pushPose();
         float scale = 0.75f;//value > 99 || value < -99 ? 0.75f : 0.75f;
         stack.scale(scale, scale, scale);
-        String msg = String.format("%,d", value);
-        ;
+        String msg = String.format("%,d", this.displayTransform.applyAsInt(this.value));
         float x = (this.getX() + this.width / 2f) / scale - font.width(msg) / 2f;
         float y = (this.getY() + (this.height - font.lineHeight) / 2f / scale) / scale + 1;
         //font.draw(stack, msg, x, y, Color.DARK_GRAY.getRGB());

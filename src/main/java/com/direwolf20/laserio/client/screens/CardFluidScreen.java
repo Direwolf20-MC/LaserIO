@@ -172,6 +172,6 @@ public class CardFluidScreen extends CardItemScreen {
     public void saveSettings() {
         if (showFilter)
             PacketDistributor.sendToServer(new UpdateFilterPayload(isAllowList == 1, isCompareNBT == 1));
-        PacketDistributor.sendToServer(new UpdateCardPayload(currentMode, currentChannel, currentFluidExtractAmt, currentPriority, currentSneaky, (short) currentTicks, currentExact, currentRegulate, (byte) currentRoundRobin, 0, 0, currentRedstoneMode, currentRedstoneChannel, currentAndMode));
+        PacketDistributor.sendToServer(new UpdateCardPayload(currentMode, currentChannel, currentFluidExtractAmt, currentPriority, currentSneaky, (short) currentTicks, currentExact, currentRegulate, (byte) currentRoundRobin, 0, 0, currentRedstoneMode, currentRedstoneChannel, currentAndMode, currentMaxBackoff));
     }
 }
