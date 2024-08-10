@@ -5,7 +5,7 @@
       "modid": "patchouli"
     }
   ],
-  "type": "patchouli:shapeless_book_recipe",
+  "type": "minecraft:crafting_shapeless",
   "ingredients": [
     {
       "item": "laserio:logic_chip"
@@ -14,5 +14,10 @@
       "item": "minecraft:book"
     }
   ],
-  "book": "laserio:laseriobook"
+  "result": {
+    "id": "patchouli:guide_book",
+    "components": {
+      "patchouli:book": "laserio:laseriobook"
+    }
+  }
 }
