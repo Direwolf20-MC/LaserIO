@@ -585,7 +585,7 @@ public class MekanismCache {
 
         if (targetState.getBlock() instanceof LaserNode) {
             targetState = level.getBlockState(fromPos);
-            VoxelShape voxelShape = targetState.getShape(level, toPos);
+            VoxelShape voxelShape = targetState.getShape(level, fromPos);
             Vector3f extractOffset = findOffset(direction, partData.position, offsets);
             Vector3f insertOffset = CardRender.shapeOffset(extractOffset, voxelShape, fromPos, toPos, direction, level, targetState);
             ChemicalFlowParticleData data = new ChemicalFlowParticleData(chemicalStack, toPos.getX() + extractOffset.x(), toPos.getY() + extractOffset.y(), toPos.getZ() + extractOffset.z(), 10);
