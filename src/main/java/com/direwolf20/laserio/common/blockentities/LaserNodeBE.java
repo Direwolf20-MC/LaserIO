@@ -160,8 +160,11 @@ public class LaserNodeBE extends BaseLaserBE {
     /** This is called by nodes when a connection is added/removed - the other node does the discovery and then tells this one about it **/
     public void setOtherNodesInNetwork(Set<GlobalPos> otherNodesInNetwork) {
         this.otherNodesInNetwork.clear();
+        if (level == null) return;
         for (GlobalPos pos : otherNodesInNetwork) {
-            this.otherNodesInNetwork.add(new GlobalPos(MiscTools.getLevel(level.getServer(), pos).dimension(), getRelativePos(pos.pos())));
+            Level targetLevel = MiscTools.getLevel(level.getServer(), pos);
+            if (targetLevel == null) continue;
+            this.otherNodesInNetwork.add(new GlobalPos(targetLevel.dimension(), getRelativePos(pos.pos())));
         }
         refreshAllInvNodes(); //Seeing as the otherNodes list just got updated, we should refresh the InventoryNode content caches
     }
@@ -354,8 +357,11 @@ public class LaserNodeBE extends BaseLaserBE {
     public void refreshRedstoneNetwork() {
         //System.out.println("Updating Redstone Network at: " + getBlockPos() + ", Gametime: " + level.getGameTime());
         redstoneNetwork.clear();
+        if (level == null) return;
         for (GlobalPos pos : otherNodesInNetwork) {
-            LaserNodeBE laserNodeBE = getNodeAt(new GlobalPos(MiscTools.getLevel(level.getServer(), pos).dimension(), getWorldPos(pos.pos())));
+            Level targetLevel = MiscTools.getLevel(level.getServer(), pos);
+            if (targetLevel == null) continue;
+            LaserNodeBE laserNodeBE = getNodeAt(new GlobalPos(targetLevel.dimension(), getWorldPos(pos.pos())));
             if (laserNodeBE == null) continue;
             for (Map.Entry<Byte, Byte> entry : laserNodeBE.myRedstoneIn.byte2ByteEntrySet()) {
                 updateRedstoneNetwork(entry.getKey(), entry.getValue());
@@ -390,8 +396,11 @@ public class LaserNodeBE extends BaseLaserBE {
         //if (inserterUpdated || extractorUpdated)
         markDirtyClient();
         if (inserterUpdated) {
+            if (level == null) return;
             for (GlobalPos pos : otherNodesInNetwork) {
-                LaserNodeBE node = getNodeAt(new GlobalPos(MiscTools.getLevel(level.getServer(), pos).dimension(), getWorldPos(pos.pos())));
+                Level targetLevel = MiscTools.getLevel(level.getServer(), pos);
+                if (targetLevel == null) continue;
+                LaserNodeBE node = getNodeAt(new GlobalPos(targetLevel.dimension(), getWorldPos(pos.pos())));
                 if (node == null) continue;
                 node.checkInvNode(new GlobalPos(this.level.dimension(), this.getBlockPos()), true);
             }
@@ -1992,8 +2001,11 @@ public class LaserNodeBE extends BaseLaserBE {
 
     /** When this node changes, tell other nodes to refresh their cache of it **/
     public void notifyOtherNodesOfChange() {
+        if (level == null) return;
         for (GlobalPos pos : otherNodesInNetwork) {
-            LaserNodeBE node = getNodeAt(new GlobalPos(MiscTools.getLevel(level.getServer(), pos).dimension(), getWorldPos(pos.pos())));
+            Level targetLevel = MiscTools.getLevel(level.getServer(), pos);
+            if (targetLevel == null) continue;
+            LaserNodeBE node = getNodeAt(new GlobalPos(targetLevel.dimension(), getWorldPos(pos.pos())));
             if (node == null) continue;
             node.checkInvNode(new GlobalPos(this.level.dimension(), this.getBlockPos()), true);
             //node.refreshRedstoneNetwork();
@@ -2012,8 +2024,11 @@ public class LaserNodeBE extends BaseLaserBE {
         channelOnlyCache.clear();
         this.stockerDestinationCache.clear();
         this.redstoneNetwork.clear();
+        if (level == null) return;
         for (GlobalPos pos : otherNodesInNetwork) {
-            checkInvNode(new GlobalPos(MiscTools.getLevel(level.getServer(), pos).dimension(), getWorldPos(pos.pos())), false);
+            Level targetLevel = MiscTools.getLevel(level.getServer(), pos);
+            if (targetLevel == null) continue;
+            checkInvNode(new GlobalPos(targetLevel.dimension(), getWorldPos(pos.pos())), false);
         }
         //refreshRedstoneNetwork();
         redstoneRefreshed = false;
