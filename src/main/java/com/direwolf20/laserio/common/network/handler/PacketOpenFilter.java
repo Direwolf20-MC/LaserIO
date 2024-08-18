@@ -90,6 +90,7 @@ public class PacketOpenFilter {
             };
             sender.openMenu(containerProvider, (buf -> {
                 ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, filterItem);
+                ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, ItemStack.EMPTY);
             }));
         }
         if (filterItem.getItem() instanceof FilterNBT) {
@@ -111,6 +112,7 @@ public class PacketOpenFilter {
             };
             sender.openMenu(containerProvider, (buf -> {
                 ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, filterItem);
+                ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, ItemStack.EMPTY);
             }));
         }
     }
