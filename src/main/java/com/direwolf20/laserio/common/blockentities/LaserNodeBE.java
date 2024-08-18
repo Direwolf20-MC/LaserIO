@@ -39,6 +39,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -2059,9 +2060,12 @@ public class LaserNodeBE extends BaseLaserBE {
     @Nullable
     public LaserNodeBE getLaserNodeBE(InserterCardCache inserterCardCache, BaseCard.CardType cardType) {
         if (inserterCardCache.cardType != cardType) return null;
-        GlobalPos nodeWorldPos = new GlobalPos(MiscTools.getLevel(level.getServer(), inserterCardCache.relativePos).dimension(), getWorldPos(inserterCardCache.relativePos.pos()));
+        if (level == null) return null;
+        Level targetLevel = MiscTools.getLevel(level.getServer(), inserterCardCache.relativePos);
+        if (targetLevel == null) return null;
+        GlobalPos nodeWorldPos = new GlobalPos(targetLevel.dimension(), getWorldPos(inserterCardCache.relativePos.pos()));
         if (!chunksLoaded(nodeWorldPos, nodeWorldPos.pos().relative(inserterCardCache.direction))) return null;
-        return getNodeAt(new GlobalPos(MiscTools.getLevel(level.getServer(), inserterCardCache.relativePos).dimension(), getWorldPos(inserterCardCache.relativePos.pos())));
+        return getNodeAt(new GlobalPos(targetLevel.dimension(), getWorldPos(inserterCardCache.relativePos.pos())));
     }
 
     public LaserNodeItemHandler getLaserNodeHandlerItem(InserterCardCache inserterCardCache) {
@@ -2190,9 +2194,11 @@ public class LaserNodeBE extends BaseLaserBE {
     public LaserNodeEnergyHandler getLaserNodeHandlerEnergy(InserterCardCache inserterCardCache) {
         if (!inserterCardCache.cardType.equals(BaseCard.CardType.ENERGY)) return null;
         if (level == null) return null;
-        GlobalPos nodeWorldPos = new GlobalPos(MiscTools.getLevel(level.getServer(), inserterCardCache.relativePos).dimension(), getWorldPos(inserterCardCache.relativePos.pos()));
+        Level targetLevel = MiscTools.getLevel(level.getServer(), inserterCardCache.relativePos);
+        if (targetLevel == null) return null;
+        GlobalPos nodeWorldPos = new GlobalPos(targetLevel.dimension(), getWorldPos(inserterCardCache.relativePos.pos()));
         if (!chunksLoaded(nodeWorldPos, nodeWorldPos.pos().relative(inserterCardCache.direction))) return null;
-        LaserNodeBE be = getNodeAt(new GlobalPos(MiscTools.getLevel(level.getServer(), inserterCardCache.relativePos).dimension(), getWorldPos(inserterCardCache.relativePos.pos())));
+        LaserNodeBE be = getNodeAt(new GlobalPos(targetLevel.dimension(), getWorldPos(inserterCardCache.relativePos.pos())));
         if (be == null) return null;
         IEnergyStorage energyhandler = be.getAttachedEnergyTank(inserterCardCache.direction, inserterCardCache.sneaky);
         if (energyhandler == null) return null;
