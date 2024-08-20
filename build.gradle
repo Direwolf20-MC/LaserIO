@@ -78,8 +78,8 @@ minecraft {
 
             // Comma-separated list of namespaces to load gametests from. Empty = all namespaces.
             property 'forge.enabledGameTestNamespaces', mod_id
-	
-			//Patchouli
+    
+            //Patchouli
             property 'mixin.env.remapRefMap', 'true'
             property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
          
@@ -99,7 +99,7 @@ minecraft {
 
             property 'forge.enabledGameTestNamespaces', mod_id
 
-			//Patchouli
+            //Patchouli
             property 'mixin.env.remapRefMap', 'true'
             property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
 
@@ -214,7 +214,7 @@ dependencies {
         runtimeOnly fg.deobf("extra-mods:$artifactId:$version")
     }
 
-	// Locally sourced extra mods for compiling (i.e. API)
+    // Locally sourced extra mods for compiling (i.e. API)
     for (extraModJar in fileTree(dir: extraAPIDir, include: '*.jar')) {
         def basename = extraModJar.name.substring(0, extraModJar.name.length() - ".jar".length())
         def versionSep = basename.lastIndexOf('-')
@@ -235,8 +235,8 @@ dependencies {
     // at runtime, use the full JEI jar for Forge
     runtimeOnly fg.deobf("mezz.jei:jei-1.20.1-forge:${jei_version}")
 
-	//Mekanism
-	compileOnly fg.deobf("mekanism:Mekanism:${mekanism_version}:api")
+    //Mekanism
+    compileOnly fg.deobf("mekanism:Mekanism:${mekanism_version}:api")
     runtimeOnly fg.deobf("mekanism:Mekanism:${mekanism_version}")// Mekanism
     runtimeOnly fg.deobf("mekanism:Mekanism:${mekanism_version}:additions")// Mekanism: Additions
     runtimeOnly fg.deobf("mekanism:Mekanism:${mekanism_version}:generators")// Mekanism: Generators
@@ -253,8 +253,8 @@ dependencies {
 // See https://docs.gradle.org/current/dsl/org.gradle.language.jvm.tasks.ProcessResources.html
 def resourceTargets = ['META-INF/mods.toml', 'pack.mcmeta']
 def replaceProperties = [
-		minecraft_version      : minecraft_version, minecraft_version_range: minecraft_version_range,
-		forge_version          : forge_version, forge_version_range: forge_version_range,
+        minecraft_version      : minecraft_version, minecraft_version_range: minecraft_version_range,
+        forge_version          : forge_version, forge_version_range: forge_version_range,
         loader_version_range   : loader_version_range,
         mod_id                 : mod_id, mod_name: mod_name, mod_license: mod_license, mod_version: mod_version,
         mod_authors            : mod_authors, mod_description: mod_description,

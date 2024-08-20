@@ -121,7 +121,6 @@ public class BaseCard extends Item {
         return nonnulllist;
     }
 
-
     /**
      * If you override hasCraftingRemainingItem you MUST override this as well
      * Note: The real logic happens above in getContainerItems(Itemstack)

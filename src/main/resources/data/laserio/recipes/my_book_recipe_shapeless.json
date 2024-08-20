@@ -5,20 +5,25 @@
       "conditions": [
         {
           "type": "forge:mod_loaded",
-          "modid": "mekanism"
+          "modid": "patchouli"
         }
       ],
       "recipe": {
-        "type": "patchouli:shapeless_book_recipe",
+        "type": "minecraft:crafting_shapeless",
         "ingredients": [
           {
-            "item": "laserio:logic_chip"
+            "item": "minecraft:book"
           },
           {
-            "item": "minecraft:book"
+            "item": "laserio:logic_chip"
           }
         ],
-        "book": "laserio:laseriobook"
+        "result": {
+          "item": "patchouli:guide_book",
+          "nbt": {
+            "patchouli:book": "laserio:laseriobook"
+          }
+        }
       }
     }
   ]

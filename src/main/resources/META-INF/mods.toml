@@ -12,7 +12,7 @@ displayURL="https://github.com/Direwolf20-MC/LaserIO"
 credits="${mod_authors}, CPW and the entire neoforge team"
 authors="${mod_authors}"
 description='''
-	"${mod_description}"
+    "${mod_description}"
 '''
 
 [[dependencies.laserio]] 
