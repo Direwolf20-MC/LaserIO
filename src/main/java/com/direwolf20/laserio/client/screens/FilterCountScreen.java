@@ -156,7 +156,6 @@ public class FilterCountScreen extends AbstractContainerScreen<FilterCountContai
             container.handler.setStackInSlotSave(hoveredSlot.index, slotStack); //We do this for continuity between client/server -- not needed in cardItemScreen
         }
 
-
         return true;
     }
 
