@@ -2,6 +2,8 @@ package com.direwolf20.laserio.integration.mekanism;
 
 import com.direwolf20.laserio.common.containers.CardChemicalContainer;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
+import com.direwolf20.laserio.setup.Config;
+
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -31,12 +33,11 @@ public class CardChemical extends BaseCard {
             buf.writeByte(-1);
         }));
 
-        //System.out.println(itemstack.getItem().getRegistryName()+""+itemstack.getTag());
         return new InteractionResultHolder<>(InteractionResult.PASS, itemstack);
     }
 	
 	public static int setChemicalExtractAmt(ItemStack card, int chemicalextractamt) {
-        if (chemicalextractamt == 15000)
+        if (chemicalextractamt == Config.BASE_MILLI_BUCKETS_CHEMICAL.get())
             card.removeTagKey("chemicalextractamt");
         else
             card.getOrCreateTag().putInt("chemicalextractamt", chemicalextractamt);
@@ -45,7 +46,7 @@ public class CardChemical extends BaseCard {
 	
 	public static int getChemicalExtractAmt(ItemStack card) {
 		CompoundTag compound = card.getTag();
-        if (compound == null || !compound.contains("chemicalextractamt")) return 15000;
+        if (compound == null || !compound.contains("chemicalextractamt")) return Config.BASE_MILLI_BUCKETS_CHEMICAL.get();
         return compound.getInt("chemicalextractamt");    
 	}
 }

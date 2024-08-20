@@ -7,6 +7,7 @@ import com.direwolf20.laserio.common.items.cards.CardEnergy;
 import com.direwolf20.laserio.common.items.cards.CardFluid;
 import com.direwolf20.laserio.common.items.cards.CardItem;
 import com.direwolf20.laserio.integration.mekanism.CardChemical;
+import com.direwolf20.laserio.setup.Config;
 
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
@@ -15,8 +16,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
-
-import static com.direwolf20.laserio.common.items.cards.CardEnergy.MAX_ENERGY_TRANSFER;
 
 public class PacketUpdateCard {
     byte mode;
@@ -105,8 +104,8 @@ public class PacketUpdateCard {
                         BaseCard.setExtractSpeed(stack, ticks);
                     } else if (stack.getItem() instanceof CardFluid) {
                         overClockerCount = container.getSlot(1).getItem().getCount();
-                        if (extractAmt > Math.max(overClockerCount * 2000, 1000)) {
-                            extractAmt = Math.max(overClockerCount * 2000, 1000);
+                        if (extractAmt > Math.max(overClockerCount * Config.MULTIPLIER_MILLI_BUCKETS_FLUID.get(), Config.BASE_MILLI_BUCKETS_FLUID.get())) {
+                            extractAmt = Math.max(overClockerCount * Config.MULTIPLIER_MILLI_BUCKETS_FLUID.get(), Config.BASE_MILLI_BUCKETS_FLUID.get());
                         }
                         CardFluid.setFluidExtractAmt(stack, extractAmt);
                         short ticks = msg.ticks;
@@ -114,7 +113,7 @@ public class PacketUpdateCard {
                             ticks = (short) Math.max(20 - overClockerCount * 5, 1);
                         BaseCard.setExtractSpeed(stack, ticks);
                     } else if (stack.getItem() instanceof CardEnergy) {
-                        int max = MAX_ENERGY_TRANSFER;
+                        int max = Config.MAX_FE_TICK.get();
                     	if (extractAmt > max) {
                             extractAmt = max;
                         }
@@ -127,8 +126,8 @@ public class PacketUpdateCard {
                         CardEnergy.setInsertLimitPercent(stack, msg.insertLimit);
                     } else if (stack.getItem() instanceof CardChemical) {
                             overClockerCount = container.getSlot(1).getItem().getCount();
-                            if (extractAmt > Math.max(overClockerCount * 60000, 15000)) {
-                                extractAmt = Math.max(overClockerCount * 60000, 15000);
+                            if (extractAmt > Math.max(overClockerCount * Config.MULTIPLIER_MILLI_BUCKETS_CHEMICAL.get(), Config.BASE_MILLI_BUCKETS_CHEMICAL.get())) {
+                                extractAmt = Math.max(overClockerCount * Config.MULTIPLIER_MILLI_BUCKETS_CHEMICAL.get(), Config.BASE_MILLI_BUCKETS_CHEMICAL.get());
                             }
                             CardChemical.setChemicalExtractAmt(stack, extractAmt);
                             short ticks = msg.ticks;

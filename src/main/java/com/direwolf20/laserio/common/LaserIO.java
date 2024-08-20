@@ -3,6 +3,7 @@ package com.direwolf20.laserio.common;
 import org.slf4j.Logger;
 
 import com.direwolf20.laserio.setup.ClientSetup;
+import com.direwolf20.laserio.setup.Config;
 import com.direwolf20.laserio.setup.ModSetup;
 import com.direwolf20.laserio.setup.Registration;
 import com.mojang.logging.LogUtils;
@@ -23,6 +24,7 @@ public class LaserIO {
     public LaserIO() {
         // Register the deferred registry
         Registration.init();
+        Config.register();
         // Register the setup method for modloading
         IEventBus modbus = FMLJavaModLoadingContext.get().getModEventBus();
         // Register the enqueueIMC method for modloading

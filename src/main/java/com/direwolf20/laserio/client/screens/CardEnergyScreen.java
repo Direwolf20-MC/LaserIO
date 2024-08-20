@@ -11,6 +11,7 @@ import com.direwolf20.laserio.common.items.cards.CardRedstone;
 import com.direwolf20.laserio.common.network.PacketHandler;
 import com.direwolf20.laserio.common.network.packets.PacketOpenNode;
 import com.direwolf20.laserio.common.network.packets.PacketUpdateCard;
+import com.direwolf20.laserio.setup.Config;
 import com.direwolf20.laserio.util.MiscTools;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -30,8 +31,6 @@ import net.minecraftforge.client.gui.widget.ExtendedButton;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import static com.direwolf20.laserio.common.items.cards.CardEnergy.MAX_ENERGY_TRANSFER;
 
 public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContainer> {
     private final ResourceLocation GUI = new ResourceLocation(LaserIO.MODID, "textures/gui/energycard.png");
@@ -334,7 +333,7 @@ public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContaine
     public void changeAmount(int change) {
         if (Screen.hasShiftDown()) change *= 10;
         if (Screen.hasControlDown()) change *= 100;
-        int max = MAX_ENERGY_TRANSFER;
+        int max = Config.MAX_FE_TICK.get();
         if (change < 0) {
             if (currentMode == 0) {
                 currentPriority = (short) (Math.max(currentPriority + change, -4096));
