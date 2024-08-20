@@ -4,6 +4,7 @@ import com.direwolf20.laserio.client.screens.widgets.NumberButton;
 import com.direwolf20.laserio.client.screens.widgets.ToggleButton;
 import com.direwolf20.laserio.common.LaserIO;
 import com.direwolf20.laserio.common.containers.CardItemContainer;
+import com.direwolf20.laserio.common.containers.customslot.FilterBasicSlot;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.common.items.filters.FilterCount;
 import com.direwolf20.laserio.common.network.PacketHandler;
@@ -12,7 +13,10 @@ import com.direwolf20.laserio.common.network.packets.PacketOpenNode;
 import com.direwolf20.laserio.common.network.packets.PacketUpdateCard;
 import com.direwolf20.laserio.common.network.packets.PacketUpdateFilter;
 import com.direwolf20.laserio.integration.mekanism.CardChemical;
+
+import mekanism.api.chemical.ChemicalStack;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
@@ -22,6 +26,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 
 import static com.direwolf20.laserio.integration.mekanism.MekanismStatics.doesItemStackHoldChemicals;
+import static com.direwolf20.laserio.integration.mekanism.MekanismStatics.getFirstChemicalOnItemStack;
 
 public class CardChemicalScreen extends CardItemScreen {
 
@@ -68,6 +73,22 @@ public class CardChemicalScreen extends CardItemScreen {
         }));
     }
 
+    @Override
+    protected void renderTooltip(GuiGraphics pGuiGraphics, int pX, int pY) {
+        if (this.menu.getCarried().isEmpty() && this.hoveredSlot != null && this.hoveredSlot.hasItem()) {
+            ItemStack itemStack = this.hoveredSlot.getItem();
+            if (hoveredSlot instanceof FilterBasicSlot) {
+                ChemicalStack<?> chemicalStack = getFirstChemicalOnItemStack(itemStack);
+                if (chemicalStack.isEmpty())
+                    pGuiGraphics.renderTooltip(this.font, this.getTooltipFromContainerItem(itemStack), itemStack.getTooltipImage(), itemStack, pX, pY);
+                else
+                    pGuiGraphics.renderTooltip(this.font, chemicalStack.getTextComponent(), pX, pY);
+                return;
+            }
+            pGuiGraphics.renderTooltip(this.font, this.getTooltipFromContainerItem(itemStack), itemStack.getTooltipImage(), itemStack, pX, pY);
+        }
+    }
+    
     @Override
     public void changeAmount(int change) {
         if (Screen.hasShiftDown()) change *= 10;

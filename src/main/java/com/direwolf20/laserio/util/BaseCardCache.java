@@ -12,14 +12,9 @@ import com.direwolf20.laserio.integration.mekanism.MekanismCardCache;
 
 import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import mekanism.api.chemical.ChemicalStack;
-import mekanism.api.chemical.ChemicalType;
-import mekanism.api.chemical.IChemicalHandler;
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
@@ -29,7 +24,6 @@ import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.*;
-import java.util.Map.Entry;
 
 public class BaseCardCache {
     public final Direction direction;
@@ -151,9 +145,9 @@ public class BaseCardCache {
         for (int i = 0; i < filterSlotHandler.getSlots(); i++) { //Gotta iterate the card's NBT because of the way we store amounts (in the MBAmt tag)
             ItemStack itemStack = filterSlotHandler.getStackInSlot(i);
             if (!itemStack.isEmpty()) {
-                Optional<IFluidHandlerItem> fluidHandlerLazyOptional = FluidUtil.getFluidHandler(itemStack).resolve();
-                if (fluidHandlerLazyOptional.isEmpty()) continue;
-                IFluidHandler fluidHandler = fluidHandlerLazyOptional.get();
+                LazyOptional<IFluidHandlerItem> fluidHandlerOptional = FluidUtil.getFluidHandler(itemStack);
+                if (!fluidHandlerOptional.isPresent()) continue;
+                IFluidHandler fluidHandler = fluidHandlerOptional.resolve().get();
                 for (int tank = 0; tank < fluidHandler.getTanks(); tank++) {
                     FluidStack fluidStack = fluidHandler.getFluidInTank(tank);
                     if (key.equals(new FluidStackKey(fluidStack, isCompareNBT))) {
@@ -193,9 +187,9 @@ public class BaseCardCache {
         for (int i = 0; i < filterSlotHandler.getSlots(); i++) {
             ItemStack itemStack = filterSlotHandler.getStackInSlot(i);
             if (!itemStack.isEmpty()) {
-                Optional<IFluidHandlerItem> fluidHandlerLazyOptional = FluidUtil.getFluidHandler(itemStack).resolve();
-                if (fluidHandlerLazyOptional.isEmpty()) continue;
-                IFluidHandler fluidHandler = fluidHandlerLazyOptional.get();
+                LazyOptional<IFluidHandlerItem> fluidHandlerOptional = FluidUtil.getFluidHandler(itemStack);
+                if (!fluidHandlerOptional.isPresent()) continue;
+                IFluidHandler fluidHandler = fluidHandlerOptional.resolve().get();
                 for (int tank = 0; tank < fluidHandler.getTanks(); tank++) {
                     FluidStack fluidStack = fluidHandler.getFluidInTank(tank);
                     if (!fluidStack.isEmpty())
@@ -298,4 +292,5 @@ public class BaseCardCache {
         }
         return false;
     }
+    
 }

@@ -158,6 +158,7 @@ public class LaserIORecipes extends RecipeProvider implements IConditionBuilder 
                 .unlockedBy("has_logic_chip", InventoryChangeTrigger.TriggerInstance.hasItems(Registration.Logic_Chip.get()))
                 .save(consumer);
         
+        //Mekanism Card
         ConditionalRecipe.builder()
         		.addCondition(modLoaded("mekanism"))
         		.addRecipe(t -> 
@@ -256,6 +257,7 @@ public class LaserIORecipes extends RecipeProvider implements IConditionBuilder 
                 .unlockedBy("has_card_redstone", InventoryChangeTrigger.TriggerInstance.hasItems(Registration.Card_Redstone.get()))
                 .save(consumer, Registration.Card_Redstone.getId() + "_nbtclear");
         
+        //Mekanism NBT Clearing Recipe
         ConditionalRecipe.builder()
 				.addCondition(modLoaded("mekanism"))
 				.addRecipe(t -> 
@@ -266,8 +268,6 @@ public class LaserIORecipes extends RecipeProvider implements IConditionBuilder 
 							.save(t))
 				.generateAdvancement(new ResourceLocation(LaserIO.MODID, "/misc/" + Registration.Card_Chemical.getId().getPath() + "_nbtclear"))
 				.build(consumer, Registration.Card_Chemical.getId().withSuffix("_nbtclear"));
-        
-        System.out.println(RecipeCategory.MISC);
         
         ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, Registration.Filter_Basic.get())
                 .requires(Registration.Filter_Basic.get())

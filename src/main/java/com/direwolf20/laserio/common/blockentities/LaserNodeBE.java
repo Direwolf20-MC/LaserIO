@@ -269,6 +269,9 @@ public class LaserNodeBE extends BaseLaserBE {
                         } else if (extractorCardCache.cardType.equals(BaseCard.CardType.ENERGY)) {
                             if (senseEnergy(sensorCardCache))
                                 countCardsHandled++;
+                        } else if (extractorCardCache.cardType.equals(BaseCard.CardType.CHEMICAL)) {
+                            if (mekanismCache.senseChemicals(sensorCardCache))
+                                countCardsHandled++;
                         }
                     }
                     if (extractorCardCache.remainingSleep <= 0) {
@@ -1890,7 +1893,7 @@ public class LaserNodeBE extends BaseLaserBE {
 
             if (targetState.getBlock() instanceof LaserNode) {
                 targetState = level.getBlockState(fromPos);
-                VoxelShape voxelShape = targetState.getShape(level, toPos);
+                VoxelShape voxelShape = targetState.getShape(level, fromPos);
                 Vector3f extractOffset = findOffset(direction, partData.position, offsets);
                 Vector3f insertOffset = CardRender.shapeOffset(extractOffset, voxelShape, fromPos, toPos, direction, level, targetState);
                 FluidFlowParticleData data = new FluidFlowParticleData(fluidStack, toPos.getX() + extractOffset.x(), toPos.getY() + extractOffset.y(), toPos.getZ() + extractOffset.z(), 10);
