@@ -12,9 +12,15 @@ import com.direwolf20.laserio.integration.mekanism.MekanismCardCache;
 
 import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import mekanism.api.chemical.ChemicalStack;
+import mekanism.api.chemical.ChemicalType;
+import mekanism.api.chemical.IChemicalHandler;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.capability.IFluidHandler;
@@ -23,6 +29,7 @@ import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.*;
+import java.util.Map.Entry;
 
 public class BaseCardCache {
     public final Direction direction;

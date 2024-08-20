@@ -8,8 +8,11 @@ import mekanism.api.chemical.IChemicalTank;
 import mekanism.api.chemical.gas.GasStack;
 import mekanism.api.chemical.gas.IGasHandler;
 import mekanism.api.chemical.infuse.IInfusionHandler;
+import mekanism.api.chemical.infuse.InfusionStack;
 import mekanism.api.chemical.pigment.IPigmentHandler;
+import mekanism.api.chemical.pigment.PigmentStack;
 import mekanism.api.chemical.slurry.ISlurryHandler;
+import mekanism.api.chemical.slurry.SlurryStack;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityManager;
@@ -91,6 +94,28 @@ public class MekanismStatics {
         }
         
         return tagsList;
+    }
+    
+    public static boolean isValidChemicalForHandler(IChemicalHandler handler, ChemicalStack<?> chemicalStack) {
+        // Check if the handler is a gas handler
+        if (handler instanceof IGasHandler) {
+            // Ensure the chemical stack is also a gas stack
+            return chemicalStack instanceof GasStack;
+        }
+        if (handler instanceof ISlurryHandler) {
+            // Ensure the chemical stack is also a gas stack
+            return chemicalStack instanceof SlurryStack;
+        }
+        if (handler instanceof IPigmentHandler) {
+            // Ensure the chemical stack is also a gas stack
+            return chemicalStack instanceof PigmentStack;
+        }
+        if (handler instanceof IInfusionHandler) {
+            // Ensure the chemical stack is also a gas stack
+            return chemicalStack instanceof InfusionStack;
+        }
+
+        return false;
     }
     
 //    @SuppressWarnings("unchecked")

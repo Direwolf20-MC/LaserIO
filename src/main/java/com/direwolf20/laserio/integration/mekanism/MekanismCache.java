@@ -5,7 +5,9 @@ import com.direwolf20.laserio.common.blockentities.LaserNodeBE.SideConnection;
 import com.direwolf20.laserio.common.blocks.LaserNode;
 import com.direwolf20.laserio.common.events.ServerTickHandler;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
+import com.direwolf20.laserio.common.items.filters.FilterBasic;
 import com.direwolf20.laserio.common.items.filters.FilterCount;
+import com.direwolf20.laserio.common.items.filters.FilterTag;
 import com.direwolf20.laserio.integration.mekanism.client.chemicalparticle.ChemicalFlowParticleData;
 import com.direwolf20.laserio.integration.mekanism.client.chemicalparticle.ParticleDataChemical;
 import com.direwolf20.laserio.integration.mekanism.client.chemicalparticle.ParticleRenderDataChemical;
@@ -13,6 +15,7 @@ import com.direwolf20.laserio.util.CardRender;
 import com.direwolf20.laserio.util.DimBlockPos;
 import com.direwolf20.laserio.util.ExtractorCardCache;
 import com.direwolf20.laserio.util.InserterCardCache;
+import com.direwolf20.laserio.util.StockerCardCache;
 import com.direwolf20.laserio.util.WeakConsumerWrapper;
 import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
 import mekanism.api.Action;
@@ -22,6 +25,7 @@ import mekanism.api.chemical.IChemicalHandler;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -35,8 +39,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import static com.direwolf20.laserio.client.blockentityrenders.LaserNodeBERender.offsets;
+import static com.direwolf20.laserio.integration.mekanism.MekanismStatics.isValidChemicalForHandler;
 import static com.direwolf20.laserio.util.MiscTools.findOffset;
 
 public class MekanismCache {
@@ -56,6 +62,150 @@ public class MekanismCache {
         this.laserNodeBE = laserNodeBE;
     }
     
+    public boolean stockChemicals(StockerCardCache stockerCardCache) {
+        BlockPos adjacentPos = laserNodeBE.getBlockPos().relative(stockerCardCache.direction);
+        Level level = laserNodeBE.getLevel();
+        assert level != null;
+        if (!level.isLoaded(adjacentPos)) return false;
+        Map<ChemicalType, LazyOptional<IChemicalHandler<?, ?>>> chemicalHandlerMap = getAttachedChemicalTanks(stockerCardCache.direction, stockerCardCache.sneaky);
+        if (chemicalHandlerMap == null || chemicalHandlerMap.isEmpty()) return false;
+
+        ItemStack filter = stockerCardCache.filterCard;
+        if (filter.isEmpty() || !stockerCardCache.isAllowList) { //Needs a filter - at least for now? Also must be in whitelist mode
+            return false;
+        }
+        
+        for (Entry<ChemicalType, LazyOptional<IChemicalHandler<?, ?>>> entry : chemicalHandlerMap.entrySet()) {
+            if (!entry.getValue().isPresent())
+            	continue;
+        	
+        	IChemicalHandler<?, ?> chemicalHandler = entry.getValue().resolve().get();
+            if (filter.getItem() instanceof FilterBasic || filter.getItem() instanceof FilterCount) {
+                if (stockerCardCache.regulate && filter.getItem() instanceof FilterCount) {
+                    if (regulateChemicalStocker(stockerCardCache, chemicalHandler, entry.getKey()))
+                        return true;
+                }
+                if (!canAnyChemicalFiltersFit(chemicalHandler, stockerCardCache)) {
+                    continue; //If we can't fit any of our filtered items into this inventory, don't bother scanning for them
+                }
+                boolean foundItems = findChemicalStackForStocker(stockerCardCache, chemicalHandler, entry.getKey()); //Start looking for this item
+                if (foundItems)
+                    return true;
+
+            } else if (filter.getItem() instanceof FilterTag) {
+                //No-Op
+            }
+        }
+        return false;
+    }
+    
+    public boolean regulateChemicalStocker(StockerCardCache stockerCardCache, IChemicalHandler stockerTank, ChemicalType chemicalType) {
+        List<ChemicalStack<?>> filteredChemicalsList = stockerCardCache.mekanismCardCache.getFilteredChemicals();
+        for (ChemicalStack<?> chemicalStack : filteredChemicalsList) { //Iterate the list of filtered items for extracting purposes
+            int desiredAmt = stockerCardCache.mekanismCardCache.getFilterAmt(chemicalStack);
+            int amtHad = 0;
+            for (int tank = 0; tank < stockerTank.getTanks(); tank++) { //Loop through all the tanks
+                ChemicalStack<?> stackInTank = stockerTank.getChemicalInTank(tank);
+                if (new ChemicalStackKey(chemicalStack).equals(new ChemicalStackKey(stackInTank)))
+                    amtHad += stackInTank.getAmount();
+            }
+            if (amtHad > desiredAmt) { //If we have too much of this fluid, remove the difference.
+                chemicalStack.setAmount(Math.min(amtHad - desiredAmt, stockerCardCache.extractAmt));
+                if (extractChemicalStack(stockerCardCache, stockerTank, chemicalStack, chemicalType))
+                    return true;
+            }
+        }
+        return false;
+    }
+    
+    public boolean canAnyChemicalFiltersFit(IChemicalHandler chemicalHandler, StockerCardCache stockerCardCache) {
+        for (ChemicalStack<?> chemicalStack : stockerCardCache.mekanismCardCache.getFilteredChemicals()) {
+            if (!isValidChemicalForHandler(chemicalHandler, chemicalStack)) //Don't Check disparate types
+                continue;
+            long amtReturned = chemicalHandler.insertChemical(chemicalStack, Action.SIMULATE).getAmount();
+            if (amtReturned < chemicalStack.getAmount()) //If any fit
+                return true;
+        }
+        return false;
+    }
+    
+    public boolean findChemicalStackForStocker(StockerCardCache stockerCardCache, IChemicalHandler stockerTank, ChemicalType chemicalType) {
+        boolean isCount = stockerCardCache.filterCard.getItem() instanceof FilterCount;
+        int extractAmt = stockerCardCache.extractAmt;
+
+        List<ChemicalStack<?>> filteredChemicalsList = new CopyOnWriteArrayList<>(stockerCardCache.mekanismCardCache.getFilteredChemicals());
+        filteredChemicalsList.removeIf(chemicalStack -> !canChemicalFitInTank(stockerTank, chemicalStack));//If this fluid can't fit in this tank at all, skip the fluid
+        if (filteredChemicalsList.isEmpty()) //If nothing in the filter can fit, return false
+            return false;
+
+        if (isCount) { //If this is a filter count, prune the list of items to search for to just what we need
+            for (ChemicalStack<?> chemicalStack : filteredChemicalsList) { //Remove all the items from the list that we already have enough of
+                for (int tank = 0; tank < stockerTank.getTanks(); tank++) {
+                    ChemicalStack<?> tankStack = stockerTank.getChemicalInTank(tank);
+                    if (tankStack.isEmpty() || new ChemicalStackKey(chemicalStack).equals(new ChemicalStackKey(tankStack))) {
+                        int filterAmt = stockerCardCache.mekanismCardCache.getFilterAmt(chemicalStack);
+                        long amtHad = tankStack.getAmount();
+                        long amtNeeded = filterAmt - amtHad;
+                        if (amtNeeded <= 0) {//if we have enough, move onto the next stack after removing this one from the list
+                            filteredChemicalsList.remove(chemicalStack);
+                            continue;
+                        }
+                        chemicalStack.setAmount(Math.min(amtNeeded, extractAmt)); //Adjust the amount we need
+                    }
+                }
+            }
+        }
+
+        if (filteredChemicalsList.isEmpty()) //If we have nothing left to look for! Probably only happens when its a count card.
+            return false;
+
+
+        //At this point we should have a list of fluids that we need to satisfy the stock request
+        for (ChemicalStack<?> chemicalStack : filteredChemicalsList) {
+            Map<InserterCardCache, ChemicalStack<?>> insertHandlers = new HashMap<>();
+            if (!isCount)
+                chemicalStack.setAmount(extractAmt); //If this isn't a counting card, we want the extractAmt value
+            long amtNeeded = chemicalStack.getAmount();
+
+            for (InserterCardCache inserterCardCache : laserNodeBE.getChannelMatchInserters(stockerCardCache)) { //Iterate through ALL inserter nodes on this channel only
+                if (!inserterCardCache.mekanismCardCache.isStackValidForCard(chemicalStack))
+                    continue;
+                LaserNodeChemicalHandler laserNodeChemicalHandler = getLaserNodeHandlerChemical(inserterCardCache, chemicalType);
+                if (laserNodeChemicalHandler == null) continue;
+                IChemicalHandler handler = laserNodeChemicalHandler.handler;
+                chemicalStack.setAmount(amtNeeded);
+                ChemicalStack<?> extractStack = handler.extractChemical(chemicalStack, Action.SIMULATE);
+                if (extractStack.isEmpty()) continue;
+                insertHandlers.put(inserterCardCache, extractStack);
+                amtNeeded -= extractStack.getAmount();
+                if (amtNeeded == 0) break;
+            }
+            if (!insertHandlers.isEmpty()) {
+                if (!stockerCardCache.exact || amtNeeded == 0) { //If its not exact mode, or it is exact mode and we found all we need to satisfy this
+                    for (Map.Entry<InserterCardCache, ChemicalStack<?>> entry : insertHandlers.entrySet()) { //Do all the extracts/inserts
+                        InserterCardCache inserterCardCache = entry.getKey();
+                        ChemicalStack<?> insertStack = entry.getValue();
+                        LaserNodeChemicalHandler laserNodeChemicalHandler = getLaserNodeHandlerChemical(inserterCardCache, chemicalType);
+                        IChemicalHandler handler = laserNodeChemicalHandler.handler;
+                        long amtReturned = stockerTank.insertChemical(insertStack, Action.SIMULATE).getAmount(); //Test inserting into the target
+                        insertStack.setAmount(insertStack.getAmount() - amtReturned); //Change the stack to size to how much can fit
+                        ChemicalStack<?> drainedStack = handler.extractChemical(insertStack, Action.EXECUTE);
+                        stockerTank.insertChemical(drainedStack, Action.EXECUTE);
+                        drawParticlesChemical(drainedStack, inserterCardCache.direction, inserterCardCache.be, stockerCardCache.be, stockerCardCache.direction, inserterCardCache.cardSlot, stockerCardCache.cardSlot);
+                    }
+                    return true;
+                }
+            }
+        }
+        return false; //If we got NOTHING
+    }
+    
+    public boolean canChemicalFitInTank(IChemicalHandler stockerTank, ChemicalStack<?> chemicalStack) {
+        if (!isValidChemicalForHandler(stockerTank, chemicalStack)) //Don't Check disparate types
+            return false;
+        return (stockerTank.insertChemical(chemicalStack, Action.SIMULATE).getAmount() < chemicalStack.getAmount());
+    }    
+    
 	/** Extractor Cards call this, and try to find an inserter card to send their items to **/
 	public boolean sendChemicals(ExtractorCardCache extractorCardCache) {
 		BlockPos adjacentPos = laserNodeBE.getBlockPos().relative(extractorCardCache.direction);
@@ -64,6 +214,7 @@ public class MekanismCache {
         if (!level.isLoaded(adjacentPos)) return false;
         Map<ChemicalType, LazyOptional<IChemicalHandler<?, ?>>> chemicalHandlerMap = getAttachedChemicalTanks(extractorCardCache.direction, extractorCardCache.sneaky);
         if (chemicalHandlerMap == null || chemicalHandlerMap.isEmpty()) return false;
+        
         for (Entry<ChemicalType, LazyOptional<IChemicalHandler<?, ?>>> entry : chemicalHandlerMap.entrySet()) {
         	if (!entry.getValue().isPresent())
         		continue;
