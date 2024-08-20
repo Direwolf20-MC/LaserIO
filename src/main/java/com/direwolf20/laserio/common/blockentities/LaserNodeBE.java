@@ -80,6 +80,7 @@ import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -196,8 +197,11 @@ public class LaserNodeBE extends BaseLaserBE {
     /** This is called by nodes when a connection is added/removed - the other node does the discovery and then tells this one about it **/
     public void setOtherNodesInNetwork(Set<DimBlockPos> otherNodesInNetwork) {
         this.otherNodesInNetwork.clear();
+        if (level == null) return;
         for (DimBlockPos pos : otherNodesInNetwork) {
-            this.otherNodesInNetwork.add(new DimBlockPos(pos.getLevel(level.getServer()), getRelativePos(pos.blockPos)));
+            Level targetLevel = pos.getLevel(level.getServer());
+            if (targetLevel == null) continue;
+            this.otherNodesInNetwork.add(new DimBlockPos(targetLevel, getRelativePos(pos.blockPos)));
         }
         refreshAllInvNodes(); //Seeing as the otherNodes list just got updated, we should refresh the InventoryNode content caches
     }
@@ -390,8 +394,11 @@ public class LaserNodeBE extends BaseLaserBE {
     public void refreshRedstoneNetwork() {
         //System.out.println("Updating Redstone Network at: " + getBlockPos() + ", Gametime: " + level.getGameTime());
         redstoneNetwork.clear();
+        if (level == null) return;
         for (DimBlockPos pos : otherNodesInNetwork) {
-            LaserNodeBE laserNodeBE = getNodeAt(new DimBlockPos(pos.getLevel(level.getServer()), getWorldPos(pos.blockPos)));
+            Level targetLevel = pos.getLevel(level.getServer());
+            if (targetLevel == null) continue;
+            LaserNodeBE laserNodeBE = getNodeAt(new DimBlockPos(targetLevel, getWorldPos(pos.blockPos)));
             if (laserNodeBE == null) continue;
             for (Map.Entry<Byte, Byte> entry : laserNodeBE.myRedstoneIn.byte2ByteEntrySet()) {
                 updateRedstoneNetwork(entry.getKey(), entry.getValue());
@@ -426,8 +433,11 @@ public class LaserNodeBE extends BaseLaserBE {
         //if (inserterUpdated || extractorUpdated)
         markDirtyClient();
         if (inserterUpdated) {
+            if (level == null) return;
             for (DimBlockPos pos : otherNodesInNetwork) {
-                LaserNodeBE node = getNodeAt(new DimBlockPos(pos.getLevel(level.getServer()), getWorldPos(pos.blockPos)));
+                Level targetLevel = pos.getLevel(level.getServer());
+                if (targetLevel == null) continue;
+                LaserNodeBE node = getNodeAt(new DimBlockPos(targetLevel, getWorldPos(pos.blockPos)));
                 if (node == null) continue;
                 node.checkInvNode(new DimBlockPos(this.level, this.getBlockPos()), true);
             }
@@ -2027,8 +2037,11 @@ public class LaserNodeBE extends BaseLaserBE {
 
     /** When this node changes, tell other nodes to refresh their cache of it **/
     public void notifyOtherNodesOfChange() {
+        if (level == null) return;
         for (DimBlockPos pos : otherNodesInNetwork) {
-            LaserNodeBE node = getNodeAt(new DimBlockPos(pos.getLevel(level.getServer()), getWorldPos(pos.blockPos)));
+            Level targetLevel = pos.getLevel(level.getServer());
+            if (targetLevel == null) continue;
+            LaserNodeBE node = getNodeAt(new DimBlockPos(targetLevel, getWorldPos(pos.blockPos)));
             if (node == null) continue;
             node.checkInvNode(new DimBlockPos(this.level, this.getBlockPos()), true);
             //node.refreshRedstoneNetwork();
@@ -2047,8 +2060,11 @@ public class LaserNodeBE extends BaseLaserBE {
         channelOnlyCache.clear();
         this.stockerDestinationCache.clear();
         this.redstoneNetwork.clear();
+        if (level == null) return;
         for (DimBlockPos pos : otherNodesInNetwork) {
-            checkInvNode(new DimBlockPos(pos.getLevel(level.getServer()), getWorldPos(pos.blockPos)), false);
+            Level targetLevel = pos.getLevel(level.getServer());
+            if (targetLevel == null) continue;
+            checkInvNode(new DimBlockPos(targetLevel, getWorldPos(pos.blockPos)), false);
         }
         //refreshRedstoneNetwork();
         redstoneRefreshed = false;
@@ -2097,9 +2113,11 @@ public class LaserNodeBE extends BaseLaserBE {
     public LaserNodeItemHandler getLaserNodeHandlerItem(InserterCardCache inserterCardCache) {
         if (!inserterCardCache.cardType.equals(BaseCard.CardType.ITEM)) return null;
         if (level == null) return null;
-        DimBlockPos nodeWorldPos = new DimBlockPos(inserterCardCache.relativePos.getLevel(level.getServer()), getWorldPos(inserterCardCache.relativePos.blockPos));
+        Level targetLevel = inserterCardCache.relativePos.getLevel(level.getServer());
+        if (targetLevel == null) return null;
+        DimBlockPos nodeWorldPos = new DimBlockPos(targetLevel, getWorldPos(inserterCardCache.relativePos.blockPos));
         if (!chunksLoaded(nodeWorldPos, nodeWorldPos.blockPos.relative(inserterCardCache.direction))) return null;
-        LaserNodeBE be = getNodeAt(new DimBlockPos(inserterCardCache.relativePos.getLevel(level.getServer()), getWorldPos(inserterCardCache.relativePos.blockPos)));
+        LaserNodeBE be = getNodeAt(new DimBlockPos(targetLevel, getWorldPos(inserterCardCache.relativePos.blockPos)));
         if (be == null) return null;
         IItemHandler handler = be.getAttachedInventory(inserterCardCache.direction, inserterCardCache.sneaky).orElse(EMPTY);
         if (handler.getSlots() == 0) return null;
@@ -2165,9 +2183,11 @@ public class LaserNodeBE extends BaseLaserBE {
     public LaserNodeFluidHandler getLaserNodeHandlerFluid(InserterCardCache inserterCardCache) {
         if (!inserterCardCache.cardType.equals(BaseCard.CardType.FLUID)) return null;
         if (level == null) return null;
-        DimBlockPos nodeWorldPos = new DimBlockPos(inserterCardCache.relativePos.getLevel(level.getServer()), getWorldPos(inserterCardCache.relativePos.blockPos));
+        Level targetLevel = inserterCardCache.relativePos.getLevel(level.getServer());
+        if (targetLevel == null) return null;
+        DimBlockPos nodeWorldPos = new DimBlockPos(targetLevel, getWorldPos(inserterCardCache.relativePos.blockPos));
         if (!chunksLoaded(nodeWorldPos, nodeWorldPos.blockPos.relative(inserterCardCache.direction))) return null;
-        LaserNodeBE be = getNodeAt(new DimBlockPos(inserterCardCache.relativePos.getLevel(level.getServer()), getWorldPos(inserterCardCache.relativePos.blockPos)));
+        LaserNodeBE be = getNodeAt(new DimBlockPos(targetLevel, getWorldPos(inserterCardCache.relativePos.blockPos)));
         if (be == null) return null;
         LazyOptional<IFluidHandler> fluidhandler = be.getAttachedFluidTank(inserterCardCache.direction, inserterCardCache.sneaky);
         if (!fluidhandler.isPresent()) return null;
@@ -2227,13 +2247,15 @@ public class LaserNodeBE extends BaseLaserBE {
     public LaserNodeEnergyHandler getLaserNodeHandlerEnergy(InserterCardCache inserterCardCache) {
         if (!inserterCardCache.cardType.equals(BaseCard.CardType.ENERGY)) return null;
         if (level == null) return null;
-        DimBlockPos nodeWorldPos = new DimBlockPos(inserterCardCache.relativePos.getLevel(level.getServer()), getWorldPos(inserterCardCache.relativePos.blockPos));
+        Level targetLevel = inserterCardCache.relativePos.getLevel(level.getServer());
+        if (targetLevel == null) return null;
+        DimBlockPos nodeWorldPos = new DimBlockPos(targetLevel, getWorldPos(inserterCardCache.relativePos.blockPos));
         if (!chunksLoaded(nodeWorldPos, nodeWorldPos.blockPos.relative(inserterCardCache.direction))) return null;
-        LaserNodeBE be = getNodeAt(new DimBlockPos(inserterCardCache.relativePos.getLevel(level.getServer()), getWorldPos(inserterCardCache.relativePos.blockPos)));
+        LaserNodeBE be = getNodeAt(new DimBlockPos(targetLevel, getWorldPos(inserterCardCache.relativePos.blockPos)));
         if (be == null) return null;
-        Optional<IEnergyStorage> energyhandler = be.getAttachedEnergyTank(inserterCardCache.direction, inserterCardCache.sneaky).resolve();
-        if (energyhandler.isEmpty()) return null;
-        IEnergyStorage energyTank = energyhandler.get();
+        LazyOptional<IEnergyStorage> energyhandler = be.getAttachedEnergyTank(inserterCardCache.direction, inserterCardCache.sneaky);
+        if (!energyhandler.isPresent()) return null;
+        IEnergyStorage energyTank = energyhandler.resolve().get();
         return new LaserNodeEnergyHandler(be, energyTank);
     }
 

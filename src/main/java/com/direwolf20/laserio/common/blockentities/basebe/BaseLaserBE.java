@@ -41,7 +41,10 @@ public class BaseLaserBE extends BlockEntity {
 
     /** Gets the node at a specific world position, returning null if not a node */
     public LaserNodeBE getNodeAt(DimBlockPos pos) {
-        BlockEntity be = pos.getLevel(level.getServer()).getBlockEntity(pos.blockPos);
+        if (level == null) return null;
+        Level targetLevel = pos.getLevel(level.getServer());
+        if (targetLevel == null) return null;
+        BlockEntity be = targetLevel.getBlockEntity(pos.blockPos);
         if (be instanceof LaserNodeBE) return (LaserNodeBE) be;
         return null;
     }
