@@ -81,7 +81,7 @@ public class ChemicalFlowParticleData implements ParticleOptions {
             double tz = reader.readDouble();
             reader.expect(' ');
             int ticks = reader.readInt();
-            return new ChemicalFlowParticleData(GasStack.EMPTY, tx, ty, tz, ticks, type); //TODO Check this
+            return new ChemicalFlowParticleData(GasStack.EMPTY, tx, ty, tz, ticks, type);
         }
 
         @Override

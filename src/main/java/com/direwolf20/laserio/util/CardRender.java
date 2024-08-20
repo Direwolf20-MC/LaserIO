@@ -53,6 +53,10 @@ public class CardRender {
             r = 1f;
             g = 0f;
             b = 0f;
+        } else if (((BaseCard) card.getItem()).getCardType() == BaseCard.CardType.CHEMICAL) {
+        	r = 1f;
+        	g = 0f;
+        	b = 1f;
         }
         if (!enabled) {
             r /= 4f;

@@ -21,6 +21,8 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 
+import static com.direwolf20.laserio.integration.mekanism.MekanismStatics.doesItemStackHoldChemicals;
+
 public class CardChemicalScreen extends CardItemScreen {
 
     public int currentChemicalExtractAmt;
@@ -41,6 +43,7 @@ public class CardChemicalScreen extends CardItemScreen {
     public void init() {
         this.currentChemicalExtractAmt = CardChemical.getChemicalExtractAmt(card);
         super.init();
+        this.renderChemicals = true;
     }
 
     @Override
@@ -87,7 +90,7 @@ public class CardChemicalScreen extends CardItemScreen {
     @Override
     public boolean filterSlot(int btn) {
         ItemStack slotStack = hoveredSlot.getItem();
-        if (!FilterCount.doesItemStackHoldFluids(slotStack)) //TODO Chemical Checks
+        if (!doesItemStackHoldChemicals(slotStack))
             return super.filterSlot(btn);
         if (slotStack.isEmpty()) return true;
         if (btn == 2) { //Todo IMC Inventory Sorter so this works

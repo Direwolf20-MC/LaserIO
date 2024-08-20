@@ -2,6 +2,8 @@ package com.direwolf20.laserio.common.items.filters;
 
 import com.direwolf20.laserio.common.containers.FilterCountContainer;
 import com.direwolf20.laserio.common.containers.customhandler.FilterCountHandler;
+import com.direwolf20.laserio.integration.mekanism.MekanismIntegration;
+
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -20,6 +22,8 @@ import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 import net.minecraftforge.network.NetworkHooks;
+
+import static com.direwolf20.laserio.integration.mekanism.MekanismStatics.doesItemStackHoldChemicals;
 
 public class FilterCount extends BaseFilter {
     public FilterCount() {
@@ -113,10 +117,6 @@ public class FilterCount extends BaseFilter {
             CompoundTag countTag = countList.getCompound(i);
             int slot = countTag.getInt("Slot");
             ItemStack itemStack = handler.getStackInSlot(slot);
-            /*int mbAmt = getSlotAmount(stack, i);
-            if (mbAmt > 0)
-                itemStack.setCount((int)Math.floor(mbAmt/1000));
-            else*/
             itemStack.setCount(countTag.getInt("Count"));
             handler.setStackInSlot(slot, itemStack);
         }
@@ -131,7 +131,7 @@ public class FilterCount extends BaseFilter {
             CompoundTag countTag = new CompoundTag();
             ItemStack itemStack = handler.getStackInSlot(i);
             countTag.putInt("Slot", i);
-            if (doesItemStackHoldFluids(itemStack)) {
+            if (doesItemStackHoldFluids(itemStack) || (MekanismIntegration.isLoaded() && doesItemStackHoldChemicals(itemStack))) {
                 int mbAmt = getSlotAmount(stack, i);
                 if (mbAmt > 0) {
                     countTag.putInt("Count", Math.max(1, (int) Math.floor(mbAmt / 1000)));
@@ -144,15 +144,6 @@ public class FilterCount extends BaseFilter {
                 countTag.putInt("Count", itemStack.getCount());
                 countTag.putInt("MBAmount", 0);
             }
-            /*int mbAmt = getSlotAmount(stack, i);
-            if (mbAmt > 0)
-                countTag.putInt("Count", (int)Math.floor(mbAmt/1000));
-            else
-                countTag.putInt("Count", itemStack.getCount());
-            if (doesItemStackHoldFluids(itemStack))
-                countTag.putInt("MBAmount", itemStack.getCount() * 1000);
-            else
-                countTag.putInt("MBAmount", 0);*/
             countList.add(countTag);
         }
         stack.getOrCreateTag().put("counts", countList);

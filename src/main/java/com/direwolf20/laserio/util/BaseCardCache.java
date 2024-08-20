@@ -8,6 +8,7 @@ import com.direwolf20.laserio.common.items.cards.CardItem;
 import com.direwolf20.laserio.common.items.cards.CardRedstone;
 import com.direwolf20.laserio.common.items.filters.*;
 import com.direwolf20.laserio.integration.mekanism.CardChemical;
+import com.direwolf20.laserio.integration.mekanism.MekanismCardCache;
 
 import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
@@ -50,6 +51,8 @@ public class BaseCardCache {
     public final Map<FluidStackKey, Boolean> filterCacheFluid = new Object2BooleanOpenHashMap<>();
     public final Map<FluidStackKey, Integer> filterCountsFluid = new Object2IntOpenHashMap<>();
 
+    public MekanismCardCache mekanismCardCache;
+    
     public BaseCardCache(Direction direction, ItemStack cardItem, int cardSlot, LaserNodeBE be) {
         this.cardItem = cardItem;
         this.direction = direction;
@@ -71,6 +74,7 @@ public class BaseCardCache {
             cardType = BaseCard.CardType.REDSTONE;
         } else if (cardItem.getItem() instanceof CardChemical) {
         	cardType = BaseCard.CardType.CHEMICAL;
+        	mekanismCardCache = new MekanismCardCache(this);
         } else
         	cardType = BaseCard.CardType.MISSING;
         this.be = be;

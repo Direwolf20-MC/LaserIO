@@ -7,6 +7,8 @@ import com.direwolf20.laserio.common.items.cards.CardFluid;
 import com.direwolf20.laserio.common.items.cards.CardItem;
 import com.direwolf20.laserio.common.items.cards.CardRedstone;
 import com.direwolf20.laserio.common.items.filters.BaseFilter;
+import com.direwolf20.laserio.integration.mekanism.CardChemical;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -101,9 +103,20 @@ public class PacketOpenCard {
                         buf.writeByte(side);
                     }));
 
+                } else if (itemStack.getItem() instanceof CardChemical) {
+                	if (!msg.hasShiftDown) {
+                        NetworkHooks.openScreen(sender, new SimpleMenuProvider(
+                                (windowId, playerInventory, playerEntity) -> new CardChemicalContainer(windowId, playerInventory, sender, msg.sourcePos, itemStack, side), Component.translatable("")), (buf -> {
+                            buf.writeItem(itemStack);
+                            buf.writeByte(side);
+                        }));
+                    } else {
+                        ItemStack filterItem = handler.getStackInSlot(0);
+                        if (filterItem.getItem() instanceof BaseFilter)
+                            PacketOpenFilter.doOpenFilter(filterItem, itemStack, sender, msg.sourcePos);
+                    }
                 }
             });
-
 
             ctx.get().setPacketHandled(true);
         }

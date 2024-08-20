@@ -4,6 +4,7 @@ import com.direwolf20.laserio.common.items.filters.FilterCount;
 import com.direwolf20.laserio.util.MiscTools;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
+import mekanism.api.chemical.ChemicalStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -20,19 +21,17 @@ import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
-import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidUtil;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 
-public class LaserGuiGraphicsFluid extends GuiGraphics {
+import static com.direwolf20.laserio.integration.mekanism.MekanismStatics.getFirstChemicalOnItemStack;
+
+public class LaserGuiGraphicsChemical extends GuiGraphics {
     public Minecraft minecraft;
     protected final AbstractContainerScreen screen;
 
-    public LaserGuiGraphicsFluid(Minecraft minecraft, MultiBufferSource.BufferSource bufferSource, AbstractContainerScreen screen) {
+    public LaserGuiGraphicsChemical(Minecraft minecraft, MultiBufferSource.BufferSource bufferSource, AbstractContainerScreen screen) {
         super(minecraft, bufferSource);
         this.minecraft = minecraft;
         this.screen = screen;
@@ -54,12 +53,12 @@ public class LaserGuiGraphicsFluid extends GuiGraphics {
 
     @Override
     public void renderItemDecorations(Font font, ItemStack itemstack, int x, int y, @Nullable String altText) {
-        if (shouldRenderFluid(itemstack, x, y, true, false)) {
-            CardFluidScreen cardFluidScreen = (CardFluidScreen) screen;
-            int sloty = (int) Math.floor((y - cardFluidScreen.filterStartY) / 18);
-            int slotx = (int) Math.floor((x - cardFluidScreen.filterStartX) / 18);
+        if (shouldRenderChemical(itemstack, x, y, true, false)) {
+            CardChemicalScreen cardChemicalScreen = (CardChemicalScreen) screen;
+            int sloty = (int) Math.floor((y - cardChemicalScreen.filterStartY) / 18);
+            int slotx = (int) Math.floor((x - cardChemicalScreen.filterStartX) / 18);
             int slot = ((5 * sloty) + slotx);
-            ItemStack filter = ((CardFluidScreen) screen).filter;
+            ItemStack filter = ((CardChemicalScreen) screen).filter;
             int totalmbAmt = FilterCount.getSlotAmount(filter, slot);
             int count = (int) Math.floor(totalmbAmt / 1000);
             int mbAmt = totalmbAmt % 1000;
@@ -98,7 +97,7 @@ public class LaserGuiGraphicsFluid extends GuiGraphics {
                     //multibuffersource$buffersource.endBatch();
                 }
 
-                if (!shouldRenderFluid(itemstack, x, y, true, true)) {
+                if (!shouldRenderChemical(itemstack, x, y, true, true)) {
                     RenderSystem.disableDepthTest();
                     //RenderSystem.disableTexture();
                     RenderSystem.enableBlend();
@@ -189,48 +188,34 @@ public class LaserGuiGraphicsFluid extends GuiGraphics {
         }
     }
 
-    public boolean shouldRenderFluid(ItemStack pStack, int pX, int pY, boolean includeCarried, boolean reverseBounds) {
-        if (!(screen instanceof CardFluidScreen)) {
+    public boolean shouldRenderChemical(ItemStack pStack, int pX, int pY, boolean includeCarried, boolean reverseBounds) {
+        if (!(screen instanceof CardChemicalScreen)) {
             return reverseBounds;
         }
-        CardFluidScreen cardFluidScreen = (CardFluidScreen) screen;
-        if (cardFluidScreen.getMenu().getCarried().equals(pStack)) {
+        CardChemicalScreen cardChemicalScreen = (CardChemicalScreen) screen;
+        if (cardChemicalScreen.getMenu().getCarried().equals(pStack)) {
             if (includeCarried)
                 return reverseBounds;
         }
         if (reverseBounds) {
-            return !(MiscTools.inBounds(cardFluidScreen.filterStartX, cardFluidScreen.filterStartY, cardFluidScreen.filterEndX - cardFluidScreen.filterStartX, cardFluidScreen.filterEndY - cardFluidScreen.filterStartY, pX, pY));
+            return !(MiscTools.inBounds(cardChemicalScreen.filterStartX, cardChemicalScreen.filterStartY, cardChemicalScreen.filterEndX - cardChemicalScreen.filterStartX, cardChemicalScreen.filterEndY - cardChemicalScreen.filterStartY, pX, pY));
         } else {
-            if (!MiscTools.inBounds(cardFluidScreen.filterStartX, cardFluidScreen.filterStartY, cardFluidScreen.filterEndX - cardFluidScreen.filterStartX, cardFluidScreen.filterEndY - cardFluidScreen.filterStartY, pX, pY)) {
+            if (!MiscTools.inBounds(cardChemicalScreen.filterStartX, cardChemicalScreen.filterStartY, cardChemicalScreen.filterEndX - cardChemicalScreen.filterStartX, cardChemicalScreen.filterEndY - cardChemicalScreen.filterStartY, pX, pY)) {
                 return reverseBounds;
             }
         }
-        LazyOptional<IFluidHandlerItem> fluidHandlerLazyOptional = FluidUtil.getFluidHandler(pStack);
-        if (!fluidHandlerLazyOptional.isPresent()) {
-            return reverseBounds;
-        }
-        FluidStack fluidStack = FluidStack.EMPTY;
-        IFluidHandler fluidHandler = fluidHandlerLazyOptional.resolve().get();
-        for (int tank = 0; tank < fluidHandler.getTanks(); tank++) {
-            fluidStack = fluidHandler.getFluidInTank(tank);
-            if (!fluidStack.isEmpty())
-                break;
-        }
-        if (fluidStack.isEmpty()) {
+        ChemicalStack<?> chemicalStack = getFirstChemicalOnItemStack(pStack);
+        if (chemicalStack.isEmpty()) {
             return reverseBounds;
         }
 
-        Fluid fluid = fluidStack.getFluid();
-        if (fluid == null) {
-            return reverseBounds;
-        }
-        ResourceLocation fluidStill = IClientFluidTypeExtensions.of(fluid).getStillTexture();
-        TextureAtlasSprite fluidStillSprite = null;
-        if (fluidStill != null) {
-            fluidStillSprite = Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(fluidStill);
+        ResourceLocation chemicalStill = chemicalStack.getType().getIcon();
+        TextureAtlasSprite chemicalStillSprite = null;
+        if (chemicalStill != null) {
+            chemicalStillSprite = Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(chemicalStill);
         }
 
-        if (fluidStillSprite == null) {
+        if (chemicalStillSprite == null) {
             return reverseBounds;
         }
         return !reverseBounds;
@@ -272,26 +257,18 @@ public class LaserGuiGraphicsFluid extends GuiGraphics {
 
     @Override
     public void renderItem(ItemStack pStack, int pX, int pY, int something) {
-        if (!shouldRenderFluid(pStack, pX, pY, true, false)) {
+        if (!shouldRenderChemical(pStack, pX, pY, true, false)) {
             super.renderItem(pStack, pX, pY, something);
             return;
         }
-        LazyOptional<IFluidHandlerItem> fluidHandlerLazyOptional = FluidUtil.getFluidHandler(pStack);
-        FluidStack fluidStack = FluidStack.EMPTY;
-        IFluidHandler fluidHandler = fluidHandlerLazyOptional.resolve().get();
-        for (int tank = 0; tank < fluidHandler.getTanks(); tank++) {
-            fluidStack = fluidHandler.getFluidInTank(tank);
-            if (!fluidStack.isEmpty())
-                break;
-        }
-        Fluid fluid = fluidStack.getFluid();
-        ResourceLocation fluidStill = IClientFluidTypeExtensions.of(fluid).getStillTexture();
-        TextureAtlasSprite fluidStillSprite = Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(fluidStill);
-        int fluidColor = IClientFluidTypeExtensions.of(fluid).getTintColor(fluidStack);
+        ChemicalStack<?> chemicalStack = getFirstChemicalOnItemStack(pStack); //We checked above to ensure this isn't empty
+        ResourceLocation chemicalStill = chemicalStack.getType().getIcon();
+        TextureAtlasSprite chamicalStillSprite = Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(chemicalStill);
+        int chemicalColor = chemicalStack.getChemicalColorRepresentation();
 
-        float red = (float) (fluidColor >> 16 & 255) / 255.0F;
-        float green = (float) (fluidColor >> 8 & 255) / 255.0F;
-        float blue = (float) (fluidColor & 255) / 255.0F;
+        float red = (float) (chemicalColor >> 16 & 255) / 255.0F;
+        float green = (float) (chemicalColor >> 8 & 255) / 255.0F;
+        float blue = (float) (chemicalColor & 255) / 255.0F;
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderTexture(0, InventoryMenu.BLOCK_ATLAS);
 
@@ -299,10 +276,10 @@ public class LaserGuiGraphicsFluid extends GuiGraphics {
         posestack.pushPose();
         RenderSystem.setShaderColor(red, green, blue, 1.0f);
         int zLevel = 100;
-        float uMin = fluidStillSprite.getU0();
-        float uMax = fluidStillSprite.getU1();
-        float vMin = fluidStillSprite.getV0();
-        float vMax = fluidStillSprite.getV1();
+        float uMin = chamicalStillSprite.getU0();
+        float uMax = chamicalStillSprite.getU1();
+        float vMin = chamicalStillSprite.getV0();
+        float vMax = chamicalStillSprite.getV1();
 
         Tesselator tessellator = Tesselator.getInstance();
         BufferBuilder vertexBuffer = tessellator.getBuilder();

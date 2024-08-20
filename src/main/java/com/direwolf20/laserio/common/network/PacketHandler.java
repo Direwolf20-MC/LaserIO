@@ -2,6 +2,8 @@ package com.direwolf20.laserio.common.network;
 
 import com.direwolf20.laserio.common.LaserIO;
 import com.direwolf20.laserio.common.network.packets.*;
+import com.direwolf20.laserio.integration.mekanism.MekanismIntegration;
+
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -44,7 +46,12 @@ public class PacketHandler {
         HANDLER.registerMessage(id++, PacketNodeParticles.class, PacketNodeParticles::encode, PacketNodeParticles::decode, PacketNodeParticles.Handler::handle);
         HANDLER.registerMessage(id++, PacketNodeParticlesFluid.class, PacketNodeParticlesFluid::encode, PacketNodeParticlesFluid::decode, PacketNodeParticlesFluid.Handler::handle);
         //HANDLER.registerMessage(id++, PacketDurabilitySync.class,     PacketDurabilitySync::encode,       PacketDurabilitySync::decode,       PacketDurabilitySync.Handler::handle);
-
+        
+        //Mekanism Packets Only
+        if (MekanismIntegration.isLoaded()) {
+        	//Client Side
+        	HANDLER.registerMessage(id++, PacketNodeParticlesChemical.class, PacketNodeParticlesChemical::encode, PacketNodeParticlesChemical::decode, PacketNodeParticlesChemical.Handler::handle);
+        }
     }
 
     public static void sendTo(Object msg, ServerPlayer player) {
