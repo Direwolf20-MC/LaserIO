@@ -16,8 +16,11 @@ import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.capabilities.CapabilityToken;
 import net.minecraftforge.common.util.LazyOptional;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+
 public class MekanismStatics {
-	
 	//TODO: Use Mekanism capabilities here
 	public static Capability<IGasHandler> GAS_CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {});
 	public static Capability<IInfusionHandler> INFUSION_CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {});
@@ -42,7 +45,7 @@ public class MekanismStatics {
         	return GasStack.EMPTY; //TODO Should I change this to something more generic?
     	
     	for (ChemicalType chemicalType : ChemicalType.values()) {
-			LazyOptional<? extends IChemicalHandler<?, ?>> chemicalHandlerOptional = itemStack.getCapability(MekanismStatics.getCapabilityForChemical(chemicalType));
+			LazyOptional<? extends IChemicalHandler<?, ?>> chemicalHandlerOptional = itemStack.getCapability(getCapabilityForChemical(chemicalType));
     		if (!chemicalHandlerOptional.isPresent())
     			continue;
     		IChemicalHandler<?, ?> chemicalHandler = chemicalHandlerOptional.resolve().get();
@@ -56,6 +59,39 @@ public class MekanismStatics {
         return GasStack.EMPTY;
     }
     
+    public static List<ChemicalStack<?>> getAllChemicalsOnItemStack(ItemStack itemStack) {
+        List<ChemicalStack<?>> chemicalStackList = new ArrayList<>();
+        if (itemStack.isEmpty()) 
+        	return chemicalStackList;
+        
+        for (ChemicalType chemicalType : ChemicalType.values()) {
+			LazyOptional<? extends IChemicalHandler<?, ?>> chemicalHandlerOptional = itemStack.getCapability(getCapabilityForChemical(chemicalType));
+			if (!chemicalHandlerOptional.isPresent())
+				continue;
+			IChemicalHandler<?, ?> chemicalHandler = chemicalHandlerOptional.resolve().get();
+			for (int tank = 0; tank < chemicalHandler.getTanks(); tank++) {
+				ChemicalStack<?> chemicalStack = chemicalHandler.getChemicalInTank(tank);
+				if (!chemicalStack.isEmpty())
+	                chemicalStackList.add(chemicalStack);
+			}
+        }
+		
+        return chemicalStackList;
+    }
+    
+    public static List<String> getTagsFromItemStack(ItemStack itemStack) {
+        List<String> tagsList = new ArrayList<>();
+        List<ChemicalStack<?>> chemicalStackList = getAllChemicalsOnItemStack(itemStack);
+        for (ChemicalStack<?> chemicalStack : chemicalStackList) {
+        	chemicalStack.getType().getTags().forEach(t -> {
+                String tag = t.location().toString().toLowerCase(Locale.ROOT);
+                if (!tagsList.contains(tag))
+                    tagsList.add(tag);
+            });
+        }
+        
+        return tagsList;
+    }
     
 //    @SuppressWarnings("unchecked")
 //    public static <CHEMICAL extends Chemical<CHEMICAL>, HANDLER extends IChemicalHandler<CHEMICAL, ?>> Capability<HANDLER> getCapabilityForChemical(CHEMICAL chemical) {

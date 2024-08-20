@@ -11,6 +11,8 @@ import com.direwolf20.laserio.common.items.filters.FilterTag;
 import com.direwolf20.laserio.common.network.PacketHandler;
 import com.direwolf20.laserio.common.network.packets.PacketGhostSlot;
 import com.direwolf20.laserio.common.network.packets.PacketUpdateFilterTag;
+import com.direwolf20.laserio.integration.mekanism.MekanismIntegration;
+import com.direwolf20.laserio.integration.mekanism.MekanismStatics;
 import com.direwolf20.laserio.util.MagicHelpers;
 import com.direwolf20.laserio.util.MiscTools;
 import com.mojang.blaze3d.platform.InputConstants;
@@ -217,6 +219,14 @@ public class FilterTagScreen extends AbstractContainerScreen<FilterTagContainer>
                         if (!stackInSlotTags.contains(tag) && !tags.contains(tag))
                             stackInSlotTags.add(tag);
                     });
+                }
+            }
+            
+            if (MekanismIntegration.isLoaded()) {
+                List<String> chemicalTags = MekanismStatics.getTagsFromItemStack(stackInSlot);
+                for (String tag : chemicalTags) {
+                    if (!stackInSlotTags.contains(tag) && !tags.contains(tag))
+                        stackInSlotTags.add(tag);
                 }
             }
         }
