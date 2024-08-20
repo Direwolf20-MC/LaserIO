@@ -48,7 +48,6 @@ public class BaseCard extends Item {
     public BaseCard() {
         super(new Item.Properties()
                 .stacksTo(1));
-
     }
 
     public CardType getCardType() {
@@ -127,8 +126,7 @@ public class BaseCard extends Item {
      * This is only here to deal with autocrafters who might crash
      */
     @Override
-    public ItemStack getCraftingRemainingItem(ItemStack itemStack)
-    {
+    public ItemStack getCraftingRemainingItem(ItemStack itemStack) {
         return ItemStack.EMPTY;
     }
 

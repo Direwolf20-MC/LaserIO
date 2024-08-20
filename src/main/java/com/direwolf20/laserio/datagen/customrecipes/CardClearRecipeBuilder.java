@@ -45,42 +45,42 @@ public class CardClearRecipeBuilder implements RecipeBuilder {
         return new CardClearRecipeBuilder(result, count);
     }
 
-    public CardClearRecipeBuilder requires(TagKey<Item> pTag) {
-        return this.requires(Ingredient.of(pTag));
+    public CardClearRecipeBuilder requires(TagKey<Item> tag) {
+        return this.requires(Ingredient.of(tag));
     }
 
-    public CardClearRecipeBuilder requires(ItemLike pItem) {
-        return this.requires(pItem, 1);
+    public CardClearRecipeBuilder requires(ItemLike item) {
+        return this.requires(item, 1);
     }
 
-    public CardClearRecipeBuilder requires(ItemLike pItem, int pQuantity) {
-        for (int i = 0; i < pQuantity; ++i) {
-            this.requires(Ingredient.of(pItem));
+    public CardClearRecipeBuilder requires(ItemLike item, int quantity) {
+        for (int i = 0; i < quantity; ++i) {
+            this.requires(Ingredient.of(item));
         }
 
         return this;
     }
 
-    public CardClearRecipeBuilder requires(Ingredient pIngredient) {
-        return this.requires(pIngredient, 1);
+    public CardClearRecipeBuilder requires(Ingredient ingredient) {
+        return this.requires(ingredient, 1);
     }
 
-    public CardClearRecipeBuilder requires(Ingredient pIngredient, int pQuantity) {
-        for (int i = 0; i < pQuantity; ++i) {
-            this.ingredients.add(pIngredient);
+    public CardClearRecipeBuilder requires(Ingredient ingredient, int quantity) {
+        for (int i = 0; i < quantity; ++i) {
+            this.ingredients.add(ingredient);
         }
 
         return this;
     }
 
-    public CardClearRecipeBuilder unlockedBy(String pName, CriterionTriggerInstance pCriterionTrigger) {
-        this.advancement.addCriterion(pName, pCriterionTrigger);
+    public CardClearRecipeBuilder unlockedBy(String name, CriterionTriggerInstance criterionTrigger) {
+        this.advancement.addCriterion(name, criterionTrigger);
 
         return this;
     }
 
-    public CardClearRecipeBuilder group(@Nullable String pGroupName) {
-        this.group = pGroupName;
+    public CardClearRecipeBuilder group(@Nullable String groupName) {
+        this.group = groupName;
 
         return this;
     }
@@ -89,10 +89,10 @@ public class CardClearRecipeBuilder implements RecipeBuilder {
         return this.result;
     }
 
-    public void save(Consumer<FinishedRecipe> consumer, ResourceLocation pId) {
-        this.ensureValid(pId);
-        this.advancement.parent(new ResourceLocation("recipes/root")).addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(pId)).rewards(AdvancementRewards.Builder.recipe(pId)).requirements(RequirementsStrategy.OR);
-        consumer.accept(new CardClearRecipeBuilder.Result(pId, this.result, this.count, this.group == null ? "" : this.group, this.ingredients, this.advancement, new ResourceLocation(pId.getNamespace(), "recipes/misc/" + pId.getPath())));
+    public void save(Consumer<FinishedRecipe> consumer, ResourceLocation id) {
+        this.ensureValid(id);
+        this.advancement.parent(new ResourceLocation("recipes/root")).addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(id)).rewards(AdvancementRewards.Builder.recipe(id)).requirements(RequirementsStrategy.OR);
+        consumer.accept(new CardClearRecipeBuilder.Result(id, this.result, this.count, this.group == null ? "" : this.group, this.ingredients, this.advancement, new ResourceLocation(id.getNamespace(), "recipes/misc/" + id.getPath())));
     }
 
     private void ensureValid(ResourceLocation consumer) {
