@@ -30,7 +30,7 @@ public class MekanismCache {
     }
 	
     public final Map<SideConnection, Map<ChemicalType, LazyOptional<? extends IChemicalHandler<?, ?>>>> facingHandlerChemical = new HashMap<>();
-    private final Map<SideConnection, NonNullConsumer<LazyOptional<IChemicalHandler<?, ?>>>> connectionInvalidatorChemical = new HashMap<>();
+    private final Map<SideConnection, Map<ChemicalType, NonNullConsumer<LazyOptional<IChemicalHandler<?, ?>>>>> connectionInvalidatorChemical = new HashMap<>();
     public final HashMap<ExtractorCardCache, HashMap<ChemicalStackKey, List<InserterCardCache>>> inserterCacheChemical = new HashMap<>();
     
 	private final LaserNodeBE laserNodeBE;
@@ -225,18 +225,26 @@ public class MekanismCache {
             
             for (ChemicalType chemicalType : ChemicalType.values())
 	            addChemicalHandlerToMap(sideConnection, be, inventorySide, chemicalType);
+            
+            if (!facingHandlerChemical.get(sideConnection).isEmpty())
+            	return facingHandlerChemical.get(sideConnection);
         }
         
-        return facingHandlerChemical.get(sideConnection);
+        // no item handler, cache empty
+        facingHandlerChemical.remove(sideConnection);
+        return null;
     }
     
     private NonNullConsumer<LazyOptional<IChemicalHandler<?, ?>>> getInvalidatorChemical(SideConnection sideConnection, ChemicalType chemicalType) {
-        return connectionInvalidatorChemical.computeIfAbsent(sideConnection, c -> new WeakConsumerWrapper<>(this, (te, handler) -> {
+    	if (connectionInvalidatorChemical.get(sideConnection) == null)
+    		connectionInvalidatorChemical.put(sideConnection, new HashMap<ChemicalType, NonNullConsumer<LazyOptional<IChemicalHandler<?, ?>>>> ());
+    	
+    	return connectionInvalidatorChemical.get(sideConnection).computeIfAbsent(chemicalType, c -> new WeakConsumerWrapper<>(this, (te, handler) -> {
         	if (te.facingHandlerChemical.get(sideConnection) != null) {
 	            if (te.facingHandlerChemical.get(sideConnection).get(chemicalType) == handler) {     
-	                laserNodeBE.clearCachedInventories(sideConnection);
+	                laserNodeBE.clearCachedInventories(sideConnection, chemicalType);
 	            }
-        	}
+    		}
         }));
     }
 }
