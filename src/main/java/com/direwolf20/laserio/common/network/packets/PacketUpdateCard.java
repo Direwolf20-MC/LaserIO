@@ -16,6 +16,8 @@ import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
+import static com.direwolf20.laserio.common.items.cards.CardEnergy.MAX_ENERGY_TRANSFER;
+
 public class PacketUpdateCard {
     byte mode;
     byte channel;
@@ -112,23 +114,8 @@ public class PacketUpdateCard {
                             ticks = (short) Math.max(20 - overClockerCount * 5, 1);
                         BaseCard.setExtractSpeed(stack, ticks);
                     } else if (stack.getItem() instanceof CardEnergy) {
-                        int overClockers = container.getSlot(0).getItem().getCount();
-                        int max = 1000;
-                        switch (overClockers) {
-                            case 1:
-                                max = 4000;
-                                break;
-                            case 2:
-                                max = 16000;
-                                break;
-                            case 3:
-                                max = 32000;
-                                break;
-                            case 4:
-                                max = 100000;
-                                break;
-                        }
-                        if (extractAmt > max) {
+                        int max = MAX_ENERGY_TRANSFER;
+                    	if (extractAmt > max) {
                             extractAmt = max;
                         }
                         CardEnergy.setEnergyExtractAmt(stack, extractAmt);

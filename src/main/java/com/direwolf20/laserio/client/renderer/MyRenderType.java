@@ -17,13 +17,13 @@ public class MyRenderType extends RenderType {
     }
 
     public static void updateRenders() {
-
+    	
     }
 
     public static final RenderType LASER_MAIN_BEAM = create("MiningLaserMainBeam",
             DefaultVertexFormat.POSITION_COLOR_TEX, VertexFormat.Mode.QUADS, 256, false, false,
             RenderType.CompositeState.builder().setTextureState(new TextureStateShard(laserBeam2, false, false))
-                    .setShaderState(ShaderStateShard.POSITION_COLOR_TEX_SHADER)
+            		.setShaderState(ShaderStateShard.POSITION_COLOR_TEX_SHADER)
                     .setLayeringState(NO_LAYERING)
                     .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
                     .setDepthTestState(LEQUAL_DEPTH_TEST)
