@@ -1,5 +1,15 @@
 package com.direwolf20.laserio.client.renderer;
 
+import static com.direwolf20.laserio.client.events.ClientEvents.getWrench;
+import static com.direwolf20.laserio.util.MiscTools.findOffset;
+
+import java.awt.Color;
+import java.util.Queue;
+import java.util.Set;
+
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
+
 import com.direwolf20.laserio.client.blockentityrenders.LaserNodeBERender;
 import com.direwolf20.laserio.common.blockentities.LaserConnectorAdvBE;
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
@@ -10,6 +20,7 @@ import com.direwolf20.laserio.setup.Registration;
 import com.direwolf20.laserio.util.CardRender;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.texture.OverlayTexture;
@@ -25,17 +36,9 @@ import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
-import org.joml.Matrix4f;
-import org.joml.Vector3f;
-
-import java.awt.*;
-import java.util.Queue;
-import java.util.Set;
-
-import static com.direwolf20.laserio.client.events.ClientEvents.getWrench;
-import static com.direwolf20.laserio.util.MiscTools.findOffset;
 
 public class RenderUtils {
+
     public static void render(Matrix4f matrix, VertexConsumer builder, BlockPos pos, Color color, float scale) {
         float red = color.getRed() / 255f, green = color.getGreen() / 255f, blue = color.getBlue() / 255f, alpha = .5f;
 
@@ -604,4 +607,5 @@ public class RenderUtils {
                 .uv2(15728880)
                 .endVertex();
     }
+
 }

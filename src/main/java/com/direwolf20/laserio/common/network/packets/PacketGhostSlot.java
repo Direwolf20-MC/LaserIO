@@ -1,5 +1,7 @@
 package com.direwolf20.laserio.common.network.packets;
 
+import java.util.function.Supplier;
+
 import com.direwolf20.laserio.common.containers.CardChemicalContainer;
 import com.direwolf20.laserio.common.containers.CardFluidContainer;
 import com.direwolf20.laserio.common.containers.CardItemContainer;
@@ -7,14 +9,13 @@ import com.direwolf20.laserio.common.containers.FilterCountContainer;
 import com.direwolf20.laserio.common.containers.customhandler.FilterCountHandler;
 import com.direwolf20.laserio.common.containers.customslot.FilterBasicSlot;
 import com.direwolf20.laserio.common.items.filters.FilterCount;
+
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.network.NetworkEvent;
-
-import java.util.function.Supplier;
 
 public class PacketGhostSlot {
     private int slotNumber;
@@ -88,4 +89,5 @@ public class PacketGhostSlot {
             ctx.get().setPacketHandled(true);
         }
     }
+
 }

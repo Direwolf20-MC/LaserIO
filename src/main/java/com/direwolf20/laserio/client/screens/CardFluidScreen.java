@@ -31,7 +31,6 @@ import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 
 public class CardFluidScreen extends CardItemScreen {
-
     public int currentFluidExtractAmt;
     public final int filterStartX;
     public final int filterStartY;
@@ -80,26 +79,26 @@ public class CardFluidScreen extends CardItemScreen {
         if (this.menu.getCarried().isEmpty() && this.hoveredSlot != null && this.hoveredSlot.hasItem()) {
             ItemStack itemStack = this.hoveredSlot.getItem();
             if (hoveredSlot instanceof FilterBasicSlot) {
-            	LazyOptional<IFluidHandlerItem> fluidHandlerLazyOptional = FluidUtil.getFluidHandler(itemStack);
-            	if (fluidHandlerLazyOptional.isPresent()) {
-	            	IFluidHandler fluidHandler = fluidHandlerLazyOptional.resolve().get();
-	                FluidStack fluidStack = FluidStack.EMPTY;
-	            
-	                for (int tank = 0; tank < fluidHandler.getTanks(); tank++) {
-	                    fluidStack = fluidHandler.getFluidInTank(tank);
-	                    if (!fluidStack.isEmpty())
-	                        break;
-	                }
-	                if (!fluidStack.isEmpty()) {
-	                    pGuiGraphics.renderTooltip(this.font, fluidStack.getDisplayName(), pX, pY);
-	                    return;
-	                }
-            	}
+                LazyOptional<IFluidHandlerItem> fluidHandlerLazyOptional = FluidUtil.getFluidHandler(itemStack);
+                if (fluidHandlerLazyOptional.isPresent()) {
+                    IFluidHandler fluidHandler = fluidHandlerLazyOptional.resolve().get();
+                    FluidStack fluidStack = FluidStack.EMPTY;
+
+                    for (int tank = 0; tank < fluidHandler.getTanks(); tank++) {
+                        fluidStack = fluidHandler.getFluidInTank(tank);
+                        if (!fluidStack.isEmpty())
+                            break;
+                    }
+                    if (!fluidStack.isEmpty()) {
+                        pGuiGraphics.renderTooltip(this.font, fluidStack.getDisplayName(), pX, pY);
+                        return;
+                    }
+                }
             }
             pGuiGraphics.renderTooltip(this.font, this.getTooltipFromContainerItem(itemStack), itemStack.getTooltipImage(), itemStack, pX, pY);
         }
     }
-    
+
     @Override
     public void changeAmount(int change) {
         if (Screen.hasShiftDown()) change *= 10;
@@ -171,4 +170,5 @@ public class CardFluidScreen extends CardItemScreen {
             PacketHandler.sendToServer(new PacketUpdateFilter(isAllowList == 1, isCompareNBT == 1));
         PacketHandler.sendToServer(new PacketUpdateCard(currentMode, currentChannel, currentFluidExtractAmt, currentPriority, currentSneaky, (short) currentTicks, currentExact, currentRegulate, (byte) currentRoundRobin, 0, 0, currentRedstoneMode, currentRedstoneChannel, currentAndMode));
     }
+
 }

@@ -1,5 +1,9 @@
 package com.direwolf20.laserio.integration.mekanism;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+
 import mekanism.api.chemical.ChemicalStack;
 import mekanism.api.chemical.ChemicalType;
 import mekanism.api.chemical.IChemicalHandler;
@@ -17,16 +21,12 @@ import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.capabilities.CapabilityToken;
 import net.minecraftforge.common.util.LazyOptional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-
 public class MekanismStatics {
-	public static Capability<IGasHandler> GAS_CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {});
-	public static Capability<IInfusionHandler> INFUSION_CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {});
-	public static Capability<IPigmentHandler> PIGMENT_CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {});
-	public static Capability<ISlurryHandler> SLURRY_CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {});
-	
+    public static Capability<IGasHandler> GAS_CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {});
+    public static Capability<IInfusionHandler> INFUSION_CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {});
+    public static Capability<IPigmentHandler> PIGMENT_CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {});
+    public static Capability<ISlurryHandler> SLURRY_CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {});
+
     public static Capability<? extends IChemicalHandler<?, ?>> getCapabilityForChemical(ChemicalType chemicalType) {
         return switch (chemicalType) {
             case GAS -> GAS_CAPABILITY;
@@ -35,64 +35,64 @@ public class MekanismStatics {
             case SLURRY -> SLURRY_CAPABILITY;
         };
     }
-    
+
     public static boolean doesItemStackHoldChemicals(ItemStack itemStack) {
         return !getFirstChemicalOnItemStack(itemStack).isEmpty();
     }
-    
+
     public static ChemicalStack<?> getFirstChemicalOnItemStack(ItemStack itemStack) {
         if (itemStack.isEmpty())
-        	return GasStack.EMPTY; //TODO Should I change this to something more generic?
-    	
-    	for (ChemicalType chemicalType : ChemicalType.values()) {
-			LazyOptional<? extends IChemicalHandler<?, ?>> chemicalHandlerOptional = itemStack.getCapability(getCapabilityForChemical(chemicalType));
-    		if (!chemicalHandlerOptional.isPresent())
-    			continue;
-    		IChemicalHandler<?, ?> chemicalHandler = chemicalHandlerOptional.resolve().get();
-    		for (int tank = 0; tank < chemicalHandler.getTanks(); tank++) {
-    			ChemicalStack<?> chemicalStack = chemicalHandler.getChemicalInTank(tank);
-    			if (!chemicalStack.isEmpty())
-    				return chemicalStack;
-    		}
-    	}
-    	
+            return GasStack.EMPTY; //TODO Should I change this to something more generic?
+
+        for (ChemicalType chemicalType : ChemicalType.values()) {
+            LazyOptional<? extends IChemicalHandler<?, ?>> chemicalHandlerOptional = itemStack.getCapability(getCapabilityForChemical(chemicalType));
+            if (!chemicalHandlerOptional.isPresent())
+                continue;
+            IChemicalHandler<?, ?> chemicalHandler = chemicalHandlerOptional.resolve().get();
+            for (int tank = 0; tank < chemicalHandler.getTanks(); tank++) {
+                ChemicalStack<?> chemicalStack = chemicalHandler.getChemicalInTank(tank);
+                if (!chemicalStack.isEmpty())
+                    return chemicalStack;
+            }
+        }
+
         return GasStack.EMPTY;
     }
-    
+
     public static List<ChemicalStack<?>> getAllChemicalsOnItemStack(ItemStack itemStack) {
         List<ChemicalStack<?>> chemicalStackList = new ArrayList<>();
-        if (itemStack.isEmpty()) 
-        	return chemicalStackList;
-        
+        if (itemStack.isEmpty())
+            return chemicalStackList;
+
         for (ChemicalType chemicalType : ChemicalType.values()) {
-			LazyOptional<? extends IChemicalHandler<?, ?>> chemicalHandlerOptional = itemStack.getCapability(getCapabilityForChemical(chemicalType));
-			if (!chemicalHandlerOptional.isPresent())
-				continue;
-			IChemicalHandler<?, ?> chemicalHandler = chemicalHandlerOptional.resolve().get();
-			for (int tank = 0; tank < chemicalHandler.getTanks(); tank++) {
-				ChemicalStack<?> chemicalStack = chemicalHandler.getChemicalInTank(tank);
-				if (!chemicalStack.isEmpty())
-	                chemicalStackList.add(chemicalStack);
-			}
+            LazyOptional<? extends IChemicalHandler<?, ?>> chemicalHandlerOptional = itemStack.getCapability(getCapabilityForChemical(chemicalType));
+            if (!chemicalHandlerOptional.isPresent())
+                continue;
+            IChemicalHandler<?, ?> chemicalHandler = chemicalHandlerOptional.resolve().get();
+            for (int tank = 0; tank < chemicalHandler.getTanks(); tank++) {
+                ChemicalStack<?> chemicalStack = chemicalHandler.getChemicalInTank(tank);
+                if (!chemicalStack.isEmpty())
+                    chemicalStackList.add(chemicalStack);
+            }
         }
-		
+
         return chemicalStackList;
     }
-    
+
     public static List<String> getTagsFromItemStack(ItemStack itemStack) {
         List<String> tagsList = new ArrayList<>();
         List<ChemicalStack<?>> chemicalStackList = getAllChemicalsOnItemStack(itemStack);
         for (ChemicalStack<?> chemicalStack : chemicalStackList) {
-        	chemicalStack.getType().getTags().forEach(t -> {
+            chemicalStack.getType().getTags().forEach(t -> {
                 String tag = t.location().toString().toLowerCase(Locale.ROOT);
                 if (!tagsList.contains(tag))
                     tagsList.add(tag);
             });
         }
-        
+
         return tagsList;
     }
-    
+
     public static boolean isValidChemicalForHandler(IChemicalHandler<?, ?> handler, ChemicalStack<?> chemicalStack) {
         // Check if the handler is a gas handler
         if (handler instanceof IGasHandler) {
@@ -114,5 +114,5 @@ public class MekanismStatics {
 
         return false;
     }
-    
+
 }

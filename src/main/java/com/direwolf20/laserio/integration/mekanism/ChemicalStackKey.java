@@ -1,9 +1,9 @@
 package com.direwolf20.laserio.integration.mekanism;
 
+import java.util.Objects;
+
 import mekanism.api.chemical.Chemical;
 import mekanism.api.chemical.ChemicalStack;
-
-import java.util.Objects;
 
 public class ChemicalStackKey {
     public final Chemical<?> chemical;
@@ -27,4 +27,5 @@ public class ChemicalStackKey {
         }
         return false;
     }
+
 }

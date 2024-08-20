@@ -1,9 +1,14 @@
 package com.direwolf20.laserio.common.network.packets;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Supplier;
+
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import com.direwolf20.laserio.util.DimBlockPos;
 import com.direwolf20.laserio.util.ParticleDataFluid;
 import com.direwolf20.laserio.util.ParticleRenderDataFluid;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
@@ -13,10 +18,6 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.network.NetworkEvent;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Supplier;
 
 public class PacketNodeParticlesFluid {
     private List<ParticleDataFluid> particleList;
@@ -93,4 +94,5 @@ public class PacketNodeParticlesFluid {
             }
         }
     }
+
 }

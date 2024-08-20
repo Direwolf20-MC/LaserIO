@@ -1,6 +1,7 @@
 package com.direwolf20.laserio.common.blocks.baseblocks;
 
 import com.direwolf20.laserio.common.blockentities.basebe.BaseLaserBE;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -13,6 +14,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 
 public class BaseLaserBlock extends Block {
+
     public BaseLaserBlock() {
         super(Properties.of()
                 .sound(SoundType.METAL)
@@ -47,4 +49,5 @@ public class BaseLaserBlock extends Block {
         }
         super.onRemove(state, worldIn, pos, newState, isMoving);
     }
+
 }

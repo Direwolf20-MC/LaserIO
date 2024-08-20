@@ -1,15 +1,15 @@
 package com.direwolf20.laserio.common.network.packets;
 
+import java.awt.Color;
+import java.util.function.Supplier;
+
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.network.NetworkEvent;
-
-import java.awt.*;
-import java.util.function.Supplier;
-
 
 public class PacketChangeColor {
     private BlockPos sourcePos;
@@ -51,4 +51,5 @@ public class PacketChangeColor {
             ctx.get().setPacketHandled(true);
         }
     }
+
 }

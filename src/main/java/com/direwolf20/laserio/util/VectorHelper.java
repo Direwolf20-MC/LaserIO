@@ -12,6 +12,7 @@ import net.minecraft.world.phys.Vec3;
  * this means that we can use COLLIDER so it traces through non-collidable objects
  */
 public class VectorHelper {
+
     public static BlockHitResult getLookingAt(Player player, ItemStack tool, int range) {
         return getLookingAt(player, ClipContext.Fluid.NONE, range);
     }
@@ -36,4 +37,5 @@ public class VectorHelper {
         ClipContext context = new ClipContext(start, end, ClipContext.Block.COLLIDER, rayTraceFluid, player);
         return level.clip(context);
     }
+
 }

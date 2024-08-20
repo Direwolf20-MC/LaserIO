@@ -1,19 +1,21 @@
 package com.direwolf20.laserio.client.jei.ghostfilterhandlers;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.direwolf20.laserio.client.screens.FilterCountScreen;
 import com.direwolf20.laserio.common.containers.customslot.FilterBasicSlot;
 import com.direwolf20.laserio.common.network.PacketHandler;
 import com.direwolf20.laserio.common.network.packets.PacketGhostSlot;
+
 import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class GhostFilterCount implements IGhostIngredientHandler<FilterCountScreen> {
+
     @Override
     public <I> List<Target<I>> getTargetsTyped(FilterCountScreen gui, ITypedIngredient<I> ingredient, boolean doStart) {
         List<Target<I>> targets = new ArrayList<>();
@@ -48,4 +50,5 @@ public class GhostFilterCount implements IGhostIngredientHandler<FilterCountScre
     public void onComplete() {
         // NO OP
     }
+
 }

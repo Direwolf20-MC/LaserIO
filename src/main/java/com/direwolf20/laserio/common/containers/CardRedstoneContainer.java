@@ -2,6 +2,7 @@ package com.direwolf20.laserio.common.containers;
 
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import com.direwolf20.laserio.setup.Registration;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
@@ -110,4 +111,5 @@ public class CardRedstoneContainer extends AbstractContainerMenu {
         }
         super.removed(playerIn);
     }
+
 }

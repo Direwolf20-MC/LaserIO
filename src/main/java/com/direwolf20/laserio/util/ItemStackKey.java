@@ -1,16 +1,15 @@
 package com.direwolf20.laserio.util;
 
+import java.util.Objects;
+
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-
-import java.util.Objects;
 
 public class ItemStackKey {
     public final Item item;
     public final CompoundTag nbt;
     private final int hash;
-
 
     public ItemStackKey(ItemStack stack, boolean compareNBT) {
         this.item = stack.getItem();
@@ -38,4 +37,5 @@ public class ItemStackKey {
         }
         return false;
     }
+
 }

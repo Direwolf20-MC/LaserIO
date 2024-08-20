@@ -1,9 +1,11 @@
 package com.direwolf20.laserio.common.containers;
 
+import static com.direwolf20.laserio.common.blocks.LaserNode.findCardHolders;
 
 import com.direwolf20.laserio.common.items.CardHolder;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.setup.Registration;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
@@ -13,17 +15,15 @@ import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
 
-import static com.direwolf20.laserio.common.blocks.LaserNode.findCardHolders;
-
 public class CardChemicalContainer extends CardItemContainer {
 
-	public CardChemicalContainer(int windowId, Inventory playerInventory, Player player, FriendlyByteBuf extraData) {
+    public CardChemicalContainer(int windowId, Inventory playerInventory, Player player, FriendlyByteBuf extraData) {
         this(windowId, playerInventory, player, extraData.readItem());
         this.direction = extraData.readByte();
         cardHolder = findCardHolders(player);
     }
 
-	public CardChemicalContainer(int windowId, Inventory playerInventory, Player player, ItemStack cardItem) {
+    public CardChemicalContainer(int windowId, Inventory playerInventory, Player player, ItemStack cardItem) {
         super(Registration.CardChemical_Container.get(), windowId);
         playerEntity = player;
         this.handler = BaseCard.getInventory(cardItem);
@@ -43,10 +43,11 @@ public class CardChemicalContainer extends CardItemContainer {
         }
         layoutPlayerInventorySlots(8, 84);
     }
-	
+
     public CardChemicalContainer(int windowId, Inventory playerInventory, Player player, BlockPos sourcePos, ItemStack cardItem, byte direction) {
         this(windowId, playerInventory, player, cardItem);
         this.sourceContainer = sourcePos;
         this.direction = direction;
     }
+
 }

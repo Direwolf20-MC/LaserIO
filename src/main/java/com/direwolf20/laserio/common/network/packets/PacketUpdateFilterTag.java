@@ -1,18 +1,19 @@
 package com.direwolf20.laserio.common.network.packets;
 
+import java.util.List;
+import java.util.function.Supplier;
+
 import com.direwolf20.laserio.common.containers.FilterNBTContainer;
 import com.direwolf20.laserio.common.containers.FilterTagContainer;
 import com.direwolf20.laserio.common.items.filters.FilterNBT;
 import com.direwolf20.laserio.common.items.filters.FilterTag;
 import com.google.common.collect.Lists;
+
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.network.NetworkEvent;
-
-import java.util.List;
-import java.util.function.Supplier;
 
 public class PacketUpdateFilterTag {
     boolean allowList;
@@ -58,4 +59,5 @@ public class PacketUpdateFilterTag {
             ctx.get().setPacketHandled(true);
         }
     }
+
 }

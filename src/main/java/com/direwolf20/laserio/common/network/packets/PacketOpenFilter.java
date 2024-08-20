@@ -1,11 +1,18 @@
 package com.direwolf20.laserio.common.network.packets;
 
-import com.direwolf20.laserio.common.containers.*;
+import java.util.function.Supplier;
+
+import com.direwolf20.laserio.common.containers.CardItemContainer;
+import com.direwolf20.laserio.common.containers.FilterBasicContainer;
+import com.direwolf20.laserio.common.containers.FilterCountContainer;
+import com.direwolf20.laserio.common.containers.FilterNBTContainer;
+import com.direwolf20.laserio.common.containers.FilterTagContainer;
 import com.direwolf20.laserio.common.containers.customhandler.FilterBasicHandler;
 import com.direwolf20.laserio.common.items.filters.FilterBasic;
 import com.direwolf20.laserio.common.items.filters.FilterCount;
 import com.direwolf20.laserio.common.items.filters.FilterNBT;
 import com.direwolf20.laserio.common.items.filters.FilterTag;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -16,9 +23,6 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.network.NetworkEvent;
 import net.minecraftforge.network.NetworkHooks;
-
-import java.util.function.Supplier;
-
 
 public class PacketOpenFilter {
     private int slotNumber;
@@ -90,4 +94,5 @@ public class PacketOpenFilter {
             ctx.get().setPacketHandled(true);
         }
     }
+
 }

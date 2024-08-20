@@ -1,12 +1,13 @@
 package com.direwolf20.laserio.util;
 
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
+
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
-
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 public class TransferResult {
     public List<Result> results = new CopyOnWriteArrayList<>();
@@ -30,7 +31,7 @@ public class TransferResult {
     }
 
     public void addRemainingStack(ItemStack stack) {
-        this.remainingStack = stack; //TODO Copy?
+        this.remainingStack = stack;
     }
 
     public int getTotalItemCounts() {
@@ -152,4 +153,5 @@ public class TransferResult {
         }
 
     }
+
 }

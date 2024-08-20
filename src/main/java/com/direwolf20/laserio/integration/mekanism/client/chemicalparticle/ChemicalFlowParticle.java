@@ -1,5 +1,7 @@
 package com.direwolf20.laserio.integration.mekanism.client.chemicalparticle;
 
+import java.util.Random;
+
 import mekanism.api.chemical.ChemicalStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -9,12 +11,9 @@ import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 
-import java.util.Random;
-
 public class ChemicalFlowParticle extends BreakingItemParticle {
-
     private double targetX, targetY, targetZ;
-    Random random = new Random();
+    private Random random = new Random();
 
     public ChemicalFlowParticle(ClientLevel world, double x, double y, double z, double targetX, double targetY, double targetZ, ChemicalStack<?> chemicalStack, int ticksPerBlock) {
         super(world, x, y, z, ItemStack.EMPTY);
@@ -50,7 +49,6 @@ public class ChemicalFlowParticle extends BreakingItemParticle {
         this.bCol *= (float) (i & 255) / 255.0F;
     }
 
-
     @Override
     public void tick() {
         this.xo = this.x;
@@ -67,4 +65,5 @@ public class ChemicalFlowParticle extends BreakingItemParticle {
     public static ParticleProvider<ChemicalFlowParticleData> FACTORY =
             (data, world, x, y, z, xSpeed, ySpeed, zSpeed) ->
                     new ChemicalFlowParticle(world, x, y, z, data.targetX, data.targetY, data.targetZ, data.getChemicalStack(), data.ticksPerBlock);
+
 }

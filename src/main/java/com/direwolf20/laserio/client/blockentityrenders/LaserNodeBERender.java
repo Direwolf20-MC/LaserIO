@@ -1,14 +1,16 @@
 package com.direwolf20.laserio.client.blockentityrenders;
 
+import java.awt.Color;
+
+import org.joml.Vector3f;
+
 import com.direwolf20.laserio.client.blockentityrenders.baseberender.BaseLaserBERender;
 import com.direwolf20.laserio.client.renderer.DelayedRenderer;
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import com.mojang.blaze3d.vertex.PoseStack;
+
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import org.joml.Vector3f;
-
-import java.awt.*;
 
 public class LaserNodeBERender extends BaseLaserBERender<LaserNodeBE> {
     public static final Vector3f[] offsets = {
@@ -54,4 +56,5 @@ public class LaserNodeBERender extends BaseLaserBERender<LaserNodeBE> {
             blockentity.populateRenderList();
         DelayedRenderer.addConnecting(blockentity);
     }
+
 }

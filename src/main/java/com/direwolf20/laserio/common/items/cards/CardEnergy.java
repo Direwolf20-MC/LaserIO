@@ -16,7 +16,8 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.network.NetworkHooks;
 
 public class CardEnergy extends BaseCard {
-	public CardEnergy() {
+
+    public CardEnergy() {
         super();
         CARDTYPE = CardType.ENERGY;
     }
@@ -90,4 +91,5 @@ public class CardEnergy extends BaseCard {
         if (compound == null || !compound.contains("limitextractpercent")) return 0;
         return compound.getInt("limitextractpercent");
     }
+
 }

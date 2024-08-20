@@ -1,12 +1,22 @@
 package com.direwolf20.laserio.util;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.common.items.cards.CardEnergy;
 import com.direwolf20.laserio.common.items.cards.CardFluid;
 import com.direwolf20.laserio.common.items.cards.CardItem;
 import com.direwolf20.laserio.common.items.cards.CardRedstone;
-import com.direwolf20.laserio.common.items.filters.*;
+import com.direwolf20.laserio.common.items.filters.BaseFilter;
+import com.direwolf20.laserio.common.items.filters.FilterBasic;
+import com.direwolf20.laserio.common.items.filters.FilterCount;
+import com.direwolf20.laserio.common.items.filters.FilterMod;
+import com.direwolf20.laserio.common.items.filters.FilterNBT;
+import com.direwolf20.laserio.common.items.filters.FilterTag;
 import com.direwolf20.laserio.integration.mekanism.CardChemical;
 import com.direwolf20.laserio.integration.mekanism.MekanismCardCache;
 
@@ -22,8 +32,6 @@ import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.registries.ForgeRegistries;
-
-import java.util.*;
 
 public class BaseCardCache {
     public final Direction direction;
@@ -53,7 +61,7 @@ public class BaseCardCache {
     public final Map<FluidStackKey, Integer> filterCountsFluid = new Object2IntOpenHashMap<>();
 
     public MekanismCardCache mekanismCardCache;
-    
+
     public BaseCardCache(Direction direction, ItemStack cardItem, int cardSlot, LaserNodeBE be) {
         this.cardItem = cardItem;
         this.direction = direction;
@@ -74,10 +82,10 @@ public class BaseCardCache {
         } else if (cardItem.getItem() instanceof CardRedstone) {
             cardType = BaseCard.CardType.REDSTONE;
         } else if (cardItem.getItem() instanceof CardChemical) {
-        	cardType = BaseCard.CardType.CHEMICAL;
-        	mekanismCardCache = new MekanismCardCache(this);
+            cardType = BaseCard.CardType.CHEMICAL;
+            mekanismCardCache = new MekanismCardCache(this);
         } else
-        	cardType = BaseCard.CardType.MISSING;
+            cardType = BaseCard.CardType.MISSING;
         this.be = be;
         if (filterCard.isEmpty()) {
             filteredItems = new ArrayList<>();
@@ -292,5 +300,5 @@ public class BaseCardCache {
         }
         return false;
     }
-    
+
 }

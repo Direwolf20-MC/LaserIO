@@ -1,5 +1,7 @@
 package com.direwolf20.laserio.client.particles.fluidparticle;
 
+import java.util.Random;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.BreakingItemParticle;
@@ -10,12 +12,9 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.minecraftforge.fluids.FluidStack;
 
-import java.util.Random;
-
 public class FluidFlowParticle extends BreakingItemParticle {
-
     private double targetX, targetY, targetZ;
-    Random random = new Random();
+    private Random random = new Random();
 
     public FluidFlowParticle(ClientLevel world, double x, double y, double z, double targetX, double targetY, double targetZ, FluidStack fluidStack, int ticksPerBlock) {
         super(world, x, y, z, ItemStack.EMPTY);
@@ -51,7 +50,6 @@ public class FluidFlowParticle extends BreakingItemParticle {
         this.bCol *= (float) (i & 255) / 255.0F;
     }
 
-
     @Override
     public void tick() {
         this.xo = this.x;
@@ -68,4 +66,5 @@ public class FluidFlowParticle extends BreakingItemParticle {
     public static ParticleProvider<FluidFlowParticleData> FACTORY =
             (data, world, x, y, z, xSpeed, ySpeed, zSpeed) ->
                     new FluidFlowParticle(world, x, y, z, data.targetX, data.targetY, data.targetZ, data.getFluidStack(), data.ticksPerBlock);
+
 }

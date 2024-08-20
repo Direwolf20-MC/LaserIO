@@ -1,11 +1,17 @@
 package com.direwolf20.laserio.integration.mekanism;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
 import com.direwolf20.laserio.common.containers.customhandler.FilterCountHandler;
 import com.direwolf20.laserio.common.items.filters.FilterBasic;
 import com.direwolf20.laserio.common.items.filters.FilterCount;
 import com.direwolf20.laserio.common.items.filters.FilterMod;
 import com.direwolf20.laserio.common.items.filters.FilterTag;
 import com.direwolf20.laserio.util.BaseCardCache;
+
 import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import mekanism.api.chemical.ChemicalStack;
@@ -16,18 +22,13 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.ItemStackHandler;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
 public class MekanismCardCache {
-	public final BaseCardCache baseCardCache;
-	public final List<ChemicalStack<?>> filteredChemicals;
-	public final Map<ChemicalStackKey, Boolean> filterCacheChemical = new Object2BooleanOpenHashMap<>();
-	public final Map<ChemicalStackKey, Integer> filterCountsChemical = new Object2IntOpenHashMap<>();
-	
-	public MekanismCardCache(BaseCardCache baseCardCache) {
+    public final BaseCardCache baseCardCache;
+    public final List<ChemicalStack<?>> filteredChemicals;
+    public final Map<ChemicalStackKey, Boolean> filterCacheChemical = new Object2BooleanOpenHashMap<>();
+    public final Map<ChemicalStackKey, Integer> filterCountsChemical = new Object2IntOpenHashMap<>();
+
+    public MekanismCardCache(BaseCardCache baseCardCache) {
         this.baseCardCache = baseCardCache;
         if (this.baseCardCache.filterCard.equals(ItemStack.EMPTY)) {
             filteredChemicals = new ArrayList<>();
@@ -35,8 +36,8 @@ public class MekanismCardCache {
             this.filteredChemicals = getFilteredChemicals();
         }
     }
-	
-	public List<ChemicalStack<?>> getFilteredChemicals() {
+
+    public List<ChemicalStack<?>> getFilteredChemicals() {
         List<ChemicalStack<?>> filteredChemicals = new ArrayList<>();
         ItemStackHandler filterSlotHandler;
         ItemStack filterCard = baseCardCache.filterCard;
@@ -47,23 +48,23 @@ public class MekanismCardCache {
         for (int i = 0; i < filterSlotHandler.getSlots(); i++) {
             ItemStack itemStack = filterSlotHandler.getStackInSlot(i);
             if (!itemStack.isEmpty()) {
-            	for (ChemicalType chemicalType : ChemicalType.values()) {
-					LazyOptional<? extends IChemicalHandler<?, ?>> chemicalHandlerOptional = itemStack.getCapability(MekanismStatics.getCapabilityForChemical(chemicalType));
-            		if (!chemicalHandlerOptional.isPresent())
-            			continue;
-            		IChemicalHandler<?, ?> chemicalHandler = chemicalHandlerOptional.resolve().get();
-            		for (int tank = 0; tank < chemicalHandler.getTanks(); tank++) {
-            			ChemicalStack<?> chemicalStack = chemicalHandler.getChemicalInTank(tank);
-            			if (!chemicalStack.isEmpty())
+                for (ChemicalType chemicalType : ChemicalType.values()) {
+                    LazyOptional<? extends IChemicalHandler<?, ?>> chemicalHandlerOptional = itemStack.getCapability(MekanismStatics.getCapabilityForChemical(chemicalType));
+                    if (!chemicalHandlerOptional.isPresent())
+                        continue;
+                    IChemicalHandler<?, ?> chemicalHandler = chemicalHandlerOptional.resolve().get();
+                    for (int tank = 0; tank < chemicalHandler.getTanks(); tank++) {
+                        ChemicalStack<?> chemicalStack = chemicalHandler.getChemicalInTank(tank);
+                        if (!chemicalStack.isEmpty())
                             filteredChemicals.add(chemicalStack); //If this is a basic card it'll always be one, but getFilterAmt handles the proper logic of returning a value
-            		}
-            	}
+                    }
+                }
             }
         }
         return filteredChemicals;
     }
-	
-	public boolean isStackValidForCard(ChemicalStack<?> testStack) {
+
+    public boolean isStackValidForCard(ChemicalStack<?> testStack) {
         ItemStack filterCard = baseCardCache.filterCard;
         if (filterCard.equals(ItemStack.EMPTY)) return true; //If theres no filter in the card
         ChemicalStackKey key = new ChemicalStackKey(testStack);
@@ -95,7 +96,7 @@ public class MekanismCardCache {
         return !baseCardCache.isAllowList;
     }
 
-	public int getFilterAmt(ChemicalStack<?> testStack) {
+    public int getFilterAmt(ChemicalStack<?> testStack) {
         ItemStack filterCard = baseCardCache.filterCard;
         if (filterCard.equals(ItemStack.EMPTY))
             return 0; //If theres no filter in the card (This should never happen in theory)
@@ -123,5 +124,5 @@ public class MekanismCardCache {
         filterCountsChemical.put(key, 0);
         return 0; //Should never get here in theory
     }
-	
+
 }

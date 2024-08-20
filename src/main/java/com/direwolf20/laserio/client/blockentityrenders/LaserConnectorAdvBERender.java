@@ -1,19 +1,22 @@
 package com.direwolf20.laserio.client.blockentityrenders;
 
+import org.joml.Matrix4f;
+
 import com.direwolf20.laserio.client.blockentityrenders.baseberender.BaseLaserBERender;
 import com.direwolf20.laserio.client.renderer.DelayedRenderer;
 import com.direwolf20.laserio.common.blockentities.LaserConnectorAdvBE;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import org.joml.Matrix4f;
 
 public class LaserConnectorAdvBERender extends BaseLaserBERender<LaserConnectorAdvBE> {
+
     public LaserConnectorAdvBERender(BlockEntityRendererProvider.Context context) {
         super(context);
     }

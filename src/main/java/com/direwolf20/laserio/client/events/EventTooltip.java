@@ -1,10 +1,16 @@
 package com.direwolf20.laserio.client.events;
 
+import java.util.Comparator;
+import java.util.List;
+
+import org.lwjgl.opengl.GL11;
+
 import com.direwolf20.laserio.client.screens.LaserGuiGraphics;
 import com.direwolf20.laserio.common.items.filters.FilterBasic;
 import com.direwolf20.laserio.common.items.filters.FilterCount;
 import com.direwolf20.laserio.common.items.filters.FilterTag;
 import com.mojang.blaze3d.systems.RenderSystem;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -20,10 +26,6 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.registries.ForgeRegistries;
-import org.lwjgl.opengl.GL11;
-
-import java.util.Comparator;
-import java.util.List;
 
 public class EventTooltip {
     private static final int STACKS_PER_LINE = 5;
@@ -156,5 +158,5 @@ public class EventTooltip {
             }
         }
     }
-}
 
+}

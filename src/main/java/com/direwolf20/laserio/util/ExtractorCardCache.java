@@ -26,7 +26,7 @@ public class ExtractorCardCache extends BaseCardCache {
         else if (cardType.equals(BaseCard.CardType.ENERGY))
             this.extractAmt = CardEnergy.getEnergyExtractAmt(cardItem);
         else if (cardType.equals(BaseCard.CardType.CHEMICAL))
-        	this.extractAmt = CardChemical.getChemicalExtractAmt(cardItem);
+            this.extractAmt = CardChemical.getChemicalExtractAmt(cardItem);
         else
             this.extractAmt = 0;
         if (cardItem.getItem() instanceof CardEnergy)
@@ -53,4 +53,5 @@ public class ExtractorCardCache extends BaseCardCache {
         }
         return remainingSleep;
     }
+
 }

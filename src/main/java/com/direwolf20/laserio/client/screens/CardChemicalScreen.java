@@ -1,5 +1,8 @@
 package com.direwolf20.laserio.client.screens;
 
+import static com.direwolf20.laserio.integration.mekanism.MekanismStatics.doesItemStackHoldChemicals;
+import static com.direwolf20.laserio.integration.mekanism.MekanismStatics.getFirstChemicalOnItemStack;
+
 import com.direwolf20.laserio.client.screens.widgets.NumberButton;
 import com.direwolf20.laserio.client.screens.widgets.ToggleButton;
 import com.direwolf20.laserio.common.LaserIO;
@@ -26,11 +29,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 
-import static com.direwolf20.laserio.integration.mekanism.MekanismStatics.doesItemStackHoldChemicals;
-import static com.direwolf20.laserio.integration.mekanism.MekanismStatics.getFirstChemicalOnItemStack;
-
 public class CardChemicalScreen extends CardItemScreen {
-
     public int currentChemicalExtractAmt;
     public final int filterStartX;
     public final int filterStartY;
@@ -89,7 +88,7 @@ public class CardChemicalScreen extends CardItemScreen {
             pGuiGraphics.renderTooltip(this.font, this.getTooltipFromContainerItem(itemStack), itemStack.getTooltipImage(), itemStack, pX, pY);
         }
     }
-    
+
     @Override
     public void changeAmount(int change) {
         if (Screen.hasShiftDown()) change *= 10;
@@ -162,5 +161,5 @@ public class CardChemicalScreen extends CardItemScreen {
         	PacketHandler.sendToServer(new PacketUpdateFilter(isAllowList == 1, isCompareNBT == 1));
         PacketHandler.sendToServer(new PacketUpdateCard(currentMode, currentChannel, currentChemicalExtractAmt, currentPriority, currentSneaky, (short) currentTicks, currentExact, currentRegulate, (byte) currentRoundRobin, 0, 0, currentRedstoneMode, currentRedstoneChannel, currentAndMode));
     }
-    
+
 }

@@ -1,5 +1,11 @@
 package com.direwolf20.laserio.client.screens;
 
+import java.awt.Color;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import com.direwolf20.laserio.common.LaserIO;
 import com.direwolf20.laserio.common.containers.LaserNodeContainer;
 import com.direwolf20.laserio.common.network.PacketHandler;
@@ -8,6 +14,7 @@ import com.direwolf20.laserio.common.network.packets.PacketOpenNode;
 import com.direwolf20.laserio.util.MiscTools;
 import com.direwolf20.laserio.util.Vec2i;
 import com.mojang.blaze3d.systems.RenderSystem;
+
 import it.unimi.dsi.fastutil.ints.IntConsumer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -24,14 +31,9 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.client.gui.widget.ExtendedButton;
 import net.minecraftforge.client.gui.widget.ForgeSlider;
 
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 public class LaserNodeSettingsScreen extends Screen {
     private final ResourceLocation GUI = new ResourceLocation(LaserIO.MODID, "textures/gui/laser_node_settings.png");
+
     protected final LaserNodeContainer container;
     protected int imageWidth = 176;
     protected int imageHeight = 166;
@@ -272,4 +274,5 @@ public class LaserNodeSettingsScreen extends Screen {
     public int getGuiTop() {
         return topPos;
     }
+
 }

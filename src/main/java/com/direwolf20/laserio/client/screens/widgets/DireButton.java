@@ -2,6 +2,7 @@ package com.direwolf20.laserio.client.screens.widgets;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -45,4 +46,5 @@ public class DireButton extends Button {
             guiGraphics.drawCenteredString(fontrenderer, this.getMessage(), this.getX() + this.width / 2, this.getY() + (this.height - 7) / 2, j);
         }
     }
+
 }

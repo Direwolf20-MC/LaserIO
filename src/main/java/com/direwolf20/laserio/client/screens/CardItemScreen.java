@@ -1,5 +1,8 @@
 package com.direwolf20.laserio.client.screens;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.direwolf20.laserio.client.screens.widgets.ChannelButton;
 import com.direwolf20.laserio.client.screens.widgets.NumberButton;
 import com.direwolf20.laserio.client.screens.widgets.ToggleButton;
@@ -14,12 +17,22 @@ import com.direwolf20.laserio.common.items.CardHolder;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.common.items.cards.CardItem;
 import com.direwolf20.laserio.common.items.cards.CardRedstone;
-import com.direwolf20.laserio.common.items.filters.*;
+import com.direwolf20.laserio.common.items.filters.BaseFilter;
+import com.direwolf20.laserio.common.items.filters.FilterBasic;
+import com.direwolf20.laserio.common.items.filters.FilterCount;
+import com.direwolf20.laserio.common.items.filters.FilterMod;
+import com.direwolf20.laserio.common.items.filters.FilterNBT;
+import com.direwolf20.laserio.common.items.filters.FilterTag;
 import com.direwolf20.laserio.common.network.PacketHandler;
-import com.direwolf20.laserio.common.network.packets.*;
+import com.direwolf20.laserio.common.network.packets.PacketGhostSlot;
+import com.direwolf20.laserio.common.network.packets.PacketOpenFilter;
+import com.direwolf20.laserio.common.network.packets.PacketOpenNode;
+import com.direwolf20.laserio.common.network.packets.PacketUpdateCard;
+import com.direwolf20.laserio.common.network.packets.PacketUpdateFilter;
 import com.direwolf20.laserio.util.MiscTools;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
@@ -36,9 +49,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.client.gui.widget.ExtendedButton;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
     private final ResourceLocation GUI = new ResourceLocation(LaserIO.MODID, "textures/gui/itemcard.png");
@@ -92,11 +102,11 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
         this.renderBackground(guiGraphics);
         toggleFilterSlots();
         if (renderChemicals) {
-        	guiGraphics = new LaserGuiGraphicsChemical(Minecraft.getInstance(), guiGraphics.bufferSource(), this);
+            guiGraphics = new LaserGuiGraphicsChemical(Minecraft.getInstance(), guiGraphics.bufferSource(), this);
         } else if (renderFluids) {
-        	guiGraphics = new LaserGuiGraphicsFluid(Minecraft.getInstance(), guiGraphics.bufferSource(), this);
+            guiGraphics = new LaserGuiGraphicsFluid(Minecraft.getInstance(), guiGraphics.bufferSource(), this);
         } else {
-        	guiGraphics = new LaserGuiGraphics(Minecraft.getInstance(), guiGraphics.bufferSource());
+            guiGraphics = new LaserGuiGraphics(Minecraft.getInstance(), guiGraphics.bufferSource());
         }
         if (showFilter)
             updateItemCounts();
@@ -828,4 +838,5 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
         }
         return super.mouseClicked(x, y, btn);
     }
+
 }

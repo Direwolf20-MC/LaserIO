@@ -1,6 +1,7 @@
 package com.direwolf20.laserio.util;
 
 public class ParticleData {
+
     public record PositionData(DimBlockPos node, byte direction, byte position) {
     }
 

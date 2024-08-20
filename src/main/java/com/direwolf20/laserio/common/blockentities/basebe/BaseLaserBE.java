@@ -1,8 +1,20 @@
 package com.direwolf20.laserio.common.blockentities.basebe;
 
+import static com.direwolf20.laserio.common.items.LaserWrench.maxDistance;
+
+import java.awt.Color;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
+
+import javax.annotation.Nonnull;
+
 import com.direwolf20.laserio.common.blockentities.LaserConnectorAdvBE;
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import com.direwolf20.laserio.util.DimBlockPos;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -15,16 +27,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
-
-import javax.annotation.Nonnull;
-import java.awt.*;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
-
-import static com.direwolf20.laserio.common.items.LaserWrench.maxDistance;
 
 public class BaseLaserBE extends BlockEntity {
     protected final Set<BlockPos> connections = new CopyOnWriteArraySet<>();
@@ -362,6 +364,5 @@ public class BaseLaserBE extends BlockEntity {
         //    validateConnections();
         super.clearRemoved();
     }
-
 
 }

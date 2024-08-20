@@ -1,5 +1,7 @@
 package com.direwolf20.laserio.common.network.packets;
 
+import java.util.function.Supplier;
+
 import com.direwolf20.laserio.common.containers.CardEnergyContainer;
 import com.direwolf20.laserio.common.containers.CardItemContainer;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
@@ -14,8 +16,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.network.NetworkEvent;
-
-import java.util.function.Supplier;
 
 public class PacketUpdateCard {
     byte mode;
@@ -114,7 +114,7 @@ public class PacketUpdateCard {
                         BaseCard.setExtractSpeed(stack, ticks);
                     } else if (stack.getItem() instanceof CardEnergy) {
                         int max = Config.MAX_FE_TICK.get();
-                    	if (extractAmt > max) {
+                        if (extractAmt > max) {
                             extractAmt = max;
                         }
                         CardEnergy.setEnergyExtractAmt(stack, extractAmt);
@@ -135,7 +135,7 @@ public class PacketUpdateCard {
                                 ticks = (short) Math.max(20 - overClockerCount * 5, 1);
                             BaseCard.setExtractSpeed(stack, ticks);
                     }
-                    
+
                     BaseCard.setPriority(stack, msg.priority);
                     BaseCard.setSneaky(stack, msg.sneaky);
                     BaseCard.setExact(stack, msg.exact);
@@ -150,4 +150,5 @@ public class PacketUpdateCard {
             ctx.get().setPacketHandled(true);
         }
     }
+
 }

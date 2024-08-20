@@ -5,6 +5,7 @@ import com.direwolf20.laserio.common.blockentities.basebe.BaseLaserBE;
 import com.direwolf20.laserio.common.blocks.baseblocks.BaseLaserBlock;
 import com.direwolf20.laserio.util.DimBlockPos;
 import com.direwolf20.laserio.util.VectorHelper;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -93,4 +94,5 @@ public class LaserWrench extends Item {
         //System.out.println(getConnectionPos(wrench));
         return InteractionResultHolder.success(wrench);
     }
+
 }

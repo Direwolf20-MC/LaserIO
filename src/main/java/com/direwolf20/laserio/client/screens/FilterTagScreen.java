@@ -1,5 +1,12 @@
 package com.direwolf20.laserio.client.screens;
 
+import java.awt.Color;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
+
 import com.direwolf20.laserio.client.screens.widgets.IconButton;
 import com.direwolf20.laserio.client.screens.widgets.ToggleButton;
 import com.direwolf20.laserio.common.LaserIO;
@@ -16,6 +23,7 @@ import com.direwolf20.laserio.util.MiscTools;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
@@ -34,10 +42,6 @@ import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 import net.minecraftforge.registries.ForgeRegistries;
-
-import java.awt.*;
-import java.util.List;
-import java.util.*;
 
 public class FilterTagScreen extends AbstractContainerScreen<FilterTagContainer> {
     private final ResourceLocation GUI = new ResourceLocation(LaserIO.MODID, "textures/gui/filtertag.png");
@@ -209,7 +213,7 @@ public class FilterTagScreen extends AbstractContainerScreen<FilterTagContainer>
                     });
                 }
             }
-            
+
             if (MekanismIntegration.isLoaded()) {
                 List<String> chemicalTags = MekanismStatics.getTagsFromItemStack(stackInSlot);
                 for (String tag : chemicalTags) {

@@ -17,8 +17,8 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 // The value here should match an entry in the META-INF/mods.toml file
 @Mod(LaserIO.MODID)
 public class LaserIO {
-	// Directly reference a slf4j logger
-	private static final Logger LOGGER = LogUtils.getLogger();
+    // Directly reference a slf4j logger
+    private static final Logger LOGGER = LogUtils.getLogger();
     public static final String MODID = "laserio";
 
     public LaserIO() {

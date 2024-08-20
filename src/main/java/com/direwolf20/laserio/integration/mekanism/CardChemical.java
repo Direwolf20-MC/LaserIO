@@ -17,12 +17,13 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.network.NetworkHooks;
 
 public class CardChemical extends BaseCard {
-	public CardChemical() {
-		super();
+
+    public CardChemical() {
+        super();
         CARDTYPE = CardType.CHEMICAL;
     }
-	
-	@Override
+
+    @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         ItemStack itemstack = player.getItemInHand(hand);
         if (level.isClientSide()) return new InteractionResultHolder<>(InteractionResult.PASS, itemstack);
@@ -35,18 +36,19 @@ public class CardChemical extends BaseCard {
 
         return new InteractionResultHolder<>(InteractionResult.PASS, itemstack);
     }
-	
-	public static int setChemicalExtractAmt(ItemStack card, int chemicalextractamt) {
+
+    public static int setChemicalExtractAmt(ItemStack card, int chemicalextractamt) {
         if (chemicalextractamt == Config.BASE_MILLI_BUCKETS_CHEMICAL.get())
             card.removeTagKey("chemicalextractamt");
         else
             card.getOrCreateTag().putInt("chemicalextractamt", chemicalextractamt);
         return chemicalextractamt;
     }
-	
-	public static int getChemicalExtractAmt(ItemStack card) {
-		CompoundTag compound = card.getTag();
+
+    public static int getChemicalExtractAmt(ItemStack card) {
+        CompoundTag compound = card.getTag();
         if (compound == null || !compound.contains("chemicalextractamt")) return Config.BASE_MILLI_BUCKETS_CHEMICAL.get();
-        return compound.getInt("chemicalextractamt");    
-	}
+        return compound.getInt("chemicalextractamt");
+    }
+
 }

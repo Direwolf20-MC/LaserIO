@@ -18,6 +18,7 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
 
 public class ModSetup {
+
     public static void init(final FMLCommonSetupEvent event) {
         PacketHandler.register();
         MinecraftForge.EVENT_BUS.register(ServerTickHandler.class);
@@ -33,14 +34,14 @@ public class ModSetup {
                 Registration.ITEMS.getEntries().forEach(e -> {
                     Item item = e.get();
                     output.accept(item);
-                    
+
                     if (item instanceof CardRedstone) {
-                    	if (MekanismIntegration.isLoaded()) {
-                    		Registration.ITEMS_MEKANISM.getEntries().forEach(f -> {
-                    			Item itemMek = f.get();
-                    			output.accept(itemMek);
-                    		});
-                    	}
+                        if (MekanismIntegration.isLoaded()) {
+                            Registration.ITEMS_MEKANISM.getEntries().forEach(f -> {
+                                Item itemMek = f.get();
+                                output.accept(itemMek);
+                            });
+                        }
                     }
                 });
             })

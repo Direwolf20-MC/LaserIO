@@ -1,5 +1,7 @@
 package com.direwolf20.laserio.util;
 
+import java.util.Objects;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
@@ -8,8 +10,6 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.Level;
-
-import java.util.Objects;
 
 public class DimBlockPos {
     public BlockPos blockPos;
@@ -65,4 +65,5 @@ public class DimBlockPos {
 
         return result;
     }
+
 }

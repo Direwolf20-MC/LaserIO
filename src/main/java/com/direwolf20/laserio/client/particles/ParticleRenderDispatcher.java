@@ -12,7 +12,6 @@ import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-
 @Mod.EventBusSubscriber(modid = LaserIO.MODID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ParticleRenderDispatcher {
 
@@ -21,7 +20,8 @@ public class ParticleRenderDispatcher {
         evt.registerSpecial(ModParticles.ITEMFLOWPARTICLE.get(), ItemFlowParticle.FACTORY);
         evt.registerSpecial(ModParticles.FLUIDFLOWPARTICLE.get(), FluidFlowParticle.FACTORY);
         if (MekanismIntegration.isLoaded()) {
-        	evt.registerSpecial(MekanismModParticles.CHEMICALFLOWPARTICLE.get(), ChemicalFlowParticle.FACTORY);
+            evt.registerSpecial(MekanismModParticles.CHEMICALFLOWPARTICLE.get(), ChemicalFlowParticle.FACTORY);
         }
     }
+
 }

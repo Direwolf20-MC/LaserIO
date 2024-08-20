@@ -1,7 +1,13 @@
 package com.direwolf20.laserio.datagen.customrecipes;
 
+import java.util.List;
+import java.util.function.Consumer;
+
+import javax.annotation.Nullable;
+
 import com.direwolf20.laserio.setup.Registration;
 import com.google.common.collect.Lists;
+
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementRewards;
 import net.minecraft.advancements.CriterionTriggerInstance;
@@ -17,10 +23,6 @@ import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.ItemLike;
-
-import javax.annotation.Nullable;
-import java.util.List;
-import java.util.function.Consumer;
 
 public class CardClearRecipeBuilder implements RecipeBuilder {
     private final Item result;
@@ -73,13 +75,13 @@ public class CardClearRecipeBuilder implements RecipeBuilder {
 
     public CardClearRecipeBuilder unlockedBy(String pName, CriterionTriggerInstance pCriterionTrigger) {
         this.advancement.addCriterion(pName, pCriterionTrigger);
-        
+
         return this;
     }
 
     public CardClearRecipeBuilder group(@Nullable String pGroupName) {
         this.group = pGroupName;
-        
+
         return this;
     }
 
@@ -111,4 +113,5 @@ public class CardClearRecipeBuilder implements RecipeBuilder {
         }
 
     }
+
 }

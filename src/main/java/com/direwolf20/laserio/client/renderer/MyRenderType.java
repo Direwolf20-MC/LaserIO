@@ -3,6 +3,7 @@ package com.direwolf20.laserio.client.renderer;
 import com.direwolf20.laserio.common.LaserIO;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
+
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 
@@ -17,13 +18,13 @@ public class MyRenderType extends RenderType {
     }
 
     public static void updateRenders() {
-    	
+
     }
 
     public static final RenderType LASER_MAIN_BEAM = create("MiningLaserMainBeam",
             DefaultVertexFormat.POSITION_COLOR_TEX, VertexFormat.Mode.QUADS, 256, false, false,
             RenderType.CompositeState.builder().setTextureState(new TextureStateShard(laserBeam2, false, false))
-            		.setShaderState(ShaderStateShard.POSITION_COLOR_TEX_SHADER)
+                    .setShaderState(ShaderStateShard.POSITION_COLOR_TEX_SHADER)
                     .setLayeringState(NO_LAYERING)
                     .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
                     .setDepthTestState(LEQUAL_DEPTH_TEST)
@@ -55,7 +56,7 @@ public class MyRenderType extends RenderType {
                     .setLightmapState(NO_LIGHTMAP)
                     .setWriteMaskState(COLOR_WRITE)
                     .createCompositeState(false));
-    
+
     public static final RenderType CONNECTING_LASER = create("ConnectingLaser",
             DefaultVertexFormat.POSITION_COLOR_TEX, VertexFormat.Mode.QUADS, 256, false, false,
             RenderType.CompositeState.builder().setTextureState(new TextureStateShard(laserBeam, false, false))

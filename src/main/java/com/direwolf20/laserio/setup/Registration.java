@@ -1,5 +1,9 @@
 package com.direwolf20.laserio.setup;
 
+import static com.direwolf20.laserio.client.particles.ModParticles.PARTICLE_TYPES;
+import static com.direwolf20.laserio.common.LaserIO.MODID;
+import static com.direwolf20.laserio.integration.mekanism.client.chemicalparticle.MekanismModParticles.PARTICLE_TYPES_MEKANISM;
+
 import com.direwolf20.laserio.common.LaserIO;
 import com.direwolf20.laserio.common.blockentities.LaserConnectorAdvBE;
 import com.direwolf20.laserio.common.blockentities.LaserConnectorBE;
@@ -7,18 +11,37 @@ import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import com.direwolf20.laserio.common.blocks.LaserConnector;
 import com.direwolf20.laserio.common.blocks.LaserConnectorAdv;
 import com.direwolf20.laserio.common.blocks.LaserNode;
-import com.direwolf20.laserio.common.containers.*;
-import com.direwolf20.laserio.common.items.*;
+import com.direwolf20.laserio.common.containers.CardChemicalContainer;
+import com.direwolf20.laserio.common.containers.CardEnergyContainer;
+import com.direwolf20.laserio.common.containers.CardFluidContainer;
+import com.direwolf20.laserio.common.containers.CardHolderContainer;
+import com.direwolf20.laserio.common.containers.CardItemContainer;
+import com.direwolf20.laserio.common.containers.CardRedstoneContainer;
+import com.direwolf20.laserio.common.containers.FilterBasicContainer;
+import com.direwolf20.laserio.common.containers.FilterCountContainer;
+import com.direwolf20.laserio.common.containers.FilterNBTContainer;
+import com.direwolf20.laserio.common.containers.FilterTagContainer;
+import com.direwolf20.laserio.common.containers.LaserNodeContainer;
+import com.direwolf20.laserio.common.items.CardCloner;
+import com.direwolf20.laserio.common.items.CardHolder;
+import com.direwolf20.laserio.common.items.LaserWrench;
+import com.direwolf20.laserio.common.items.LogicChip;
+import com.direwolf20.laserio.common.items.LogicChipRaw;
 import com.direwolf20.laserio.common.items.cards.CardEnergy;
 import com.direwolf20.laserio.common.items.cards.CardFluid;
 import com.direwolf20.laserio.common.items.cards.CardItem;
 import com.direwolf20.laserio.common.items.cards.CardRedstone;
-import com.direwolf20.laserio.common.items.filters.*;
+import com.direwolf20.laserio.common.items.filters.FilterBasic;
+import com.direwolf20.laserio.common.items.filters.FilterCount;
+import com.direwolf20.laserio.common.items.filters.FilterMod;
+import com.direwolf20.laserio.common.items.filters.FilterNBT;
+import com.direwolf20.laserio.common.items.filters.FilterTag;
 import com.direwolf20.laserio.common.items.upgrades.OverclockerCard;
 import com.direwolf20.laserio.common.items.upgrades.OverclockerNode;
 import com.direwolf20.laserio.datagen.customrecipes.CardClearRecipe;
 import com.direwolf20.laserio.integration.mekanism.CardChemical;
 import com.direwolf20.laserio.integration.mekanism.MekanismIntegration;
+
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
@@ -32,12 +55,7 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
-import static com.direwolf20.laserio.client.particles.ModParticles.PARTICLE_TYPES;
-import static com.direwolf20.laserio.common.LaserIO.MODID;
-import static com.direwolf20.laserio.integration.mekanism.client.chemicalparticle.MekanismModParticles.PARTICLE_TYPES_MEKANISM;
-
 public class Registration {
-
     private static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, MODID);
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
     private static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, MODID);
@@ -46,7 +64,7 @@ public class Registration {
     public static final RegistryObject<CardClearRecipe.Serializer> CARD_CLEAR_RECIPE_SERIALIZER = RECIPE_SERIALIZERS.register("cardclear", CardClearRecipe.Serializer::new);
 
     public static final DeferredRegister<Item> ITEMS_MEKANISM = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
-    
+
     public static void init() {
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
         BLOCKS.register(bus);
@@ -89,9 +107,9 @@ public class Registration {
     public static final RegistryObject<Item> Card_Energy = ITEMS.register("card_energy", CardEnergy::new);
     public static final RegistryObject<Item> Card_Redstone = ITEMS.register("card_redstone", CardRedstone::new);
 
-	//Mekanism
+    //Mekanism
     public static final RegistryObject<Item> Card_Chemical = ITEMS_MEKANISM.register("card_chemical", CardChemical::new);
-    
+
     //Filters
     public static final RegistryObject<Item> Filter_Basic = ITEMS.register("filter_basic", FilterBasic::new);
     public static final RegistryObject<Item> Filter_Count = ITEMS.register("filter_count", FilterCount::new);
@@ -133,4 +151,5 @@ public class Registration {
     /*public static <B extends Block> RegistryObject<Item> fromBlock(RegistryObject<B> block) {
         return ITEMS.register(block.getId().getPath(), () -> new BlockItem(block.get(), ITEM_PROPERTIES));
     }*/
+
 }

@@ -1,9 +1,14 @@
 package com.direwolf20.laserio.common.network.packets;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Supplier;
+
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import com.direwolf20.laserio.util.DimBlockPos;
 import com.direwolf20.laserio.util.ParticleData;
 import com.direwolf20.laserio.util.ParticleRenderData;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
@@ -12,10 +17,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.network.NetworkEvent;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Supplier;
 
 public class PacketNodeParticles {
     private List<ParticleData> particleList;
@@ -95,4 +96,5 @@ public class PacketNodeParticles {
             }
         }
     }
+
 }

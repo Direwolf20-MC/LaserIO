@@ -1,14 +1,15 @@
 package com.direwolf20.laserio.common.containers.customslot;
 
+import javax.annotation.Nonnull;
+
 import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.common.items.filters.BaseFilter;
 import com.direwolf20.laserio.common.items.upgrades.OverclockerCard;
 import com.direwolf20.laserio.common.items.upgrades.OverclockerNode;
+
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
-
-import javax.annotation.Nonnull;
 
 public class CardHolderSlot extends SlotItemHandler {
     protected boolean enabled = true;
@@ -43,4 +44,5 @@ public class CardHolderSlot extends SlotItemHandler {
         this.enabled = enabled;
         return this;
     }
+
 }

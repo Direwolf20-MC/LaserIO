@@ -1,13 +1,14 @@
 package com.direwolf20.laserio.datagen;
 
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import com.direwolf20.laserio.common.LaserIO;
 import com.direwolf20.laserio.setup.Registration;
+
 import net.minecraft.data.loot.packs.VanillaBlockLoot;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.registries.ForgeRegistries;
-
-import java.util.Map;
-import java.util.stream.Collectors;
 
 public class LaserIOLootTable extends VanillaBlockLoot {
 
@@ -25,4 +26,5 @@ public class LaserIOLootTable extends VanillaBlockLoot {
                 .map(Map.Entry::getValue)
                 .collect(Collectors.toList());
     }
+
 }

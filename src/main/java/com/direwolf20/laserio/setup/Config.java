@@ -22,8 +22,8 @@ public class Config {
 
     public static void register() {
         //registerClientConfigs();
-    	registerCommonConfigs();
-    	//registerServerConfigs();
+        registerCommonConfigs();
+        //registerServerConfigs();
     }
 
     private static void registerClientConfigs() {
@@ -54,7 +54,7 @@ public class Config {
         MAX_FE_TICK = COMMON_BUILDER.comment("Maximum FE/T for Energy Cards")
                 .defineInRange("max_fe_tick", 1000000, 0, Integer.MAX_VALUE);
         COMMON_BUILDER.pop();
-        
+
         COMMON_BUILDER.comment("Chemical Card").push(SUBCATEGORY_CHEMICAL);
         BASE_MILLI_BUCKETS_CHEMICAL = COMMON_BUILDER.comment("Millibuckets for Chemical Cards without Overclockers installed (only if Mekanism is installed)")
                 .defineInRange("base_milli_buckets_chemical", 15000, 0, Integer.MAX_VALUE);

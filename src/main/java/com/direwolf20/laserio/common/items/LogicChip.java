@@ -7,4 +7,5 @@ public class LogicChip extends Item {
     public LogicChip() {
         super(new Item.Properties());
     }
+
 }

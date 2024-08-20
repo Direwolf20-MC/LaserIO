@@ -1,17 +1,19 @@
 package com.direwolf20.laserio.client.screens.widgets;
 
+import java.awt.Color;
+
 import com.direwolf20.laserio.common.LaserIO;
 import com.mojang.blaze3d.systems.RenderSystem;
+
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
-import java.awt.*;
-
 public class ChannelButton extends Button {
     private final ResourceLocation resourceLocation = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/blankbutton.png");
+
     private int channel;
     private final Color colors[] = {
             new Color(0xf9ffff),
@@ -50,4 +52,5 @@ public class ChannelButton extends Button {
     public void setChannel(int channel) {
         this.channel = channel;
     }
+
 }

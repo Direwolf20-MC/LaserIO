@@ -1,17 +1,19 @@
 package com.direwolf20.laserio.util;
 
+import static com.direwolf20.laserio.util.MiscTools.findOffset;
+
+import org.joml.Vector3f;
+
 import com.direwolf20.laserio.client.blockentityrenders.LaserNodeBERender;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.common.items.cards.CardRedstone;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import org.joml.Vector3f;
-
-import static com.direwolf20.laserio.util.MiscTools.findOffset;
 
 public class CardRender {
     public Direction direction;
@@ -54,9 +56,9 @@ public class CardRender {
             g = 0f;
             b = 0f;
         } else if (((BaseCard) card.getItem()).getCardType() == BaseCard.CardType.CHEMICAL) {
-        	r = 1f;
-        	g = 0f;
-        	b = 1f;
+            r = 1f;
+            g = 0f;
+            b = 1f;
         }
         if (!enabled) {
             r /= 4f;
@@ -142,4 +144,5 @@ public class CardRender {
         }
         return new Vector3f(diffX, diffY, diffZ);
     }
+
 }

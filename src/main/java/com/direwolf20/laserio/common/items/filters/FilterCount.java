@@ -1,5 +1,7 @@
 package com.direwolf20.laserio.common.items.filters;
 
+import static com.direwolf20.laserio.integration.mekanism.MekanismStatics.doesItemStackHoldChemicals;
+
 import com.direwolf20.laserio.common.containers.FilterCountContainer;
 import com.direwolf20.laserio.common.containers.customhandler.FilterCountHandler;
 import com.direwolf20.laserio.integration.mekanism.MekanismIntegration;
@@ -23,9 +25,8 @@ import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 import net.minecraftforge.network.NetworkHooks;
 
-import static com.direwolf20.laserio.integration.mekanism.MekanismStatics.doesItemStackHoldChemicals;
-
 public class FilterCount extends BaseFilter {
+
     public FilterCount() {
         super();
     }
@@ -178,4 +179,5 @@ public class FilterCount extends BaseFilter {
         stack.getOrCreateTag().putBoolean("allowList", true);
         return true;
     }
+
 }

@@ -2,6 +2,7 @@ package com.direwolf20.laserio.common.containers;
 
 import com.direwolf20.laserio.common.containers.customslot.CardHolderSlot;
 import com.direwolf20.laserio.setup.Registration;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
@@ -215,4 +216,5 @@ public class CardHolderContainer extends AbstractContainerMenu {
     public void removed(Player playerIn) {
         super.removed(playerIn);
     }
+
 }

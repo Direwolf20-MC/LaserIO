@@ -1,9 +1,14 @@
 package com.direwolf20.laserio.common.network.packets;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Supplier;
+
 import com.direwolf20.laserio.common.containers.LaserNodeContainer;
 import com.direwolf20.laserio.common.containers.customhandler.CardItemHandler;
 import com.direwolf20.laserio.common.items.CardCloner;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
+
 import net.minecraft.core.Holder;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
@@ -17,10 +22,6 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.network.NetworkEvent;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Supplier;
 
 public class PacketCopyPasteCard {
     int slot;
@@ -232,4 +233,5 @@ public class PacketCopyPasteCard {
             ctx.get().setPacketHandled(true);
         }
     }
+
 }

@@ -1,9 +1,10 @@
 package com.direwolf20.laserio.common.containers.customhandler;
 
-import com.direwolf20.laserio.common.items.filters.FilterCount;
-import net.minecraft.world.item.ItemStack;
-
 import javax.annotation.Nonnull;
+
+import com.direwolf20.laserio.common.items.filters.FilterCount;
+
+import net.minecraft.world.item.ItemStack;
 
 public class FilterCountHandler extends FilterBasicHandler {
 
@@ -43,7 +44,7 @@ public class FilterCountHandler extends FilterBasicHandler {
         super.setStackInSlot(slot, stackCopy);
         FilterCount.setSlotCount(this.stack, slot, amt);
     }
-    
+
     public void setStackInSlotSave(int slot, @Nonnull ItemStack incomingStack) {
         if (this.getStackInSlot(slot).isEmpty()) {
             this.setStackInSlot(slot, incomingStack);
@@ -68,7 +69,7 @@ public class FilterCountHandler extends FilterBasicHandler {
             //FilterCount.setInventory(this.stack, this);
         }
     }
-    
+
     public void setMBAmountInSlot(int slot, int mbAmt) {
         if (mbAmt == -1) return; //Shouldn't happen unless i done did goofed
         FilterCount.setSlotAmount(this.stack, slot, mbAmt);
@@ -81,4 +82,5 @@ public class FilterCountHandler extends FilterBasicHandler {
         }
         FilterCount.setInventory(this.stack, this);
     }
+
 }

@@ -1,5 +1,9 @@
 package com.direwolf20.laserio.common.network.packets;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Supplier;
+
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import com.direwolf20.laserio.integration.mekanism.client.chemicalparticle.ParticleDataChemical;
 import com.direwolf20.laserio.integration.mekanism.client.chemicalparticle.ParticleRenderDataChemical;
@@ -16,10 +20,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.network.NetworkEvent;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Supplier;
 
 public class PacketNodeParticlesChemical {
     private List<ParticleDataChemical> particleList;
@@ -54,10 +54,10 @@ public class PacketNodeParticlesChemical {
         List<ParticleDataChemical> thisList = new ArrayList<>();
         int size = buffer.readInt();
         for (int i = 0; i < size; i++) {
-        	String type = buffer.readUtf();
-        	ChemicalType chemicalType = ChemicalType.fromString(type);
+            String type = buffer.readUtf();
+            ChemicalType chemicalType = ChemicalType.fromString(type);
             ChemicalStack<?> chemicalStack;
-            
+
             if (chemicalType == ChemicalType.GAS)
                 chemicalStack = ChemicalUtils.readGasStack(buffer);
             else if (chemicalType == ChemicalType.INFUSION)
@@ -67,8 +67,8 @@ public class PacketNodeParticlesChemical {
             else if (chemicalType == ChemicalType.SLURRY)
                 chemicalStack = ChemicalUtils.readSlurryStack(buffer);
             else
-            	continue; //Shouldn't happen?
-                
+                continue; //Shouldn't happen?
+
             DimBlockPos fromNode = new DimBlockPos(buffer.readResourceKey(Registries.DIMENSION), buffer.readBlockPos());
             byte fromDirection = buffer.readByte();
             byte extractPosition = buffer.readByte();
@@ -90,7 +90,7 @@ public class PacketNodeParticlesChemical {
 
     public static void clientPacketHandler(PacketNodeParticlesChemical msg) {
         List<ParticleDataChemical> tempList = msg.particleList;
-        
+
         for (ParticleDataChemical data : tempList) {
             //Extract
             if (data.fromData != null) {
@@ -112,5 +112,5 @@ public class PacketNodeParticlesChemical {
             }
         }
     }
-    
+
 }

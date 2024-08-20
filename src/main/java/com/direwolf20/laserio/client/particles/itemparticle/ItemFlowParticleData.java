@@ -1,7 +1,12 @@
 package com.direwolf20.laserio.client.particles.itemparticle;
 
+import java.util.Locale;
+
+import javax.annotation.Nonnull;
+
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+
 import net.minecraft.commands.arguments.item.ItemInput;
 import net.minecraft.commands.arguments.item.ItemParser;
 import net.minecraft.core.particles.ParticleOptions;
@@ -11,9 +16,6 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-
-import javax.annotation.Nonnull;
-import java.util.Locale;
 
 public class ItemFlowParticleData implements ParticleOptions {
     private final ItemStack itemStack;
@@ -87,5 +89,5 @@ public class ItemFlowParticleData implements ParticleOptions {
             return new ItemFlowParticleData(buffer.readItem(), buffer.readDouble(), buffer.readDouble(), buffer.readDouble(), buffer.readInt());
         }
     };
-}
 
+}

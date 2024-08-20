@@ -1,13 +1,14 @@
 package com.direwolf20.laserio.util;
 
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import com.direwolf20.laserio.common.containers.customhandler.LaserNodeItemHandler;
+
 import it.unimi.dsi.fastutil.bytes.Byte2ByteMap;
 import it.unimi.dsi.fastutil.bytes.Byte2ByteOpenHashMap;
 import net.minecraftforge.common.util.LazyOptional;
-
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 public class NodeSideCache {
     public LaserNodeItemHandler itemHandler;
@@ -34,6 +35,5 @@ public class NodeSideCache {
         laserEnergyStorage.invalidate();
         laserEnergyStorage = LazyOptional.of(() -> energyStorage);
     }
-
 
 }

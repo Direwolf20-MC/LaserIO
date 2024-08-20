@@ -1,16 +1,15 @@
 package com.direwolf20.laserio.util;
 
+import java.util.Objects;
+
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.fluids.FluidStack;
-
-import java.util.Objects;
 
 public class FluidStackKey {
     public final Fluid fluid;
     public final CompoundTag nbt;
     private final int hash;
-
 
     public FluidStackKey(FluidStack stack, boolean compareNBT) {
         this.fluid = stack.getFluid();
@@ -38,4 +37,5 @@ public class FluidStackKey {
         }
         return false;
     }
+
 }

@@ -1,7 +1,10 @@
 package com.direwolf20.laserio.datagen.customrecipes;
 
+import java.util.List;
+
 import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.setup.Registration;
+
 import net.minecraft.core.NonNullList;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.CraftingContainer;
@@ -12,9 +15,8 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.ShapelessRecipe;
 
-import java.util.List;
-
 public class CardClearRecipe extends ShapelessRecipe {
+
     public CardClearRecipe(ResourceLocation resourceLocation, String group, ItemStack result, NonNullList<Ingredient> ingredients) {
         super(resourceLocation, group, CraftingBookCategory.MISC, result, ingredients);
     }

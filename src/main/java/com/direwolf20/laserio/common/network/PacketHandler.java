@@ -1,7 +1,19 @@
 package com.direwolf20.laserio.common.network;
 
 import com.direwolf20.laserio.common.LaserIO;
-import com.direwolf20.laserio.common.network.packets.*;
+import com.direwolf20.laserio.common.network.packets.PacketChangeColor;
+import com.direwolf20.laserio.common.network.packets.PacketCopyPasteCard;
+import com.direwolf20.laserio.common.network.packets.PacketGhostSlot;
+import com.direwolf20.laserio.common.network.packets.PacketNodeParticles;
+import com.direwolf20.laserio.common.network.packets.PacketNodeParticlesChemical;
+import com.direwolf20.laserio.common.network.packets.PacketNodeParticlesFluid;
+import com.direwolf20.laserio.common.network.packets.PacketOpenCard;
+import com.direwolf20.laserio.common.network.packets.PacketOpenFilter;
+import com.direwolf20.laserio.common.network.packets.PacketOpenNode;
+import com.direwolf20.laserio.common.network.packets.PacketUpdateCard;
+import com.direwolf20.laserio.common.network.packets.PacketUpdateFilter;
+import com.direwolf20.laserio.common.network.packets.PacketUpdateFilterTag;
+import com.direwolf20.laserio.common.network.packets.PacketUpdateRedstoneCard;
 import com.direwolf20.laserio.integration.mekanism.MekanismIntegration;
 
 import net.minecraft.network.protocol.Packet;
@@ -45,11 +57,11 @@ public class PacketHandler {
         HANDLER.registerMessage(id++, PacketNodeParticles.class, PacketNodeParticles::encode, PacketNodeParticles::decode, PacketNodeParticles.Handler::handle);
         HANDLER.registerMessage(id++, PacketNodeParticlesFluid.class, PacketNodeParticlesFluid::encode, PacketNodeParticlesFluid::decode, PacketNodeParticlesFluid.Handler::handle);
         //HANDLER.registerMessage(id++, PacketDurabilitySync.class,     PacketDurabilitySync::encode,       PacketDurabilitySync::decode,       PacketDurabilitySync.Handler::handle);
-        
+
         //Mekanism Packets Only
         if (MekanismIntegration.isLoaded()) {
-        	//Client Side
-        	HANDLER.registerMessage(id++, PacketNodeParticlesChemical.class, PacketNodeParticlesChemical::encode, PacketNodeParticlesChemical::decode, PacketNodeParticlesChemical.Handler::handle);
+            //Client Side
+            HANDLER.registerMessage(id++, PacketNodeParticlesChemical.class, PacketNodeParticlesChemical::encode, PacketNodeParticlesChemical::decode, PacketNodeParticlesChemical.Handler::handle);
         }
     }
 
@@ -81,4 +93,5 @@ public class PacketHandler {
     public static void sendToServer(Object msg) {
         HANDLER.sendToServer(msg);
     }
+
 }

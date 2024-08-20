@@ -1,7 +1,12 @@
 package com.direwolf20.laserio.integration.mekanism.client.chemicalparticle;
 
+import java.util.Locale;
+
+import javax.annotation.Nonnull;
+
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+
 import mekanism.api.chemical.ChemicalStack;
 import mekanism.api.chemical.ChemicalType;
 import mekanism.api.chemical.ChemicalUtils;
@@ -11,9 +16,6 @@ import net.minecraft.core.particles.ParticleType;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-
-import javax.annotation.Nonnull;
-import java.util.Locale;
 
 public class ChemicalFlowParticleData implements ParticleOptions {
     private final ChemicalStack<?> chemicalStack;
@@ -100,4 +102,5 @@ public class ChemicalFlowParticleData implements ParticleOptions {
                 return null; //Shouldn't happen?
         }
     };
+
 }

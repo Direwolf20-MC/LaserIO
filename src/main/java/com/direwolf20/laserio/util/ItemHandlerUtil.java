@@ -1,8 +1,14 @@
 package com.direwolf20.laserio.util;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.annotation.Nonnull;
+
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import com.direwolf20.laserio.common.items.filters.FilterCount;
 import com.google.common.collect.ArrayListMultimap;
+
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.core.NonNullList;
@@ -13,11 +19,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
-
-import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.List;
-
 
 public class ItemHandlerUtil {
     public record ExtractResult(ItemStack itemStack, int slot) {
@@ -376,4 +377,5 @@ public class ItemHandlerUtil {
             return totalCount;
         }
     }
+
 }

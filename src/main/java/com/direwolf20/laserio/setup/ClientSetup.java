@@ -1,11 +1,23 @@
 package com.direwolf20.laserio.setup;
 
+import java.awt.Color;
+
 import com.direwolf20.laserio.client.blockentityrenders.LaserConnectorAdvBERender;
 import com.direwolf20.laserio.client.blockentityrenders.LaserConnectorBERender;
 import com.direwolf20.laserio.client.blockentityrenders.LaserNodeBERender;
 import com.direwolf20.laserio.client.events.ClientEvents;
 import com.direwolf20.laserio.client.events.EventTooltip;
-import com.direwolf20.laserio.client.screens.*;
+import com.direwolf20.laserio.client.screens.CardChemicalScreen;
+import com.direwolf20.laserio.client.screens.CardEnergyScreen;
+import com.direwolf20.laserio.client.screens.CardFluidScreen;
+import com.direwolf20.laserio.client.screens.CardHolderScreen;
+import com.direwolf20.laserio.client.screens.CardItemScreen;
+import com.direwolf20.laserio.client.screens.CardRedstoneScreen;
+import com.direwolf20.laserio.client.screens.FilterBasicScreen;
+import com.direwolf20.laserio.client.screens.FilterCountScreen;
+import com.direwolf20.laserio.client.screens.FilterNBTScreen;
+import com.direwolf20.laserio.client.screens.FilterTagScreen;
+import com.direwolf20.laserio.client.screens.LaserNodeScreen;
 import com.direwolf20.laserio.common.LaserIO;
 import com.direwolf20.laserio.common.blockentities.LaserConnectorAdvBE;
 import com.direwolf20.laserio.common.blockentities.LaserConnectorBE;
@@ -31,10 +43,9 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
-import java.awt.*;
-
 @Mod.EventBusSubscriber(modid = LaserIO.MODID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ClientSetup {
+
     public static void init(final FMLClientSetupEvent event) {
         ItemBlockRenderTypes.setRenderLayer(Registration.LaserNode.get(), RenderType.cutout());
         ItemBlockRenderTypes.setRenderLayer(Registration.LaserConnector.get(), RenderType.cutout());
@@ -234,4 +245,5 @@ public class ClientSetup {
                 Registration.LaserConnectorAdv.get()
         );
     }
+
 }

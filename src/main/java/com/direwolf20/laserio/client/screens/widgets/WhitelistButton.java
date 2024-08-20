@@ -2,6 +2,7 @@ package com.direwolf20.laserio.client.screens.widgets;
 
 import com.direwolf20.laserio.common.LaserIO;
 import com.mojang.blaze3d.systems.RenderSystem;
+
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.renderer.GameRenderer;
@@ -27,4 +28,5 @@ public class WhitelistButton extends Button {
     public void setWhitelist(boolean whitelist) {
         isWhitelist = whitelist;
     }
+
 }

@@ -16,6 +16,7 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.network.NetworkHooks;
 
 public class CardFluid extends BaseCard {
+
     public CardFluid() {
         super();
         CARDTYPE = CardType.FLUID;
@@ -48,4 +49,5 @@ public class CardFluid extends BaseCard {
         if (compound == null || !compound.contains("fluidextractamt")) return Config.BASE_MILLI_BUCKETS_FLUID.get();
         return compound.getInt("fluidextractamt");
     }
+
 }

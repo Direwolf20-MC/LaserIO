@@ -1,8 +1,12 @@
 package com.direwolf20.laserio.common.items.filters;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.direwolf20.laserio.common.containers.FilterNBTContainer;
 import com.direwolf20.laserio.common.containers.customhandler.FilterBasicHandler;
 import com.direwolf20.laserio.util.MiscTools;
+
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -17,10 +21,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.network.NetworkHooks;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class FilterNBT extends BaseFilter {
+
     public FilterNBT() {
         super();
     }
@@ -97,4 +99,5 @@ public class FilterNBT extends BaseFilter {
         }
         return tags;
     }
+
 }

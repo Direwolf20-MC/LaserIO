@@ -1,20 +1,20 @@
 package com.direwolf20.laserio.common.network.packets;
 
+import java.util.function.Supplier;
+
 import com.direwolf20.laserio.common.containers.CardRedstoneContainer;
 import com.direwolf20.laserio.common.items.cards.CardRedstone;
+
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.network.NetworkEvent;
 
-import java.util.function.Supplier;
-
 public class PacketUpdateRedstoneCard {
     byte mode;
     byte channel;
     boolean strong;
-
 
     public PacketUpdateRedstoneCard(byte mode, byte channel, boolean strong) {
         this.mode = mode;
@@ -56,4 +56,5 @@ public class PacketUpdateRedstoneCard {
             ctx.get().setPacketHandled(true);
         }
     }
+
 }

@@ -1,6 +1,14 @@
 package com.direwolf20.laserio.common.items.filters;
 
+import static com.direwolf20.laserio.util.MiscTools.tooltipMaker;
+
+import java.util.List;
+import java.util.Optional;
+
+import javax.annotation.Nullable;
+
 import com.direwolf20.laserio.client.events.EventTooltip;
+
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
@@ -15,13 +23,8 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
-import javax.annotation.Nullable;
-import java.util.List;
-import java.util.Optional;
-
-import static com.direwolf20.laserio.util.MiscTools.tooltipMaker;
-
 public class BaseFilter extends Item {
+
     public BaseFilter() {
         super(new Item.Properties());
     }
@@ -94,4 +97,5 @@ public class BaseFilter extends Item {
         stack.getOrCreateTag().putBoolean("compareNBT", compareNBT);
         return compareNBT;
     }
+
 }
