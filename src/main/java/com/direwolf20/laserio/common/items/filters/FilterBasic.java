@@ -2,7 +2,6 @@ package com.direwolf20.laserio.common.items.filters;
 
 import com.direwolf20.laserio.common.containers.FilterBasicContainer;
 import com.direwolf20.laserio.common.containers.customhandler.FilterBasicHandler;
-
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -16,7 +15,6 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.network.NetworkHooks;
 
 public class FilterBasic extends BaseFilter {
-
     public FilterBasic() {
         super();
     }
@@ -47,5 +45,4 @@ public class FilterBasic extends BaseFilter {
         stack.getOrCreateTag().put("inv", handler.serializeNBT());
         return handler;
     }
-
 }

@@ -2,7 +2,6 @@ package com.direwolf20.laserio.common.items.cards;
 
 import com.direwolf20.laserio.common.containers.CardFluidContainer;
 import com.direwolf20.laserio.setup.Config;
-
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -16,7 +15,6 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.network.NetworkHooks;
 
 public class CardFluid extends BaseCard {
-
     public CardFluid() {
         super();
         CARDTYPE = CardType.FLUID;
@@ -49,5 +47,4 @@ public class CardFluid extends BaseCard {
         if (compound == null || !compound.contains("fluidextractamt")) return Config.BASE_MILLI_BUCKETS_FLUID.get();
         return compound.getInt("fluidextractamt");
     }
-
 }

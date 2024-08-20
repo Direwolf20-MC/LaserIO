@@ -32,5 +32,4 @@ public class FilterBasicSlot extends SlotItemHandler {
         this.enabled = enabled;
         return this;
     }
-
 }

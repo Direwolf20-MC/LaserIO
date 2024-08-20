@@ -1,13 +1,13 @@
 package com.direwolf20.laserio.client.renderer;
 
+import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
+import com.direwolf20.laserio.common.blockentities.basebe.BaseLaserBE;
+import com.mojang.blaze3d.vertex.PoseStack;
+
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Set;
-
-import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
-import com.direwolf20.laserio.common.blockentities.basebe.BaseLaserBE;
-import com.mojang.blaze3d.vertex.PoseStack;
 
 public class DelayedRenderer {
     private static final Queue<BaseLaserBE> beRenders = new LinkedList<>();
@@ -32,5 +32,4 @@ public class DelayedRenderer {
     public static void addConnecting(LaserNodeBE be) {
         beConnectingRenders.add(be);
     }
-
 }

@@ -1,7 +1,5 @@
 package com.direwolf20.laserio.client.events;
 
-import static com.direwolf20.laserio.client.events.RenderGUIOverlay.renderLocation;
-
 import com.direwolf20.laserio.client.renderer.BlockOverlayRender;
 import com.direwolf20.laserio.client.renderer.DelayedRenderer;
 import com.direwolf20.laserio.common.blockentities.LaserConnectorAdvBE;
@@ -10,7 +8,6 @@ import com.direwolf20.laserio.common.blocks.LaserConnectorAdv;
 import com.direwolf20.laserio.common.items.LaserWrench;
 import com.direwolf20.laserio.util.DimBlockPos;
 import com.direwolf20.laserio.util.VectorHelper;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -25,8 +22,9 @@ import net.minecraftforge.client.event.CustomizeGuiOverlayEvent;
 import net.minecraftforge.client.event.RenderLevelStageEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
-public class ClientEvents {
+import static com.direwolf20.laserio.client.events.RenderGUIOverlay.renderLocation;
 
+public class ClientEvents {
     @SubscribeEvent
     static void renderWorldLastEvent(RenderLevelStageEvent evt) {
         if (evt.getStage() != RenderLevelStageEvent.Stage.AFTER_TRANSLUCENT_BLOCKS) {
@@ -81,5 +79,4 @@ public class ClientEvents {
             renderLocation(font, guiGraphics, laserConnectorAdvBE);
         }
     }
-
 }

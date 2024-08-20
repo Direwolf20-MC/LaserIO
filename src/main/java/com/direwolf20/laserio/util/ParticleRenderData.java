@@ -18,5 +18,4 @@ public class ParticleRenderData {
         this.toPos = toPos;
         this.position = position;
     }
-
 }

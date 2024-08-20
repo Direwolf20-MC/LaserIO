@@ -1,8 +1,5 @@
 package com.direwolf20.laserio.client.screens;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.direwolf20.laserio.client.screens.widgets.ChannelButton;
 import com.direwolf20.laserio.client.screens.widgets.NumberButton;
 import com.direwolf20.laserio.client.screens.widgets.ToggleButton;
@@ -32,7 +29,6 @@ import com.direwolf20.laserio.common.network.packets.PacketUpdateFilter;
 import com.direwolf20.laserio.util.MiscTools;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
@@ -49,6 +45,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.client.gui.widget.ExtendedButton;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
     private final ResourceLocation GUI = new ResourceLocation(LaserIO.MODID, "textures/gui/itemcard.png");
@@ -824,5 +823,4 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
         }
         return super.mouseClicked(x, y, btn);
     }
-
 }

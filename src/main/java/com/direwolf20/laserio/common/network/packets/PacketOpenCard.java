@@ -1,9 +1,5 @@
 package com.direwolf20.laserio.common.network.packets;
 
-import static com.direwolf20.laserio.common.items.cards.BaseCard.getInventory;
-
-import java.util.function.Supplier;
-
 import com.direwolf20.laserio.common.containers.CardChemicalContainer;
 import com.direwolf20.laserio.common.containers.CardEnergyContainer;
 import com.direwolf20.laserio.common.containers.CardFluidContainer;
@@ -17,7 +13,6 @@ import com.direwolf20.laserio.common.items.cards.CardItem;
 import com.direwolf20.laserio.common.items.cards.CardRedstone;
 import com.direwolf20.laserio.common.items.filters.BaseFilter;
 import com.direwolf20.laserio.integration.mekanism.CardChemical;
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -28,6 +23,10 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.network.NetworkEvent;
 import net.minecraftforge.network.NetworkHooks;
+
+import java.util.function.Supplier;
+
+import static com.direwolf20.laserio.common.items.cards.BaseCard.getInventory;
 
 public class PacketOpenCard {
     private int slotNumber;
@@ -125,5 +124,4 @@ public class PacketOpenCard {
             ctx.get().setPacketHandled(true);
         }
     }
-
 }

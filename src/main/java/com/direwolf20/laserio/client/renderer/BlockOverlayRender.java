@@ -1,24 +1,22 @@
 package com.direwolf20.laserio.client.renderer;
 
-import java.awt.Color;
-
-import org.joml.Matrix4f;
-
 import com.direwolf20.laserio.common.blockentities.LaserConnectorAdvBE;
 import com.direwolf20.laserio.common.blockentities.LaserConnectorBE;
 import com.direwolf20.laserio.common.blockentities.basebe.BaseLaserBE;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.RenderLevelStageEvent;
 
-public class BlockOverlayRender {
+import org.joml.Matrix4f;
 
+import java.awt.Color;
+
+public class BlockOverlayRender {
     public static void renderSelectedBlock(RenderLevelStageEvent event, BlockPos pos, BaseLaserBE be) {
         final Minecraft mc = Minecraft.getInstance();
 
@@ -51,5 +49,4 @@ public class BlockOverlayRender {
         //RenderSystem.disableDepthTest();
         buffer.endBatch(MyRenderType.BlockOverlay);
     }
-
 }

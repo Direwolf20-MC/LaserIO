@@ -1,11 +1,8 @@
 package com.direwolf20.laserio.datagen;
 
-import java.util.function.Consumer;
-
 import com.direwolf20.laserio.common.LaserIO;
 import com.direwolf20.laserio.datagen.customrecipes.CardClearRecipeBuilder;
 import com.direwolf20.laserio.setup.Registration;
-
 import net.minecraft.advancements.critereon.InventoryChangeTrigger;
 import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.data.PackOutput;
@@ -22,8 +19,9 @@ import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.crafting.ConditionalRecipe;
 import net.minecraftforge.common.crafting.conditions.IConditionBuilder;
 
-public class LaserIORecipes extends RecipeProvider implements IConditionBuilder {
+import java.util.function.Consumer;
 
+public class LaserIORecipes extends RecipeProvider implements IConditionBuilder {
     public LaserIORecipes(PackOutput packOutput) {
         super(packOutput);
     }
@@ -300,5 +298,4 @@ public class LaserIORecipes extends RecipeProvider implements IConditionBuilder 
                 .save(consumer, Registration.Filter_Mod.getId() + "_nbtclear");
 
     }
-
 }

@@ -3,7 +3,6 @@ package com.direwolf20.laserio.util;
 import net.minecraftforge.fluids.FluidStack;
 
 public class ParticleDataFluid {
-
     public record PositionData(DimBlockPos node, byte direction, byte position) {
     }
 
@@ -16,5 +15,4 @@ public class ParticleDataFluid {
         this.fromData = new PositionData(fromNode, fromDirection, extractPosition);
         this.toData = new PositionData(toNode, toDirection, insertPosition);
     }
-
 }

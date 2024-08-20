@@ -1,7 +1,6 @@
 package com.direwolf20.laserio.util;
 
 public class ParticleData {
-
     public record PositionData(DimBlockPos node, byte direction, byte position) {
     }
 
@@ -16,5 +15,4 @@ public class ParticleData {
         this.fromData = new PositionData(fromNode, fromDirection, extractPosition);
         this.toData = new PositionData(toNode, toDirection, insertPosition);
     }
-
 }

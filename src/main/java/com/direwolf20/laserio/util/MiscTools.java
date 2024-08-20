@@ -1,11 +1,5 @@
 package com.direwolf20.laserio.util;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.joml.Quaternionf;
-import org.joml.Vector3f;
-
 import com.mojang.math.Axis;
 
 import net.minecraft.core.Direction;
@@ -14,9 +8,13 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MiscTools {
-
     public static boolean inBounds(int x, int y, int w, int h, double ox, double oy) {
         return ox >= x && ox <= x + w && oy >= y && oy <= y + h;
     }
@@ -86,5 +84,4 @@ public class MiscTools {
         current.setStyle(style);
         return current;
     }
-
 }

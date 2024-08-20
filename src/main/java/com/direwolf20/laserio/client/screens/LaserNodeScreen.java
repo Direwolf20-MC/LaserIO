@@ -1,9 +1,5 @@
 package com.direwolf20.laserio.client.screens;
 
-import java.awt.Color;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.direwolf20.laserio.client.screens.widgets.IconButton;
 import com.direwolf20.laserio.client.screens.widgets.ToggleButton;
 import com.direwolf20.laserio.common.LaserIO;
@@ -22,7 +18,6 @@ import com.direwolf20.laserio.common.network.packets.PacketToggleParticles;
 import com.direwolf20.laserio.util.MiscTools;
 import com.direwolf20.laserio.util.Vec2i;
 import com.mojang.blaze3d.systems.RenderSystem;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
@@ -38,6 +33,10 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
+
+import java.awt.Color;
+import java.util.ArrayList;
+import java.util.List;
 
 public class LaserNodeScreen extends AbstractContainerScreen<LaserNodeContainer> {
     private final ResourceLocation GUI = new ResourceLocation(LaserIO.MODID, "textures/gui/laser_node.png");
@@ -241,5 +240,4 @@ public class LaserNodeScreen extends AbstractContainerScreen<LaserNodeContainer>
         }
         return super.mouseClicked(x, y, btn);
     }
-
 }

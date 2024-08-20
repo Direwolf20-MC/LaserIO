@@ -1,14 +1,13 @@
 package com.direwolf20.laserio.common.containers.customhandler;
 
-import javax.annotation.Nonnull;
-
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.common.items.upgrades.OverclockerNode;
-
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.ItemStackHandler;
+
+import javax.annotation.Nonnull;
 
 public class LaserNodeItemHandler extends ItemStackHandler {
     LaserNodeBE blockEntity;
@@ -58,5 +57,4 @@ public class LaserNodeItemHandler extends ItemStackHandler {
             newStacks.set(i, stacks.get(i));
         stacks = newStacks;
     }
-
 }

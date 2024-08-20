@@ -2,13 +2,11 @@ package com.direwolf20.laserio.datagen;
 
 import com.direwolf20.laserio.common.LaserIO;
 import com.direwolf20.laserio.setup.Registration;
-
 import net.minecraft.data.PackOutput;
 import net.minecraftforge.client.model.generators.ItemModelProvider;
 import net.minecraftforge.common.data.ExistingFileHelper;
 
 public class LaserIOItemModels extends ItemModelProvider {
-
     public LaserIOItemModels(PackOutput output, ExistingFileHelper existingFileHelper) {
         super(output, LaserIO.MODID, existingFileHelper);
     }
@@ -37,5 +35,4 @@ public class LaserIOItemModels extends ItemModelProvider {
         singleTexture(Registration.Overclocker_Node.getId().getPath(), mcLoc("item/generated"), "layer0", modLoc("item/overclocker_node"));
         singleTexture(Registration.Card_Cloner.getId().getPath(), mcLoc("item/generated"), "layer0", modLoc("item/card_cloner"));
     }
-
 }

@@ -1,15 +1,14 @@
 package com.direwolf20.laserio.common.containers.customhandler;
 
-import javax.annotation.Nonnull;
-
 import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.common.items.cards.CardEnergy;
 import com.direwolf20.laserio.common.items.filters.BaseFilter;
 import com.direwolf20.laserio.common.items.upgrades.OverclockerCard;
-
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.ItemStackHandler;
+
+import javax.annotation.Nonnull;
 
 public class CardItemHandler extends ItemStackHandler {
     public ItemStack stack;
@@ -50,5 +49,4 @@ public class CardItemHandler extends ItemStackHandler {
             newStacks.set(i, stacks.get(i));
         stacks = newStacks;
     }
-
 }

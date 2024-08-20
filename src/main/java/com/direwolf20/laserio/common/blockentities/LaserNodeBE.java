@@ -1,28 +1,5 @@
 package com.direwolf20.laserio.common.blockentities;
 
-import static com.direwolf20.laserio.util.MiscTools.findOffset;
-import static net.minecraft.world.level.block.Block.UPDATE_ALL;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Random;
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.stream.Collectors;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
-import org.joml.Vector3f;
-
 import com.direwolf20.laserio.client.particles.fluidparticle.FluidFlowParticleData;
 import com.direwolf20.laserio.client.particles.itemparticle.ItemFlowParticleData;
 import com.direwolf20.laserio.common.blockentities.basebe.BaseLaserBE;
@@ -61,7 +38,6 @@ import com.direwolf20.laserio.util.SensorCardCache;
 import com.direwolf20.laserio.util.StockerCardCache;
 import com.direwolf20.laserio.util.TransferResult;
 import com.direwolf20.laserio.util.WeakConsumerWrapper;
-
 import it.unimi.dsi.fastutil.bytes.Byte2BooleanMap;
 import it.unimi.dsi.fastutil.bytes.Byte2BooleanOpenHashMap;
 import it.unimi.dsi.fastutil.bytes.Byte2ByteMap;
@@ -94,6 +70,28 @@ import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.ItemStackHandler;
+import org.joml.Vector3f;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Random;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.Collectors;
+
+import static com.direwolf20.laserio.util.MiscTools.findOffset;
+import static net.minecraft.world.level.block.Block.UPDATE_ALL;
 
 public class LaserNodeBE extends BaseLaserBE {
     private static final Vector3f[] offsets = { //Used for where to draw particles from
@@ -2561,5 +2559,4 @@ public class LaserNodeBE extends BaseLaserBE {
             return true;
         }
     }
-
 }

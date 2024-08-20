@@ -1,10 +1,5 @@
 package com.direwolf20.laserio.client.jei;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.annotation.Nonnull;
-
 import com.direwolf20.laserio.client.jei.ghostfilterhandlers.GhostFilterBasic;
 import com.direwolf20.laserio.client.jei.ghostfilterhandlers.GhostFilterCard;
 import com.direwolf20.laserio.client.jei.ghostfilterhandlers.GhostFilterCount;
@@ -16,7 +11,6 @@ import com.direwolf20.laserio.client.screens.FilterTagScreen;
 import com.direwolf20.laserio.common.LaserIO;
 import com.direwolf20.laserio.integration.mekanism.MekanismIntegration;
 import com.direwolf20.laserio.setup.Registration;
-
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.RecipeTypes;
@@ -28,9 +22,13 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.RecipeManager;
 
+import javax.annotation.Nonnull;
+
+import java.util.ArrayList;
+import java.util.List;
+
 @JeiPlugin
 public class JEIIntegration implements IModPlugin {
-
     @Nonnull
     @Override
     public ResourceLocation getPluginUid() {
@@ -66,5 +64,4 @@ public class JEIIntegration implements IModPlugin {
         registration.addGhostIngredientHandler(FilterCountScreen.class, new GhostFilterCount());
         registration.addGhostIngredientHandler(FilterTagScreen.class, new GhostFilterTag());
     }
-
 }

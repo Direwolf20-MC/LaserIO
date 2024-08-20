@@ -32,7 +32,6 @@ public class CardRedstone extends BaseCard {
             buf.writeByte(-1);
         }));
 
-        //System.out.println(itemstack.getItem().getRegistryName()+""+itemstack.getTag());
         return new InteractionResultHolder<>(InteractionResult.PASS, itemstack);
     }
 
@@ -54,5 +53,4 @@ public class CardRedstone extends BaseCard {
             stack.getOrCreateTag().putBoolean("redstonestrong", strong);
         return strong;
     }
-
 }

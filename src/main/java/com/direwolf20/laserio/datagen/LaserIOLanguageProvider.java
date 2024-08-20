@@ -1,15 +1,13 @@
 package com.direwolf20.laserio.datagen;
 
-import static com.direwolf20.laserio.setup.ModSetup.TAB_NAME;
-
 import com.direwolf20.laserio.common.LaserIO;
 import com.direwolf20.laserio.setup.Registration;
-
 import net.minecraft.data.PackOutput;
 import net.minecraftforge.common.data.LanguageProvider;
 
-public class LaserIOLanguageProvider extends LanguageProvider {
+import static com.direwolf20.laserio.setup.ModSetup.TAB_NAME;
 
+public class LaserIOLanguageProvider extends LanguageProvider {
     public LaserIOLanguageProvider(PackOutput output, String locale) {
         super(output, LaserIO.MODID, locale);
     }
@@ -123,5 +121,4 @@ public class LaserIOLanguageProvider extends LanguageProvider {
 
         //add("", "");
     }
-
 }

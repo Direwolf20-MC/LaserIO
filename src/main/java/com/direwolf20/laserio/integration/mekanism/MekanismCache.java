@@ -1,20 +1,5 @@
 package com.direwolf20.laserio.integration.mekanism;
 
-import static com.direwolf20.laserio.client.blockentityrenders.LaserNodeBERender.offsets;
-import static com.direwolf20.laserio.integration.mekanism.MekanismStatics.isValidChemicalForHandler;
-import static com.direwolf20.laserio.util.MiscTools.findOffset;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Random;
-import java.util.concurrent.CopyOnWriteArrayList;
-
-import org.joml.Vector3f;
-
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE.SideConnection;
 import com.direwolf20.laserio.common.blocks.LaserNode;
@@ -34,7 +19,6 @@ import com.direwolf20.laserio.util.NodeSideCache;
 import com.direwolf20.laserio.util.SensorCardCache;
 import com.direwolf20.laserio.util.StockerCardCache;
 import com.direwolf20.laserio.util.WeakConsumerWrapper;
-
 import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
 import mekanism.api.Action;
 import mekanism.api.chemical.ChemicalStack;
@@ -51,6 +35,19 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.common.util.NonNullConsumer;
+import org.joml.Vector3f;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Random;
+import java.util.concurrent.CopyOnWriteArrayList;
+
+import static com.direwolf20.laserio.client.blockentityrenders.LaserNodeBERender.offsets;
+import static com.direwolf20.laserio.integration.mekanism.MekanismStatics.isValidChemicalForHandler;
+import static com.direwolf20.laserio.util.MiscTools.findOffset;
 
 public class MekanismCache {
     private record LaserNodeChemicalHandler(LaserNodeBE be, IChemicalHandler<?, ?> handler) {
@@ -102,7 +99,7 @@ public class MekanismCache {
             List<ChemicalStack<?>> filteredChemicalsOriginal = new ArrayList<>(filteredChemicals);
 
             outloop:
-            for (Entry<ChemicalType, LazyOptional<IChemicalHandler<?, ?>>> entry : chemicalHandlerMap.entrySet()) {
+            for (Map.Entry<ChemicalType, LazyOptional<IChemicalHandler<?, ?>>> entry : chemicalHandlerMap.entrySet()) {
                 if (!entry.getValue().isPresent())
                     continue;
 
@@ -130,7 +127,7 @@ public class MekanismCache {
             List<ChemicalStack<?>> filteredChemicalsOriginal = new ArrayList<>(filteredChemicals);
 
             outloop:
-            for (Entry<ChemicalType, LazyOptional<IChemicalHandler<?, ?>>> entry : chemicalHandlerMap.entrySet()) {
+            for (Map.Entry<ChemicalType, LazyOptional<IChemicalHandler<?, ?>>> entry : chemicalHandlerMap.entrySet()) {
                 if (!entry.getValue().isPresent())
                     continue;
 
@@ -164,7 +161,7 @@ public class MekanismCache {
             int tagsToMatch = tags.size();
 
             outloop:
-            for (Entry<ChemicalType, LazyOptional<IChemicalHandler<?, ?>>> entry : chemicalHandlerMap.entrySet()) {
+            for (Map.Entry<ChemicalType, LazyOptional<IChemicalHandler<?, ?>>> entry : chemicalHandlerMap.entrySet()) {
                 if (!entry.getValue().isPresent())
                     continue;
 
@@ -210,7 +207,7 @@ public class MekanismCache {
             return false;
         }
 
-        for (Entry<ChemicalType, LazyOptional<IChemicalHandler<?, ?>>> entry : chemicalHandlerMap.entrySet()) {
+        for (Map.Entry<ChemicalType, LazyOptional<IChemicalHandler<?, ?>>> entry : chemicalHandlerMap.entrySet()) {
             if (!entry.getValue().isPresent())
                 continue;
 
@@ -350,7 +347,7 @@ public class MekanismCache {
         Map<ChemicalType, LazyOptional<IChemicalHandler<?, ?>>> chemicalHandlerMap = getAttachedChemicalTanks(extractorCardCache.direction, extractorCardCache.sneaky);
         if (chemicalHandlerMap == null || chemicalHandlerMap.isEmpty()) return false;
 
-        for (Entry<ChemicalType, LazyOptional<IChemicalHandler<?, ?>>> entry : chemicalHandlerMap.entrySet()) {
+        for (Map.Entry<ChemicalType, LazyOptional<IChemicalHandler<?, ?>>> entry : chemicalHandlerMap.entrySet()) {
             if (!entry.getValue().isPresent())
                 continue;
 
@@ -699,5 +696,4 @@ public class MekanismCache {
             }
         }
     }
-
 }

@@ -1,10 +1,7 @@
 package com.direwolf20.laserio.datagen;
 
-import java.util.concurrent.CompletableFuture;
-
 import com.direwolf20.laserio.common.LaserIO;
 import com.direwolf20.laserio.setup.Registration;
-
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.ItemTagsProvider;
@@ -15,13 +12,15 @@ import net.minecraft.world.item.Item;
 import net.minecraftforge.common.data.BlockTagsProvider;
 import net.minecraftforge.common.data.ExistingFileHelper;
 
+import java.util.concurrent.CompletableFuture;
+
 public class LaserIOItemTags extends ItemTagsProvider {
     public static final TagKey<Item> WRENCHES = forgeTag("wrenches");
     public static final TagKey<Item> TOOLS_WRENCH = forgeTag("tools/wrench");
     public static final TagKey<Item> CIRCUITS_BASIC = forgeTag("circuits/basic");
 
     public static final TagKey<Item> FILTERS_TAG = ItemTags.create(new ResourceLocation(LaserIO.MODID, "filters"));
-    
+
     private static TagKey<Item> forgeTag(String name) {
         return ItemTags.create(new ResourceLocation("forge", name));
     }
@@ -48,5 +47,4 @@ public class LaserIOItemTags extends ItemTagsProvider {
     public String getName() {
         return "LaserIO Item Tags";
     }
-
 }

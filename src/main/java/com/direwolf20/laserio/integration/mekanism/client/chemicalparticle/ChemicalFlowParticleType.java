@@ -1,11 +1,9 @@
 package com.direwolf20.laserio.integration.mekanism.client.chemicalparticle;
 
 import com.mojang.serialization.Codec;
-
 import net.minecraft.core.particles.ParticleType;
 
 public class ChemicalFlowParticleType extends ParticleType<ChemicalFlowParticleData> {
-
     public ChemicalFlowParticleType() {
         super(false, ChemicalFlowParticleData.DESERIALIZER);
     }
@@ -14,5 +12,4 @@ public class ChemicalFlowParticleType extends ParticleType<ChemicalFlowParticleD
     public Codec<ChemicalFlowParticleData> codec() {
         return null;
     }
-
 }

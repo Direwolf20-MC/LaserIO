@@ -1,13 +1,8 @@
 package com.direwolf20.laserio.client.particles.fluidparticle;
 
-import java.util.Locale;
-
-import javax.annotation.Nonnull;
-
 import com.direwolf20.laserio.client.particles.ModParticles;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-
 import net.minecraft.commands.arguments.item.ItemInput;
 import net.minecraft.commands.arguments.item.ItemParser;
 import net.minecraft.core.particles.ParticleOptions;
@@ -18,6 +13,10 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fluids.FluidStack;
+
+import javax.annotation.Nonnull;
+
+import java.util.Locale;
 
 public class FluidFlowParticleData implements ParticleOptions {
     private final FluidStack fluidStack;
@@ -92,5 +91,4 @@ public class FluidFlowParticleData implements ParticleOptions {
             return new FluidFlowParticleData(buffer.readFluidStack(), buffer.readDouble(), buffer.readDouble(), buffer.readDouble(), buffer.readInt());
         }
     };
-
 }

@@ -1,10 +1,5 @@
 package com.direwolf20.laserio.common.events;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import com.direwolf20.laserio.common.network.PacketHandler;
 import com.direwolf20.laserio.common.network.packets.PacketNodeParticles;
 import com.direwolf20.laserio.common.network.packets.PacketNodeParticlesChemical;
@@ -12,10 +7,14 @@ import com.direwolf20.laserio.common.network.packets.PacketNodeParticlesFluid;
 import com.direwolf20.laserio.integration.mekanism.client.chemicalparticle.ParticleDataChemical;
 import com.direwolf20.laserio.util.ParticleData;
 import com.direwolf20.laserio.util.ParticleDataFluid;
-
 import net.minecraft.world.level.Level;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class ServerTickHandler {
     private static List<ParticleData> particleList = new ArrayList<>();
@@ -71,5 +70,4 @@ public class ServerTickHandler {
         if (!particleData.chemicalStack.isEmpty())
             particleListChemical.add(particleData);
     }
-
 }

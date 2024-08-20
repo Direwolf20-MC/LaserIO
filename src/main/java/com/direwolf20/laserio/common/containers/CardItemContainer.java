@@ -1,11 +1,5 @@
 package com.direwolf20.laserio.common.containers;
 
-import static com.direwolf20.laserio.common.blocks.LaserNode.findCardHolders;
-
-import java.util.UUID;
-
-import javax.annotation.Nullable;
-
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import com.direwolf20.laserio.common.containers.customhandler.CardItemHandler;
 import com.direwolf20.laserio.common.containers.customhandler.FilterBasicHandler;
@@ -20,7 +14,6 @@ import com.direwolf20.laserio.common.items.filters.BaseFilter;
 import com.direwolf20.laserio.common.items.filters.FilterBasic;
 import com.direwolf20.laserio.common.items.filters.FilterCount;
 import com.direwolf20.laserio.setup.Registration;
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
@@ -38,6 +31,12 @@ import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.SlotItemHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
+
+import javax.annotation.Nullable;
+
+import java.util.UUID;
+
+import static com.direwolf20.laserio.common.blocks.LaserNode.findCardHolders;
 
 public class CardItemContainer extends AbstractContainerMenu {
     public static final int SLOTS = 2;
@@ -296,5 +295,4 @@ public class CardItemContainer extends AbstractContainerMenu {
         }
         super.removed(playerIn);
     }
-
 }

@@ -1,13 +1,12 @@
 package com.direwolf20.laserio.common.containers.customslot;
 
-import javax.annotation.Nonnull;
-
 import com.direwolf20.laserio.common.containers.CardItemContainer;
 import com.direwolf20.laserio.common.items.filters.BaseFilter;
-
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
+
+import javax.annotation.Nonnull;
 
 public class CardItemSlot extends SlotItemHandler {
     CardItemContainer parentContainer;
@@ -38,5 +37,4 @@ public class CardItemSlot extends SlotItemHandler {
         this.enabled = enabled;
         return this;
     }
-
 }

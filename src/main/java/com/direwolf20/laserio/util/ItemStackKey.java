@@ -1,10 +1,10 @@
 package com.direwolf20.laserio.util;
 
-import java.util.Objects;
-
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+
+import java.util.Objects;
 
 public class ItemStackKey {
     public final Item item;
@@ -37,5 +37,4 @@ public class ItemStackKey {
         }
         return false;
     }
-
 }

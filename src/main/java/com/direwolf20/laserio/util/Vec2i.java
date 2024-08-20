@@ -8,5 +8,4 @@ public class Vec2i {
         this.x = x;
         this.y = y;
     }
-
 }

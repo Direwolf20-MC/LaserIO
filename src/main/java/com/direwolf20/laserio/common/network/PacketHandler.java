@@ -16,7 +16,6 @@ import com.direwolf20.laserio.common.network.packets.PacketUpdateFilter;
 import com.direwolf20.laserio.common.network.packets.PacketUpdateFilterTag;
 import com.direwolf20.laserio.common.network.packets.PacketUpdateRedstoneCard;
 import com.direwolf20.laserio.integration.mekanism.MekanismIntegration;
-
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -95,5 +94,4 @@ public class PacketHandler {
     public static void sendToServer(Object msg) {
         HANDLER.sendToServer(msg);
     }
-
 }

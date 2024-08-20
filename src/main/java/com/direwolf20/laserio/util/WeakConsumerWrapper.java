@@ -1,8 +1,8 @@
 package com.direwolf20.laserio.util;
 
-import java.lang.ref.WeakReference;
-
 import net.minecraftforge.common.util.NonNullConsumer;
+
+import java.lang.ref.WeakReference;
 
 /**
  * Implementation of {@link NonNullConsumer} that weakly references a parent object.
@@ -34,5 +34,4 @@ public class WeakConsumerWrapper<TE, C> implements NonNullConsumer<C> {
             consumer.accept(te, c);
         }
     }
-
 }

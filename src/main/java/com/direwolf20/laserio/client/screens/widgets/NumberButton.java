@@ -1,13 +1,12 @@
 package com.direwolf20.laserio.client.screens.widgets;
 
-import java.awt.Color;
-
 import com.mojang.blaze3d.vertex.PoseStack;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
+
+import java.awt.Color;
 
 public class NumberButton extends Button {
     private int value;
@@ -58,5 +57,4 @@ public class NumberButton extends Button {
     public void setValue(int value) {
         this.value = value;
     }
-
 }

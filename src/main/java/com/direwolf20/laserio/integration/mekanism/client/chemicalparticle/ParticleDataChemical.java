@@ -1,7 +1,6 @@
 package com.direwolf20.laserio.integration.mekanism.client.chemicalparticle;
 
 import com.direwolf20.laserio.util.DimBlockPos;
-
 import mekanism.api.chemical.ChemicalStack;
 import mekanism.api.chemical.ChemicalType;
 
@@ -20,5 +19,4 @@ public class ParticleDataChemical {
         this.fromData = new PositionData(fromNode, fromDirection, extractPosition);
         this.toData = new PositionData(toNode, toDirection, insertPosition);
     }
-
 }

@@ -1,17 +1,15 @@
 package com.direwolf20.laserio.common.blocks;
 
-import javax.annotation.Nullable;
-
 import com.direwolf20.laserio.common.blockentities.LaserConnectorAdvBE;
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
-public class LaserConnectorAdv extends LaserConnector implements EntityBlock {
+import javax.annotation.Nullable;
 
+public class LaserConnectorAdv extends LaserConnector implements EntityBlock {
     public LaserConnectorAdv() {
         super();
     }
@@ -32,5 +30,4 @@ public class LaserConnectorAdv extends LaserConnector implements EntityBlock {
         }
         super.onRemove(state, worldIn, pos, newState, isMoving);
     }
-
 }

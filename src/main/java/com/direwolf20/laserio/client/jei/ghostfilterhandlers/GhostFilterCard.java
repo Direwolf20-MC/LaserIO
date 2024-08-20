@@ -1,13 +1,9 @@
 package com.direwolf20.laserio.client.jei.ghostfilterhandlers;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.direwolf20.laserio.client.screens.CardItemScreen;
 import com.direwolf20.laserio.common.containers.customslot.FilterBasicSlot;
 import com.direwolf20.laserio.common.network.PacketHandler;
 import com.direwolf20.laserio.common.network.packets.PacketGhostSlot;
-
 import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import net.minecraft.client.renderer.Rect2i;
@@ -15,8 +11,10 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 
-public class GhostFilterCard implements IGhostIngredientHandler<CardItemScreen> {
+import java.util.ArrayList;
+import java.util.List;
 
+public class GhostFilterCard implements IGhostIngredientHandler<CardItemScreen> {
     @Override
     public <I> List<Target<I>> getTargetsTyped(CardItemScreen gui, ITypedIngredient<I> ingredient, boolean doStart) {
         List<Target<I>> targets = new ArrayList<>();
@@ -65,5 +63,4 @@ public class GhostFilterCard implements IGhostIngredientHandler<CardItemScreen> 
     public void onComplete() {
         // NO OP
     }
-
 }

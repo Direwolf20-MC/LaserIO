@@ -1,7 +1,6 @@
 package com.direwolf20.laserio.client.screens.widgets;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.renderer.GameRenderer;
@@ -39,5 +38,4 @@ public class IconButton extends Button {
     public void updateNarration(NarrationElementOutput p_169152_) {
 
     }*/
-
 }

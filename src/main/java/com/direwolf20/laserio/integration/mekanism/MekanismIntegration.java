@@ -11,5 +11,4 @@ public class MekanismIntegration {
     public static boolean isLoaded() {
         return ModList.get().isLoaded(ID);
     }
-
 }

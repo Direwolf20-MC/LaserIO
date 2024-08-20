@@ -1,12 +1,11 @@
 package com.direwolf20.laserio.common.containers.customslot;
 
-import javax.annotation.Nonnull;
-
 import com.direwolf20.laserio.common.items.upgrades.OverclockerCard;
-
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
+
+import javax.annotation.Nonnull;
 
 public class CardOverclockSlot extends SlotItemHandler {
     protected boolean enabled = true;
@@ -29,5 +28,4 @@ public class CardOverclockSlot extends SlotItemHandler {
         this.enabled = enabled;
         return this;
     }
-
 }

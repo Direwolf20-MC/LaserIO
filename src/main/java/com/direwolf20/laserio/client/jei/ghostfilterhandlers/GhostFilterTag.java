@@ -1,21 +1,19 @@
 package com.direwolf20.laserio.client.jei.ghostfilterhandlers;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.direwolf20.laserio.client.screens.FilterTagScreen;
 import com.direwolf20.laserio.common.containers.customslot.FilterBasicSlot;
 import com.direwolf20.laserio.common.network.PacketHandler;
 import com.direwolf20.laserio.common.network.packets.PacketGhostSlot;
-
 import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
-public class GhostFilterTag implements IGhostIngredientHandler<FilterTagScreen> {
+import java.util.ArrayList;
+import java.util.List;
 
+public class GhostFilterTag implements IGhostIngredientHandler<FilterTagScreen> {
     @Override
     public <I> List<Target<I>> getTargetsTyped(FilterTagScreen gui, ITypedIngredient<I> ingredient, boolean doStart) {
         List<Target<I>> targets = new ArrayList<>();
@@ -49,5 +47,4 @@ public class GhostFilterTag implements IGhostIngredientHandler<FilterTagScreen> 
     public void onComplete() {
         // NO OP
     }
-
 }

@@ -1,10 +1,5 @@
 package com.direwolf20.laserio.common.network.packets;
 
-import static com.direwolf20.laserio.common.blocks.LaserNode.SCREEN_LASERNODE;
-import static com.direwolf20.laserio.common.blocks.LaserNode.findCardHolders;
-
-import java.util.function.Supplier;
-
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import com.direwolf20.laserio.common.blockentities.basebe.BaseLaserBE;
 import com.direwolf20.laserio.common.containers.CardEnergyContainer;
@@ -13,7 +8,6 @@ import com.direwolf20.laserio.common.containers.CardRedstoneContainer;
 import com.direwolf20.laserio.common.containers.LaserNodeContainer;
 import com.direwolf20.laserio.common.containers.customhandler.LaserNodeItemHandler;
 import com.direwolf20.laserio.common.network.PacketHandler;
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.FriendlyByteBuf;
@@ -30,6 +24,11 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.network.NetworkEvent;
 import net.minecraftforge.network.NetworkHooks;
+
+import java.util.function.Supplier;
+
+import static com.direwolf20.laserio.common.blocks.LaserNode.SCREEN_LASERNODE;
+import static com.direwolf20.laserio.common.blocks.LaserNode.findCardHolders;
 
 public class PacketOpenNode {
     private BlockPos sourcePos;
@@ -109,9 +108,7 @@ public class PacketOpenNode {
 
             });
 
-
             ctx.get().setPacketHandled(true);
         }
     }
-
 }

@@ -1,13 +1,11 @@
 package com.direwolf20.laserio.common.containers.customhandler;
 
-import javax.annotation.Nonnull;
-
 import com.direwolf20.laserio.common.items.filters.FilterCount;
-
 import net.minecraft.world.item.ItemStack;
 
-public class FilterCountHandler extends FilterBasicHandler {
+import javax.annotation.Nonnull;
 
+public class FilterCountHandler extends FilterBasicHandler {
     public FilterCountHandler(int size, ItemStack itemStack) {
         super(size, itemStack);
     }
@@ -82,5 +80,4 @@ public class FilterCountHandler extends FilterBasicHandler {
         }
         FilterCount.setInventory(this.stack, this);
     }
-
 }

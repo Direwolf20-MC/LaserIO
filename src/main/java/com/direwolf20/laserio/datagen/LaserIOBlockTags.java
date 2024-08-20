@@ -1,20 +1,17 @@
 package com.direwolf20.laserio.datagen;
 
-import java.util.concurrent.CompletableFuture;
-
-import org.jetbrains.annotations.Nullable;
-
 import com.direwolf20.laserio.common.LaserIO;
 import com.direwolf20.laserio.setup.Registration;
-
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.tags.BlockTags;
 import net.minecraftforge.common.data.BlockTagsProvider;
 import net.minecraftforge.common.data.ExistingFileHelper;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.concurrent.CompletableFuture;
 
 public class LaserIOBlockTags extends BlockTagsProvider {
-
     public LaserIOBlockTags(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, @Nullable ExistingFileHelper existingFileHelper) {
         super(output, lookupProvider, LaserIO.MODID, existingFileHelper);
     }
@@ -31,5 +28,4 @@ public class LaserIOBlockTags extends BlockTagsProvider {
     public String getName() {
         return "LaserIO Tags";
     }
-
 }

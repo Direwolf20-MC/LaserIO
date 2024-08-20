@@ -1,11 +1,8 @@
 package com.direwolf20.laserio.common.containers;
 
-import static com.direwolf20.laserio.common.blocks.LaserNode.findCardHolders;
-
 import com.direwolf20.laserio.common.items.CardHolder;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.setup.Registration;
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
@@ -15,8 +12,9 @@ import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
 
-public class CardFluidContainer extends CardItemContainer {
+import static com.direwolf20.laserio.common.blocks.LaserNode.findCardHolders;
 
+public class CardFluidContainer extends CardItemContainer {
     public CardFluidContainer(int windowId, Inventory playerInventory, Player player, FriendlyByteBuf extraData) {
         this(windowId, playerInventory, player, extraData.readItem());
         this.direction = extraData.readByte();
@@ -49,5 +47,4 @@ public class CardFluidContainer extends CardItemContainer {
         this.sourceContainer = sourcePos;
         this.direction = direction;
     }
-
 }

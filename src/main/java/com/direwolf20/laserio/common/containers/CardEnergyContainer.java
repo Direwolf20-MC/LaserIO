@@ -1,10 +1,7 @@
 package com.direwolf20.laserio.common.containers;
 
-import javax.annotation.Nullable;
-
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import com.direwolf20.laserio.setup.Registration;
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
@@ -20,6 +17,8 @@ import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.SlotItemHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
+
+import javax.annotation.Nullable;
 
 public class CardEnergyContainer extends AbstractContainerMenu {
     public ItemStack cardItem;
@@ -128,5 +127,4 @@ public class CardEnergyContainer extends AbstractContainerMenu {
         }
         super.removed(playerIn);
     }
-
 }

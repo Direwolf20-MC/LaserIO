@@ -1,8 +1,5 @@
 package com.direwolf20.laserio.common.blocks;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import com.direwolf20.laserio.common.blocks.baseblocks.BaseLaserBlock;
 import com.direwolf20.laserio.common.containers.LaserNodeContainer;
@@ -10,7 +7,6 @@ import com.direwolf20.laserio.common.containers.customhandler.LaserNodeItemHandl
 import com.direwolf20.laserio.common.items.CardHolder;
 import com.direwolf20.laserio.common.items.LaserWrench;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -39,6 +35,9 @@ import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.network.NetworkHooks;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public class LaserNode extends BaseLaserBlock implements EntityBlock {
     //This makes the shape fit the model perfectly, but introduces issues with clicking on specific sides of the block
@@ -256,5 +255,4 @@ public class LaserNode extends BaseLaserBlock implements EntityBlock {
         }
         super.onRemove(state, worldIn, pos, newState, isMoving);
     }
-
 }

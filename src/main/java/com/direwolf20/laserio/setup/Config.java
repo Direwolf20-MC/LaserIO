@@ -62,5 +62,4 @@ public class Config {
                 .defineInRange("multiplier_milli_buckets_chemical", 60000, 0, Integer.MAX_VALUE);
         COMMON_BUILDER.pop();
     }
-
 }

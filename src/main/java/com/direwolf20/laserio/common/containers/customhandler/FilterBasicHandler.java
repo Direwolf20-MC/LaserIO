@@ -1,11 +1,10 @@
 package com.direwolf20.laserio.common.containers.customhandler;
 
-import javax.annotation.Nonnull;
-
 import com.direwolf20.laserio.common.items.filters.FilterBasic;
-
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.ItemStackHandler;
+
+import javax.annotation.Nonnull;
 
 public class FilterBasicHandler extends ItemStackHandler {
     public ItemStack stack;
@@ -30,5 +29,4 @@ public class FilterBasicHandler extends ItemStackHandler {
     public int getSlotLimit(int slot) {
         return 1;
     }
-
 }

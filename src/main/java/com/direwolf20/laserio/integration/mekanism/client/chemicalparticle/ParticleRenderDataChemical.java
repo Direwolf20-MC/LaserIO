@@ -17,5 +17,4 @@ public class ParticleRenderDataChemical {
         this.toPos = toPos;
         this.position = position;
     }
-
 }

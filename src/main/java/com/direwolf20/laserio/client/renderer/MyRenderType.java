@@ -3,7 +3,6 @@ package com.direwolf20.laserio.client.renderer;
 import com.direwolf20.laserio.common.LaserIO;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
-
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 
@@ -81,5 +80,4 @@ public class MyRenderType extends RenderType {
                     .setLightmapState(NO_LIGHTMAP)
                     .setWriteMaskState(COLOR_WRITE)
                     .createCompositeState(false));
-
 }

@@ -1,9 +1,5 @@
 package com.direwolf20.laserio.integration.mekanism;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-
 import mekanism.api.chemical.ChemicalStack;
 import mekanism.api.chemical.ChemicalType;
 import mekanism.api.chemical.IChemicalHandler;
@@ -20,6 +16,10 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.capabilities.CapabilityToken;
 import net.minecraftforge.common.util.LazyOptional;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 public class MekanismStatics {
     public static Capability<IGasHandler> GAS_CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {});
@@ -120,5 +120,4 @@ public class MekanismStatics {
 
         return false;
     }
-
 }

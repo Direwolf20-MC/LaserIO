@@ -1,13 +1,12 @@
 package com.direwolf20.laserio.common.network.packets;
 
-import java.util.function.Supplier;
-
 import com.direwolf20.laserio.common.containers.LaserNodeContainer;
-
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraftforge.network.NetworkEvent;
+
+import java.util.function.Supplier;
 
 public class PacketToggleParticles {
     private boolean renderParticles;
@@ -40,9 +39,7 @@ public class PacketToggleParticles {
                 }
             });
 
-
             ctx.get().setPacketHandled(true);
         }
     }
-
 }

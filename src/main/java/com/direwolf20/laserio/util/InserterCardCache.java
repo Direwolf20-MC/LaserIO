@@ -2,7 +2,6 @@ package com.direwolf20.laserio.util;
 
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
@@ -24,5 +23,4 @@ public class InserterCardCache extends BaseCardCache {
     public double getDistance() {
         return relativePos.blockPos.distSqr(BlockPos.ZERO);
     }
-
 }

@@ -1,13 +1,10 @@
 package com.direwolf20.laserio.datagen.customrecipes;
 
-import java.util.List;
-
 import com.direwolf20.laserio.common.LaserIO;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.setup.Registration;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.FriendlyByteBuf;
@@ -20,8 +17,9 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.ShapelessRecipe;
 
-public class CardClearRecipe extends ShapelessRecipe {
+import java.util.List;
 
+public class CardClearRecipe extends ShapelessRecipe {
     public CardClearRecipe(ResourceLocation resourceLocation, String group, ItemStack result, NonNullList<Ingredient> ingredients) {
         super(resourceLocation, group, CraftingBookCategory.MISC, result, ingredients);
     }
@@ -90,7 +88,5 @@ public class CardClearRecipe extends ShapelessRecipe {
         public void toNetwork(FriendlyByteBuf byteBuf, ShapelessRecipe shapelessRecipe) {
             super.toNetwork(byteBuf, shapelessRecipe);
         }
-
     }
-
 }

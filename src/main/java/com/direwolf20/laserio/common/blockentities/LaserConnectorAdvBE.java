@@ -3,7 +3,6 @@ package com.direwolf20.laserio.common.blockentities;
 import com.direwolf20.laserio.common.blockentities.basebe.BaseLaserBE;
 import com.direwolf20.laserio.setup.Registration;
 import com.direwolf20.laserio.util.DimBlockPos;
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
@@ -149,5 +148,4 @@ public class LaserConnectorAdvBE extends BaseLaserBE {
     public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
         this.load(pkt.getTag());
     }
-
 }

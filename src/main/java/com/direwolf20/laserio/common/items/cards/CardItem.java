@@ -1,7 +1,6 @@
 package com.direwolf20.laserio.common.items.cards;
 
 import com.direwolf20.laserio.common.containers.CardItemContainer;
-
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -15,7 +14,6 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.network.NetworkHooks;
 
 public class CardItem extends BaseCard {
-
     public CardItem() {
         super();
         CARDTYPE = CardType.ITEM;
@@ -32,7 +30,6 @@ public class CardItem extends BaseCard {
             buf.writeByte(-1);
         }));
 
-        //System.out.println(itemstack.getItem().getRegistryName()+""+itemstack.getTag());
         return new InteractionResultHolder<>(InteractionResult.PASS, itemstack);
     }
 
@@ -49,5 +46,4 @@ public class CardItem extends BaseCard {
         if (compound == null || !compound.contains("itemextractamt")) return (byte) 1;
         return compound.getByte("itemextractamt");
     }
-
 }

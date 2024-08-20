@@ -2,7 +2,6 @@ package com.direwolf20.laserio.common.items.cards;
 
 import com.direwolf20.laserio.common.containers.CardEnergyContainer;
 import com.direwolf20.laserio.setup.Config;
-
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -16,7 +15,6 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.network.NetworkHooks;
 
 public class CardEnergy extends BaseCard {
-
     public CardEnergy() {
         super();
         CARDTYPE = CardType.ENERGY;
@@ -91,5 +89,4 @@ public class CardEnergy extends BaseCard {
         if (compound == null || !compound.contains("limitextractpercent")) return 0;
         return compound.getInt("limitextractpercent");
     }
-
 }

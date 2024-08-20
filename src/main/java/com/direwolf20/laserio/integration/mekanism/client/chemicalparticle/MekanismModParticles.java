@@ -1,7 +1,6 @@
 package com.direwolf20.laserio.integration.mekanism.client.chemicalparticle;
 
 import com.direwolf20.laserio.common.LaserIO;
-
 import net.minecraft.core.particles.ParticleType;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;

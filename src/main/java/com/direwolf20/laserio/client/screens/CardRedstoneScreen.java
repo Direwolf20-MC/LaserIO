@@ -1,8 +1,5 @@
 package com.direwolf20.laserio.client.screens;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.direwolf20.laserio.client.screens.widgets.ChannelButton;
 import com.direwolf20.laserio.client.screens.widgets.ToggleButton;
 import com.direwolf20.laserio.common.LaserIO;
@@ -14,7 +11,6 @@ import com.direwolf20.laserio.common.network.packets.PacketUpdateRedstoneCard;
 import com.direwolf20.laserio.util.MiscTools;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
@@ -27,6 +23,9 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.client.gui.widget.ExtendedButton;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class CardRedstoneScreen extends AbstractContainerScreen<CardRedstoneContainer> {
     private final ResourceLocation GUI = new ResourceLocation(LaserIO.MODID, "textures/gui/redstonecard.png");
@@ -212,5 +211,4 @@ public class CardRedstoneScreen extends AbstractContainerScreen<CardRedstoneCont
 
         return super.mouseClicked(x, y, btn);
     }
-
 }

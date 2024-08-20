@@ -1,12 +1,7 @@
 package com.direwolf20.laserio.common.blocks;
 
-import java.util.stream.Stream;
-
-import javax.annotation.Nullable;
-
 import com.direwolf20.laserio.common.blockentities.LaserConnectorBE;
 import com.direwolf20.laserio.common.blocks.baseblocks.BaseLaserBlock;
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
@@ -21,6 +16,10 @@ import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+
+import javax.annotation.Nullable;
+
+import java.util.stream.Stream;
 
 public class LaserConnector extends BaseLaserBlock implements EntityBlock {
     protected static final VoxelShape[] shapes = new VoxelShape[]{
@@ -182,5 +181,4 @@ public class LaserConnector extends BaseLaserBlock implements EntityBlock {
     public boolean propagatesSkylightDown(BlockState p_48740_, BlockGetter p_48741_, BlockPos p_48742_) {
         return true;
     }
-
 }
