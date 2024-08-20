@@ -10,6 +10,7 @@ import com.direwolf20.laserio.common.network.packets.PacketNodeParticlesFluid;
 import com.direwolf20.laserio.common.network.packets.PacketOpenCard;
 import com.direwolf20.laserio.common.network.packets.PacketOpenFilter;
 import com.direwolf20.laserio.common.network.packets.PacketOpenNode;
+import com.direwolf20.laserio.common.network.packets.PacketToggleParticles;
 import com.direwolf20.laserio.common.network.packets.PacketUpdateCard;
 import com.direwolf20.laserio.common.network.packets.PacketUpdateFilter;
 import com.direwolf20.laserio.common.network.packets.PacketUpdateFilterTag;
@@ -49,6 +50,7 @@ public class PacketHandler {
         HANDLER.registerMessage(id++, PacketGhostSlot.class, PacketGhostSlot::encode, PacketGhostSlot::decode, PacketGhostSlot.Handler::handle);
         HANDLER.registerMessage(id++, PacketOpenNode.class, PacketOpenNode::encode, PacketOpenNode::decode, PacketOpenNode.Handler::handle);
         HANDLER.registerMessage(id++, PacketUpdateFilterTag.class, PacketUpdateFilterTag::encode, PacketUpdateFilterTag::decode, PacketUpdateFilterTag.Handler::handle);
+        HANDLER.registerMessage(id++, PacketToggleParticles.class, PacketToggleParticles::encode, PacketToggleParticles::decode, PacketToggleParticles.Handler::handle);
         HANDLER.registerMessage(id++, PacketChangeColor.class, PacketChangeColor::encode, PacketChangeColor::decode, PacketChangeColor.Handler::handle);
         HANDLER.registerMessage(id++, PacketCopyPasteCard.class, PacketCopyPasteCard::encode, PacketCopyPasteCard::decode, PacketCopyPasteCard.Handler::handle);
         //HANDLER.registerMessage(id++, PacketExtractUpgrade.class,     PacketExtractUpgrade::encode,       PacketExtractUpgrade::decode,       PacketExtractUpgrade.Handler::handle);

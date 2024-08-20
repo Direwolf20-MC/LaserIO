@@ -173,6 +173,7 @@ public class LaserNodeBE extends BaseLaserBE {
 
     /** Misc Variables **/
     private boolean discoveredNodes = false; //The first time this block entity loads, it'll run discovery to refresh itself
+    private boolean showParticles = true;
 
     public MekanismCache mekanismCache;
 
@@ -1981,11 +1982,13 @@ public class LaserNodeBE extends BaseLaserBE {
 
     /** Draw the particles between node and inventory **/
     public void drawParticlesFluid(FluidStack fluidStack, Direction fromDirection, LaserNodeBE sourceBE, LaserNodeBE destinationBE, Direction destinationDirection, int extractPosition, int insertPosition) {
+        if (!sourceBE.getShowParticles() || !destinationBE.getShowParticles()) return;
         ServerTickHandler.addToListFluid(new ParticleDataFluid(fluidStack, new DimBlockPos(sourceBE.level, sourceBE.getBlockPos()), (byte) fromDirection.ordinal(), new DimBlockPos(destinationBE.level, destinationBE.getBlockPos()), (byte) destinationDirection.ordinal(), (byte) extractPosition, (byte) insertPosition));
     }
 
     /** Draw the particles between node and inventory **/
     public void drawParticles(ItemStack itemStack, int amount, Direction fromDirection, LaserNodeBE sourceBE, LaserNodeBE destinationBE, Direction destinationDirection, int extractPosition, int insertPosition) {
+        if (!sourceBE.getShowParticles() || !destinationBE.getShowParticles()) return;
         ServerTickHandler.addToList(new ParticleData(Item.getId(itemStack.getItem()), (byte) amount, new DimBlockPos(sourceBE.level, sourceBE.getBlockPos()), (byte) fromDirection.ordinal(), new DimBlockPos(destinationBE.level, destinationBE.getBlockPos()), (byte) destinationDirection.ordinal(), (byte) extractPosition, (byte) insertPosition));
 
         /*ServerLevel serverWorld = (ServerLevel) level;
@@ -2402,6 +2405,15 @@ public class LaserNodeBE extends BaseLaserBE {
         rendersChecked = true;
     }
 
+    public void setShowParticles(boolean show) {
+        this.showParticles = show;
+        markDirtyClient();
+    }
+
+    public boolean getShowParticles() {
+        return showParticles;
+    }
+
     @Nonnull
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
@@ -2467,6 +2479,8 @@ public class LaserNodeBE extends BaseLaserBE {
                 }
             }
         }
+        if (tag.contains("showParticles"))
+            showParticles = tag.getBoolean("showParticles");
         super.load(tag);
         rendersChecked = false;
     }
@@ -2478,6 +2492,7 @@ public class LaserNodeBE extends BaseLaserBE {
             NodeSideCache nodeSideCache = nodeSideCaches[i];
             tag.put("Inventory" + i, nodeSideCache.itemHandler.serializeNBT());
         }
+        tag.putBoolean("showParticles", showParticles);
     }
 
     @Override

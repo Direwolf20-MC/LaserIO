@@ -30,7 +30,6 @@ public class PacketChangeColor {
 
     public static PacketChangeColor decode(FriendlyByteBuf buffer) {
         return new PacketChangeColor(buffer.readBlockPos(), buffer.readInt(), buffer.readInt());
-
     }
 
     public static class Handler {

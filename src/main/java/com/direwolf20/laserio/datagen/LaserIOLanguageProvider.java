@@ -85,6 +85,9 @@ public class LaserIOLanguageProvider extends LanguageProvider {
         add("screen.laserio.low", "Low");
         add("screen.laserio.high", "High");
 
+        add("screen.laserio.showparticles", "Show Particles");
+        add("screen.laserio.hideparticles", "Hide Particles");
+
         add("screen.laserio.denylist", "Deny");
         add("screen.laserio.nbttrue", "Match NBT");
         add("screen.laserio.nbtfalse", "Ignore NBT");
