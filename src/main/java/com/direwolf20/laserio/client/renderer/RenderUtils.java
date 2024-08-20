@@ -291,7 +291,7 @@ public class RenderUtils {
             Matrix4f positionMatrix = matrixStackIn.last().pose();
             matrixStackIn.translate(startBlock.getX() - projectedView.x, startBlock.getY() - projectedView.y, startBlock.getZ() - projectedView.z);
 
-            for (Direction direction : Direction.values()) { //Todo Improve
+            for (Direction direction : Direction.values()) {
                 IItemHandler h = be.getCapability(ForgeCapabilities.ITEM_HANDLER, direction).orElse(new ItemStackHandler(0));
                 for (int slot = 0; slot < h.getSlots(); slot++) {
                     ItemStack card = h.getStackInSlot(slot);
@@ -342,7 +342,7 @@ public class RenderUtils {
             Matrix4f positionMatrix = matrixStackIn.last().pose();
             matrixStackIn.translate(startBlock.getX() - projectedView.x, startBlock.getY() - projectedView.y, startBlock.getZ() - projectedView.z);
 
-            for (Direction direction : Direction.values()) { //Todo Improve
+            for (Direction direction : Direction.values()) {
                 IItemHandler h = be.getCapability(ForgeCapabilities.ITEM_HANDLER, direction).orElse(new ItemStackHandler(0));
                 for (int slot = 0; slot < h.getSlots(); slot++) {
                     ItemStack card = h.getStackInSlot(slot);
@@ -403,7 +403,7 @@ public class RenderUtils {
 
 
         builder = buffer.getBuffer(MyRenderType.LASER_MAIN_BEAM);
-        for (Direction direction : Direction.values()) { //Todo Improve
+        for (Direction direction : Direction.values()) {
             IItemHandler h = be.getCapability(ForgeCapabilities.ITEM_HANDLER, direction).orElse(new ItemStackHandler(0));
             for (int slot = 0; slot < h.getSlots(); slot++) {
                 ItemStack card = h.getStackInSlot(slot);
@@ -440,7 +440,7 @@ public class RenderUtils {
         buffer.endBatch(MyRenderType.LASER_MAIN_BEAM); //This apparently is needed in RenderWorldLast
 
         builder = buffer.getBuffer(MyRenderType.LASER_MAIN_CORE);
-        for (Direction direction : Direction.values()) { //Todo Improve
+        for (Direction direction : Direction.values()) {
             IItemHandler h = be.getCapability(ForgeCapabilities.ITEM_HANDLER, direction).orElse(new ItemStackHandler(0));
             for (int slot = 0; slot < h.getSlots(); slot++) {
                 ItemStack card = h.getStackInSlot(slot);

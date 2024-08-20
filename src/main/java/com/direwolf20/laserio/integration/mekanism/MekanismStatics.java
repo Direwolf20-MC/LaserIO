@@ -42,10 +42,13 @@ public class MekanismStatics {
 
     public static ChemicalStack<?> getFirstChemicalOnItemStack(ItemStack itemStack) {
         if (itemStack.isEmpty())
-            return GasStack.EMPTY; //TODO Should I change this to something more generic?
+            return GasStack.EMPTY;
 
+        ItemStack testStack = itemStack.copy();
+        if (testStack.getCount() > 1)
+            testStack.setCount(1);
         for (ChemicalType chemicalType : ChemicalType.values()) {
-            LazyOptional<? extends IChemicalHandler<?, ?>> chemicalHandlerOptional = itemStack.getCapability(getCapabilityForChemical(chemicalType));
+            LazyOptional<? extends IChemicalHandler<?, ?>> chemicalHandlerOptional = testStack.getCapability(getCapabilityForChemical(chemicalType));
             if (!chemicalHandlerOptional.isPresent())
                 continue;
             IChemicalHandler<?, ?> chemicalHandler = chemicalHandlerOptional.resolve().get();
@@ -64,8 +67,11 @@ public class MekanismStatics {
         if (itemStack.isEmpty())
             return chemicalStackList;
 
+        ItemStack testStack = itemStack.copy();
+        if (testStack.getCount() > 1)
+            testStack.setCount(1);
         for (ChemicalType chemicalType : ChemicalType.values()) {
-            LazyOptional<? extends IChemicalHandler<?, ?>> chemicalHandlerOptional = itemStack.getCapability(getCapabilityForChemical(chemicalType));
+            LazyOptional<? extends IChemicalHandler<?, ?>> chemicalHandlerOptional = testStack.getCapability(getCapabilityForChemical(chemicalType));
             if (!chemicalHandlerOptional.isPresent())
                 continue;
             IChemicalHandler<?, ?> chemicalHandler = chemicalHandlerOptional.resolve().get();

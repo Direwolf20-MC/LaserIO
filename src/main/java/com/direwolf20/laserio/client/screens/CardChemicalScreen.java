@@ -115,7 +115,7 @@ public class CardChemicalScreen extends CardItemScreen {
         if (!doesItemStackHoldChemicals(slotStack))
             return super.filterSlot(btn);
         if (slotStack.isEmpty()) return true;
-        if (btn == 2) { //Todo IMC Inventory Sorter so this works
+        if (btn == 2) {
             slotStack.setCount(0);
             PacketHandler.sendToServer(new PacketGhostSlot(hoveredSlot.index, slotStack, slotStack.getCount(), 0));
             return true;

@@ -57,7 +57,6 @@ public class FilterTagContainer extends AbstractContainerMenu {
     @Override
     public boolean stillValid(Player playerIn) {
         return true;
-        //return playerIn.getMainHandItem().equals(cardItem); //TODO Validate this and check offhand?
     }
 
     @Override
@@ -120,7 +119,7 @@ public class FilterTagContainer extends AbstractContainerMenu {
     }
 
     @Override
-    public void removed(Player playerIn) { //Todo see if we can send the player back to their last container screen?
+    public void removed(Player playerIn) {
         Level world = playerIn.level();
         if (!world.isClientSide) {
             handler.setStackInSlot(0, ItemStack.EMPTY); //Clear the current slot
