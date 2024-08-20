@@ -3,30 +3,21 @@ package com.direwolf20.laserio.integration.mekanism;
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE.SideConnection;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
-import com.direwolf20.laserio.common.items.filters.FilterCount;
 import com.direwolf20.laserio.util.DimBlockPos;
 import com.direwolf20.laserio.util.ExtractorCardCache;
 import com.direwolf20.laserio.util.InserterCardCache;
-import com.direwolf20.laserio.util.ItemStackKey;
+import com.direwolf20.laserio.util.WeakConsumerWrapper;
 
 import mekanism.api.Action;
 import mekanism.api.chemical.ChemicalStack;
 import mekanism.api.chemical.ChemicalType;
 import mekanism.api.chemical.IChemicalHandler;
-import mekanism.api.chemical.gas.GasStack;
-import mekanism.api.chemical.gas.IGasHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.common.util.NonNullConsumer;
 
 import java.util.HashMap;
 import java.util.List;
@@ -38,8 +29,9 @@ public class MekanismCache {
 
     }
 	
-    private final Map<SideConnection, Map<ChemicalType, LazyOptional<? extends IChemicalHandler<?, ?>>>> facingHandlerChemical = new HashMap<>();
-    private final HashMap<ExtractorCardCache, HashMap<ChemicalStackKey, List<InserterCardCache>>> inserterCacheChemical = new HashMap<>();
+    public final Map<SideConnection, Map<ChemicalType, LazyOptional<? extends IChemicalHandler<?, ?>>>> facingHandlerChemical = new HashMap<>();
+    private final Map<SideConnection, NonNullConsumer<LazyOptional<IChemicalHandler<?, ?>>>> connectionInvalidatorChemical = new HashMap<>();
+    public final HashMap<ExtractorCardCache, HashMap<ChemicalStackKey, List<InserterCardCache>>> inserterCacheChemical = new HashMap<>();
     
 	private final LaserNodeBE laserNodeBE;
 
@@ -156,7 +148,6 @@ public class MekanismCache {
     
     /** Finds all inserters that can be extracted to **/
     public List<InserterCardCache> getPossibleInserters(ExtractorCardCache extractorCardCache, ChemicalStack<?> stack) {
-    	inserterCacheChemical.clear();
     	ChemicalStackKey key = new ChemicalStackKey(stack);
         if (inserterCacheChemical.containsKey(extractorCardCache)) { //If this extractor card is already in the cache
             if (inserterCacheChemical.get(extractorCardCache).containsKey(key)) //If this extractor card AND itemKey are already in the cache
@@ -203,11 +194,11 @@ public class MekanismCache {
     }
     
     private void addChemicalHandlerToMap(SideConnection sideConnection, BlockEntity be, Direction inventorySide, ChemicalType chemicalType) {
-    	LazyOptional<? extends IChemicalHandler<?, ?>> chemicalHandlerOptional = be.getCapability(MekanismStatics.getCapabilityForChemical(chemicalType), inventorySide);
+    	LazyOptional<IChemicalHandler<?, ?>> chemicalHandlerOptional = (LazyOptional<IChemicalHandler<?, ?>>) be.getCapability(MekanismStatics.getCapabilityForChemical(chemicalType), inventorySide);
     	
         if (chemicalHandlerOptional.isPresent()) {
             // add the invalidator
-        	//chemicalHandlerOptional.addListener(getInvalidatorChemical(sideConnection));
+        	chemicalHandlerOptional.addListener(getInvalidatorChemical(sideConnection, chemicalType));
             // cache and return
         	facingHandlerChemical.get(sideConnection).put(chemicalType, chemicalHandlerOptional);
         }
@@ -215,7 +206,6 @@ public class MekanismCache {
     
     /** Somehow this makes it so if you break an adjacent chest it immediately invalidates the cache of it **/
     public Map<ChemicalType, LazyOptional<? extends IChemicalHandler<?, ?>>> getAttachedChemicalTanks(Direction direction, Byte sneakySide) {
-    	facingHandlerChemical.clear(); //TODO Fix this
     	Direction inventorySide = direction.getOpposite();
         if (sneakySide != -1)
             inventorySide = Direction.values()[sneakySide];
@@ -233,13 +223,20 @@ public class MekanismCache {
             if (testHandlerMap == null)
             	facingHandlerChemical.put(sideConnection, new HashMap<>());
             
-            addChemicalHandlerToMap(sideConnection, be, inventorySide, ChemicalType.GAS);
-            addChemicalHandlerToMap(sideConnection, be, inventorySide, ChemicalType.INFUSION);
-            addChemicalHandlerToMap(sideConnection, be, inventorySide, ChemicalType.PIGMENT);
-            addChemicalHandlerToMap(sideConnection, be, inventorySide, ChemicalType.SLURRY);
+            for (ChemicalType chemicalType : ChemicalType.values())
+	            addChemicalHandlerToMap(sideConnection, be, inventorySide, chemicalType);
         }
         
         return facingHandlerChemical.get(sideConnection);
     }
-     
+    
+    private NonNullConsumer<LazyOptional<IChemicalHandler<?, ?>>> getInvalidatorChemical(SideConnection sideConnection, ChemicalType chemicalType) {
+        return connectionInvalidatorChemical.computeIfAbsent(sideConnection, c -> new WeakConsumerWrapper<>(this, (te, handler) -> {
+        	if (te.facingHandlerChemical.get(sideConnection) != null) {
+	            if (te.facingHandlerChemical.get(sideConnection).get(chemicalType) == handler) {     
+	                laserNodeBE.clearCachedInventories(sideConnection);
+	            }
+        	}
+        }));
+    }
 }
