@@ -1,0 +1,6 @@
+{
+  "parent": "laserio:item/card_chemical",
+  "textures": {
+    "layer1": "laserio:item/cardlayers/sensor"
+  }
+}

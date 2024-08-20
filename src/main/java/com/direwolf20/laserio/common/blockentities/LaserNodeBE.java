@@ -12,6 +12,8 @@ import com.direwolf20.laserio.common.items.filters.FilterCount;
 import com.direwolf20.laserio.common.items.filters.FilterMod;
 import com.direwolf20.laserio.common.items.filters.FilterTag;
 import com.direwolf20.laserio.common.items.upgrades.OverclockerNode;
+import com.direwolf20.laserio.integration.mekanism.MekanismCache;
+import com.direwolf20.laserio.integration.mekanism.MekanismIntegration;
 import com.direwolf20.laserio.setup.Registration;
 import com.direwolf20.laserio.util.*;
 import it.unimi.dsi.fastutil.bytes.Byte2BooleanMap;
@@ -71,7 +73,7 @@ public class LaserNodeBE extends BaseLaserBE {
     private final IItemHandler EMPTY = new ItemStackHandler(0);
 
     /** Adjacent Inventory Handlers **/
-    private record SideConnection(Direction nodeSide, Direction sneakySide) {
+    public record SideConnection(Direction nodeSide, Direction sneakySide) {
     }
 
     /** BE and ItemHandler used for checking if a note/container is valid **/
@@ -98,6 +100,7 @@ public class LaserNodeBE extends BaseLaserBE {
 
     /** Variables for tracking and sending items/filters/etc **/
     private final Set<DimBlockPos> otherNodesInNetwork = new HashSet<>();
+    
     private final List<InserterCardCache> inserterNodes = new CopyOnWriteArrayList<>(); //All Inventory nodes that contain an inserter card
     private final HashMap<ExtractorCardCache, HashMap<ItemStackKey, List<InserterCardCache>>> inserterCache = new HashMap<>();
     private final HashMap<ExtractorCardCache, HashMap<FluidStackKey, List<InserterCardCache>>> inserterCacheFluid = new HashMap<>();
@@ -131,8 +134,13 @@ public class LaserNodeBE extends BaseLaserBE {
     /** Misc Variables **/
     private boolean discoveredNodes = false; //The first time this block entity loads, it'll run discovery to refresh itself
 
+    public MekanismCache mekanismCache;
+    
     public LaserNodeBE(BlockPos pos, BlockState state) {
         super(Registration.LaserNode_BE.get(), pos, state);
+        if (MekanismIntegration.isLoaded()) {
+            mekanismCache = new MekanismCache(this);
+        }
         for (Direction direction : Direction.values()) {
             final int j = direction.ordinal();
             com.direwolf20.laserio.common.containers.customhandler.LaserNodeItemHandler tempHandler = new com.direwolf20.laserio.common.containers.customhandler.LaserNodeItemHandler(LaserNodeContainer.SLOTS, this);
@@ -140,6 +148,10 @@ public class LaserNodeBE extends BaseLaserBE {
         }
     }
 
+    public List<InserterCardCache> getInserterNodes() {
+        return inserterNodes;
+    }
+    
     /** This is called by nodes when a connection is added/removed - the other node does the discovery and then tells this one about it **/
     public void setOtherNodesInNetwork(Set<DimBlockPos> otherNodesInNetwork) {
         this.otherNodesInNetwork.clear();
@@ -214,6 +226,9 @@ public class LaserNodeBE extends BaseLaserBE {
                                 countCardsHandled++;
                         } else if (extractorCardCache.cardType.equals(BaseCard.CardType.ENERGY)) {
                             if (sendEnergy(extractorCardCache))
+                                countCardsHandled++;
+                        } else if (extractorCardCache.cardType.equals(BaseCard.CardType.CHEMICAL)) {
+                            if (mekanismCache.sendChemicals(extractorCardCache))
                                 countCardsHandled++;
                         }
                     }

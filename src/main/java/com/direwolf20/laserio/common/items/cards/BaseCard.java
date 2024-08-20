@@ -32,6 +32,7 @@ public class BaseCard extends Item {
         FLUID,
         ENERGY,
         REDSTONE,
+        CHEMICAL,
         MISSING
     }
 

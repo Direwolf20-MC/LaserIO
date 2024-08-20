@@ -5,7 +5,10 @@ import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.common.items.cards.CardEnergy;
 import com.direwolf20.laserio.common.items.cards.CardFluid;
 import com.direwolf20.laserio.common.items.cards.CardItem;
+import com.direwolf20.laserio.common.items.cards.CardRedstone;
 import com.direwolf20.laserio.common.items.filters.*;
+import com.direwolf20.laserio.integration.mekanism.CardChemical;
+
 import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.core.Direction;
@@ -56,17 +59,20 @@ public class BaseCardCache {
         this.redstoneChannel = BaseCard.getRedstoneChannel(cardItem);
         this.filterCard = BaseCard.getFilter(cardItem);
         this.cardSlot = cardSlot;
-        if (cardItem.getItem() instanceof CardItem)
+        if (cardItem.getItem() instanceof CardItem) {
             cardType = BaseCard.CardType.ITEM;
-        else if (cardItem.getItem() instanceof CardFluid)
+        } else if (cardItem.getItem() instanceof CardFluid) {
             cardType = BaseCard.CardType.FLUID;
-        else if (cardItem.getItem() instanceof CardEnergy) {
+        } else if (cardItem.getItem() instanceof CardEnergy) {
             cardType = BaseCard.CardType.ENERGY;
             this.insertLimit = CardEnergy.getInsertLimitPercent(cardItem);
             this.extractLimit = CardEnergy.getExtractLimitPercent(cardItem);
-        } else if (cardItem.getItem() instanceof CardEnergy)
+        } else if (cardItem.getItem() instanceof CardRedstone) {
             cardType = BaseCard.CardType.REDSTONE;
-        else cardType = BaseCard.CardType.MISSING;
+        } else if (cardItem.getItem() instanceof CardChemical) {
+        	cardType = BaseCard.CardType.CHEMICAL;
+        } else
+        	cardType = BaseCard.CardType.MISSING;
         this.be = be;
         if (filterCard.equals(ItemStack.EMPTY)) {
             filteredItems = new ArrayList<>();

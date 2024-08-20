@@ -5,6 +5,8 @@ import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.common.items.cards.CardEnergy;
 import com.direwolf20.laserio.common.items.cards.CardFluid;
 import com.direwolf20.laserio.common.items.cards.CardItem;
+import com.direwolf20.laserio.integration.mekanism.CardChemical;
+
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
 
@@ -23,6 +25,8 @@ public class ExtractorCardCache extends BaseCardCache {
             this.extractAmt = CardFluid.getFluidExtractAmt(cardItem);
         else if (cardType.equals(BaseCard.CardType.ENERGY))
             this.extractAmt = CardEnergy.getEnergyExtractAmt(cardItem);
+        else if (cardType.equals(BaseCard.CardType.CHEMICAL))
+        	this.extractAmt = CardChemical.getChemicalExtractAmt(cardItem);
         else
             this.extractAmt = 0;
         if (cardItem.getItem() instanceof CardEnergy)

@@ -12,6 +12,9 @@ import com.direwolf20.laserio.common.blockentities.LaserConnectorBE;
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.common.items.cards.CardRedstone;
+import com.direwolf20.laserio.integration.mekanism.CardChemical;
+import com.direwolf20.laserio.integration.mekanism.MekanismIntegration;
+
 import net.minecraft.client.color.item.ItemColors;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
@@ -50,6 +53,7 @@ public class ClientSetup {
             MenuScreens.register(Registration.CardFluid_Container.get(), CardFluidScreen::new);           // Attach our container to the screen
             MenuScreens.register(Registration.CardEnergy_Container.get(), CardEnergyScreen::new);           // Attach our container to the screen
             MenuScreens.register(Registration.CardRedstone_Container.get(), CardRedstoneScreen::new);           // Attach our container to the screen
+            MenuScreens.register(Registration.CardChemical_Container.get(), CardChemicalScreen::new);           // Attach our container to the screen
             MenuScreens.register(Registration.CardHolder_Container.get(), CardHolderScreen::new);           // Attach our container to the screen
             MenuScreens.register(Registration.FilterBasic_Container.get(), FilterBasicScreen::new);           // Attach our container to the screen
             MenuScreens.register(Registration.FilterCount_Container.get(), FilterCountScreen::new);           // Attach our container to the screen
@@ -82,6 +86,14 @@ public class ClientSetup {
                         return (int) CardRedstone.getTransferMode(stack);
                     });
         });
+        if (MekanismIntegration.isLoaded()) {
+            event.enqueueWork(() -> {
+                ItemProperties.register(Registration.Card_Chemical.get(),
+                        new ResourceLocation(LaserIO.MODID, "mode"), (stack, level, living, id) -> {
+                            return (int) CardChemical.getTransferMode(stack);
+                        });
+            });
+        }
     }
 
     @SubscribeEvent
@@ -127,6 +139,20 @@ public class ClientSetup {
             }
             return 0xFFFFFFFF;
         }, Registration.Card_Fluid.get());
+        if (MekanismIntegration.isLoaded()) {
+            colors.register((stack, index) -> {
+                if (index == 2) {
+                    if (BaseCard.getTransferMode(stack) == (byte) 3) {
+                        Color color = LaserNodeBERender.colors[BaseCard.getRedstoneChannel(stack)];
+                        return color.getRGB();
+                    } else {
+                        Color color = LaserNodeBERender.colors[BaseCard.getChannel(stack)];
+                        return color.getRGB();
+                    }
+                }
+                return 0xFFFFFFFF;
+            }, Registration.Card_Chemical.get());
+        }
         colors.register((stack, index) -> {
             if (index == 2) {
                 if (BaseCard.getTransferMode(stack) == (byte) 3) {

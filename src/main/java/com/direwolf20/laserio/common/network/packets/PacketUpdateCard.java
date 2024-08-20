@@ -6,6 +6,8 @@ import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.common.items.cards.CardEnergy;
 import com.direwolf20.laserio.common.items.cards.CardFluid;
 import com.direwolf20.laserio.common.items.cards.CardItem;
+import com.direwolf20.laserio.integration.mekanism.CardChemical;
+
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -136,7 +138,18 @@ public class PacketUpdateCard {
                         CardEnergy.setExtractSpeed(stack, ticks);
                         CardEnergy.setExtractLimitPercent(stack, msg.extractLimit);
                         CardEnergy.setInsertLimitPercent(stack, msg.insertLimit);
+                    } else if (stack.getItem() instanceof CardChemical) {
+                            overClockerCount = container.getSlot(1).getItem().getCount();
+                            if (extractAmt > Math.max(overClockerCount * 60000, 15000)) {
+                                extractAmt = Math.max(overClockerCount * 60000, 15000);
+                            }
+                            CardChemical.setChemicalExtractAmt(stack, extractAmt);
+                            short ticks = msg.ticks;
+                            if (ticks < Math.max(20 - overClockerCount * 5, 1))
+                                ticks = (short) Math.max(20 - overClockerCount * 5, 1);
+                            BaseCard.setExtractSpeed(stack, ticks);
                     }
+                    
                     BaseCard.setPriority(stack, msg.priority);
                     BaseCard.setSneaky(stack, msg.sneaky);
                     BaseCard.setExact(stack, msg.exact);

@@ -17,6 +17,8 @@ import com.direwolf20.laserio.common.items.filters.*;
 import com.direwolf20.laserio.common.items.upgrades.OverclockerCard;
 import com.direwolf20.laserio.common.items.upgrades.OverclockerNode;
 import com.direwolf20.laserio.datagen.customrecipes.CardClearRecipe;
+import com.direwolf20.laserio.integration.mekanism.CardChemical;
+import com.direwolf20.laserio.integration.mekanism.MekanismIntegration;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
@@ -32,6 +34,7 @@ import net.minecraftforge.registries.RegistryObject;
 
 import static com.direwolf20.laserio.client.particles.ModParticles.PARTICLE_TYPES;
 import static com.direwolf20.laserio.common.LaserIO.MODID;
+import static com.direwolf20.laserio.integration.mekanism.client.chemicalparticle.MekanismModParticles.PARTICLE_TYPES_MEKANISM;
 
 public class Registration {
 
@@ -42,10 +45,16 @@ public class Registration {
     public static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZERS = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, LaserIO.MODID);
     public static final RegistryObject<CardClearRecipe.Serializer> CARD_CLEAR_RECIPE_SERIALIZER = RECIPE_SERIALIZERS.register("cardclear", CardClearRecipe.Serializer::new);
 
+    public static final DeferredRegister<Item> ITEMS_MEKANISM = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
+    
     public static void init() {
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
         BLOCKS.register(bus);
         ITEMS.register(bus);
+        if (MekanismIntegration.isLoaded()) {
+            ITEMS_MEKANISM.register(bus);
+            PARTICLE_TYPES_MEKANISM.register(bus);
+        }
         BLOCK_ENTITIES.register(bus);
         CONTAINERS.register(bus);
         PARTICLE_TYPES.register(bus);
@@ -80,6 +89,9 @@ public class Registration {
     public static final RegistryObject<Item> Card_Energy = ITEMS.register("card_energy", CardEnergy::new);
     public static final RegistryObject<Item> Card_Redstone = ITEMS.register("card_redstone", CardRedstone::new);
 
+	//Mekanism
+    public static final RegistryObject<Item> Card_Chemical = ITEMS_MEKANISM.register("card_chemical", CardChemical::new);
+    
     //Filters
     public static final RegistryObject<Item> Filter_Basic = ITEMS.register("filter_basic", FilterBasic::new);
     public static final RegistryObject<Item> Filter_Count = ITEMS.register("filter_count", FilterCount::new);
@@ -104,6 +116,8 @@ public class Registration {
             () -> IForgeMenuType.create((windowId, inv, data) -> new CardEnergyContainer(windowId, inv, inv.player, data)));
     public static final RegistryObject<MenuType<CardRedstoneContainer>> CardRedstone_Container = CONTAINERS.register("cardredstone",
             () -> IForgeMenuType.create((windowId, inv, data) -> new CardRedstoneContainer(windowId, inv, inv.player, data)));
+    public static final RegistryObject<MenuType<CardChemicalContainer>> CardChemical_Container = CONTAINERS.register("cardchemical",
+            () -> IForgeMenuType.create((windowId, inv, data) -> new CardChemicalContainer(windowId, inv, inv.player, data)));
     public static final RegistryObject<MenuType<CardHolderContainer>> CardHolder_Container = CONTAINERS.register("cardholder",
             () -> IForgeMenuType.create((windowId, inv, data) -> new CardHolderContainer(windowId, inv, inv.player, data)));
     public static final RegistryObject<MenuType<FilterBasicContainer>> FilterBasic_Container = CONTAINERS.register("filterbasic",
