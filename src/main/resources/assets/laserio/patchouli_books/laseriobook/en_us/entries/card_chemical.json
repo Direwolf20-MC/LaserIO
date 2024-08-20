@@ -1,0 +1,18 @@
+{
+  "flag": "mod:mekanism",
+  "name": "Chemical Cards",
+  "sortnum": 5,
+  "category": "laserio:cards",
+  "icon": "laserio:card_chemical",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "WIP"
+    },
+    {
+      "type": "patchouli:crafting",
+      "title": "Chemical Card",
+      "recipe": "laserio:card_chemical"
+    }
+  ]
+}

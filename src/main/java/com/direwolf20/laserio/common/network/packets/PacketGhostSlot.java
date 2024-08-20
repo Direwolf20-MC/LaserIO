@@ -66,7 +66,7 @@ public class PacketGhostSlot {
                     } else {
                         stack.setCount(msg.count);
                     }
-                    handler.setStackInSlotSave(msg.slotNumber - CardItemContainer.SLOTS, stack);
+                    handler.setStackInSlotSave(msg.slotNumber - CardItemContainer.SLOTS, stack, msg.count);
 
                     if (mbAmt != -1 && (container instanceof CardFluidContainer || container instanceof CardChemicalContainer)) { //MB amt is only done in CardFluidContainers
                         handler.setMBAmountInSlot(msg.slotNumber - CardItemContainer.SLOTS, mbAmt);

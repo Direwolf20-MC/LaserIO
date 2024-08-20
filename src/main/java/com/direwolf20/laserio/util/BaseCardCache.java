@@ -79,7 +79,7 @@ public class BaseCardCache {
         } else
         	cardType = BaseCard.CardType.MISSING;
         this.be = be;
-        if (filterCard.equals(ItemStack.EMPTY)) {
+        if (filterCard.isEmpty()) {
             filteredItems = new ArrayList<>();
             filteredFluids = new ArrayList<>();
             filterTags = new ArrayList<>();
@@ -113,7 +113,7 @@ public class BaseCardCache {
     }
 
     public int getFilterAmt(ItemStack testStack) {
-        if (filterCard.equals(ItemStack.EMPTY))
+        if (filterCard.isEmpty())
             return 0; //If theres no filter in the card (This should never happen in theory)
         if (!(filterCard.getItem() instanceof FilterCount)) { //If this is a basic or tag Card return -1 which will mean infinite amount
             return -1;
@@ -132,7 +132,7 @@ public class BaseCardCache {
     }
 
     public int getFilterAmt(FluidStack testStack) {
-        if (filterCard.equals(ItemStack.EMPTY))
+        if (filterCard.isEmpty())
             return 0; //If theres no filter in the card (This should never happen in theory)
         if (!(filterCard.getItem() instanceof FilterCount)) { //If this is a basic or tag Card return -1 which will mean infinite amount
             return -1;
@@ -217,7 +217,7 @@ public class BaseCardCache {
     }
 
     public boolean isStackValidForCard(ItemStack testStack) {
-        if (filterCard.equals(ItemStack.EMPTY)) return true; //If theres no filter in the card
+        if (filterCard.isEmpty()) return true; //If theres no filter in the card
         ItemStackKey key = new ItemStackKey(testStack, isCompareNBT);
         if (filterCache.containsKey(key)) return filterCache.get(key);
         if (filterCard.getItem() instanceof FilterMod) {
@@ -255,7 +255,7 @@ public class BaseCardCache {
     }
 
     public boolean isStackValidForCard(FluidStack testStack) {
-        if (filterCard.equals(ItemStack.EMPTY)) return true; //If theres no filter in the card
+        if (filterCard.isEmpty()) return true; //If theres no filter in the card
         FluidStackKey key = new FluidStackKey(testStack, isCompareNBT);
         if (filterCacheFluid.containsKey(key)) return filterCacheFluid.get(key);
         if (filterCard.getItem() instanceof FilterMod) {

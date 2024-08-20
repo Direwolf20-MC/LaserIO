@@ -37,21 +37,8 @@ public class GhostFilterCount implements IGhostIngredientHandler<FilterCountScre
                         slot.set((ItemStack) ingredient);
                         gui.getMenu().handler.setStackInSlotSave(slot.index, (ItemStack) ingredient); //We do this for continuity between client/server -- not needed in cardItemScreen
                         PacketHandler.sendToServer(new PacketGhostSlot(slot.index, (ItemStack) ingredient, ((ItemStack) ingredient).getCount()));
-                        //RS.NETWORK_HANDLER.sendToServer(new SetFilterSlotMessage(slot.index, (ItemStack) ingredient));
                     }
                 });
-           /*} else if (ingredient instanceof FluidStack && slot instanceof FluidFilterSlot) {
-                targets.add(new Target<I>() {
-                    @Override
-                    public Rect2i getArea() {
-                        return bounds;
-                    }
-
-                    @Override
-                    public void accept(I ingredient) {
-                        RS.NETWORK_HANDLER.sendToServer(new SetFluidFilterSlotMessage(slot.index, StackUtils.copy((FluidStack) ingredient, FluidAttributes.BUCKET_VOLUME)));
-                    }
-                });*/
             }
         }
         return targets;

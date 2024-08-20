@@ -524,7 +524,7 @@ public class MekanismCache {
                 				&& (p.cardType.equals(extractorCardCache.cardType))
                 				&& (p.enabled)
                                 && (p.mekanismCardCache.isStackValidForCard(stack))
-                                && (!(p.relativePos.equals(BlockPos.ZERO) && p.direction.equals(extractorCardCache.direction))))
+                                && (!(p.relativePos.blockPos.equals(BlockPos.ZERO) && p.direction.equals(extractorCardCache.direction))))
                         .toList();
                 inserterCacheChemical.get(extractorCardCache).put(key, nodes);
                 return nodes;
@@ -534,7 +534,7 @@ public class MekanismCache {
 		            		&& (p.cardType.equals(extractorCardCache.cardType))
 		            		&& (p.enabled)
                             && (p.mekanismCardCache.isStackValidForCard(stack))
-                            && (!(p.relativePos.equals(BlockPos.ZERO) && p.direction.equals(extractorCardCache.direction))))
+                            && (!(p.relativePos.blockPos.equals(BlockPos.ZERO) && p.direction.equals(extractorCardCache.direction))))
                     .toList();
             HashMap<ChemicalStackKey, List<InserterCardCache>> tempMap = new HashMap<>();
             tempMap.put(key, nodes);
@@ -546,6 +546,7 @@ public class MekanismCache {
     public LaserNodeChemicalHandler getLaserNodeHandlerChemical(InserterCardCache inserterCardCache, ChemicalType chemicalType) {
         if (!inserterCardCache.cardType.equals(BaseCard.CardType.CHEMICAL)) return null;
         Level level = laserNodeBE.getLevel();
+        if (level == null) return null;
         DimBlockPos nodeWorldPos = new DimBlockPos(inserterCardCache.relativePos.getLevel(level.getServer()), laserNodeBE.getWorldPos(inserterCardCache.relativePos.blockPos));
         if (!laserNodeBE.chunksLoaded(nodeWorldPos, nodeWorldPos.blockPos.relative(inserterCardCache.direction))) return null;
         LaserNodeBE be = laserNodeBE.getNodeAt(new DimBlockPos(inserterCardCache.relativePos.getLevel(level.getServer()), laserNodeBE.getWorldPos(inserterCardCache.relativePos.blockPos)));

@@ -61,7 +61,7 @@ public class LaserWrench extends Item {
 
         if (player.isShiftKeyDown()) {
             //If the wrench's position equals this one, erase it
-            if (targetPos.equals(getConnectionPos(wrench, level))) {
+            if (targetPos.equals(getConnectionPos(wrench, level).blockPos)) {
                 storeConnectionPos(wrench, level, BlockPos.ZERO);
                 return InteractionResultHolder.pass(wrench);
             }

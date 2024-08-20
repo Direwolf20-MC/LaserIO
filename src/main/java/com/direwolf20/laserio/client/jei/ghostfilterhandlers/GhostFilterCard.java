@@ -38,7 +38,6 @@ public class GhostFilterCard implements IGhostIngredientHandler<CardItemScreen> 
                         ItemStack itemStack = (ItemStack) ingredient;
                         slot.set(itemStack.copy());
                         PacketHandler.sendToServer(new PacketGhostSlot(slot.index, itemStack, itemStack.getCount()));
-                        //RS.NETWORK_HANDLER.sendToServer(new SetFilterSlotMessage(slot.index, (ItemStack) ingredient));
                     }
                 });
             } else if (ingredient instanceof FluidStack && (slot instanceof FilterBasicSlot)) {
@@ -53,7 +52,6 @@ public class GhostFilterCard implements IGhostIngredientHandler<CardItemScreen> 
                         ItemStack itemStack = new ItemStack(((FluidStack) ingredient).getFluid().getBucket(), 1);
                         slot.set(itemStack.copy());
                         PacketHandler.sendToServer(new PacketGhostSlot(slot.index, itemStack, itemStack.getCount()));
-                        //RS.NETWORK_HANDLER.sendToServer(new SetFluidFilterSlotMessage(slot.index, StackUtils.copy((FluidStack) ingredient, FluidAttributes.BUCKET_VOLUME)));
                     }
                 });
             }

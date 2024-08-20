@@ -62,11 +62,13 @@ public class ServerTickHandler {
     }
 
     public static void addToListFluid(ParticleDataFluid particleData) {
-        particleListFluid.add(particleData);
+    	if (!particleData.fluidStack.isEmpty()) 
+    		particleListFluid.add(particleData);
     }
     
     public static void addToListChemical(ParticleDataChemical particleData) {
-        particleListChemical.add(particleData);
+    	if (!particleData.chemicalStack.isEmpty())
+    		particleListChemical.add(particleData);
     }
     
 }
