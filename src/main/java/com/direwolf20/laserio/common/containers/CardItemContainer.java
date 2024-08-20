@@ -33,6 +33,7 @@ import net.minecraftforge.items.SlotItemHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
 
 import javax.annotation.Nullable;
+
 import java.util.UUID;
 
 import static com.direwolf20.laserio.common.blocks.LaserNode.findCardHolders;

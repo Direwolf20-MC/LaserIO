@@ -1,6 +1,5 @@
 package com.direwolf20.laserio.client.particles.itemparticle;
 
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.BreakingItemParticle;
@@ -13,9 +12,8 @@ import net.minecraft.world.phys.Vec3;
 import java.util.Random;
 
 public class ItemFlowParticle extends BreakingItemParticle {
-
     private double targetX, targetY, targetZ;
-    Random random = new Random();
+    private Random random = new Random();
 
     public ItemFlowParticle(ClientLevel world, double x, double y, double z, double targetX, double targetY, double targetZ, ItemStack itemStack, int ticksPerBlock) {
         this(world, x, y, z, itemStack);
@@ -70,4 +68,3 @@ public class ItemFlowParticle extends BreakingItemParticle {
             (data, world, x, y, z, xSpeed, ySpeed, zSpeed) ->
                     new ItemFlowParticle(world, x, y, z, data.targetX, data.targetY, data.targetZ, data.getItemStack(), data.ticksPerBlock);
 }
-

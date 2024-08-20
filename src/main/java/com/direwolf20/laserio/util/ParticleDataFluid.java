@@ -15,5 +15,4 @@ public class ParticleDataFluid {
         this.fromData = new PositionData(fromNode, fromDirection, extractPosition);
         this.toData = new PositionData(toNode, toDirection, insertPosition);
     }
-
 }

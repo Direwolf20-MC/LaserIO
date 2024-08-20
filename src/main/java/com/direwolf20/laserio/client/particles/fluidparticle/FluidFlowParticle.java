@@ -13,9 +13,8 @@ import net.minecraftforge.fluids.FluidStack;
 import java.util.Random;
 
 public class FluidFlowParticle extends BreakingItemParticle {
-
     private double targetX, targetY, targetZ;
-    Random random = new Random();
+    private Random random = new Random();
 
     public FluidFlowParticle(ClientLevel world, double x, double y, double z, double targetX, double targetY, double targetZ, FluidStack fluidStack, int ticksPerBlock) {
         super(world, x, y, z, ItemStack.EMPTY);
@@ -50,7 +49,6 @@ public class FluidFlowParticle extends BreakingItemParticle {
         this.gCol *= (float) (i >> 8 & 255) / 255.0F;
         this.bCol *= (float) (i & 255) / 255.0F;
     }
-
 
     @Override
     public void tick() {

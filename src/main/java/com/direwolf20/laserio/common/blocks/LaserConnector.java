@@ -18,6 +18,7 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import javax.annotation.Nullable;
+
 import java.util.stream.Stream;
 
 public class LaserConnector extends BaseLaserBlock implements EntityBlock {
@@ -156,7 +157,6 @@ public class LaserConnector extends BaseLaserBlock implements EntityBlock {
         return shapes[state.getValue(FACING).get3DDataValue()];
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public VoxelShape getOcclusionShape(BlockState state, BlockGetter reader, BlockPos pos) {
         return shapes[state.getValue(FACING).get3DDataValue()];
@@ -181,5 +181,4 @@ public class LaserConnector extends BaseLaserBlock implements EntityBlock {
     public boolean propagatesSkylightDown(BlockState p_48740_, BlockGetter p_48741_, BlockPos p_48742_) {
         return true;
     }
-
 }

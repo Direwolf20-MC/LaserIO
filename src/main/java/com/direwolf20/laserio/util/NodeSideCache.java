@@ -34,6 +34,4 @@ public class NodeSideCache {
         laserEnergyStorage.invalidate();
         laserEnergyStorage = LazyOptional.of(() -> energyStorage);
     }
-
-
 }

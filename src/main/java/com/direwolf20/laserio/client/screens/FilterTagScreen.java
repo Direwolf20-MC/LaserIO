@@ -1,7 +1,5 @@
 package com.direwolf20.laserio.client.screens;
 
-import com.direwolf20.laserio.client.renderer.LaserIOItemRenderer;
-import com.direwolf20.laserio.client.renderer.LaserIOItemRendererFluid;
 import com.direwolf20.laserio.client.screens.widgets.IconButton;
 import com.direwolf20.laserio.client.screens.widgets.ToggleButton;
 import com.direwolf20.laserio.common.LaserIO;
@@ -11,20 +9,19 @@ import com.direwolf20.laserio.common.items.filters.FilterTag;
 import com.direwolf20.laserio.common.network.PacketHandler;
 import com.direwolf20.laserio.common.network.packets.PacketGhostSlot;
 import com.direwolf20.laserio.common.network.packets.PacketUpdateFilterTag;
+import com.direwolf20.laserio.integration.mekanism.MekanismIntegration;
+import com.direwolf20.laserio.integration.mekanism.MekanismStatics;
 import com.direwolf20.laserio.util.MagicHelpers;
 import com.direwolf20.laserio.util.MiscTools;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.tags.ItemTags;
@@ -38,9 +35,12 @@ import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 import net.minecraftforge.registries.ForgeRegistries;
 
-import java.awt.*;
+import java.awt.Color;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
-import java.util.*;
+import java.util.Locale;
+import java.util.Optional;
 
 public class FilterTagScreen extends AbstractContainerScreen<FilterTagContainer> {
     private final ResourceLocation GUI = new ResourceLocation(LaserIO.MODID, "textures/gui/filtertag.png");
@@ -57,9 +57,6 @@ public class FilterTagScreen extends AbstractContainerScreen<FilterTagContainer>
     List<String> tags = new ArrayList<>();
     List<String> stackInSlotTags = new ArrayList<>();
     int cycleRenders = 0;
-    LaserIOItemRenderer tagItemRenderer;
-    LaserIOItemRendererFluid tagFluidRenderer;
-
 
     public FilterTagScreen(FilterTagContainer container, Inventory inv, Component name) {
         super(container, inv, name);
@@ -68,11 +65,7 @@ public class FilterTagScreen extends AbstractContainerScreen<FilterTagContainer>
         this.imageWidth = 200;
         this.imageHeight = 254;
         this.tags = FilterTag.getTags(filter);
-        Minecraft minecraft = Minecraft.getInstance();
-        BlockEntityWithoutLevelRenderer blockentitywithoutlevelrenderer = new BlockEntityWithoutLevelRenderer(minecraft.getBlockEntityRenderDispatcher(), minecraft.getEntityModels());
-        tagItemRenderer = new LaserIOItemRenderer(Minecraft.getInstance(), minecraft.getTextureManager(), minecraft.getModelManager(), minecraft.getItemColors(), blockentitywithoutlevelrenderer);
-        tagFluidRenderer = new LaserIOItemRendererFluid(minecraft, minecraft.getTextureManager(), minecraft.getModelManager(), minecraft.getItemColors(), blockentitywithoutlevelrenderer, this);
-    }
+     }
 
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
@@ -217,6 +210,14 @@ public class FilterTagScreen extends AbstractContainerScreen<FilterTagContainer>
                         if (!stackInSlotTags.contains(tag) && !tags.contains(tag))
                             stackInSlotTags.add(tag);
                     });
+                }
+            }
+
+            if (MekanismIntegration.isLoaded()) {
+                List<String> chemicalTags = MekanismStatics.getTagsFromItemStack(stackInSlot);
+                for (String tag : chemicalTags) {
+                    if (!stackInSlotTags.contains(tag) && !tags.contains(tag))
+                        stackInSlotTags.add(tag);
                 }
             }
         }
@@ -423,9 +424,5 @@ public class FilterTagScreen extends AbstractContainerScreen<FilterTagContainer>
         }
 
         return super.mouseScrolled(mouseX, mouseY, delta);
-    }
-
-    private static MutableComponent getTrans(String key, Object... args) {
-        return Component.translatable(LaserIO.MODID + "." + key, args);
     }
 }

@@ -15,9 +15,9 @@ import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 
 import javax.annotation.Nonnull;
+
 import java.util.ArrayList;
 import java.util.List;
-
 
 public class ItemHandlerUtil {
     public record ExtractResult(ItemStack itemStack, int slot) {
@@ -356,7 +356,7 @@ public class ItemHandlerUtil {
                     break;
                 }
             }
-            if (returnStack.equals(ItemStack.EMPTY)) return returnStack;
+            if (returnStack.isEmpty()) return returnStack;
 
             itemMap.get(returnStack.getItem()).removeIf(o -> o.isEmpty());
             totalCount -= returnStack.getCount();

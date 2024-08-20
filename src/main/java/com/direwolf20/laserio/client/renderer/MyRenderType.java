@@ -6,8 +6,6 @@ import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 
-import java.util.OptionalDouble;
-
 public class MyRenderType extends RenderType {
     private final static ResourceLocation laserBeam = new ResourceLocation(LaserIO.MODID + ":textures/misc/laser.png");
     private final static ResourceLocation laserBeam2 = new ResourceLocation(LaserIO.MODID + ":textures/misc/laser2.png");
@@ -18,20 +16,8 @@ public class MyRenderType extends RenderType {
         super(name, format, p_i225992_3_, p_i225992_4_, p_i225992_5_, p_i225992_6_, runnablePre, runnablePost);
     }
 
-    private static final LineStateShard THICK_LINES = new LineStateShard(OptionalDouble.of(3.0D));
-
     public static void updateRenders() {
-        /*CONNECTING_LASER = create("ConnectingLaser",
-                DefaultVertexFormat.POSITION_COLOR_TEX, VertexFormat.Mode.QUADS, 256, false, false,
-                RenderType.CompositeState.builder().setTextureState(new TextureStateShard(laserBeam, false, false))
-                        .setShaderState(ShaderStateShard.POSITION_COLOR_TEX_SHADER)
-                        .setLayeringState(VIEW_OFFSET_Z_LAYERING)
-                        .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
-                        .setDepthTestState(LEQUAL_DEPTH_TEST)
-                        .setCullState(CULL)
-                        .setLightmapState(NO_LIGHTMAP)
-                        .setWriteMaskState(COLOR_WRITE)
-                        .createCompositeState(false));*/
+
     }
 
     public static final RenderType LASER_MAIN_BEAM = create("MiningLaserMainBeam",
@@ -69,6 +55,7 @@ public class MyRenderType extends RenderType {
                     .setLightmapState(NO_LIGHTMAP)
                     .setWriteMaskState(COLOR_WRITE)
                     .createCompositeState(false));
+
     public static final RenderType CONNECTING_LASER = create("ConnectingLaser",
             DefaultVertexFormat.POSITION_COLOR_TEX, VertexFormat.Mode.QUADS, 256, false, false,
             RenderType.CompositeState.builder().setTextureState(new TextureStateShard(laserBeam, false, false))
@@ -93,18 +80,4 @@ public class MyRenderType extends RenderType {
                     .setLightmapState(NO_LIGHTMAP)
                     .setWriteMaskState(COLOR_WRITE)
                     .createCompositeState(false));
-
-    /*public static final RenderType RenderBlock = create("MiningLaserRenderBlock",
-            DefaultVertexFormat.BLOCK, VertexFormat.Mode.QUADS, 256, false, false,
-            RenderType.CompositeState.builder()
-//                    .setShaderState(SMOOTH_SHADE)
-                    .setShaderState(ShaderStateShard.BLOCK_SHADER)
-                    .setLightmapState(LIGHTMAP)
-                    .setTextureState(BLOCK_SHEET_MIPPED)
-                    .setLayeringState(VIEW_OFFSET_Z_LAYERING)
-                    .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
-                    .setDepthTestState(LEQUAL_DEPTH_TEST)
-                    .setCullState(CULL)
-                    .setWriteMaskState(COLOR_WRITE)
-                    .createCompositeState(false));*/
 }

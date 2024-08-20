@@ -17,5 +17,4 @@ public class ParticleRenderDataFluid {
         this.toPos = toPos;
         this.position = position;
     }
-
 }

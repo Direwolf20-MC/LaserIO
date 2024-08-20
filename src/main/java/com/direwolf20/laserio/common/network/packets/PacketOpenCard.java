@@ -1,12 +1,18 @@
 package com.direwolf20.laserio.common.network.packets;
 
-import com.direwolf20.laserio.common.containers.*;
+import com.direwolf20.laserio.common.containers.CardChemicalContainer;
+import com.direwolf20.laserio.common.containers.CardEnergyContainer;
+import com.direwolf20.laserio.common.containers.CardFluidContainer;
+import com.direwolf20.laserio.common.containers.CardItemContainer;
+import com.direwolf20.laserio.common.containers.CardRedstoneContainer;
+import com.direwolf20.laserio.common.containers.LaserNodeContainer;
 import com.direwolf20.laserio.common.containers.customhandler.CardItemHandler;
 import com.direwolf20.laserio.common.items.cards.CardEnergy;
 import com.direwolf20.laserio.common.items.cards.CardFluid;
 import com.direwolf20.laserio.common.items.cards.CardItem;
 import com.direwolf20.laserio.common.items.cards.CardRedstone;
 import com.direwolf20.laserio.common.items.filters.BaseFilter;
+import com.direwolf20.laserio.integration.mekanism.CardChemical;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -21,7 +27,6 @@ import net.minecraftforge.network.NetworkHooks;
 import java.util.function.Supplier;
 
 import static com.direwolf20.laserio.common.items.cards.BaseCard.getInventory;
-
 
 public class PacketOpenCard {
     private int slotNumber;
@@ -101,9 +106,20 @@ public class PacketOpenCard {
                         buf.writeByte(side);
                     }));
 
+                } else if (itemStack.getItem() instanceof CardChemical) {
+                    if (!msg.hasShiftDown) {
+                        NetworkHooks.openScreen(sender, new SimpleMenuProvider(
+                                (windowId, playerInventory, playerEntity) -> new CardChemicalContainer(windowId, playerInventory, sender, msg.sourcePos, itemStack, side), Component.translatable("")), (buf -> {
+                            buf.writeItem(itemStack);
+                            buf.writeByte(side);
+                        }));
+                    } else {
+                        ItemStack filterItem = handler.getStackInSlot(0);
+                        if (filterItem.getItem() instanceof BaseFilter)
+                            PacketOpenFilter.doOpenFilter(filterItem, itemStack, sender, msg.sourcePos);
+                    }
                 }
             });
-
 
             ctx.get().setPacketHandled(true);
         }

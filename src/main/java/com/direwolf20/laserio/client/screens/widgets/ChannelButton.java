@@ -8,10 +8,11 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
-import java.awt.*;
+import java.awt.Color;
 
 public class ChannelButton extends Button {
     private final ResourceLocation resourceLocation = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/blankbutton.png");
+
     private int channel;
     private final Color colors[] = {
             new Color(0xf9ffff),

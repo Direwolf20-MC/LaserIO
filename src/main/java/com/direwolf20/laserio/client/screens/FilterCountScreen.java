@@ -16,9 +16,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
@@ -68,8 +66,6 @@ public class FilterCountScreen extends AbstractContainerScreen<FilterCountContai
     @Override
     public void init() {
         super.init();
-        Minecraft minecraft = Minecraft.getInstance();
-        BlockEntityWithoutLevelRenderer blockentitywithoutlevelrenderer = new BlockEntityWithoutLevelRenderer(minecraft.getBlockEntityRenderDispatcher(), minecraft.getEntityModels());
         List<AbstractWidget> leftWidgets = new ArrayList<>();
 
         this.isAllowList = FilterCount.getAllowList(filter);
@@ -145,7 +141,7 @@ public class FilterCountScreen extends AbstractContainerScreen<FilterCountContai
         } else {
             ItemStack slotStack = hoveredSlot.getItem();
             if (slotStack.isEmpty()) return true;
-            if (btn == 2) { //Todo IMC Inventory Sorter so this works
+            if (btn == 2) {
                 slotStack.setCount(0);
                 PacketHandler.sendToServer(new PacketGhostSlot(hoveredSlot.index, slotStack, slotStack.getCount()));
                 return true;
@@ -159,7 +155,6 @@ public class FilterCountScreen extends AbstractContainerScreen<FilterCountContai
             PacketHandler.sendToServer(new PacketGhostSlot(hoveredSlot.index, slotStack, slotStack.getCount()));
             container.handler.setStackInSlotSave(hoveredSlot.index, slotStack); //We do this for continuity between client/server -- not needed in cardItemScreen
         }
-
 
         return true;
     }
@@ -186,9 +181,4 @@ public class FilterCountScreen extends AbstractContainerScreen<FilterCountContai
         PacketHandler.sendToServer(new PacketGhostSlot(hoveredSlot.index, slotStack, slotStack.getCount()));
         return true;
     }
-
-    private static MutableComponent getTrans(String key, Object... args) {
-        return Component.translatable(LaserIO.MODID + "." + key, args);
-    }
-
 }

@@ -12,5 +12,4 @@ public class FluidFlowParticleType extends ParticleType<FluidFlowParticleData> {
     public Codec<FluidFlowParticleData> codec() {
         return null;
     }
-
 }

@@ -13,6 +13,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
+
 import java.util.Locale;
 
 public class ItemFlowParticleData implements ParticleOptions {
@@ -88,4 +89,3 @@ public class ItemFlowParticleData implements ParticleOptions {
         }
     };
 }
-

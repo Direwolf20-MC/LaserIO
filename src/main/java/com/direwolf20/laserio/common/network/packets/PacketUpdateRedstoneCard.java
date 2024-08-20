@@ -15,7 +15,6 @@ public class PacketUpdateRedstoneCard {
     byte channel;
     boolean strong;
 
-
     public PacketUpdateRedstoneCard(byte mode, byte channel, boolean strong) {
         this.mode = mode;
         this.channel = channel;

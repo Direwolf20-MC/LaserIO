@@ -18,12 +18,12 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nullable;
+
 import java.util.List;
 
 import static com.direwolf20.laserio.util.MiscTools.tooltipMaker;
 
 public class CardCloner extends Item {
-
     public CardCloner() {
         super(new Properties()
                 .stacksTo(1));

@@ -14,9 +14,18 @@ import com.direwolf20.laserio.common.items.CardHolder;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.common.items.cards.CardItem;
 import com.direwolf20.laserio.common.items.cards.CardRedstone;
-import com.direwolf20.laserio.common.items.filters.*;
+import com.direwolf20.laserio.common.items.filters.BaseFilter;
+import com.direwolf20.laserio.common.items.filters.FilterBasic;
+import com.direwolf20.laserio.common.items.filters.FilterCount;
+import com.direwolf20.laserio.common.items.filters.FilterMod;
+import com.direwolf20.laserio.common.items.filters.FilterNBT;
+import com.direwolf20.laserio.common.items.filters.FilterTag;
 import com.direwolf20.laserio.common.network.PacketHandler;
-import com.direwolf20.laserio.common.network.packets.*;
+import com.direwolf20.laserio.common.network.packets.PacketGhostSlot;
+import com.direwolf20.laserio.common.network.packets.PacketOpenFilter;
+import com.direwolf20.laserio.common.network.packets.PacketOpenNode;
+import com.direwolf20.laserio.common.network.packets.PacketUpdateCard;
+import com.direwolf20.laserio.common.network.packets.PacketUpdateFilter;
 import com.direwolf20.laserio.util.MiscTools;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -25,7 +34,6 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -66,6 +74,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
     protected Map<String, Button> buttons = new HashMap<>();
     protected byte currentRedstoneMode;
     protected boolean renderFluids = false;
+    protected boolean renderChemicals = false;
     private boolean showCardHolderUI;
 
     protected final String[] sneakyNames = {
@@ -91,7 +100,13 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
         validateHolder();
         this.renderBackground(guiGraphics);
         toggleFilterSlots();
-        guiGraphics = renderFluids ? new LaserGuiGraphicsFluid(Minecraft.getInstance(), guiGraphics.bufferSource(), this) : new LaserGuiGraphics(Minecraft.getInstance(), guiGraphics.bufferSource());
+        if (renderChemicals) {
+            guiGraphics = new LaserGuiGraphicsChemical(Minecraft.getInstance(), guiGraphics.bufferSource(), this);
+        } else if (renderFluids) {
+            guiGraphics = new LaserGuiGraphicsFluid(Minecraft.getInstance(), guiGraphics.bufferSource(), this);
+        } else {
+            guiGraphics = new LaserGuiGraphics(Minecraft.getInstance(), guiGraphics.bufferSource());
+        }
         if (showFilter)
             updateItemCounts();
         super.render(guiGraphics, mouseX, mouseY, partialTicks);
@@ -229,7 +244,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
         IItemHandler handler = container.filterHandler;
         for (int i = 0; i < handler.getSlots(); i++) {
             ItemStack stack = handler.getStackInSlot(i);
-            stack.setCount(container.getStackSize(i + container.SLOTS));
+            stack.setCount(container.getStackSize(i + CardItemContainer.SLOTS));
         }
     }
 
@@ -274,8 +289,6 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
     @Override
     public void init() {
         super.init();
-        Minecraft minecraft = Minecraft.getInstance();
-        BlockEntityWithoutLevelRenderer blockentitywithoutlevelrenderer = new BlockEntityWithoutLevelRenderer(minecraft.getBlockEntityRenderDispatcher(), minecraft.getEntityModels());
         currentMode = BaseCard.getTransferMode(card);
         currentChannel = BaseCard.getChannel(card);
         currentItemExtractAmt = CardItem.getItemExtractAmt(card);
@@ -406,7 +419,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
 
 
         if (card.getCount() > 1) {
-            for (int i = 0; i < container.SLOTS; i++) {
+            for (int i = 0; i < CardItemContainer.SLOTS; i++) {
                 if (i >= container.slots.size()) continue;
                 Slot slot = container.getSlot(i);
                 if (slot instanceof CardItemSlot cardItemSlot)
@@ -578,7 +591,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
                 removeWidget(exactButton);
             }
         }
-        for (int i = container.SLOTS; i < container.SLOTS + container.FILTERSLOTS; i++) {
+        for (int i = CardItemContainer.SLOTS; i < CardItemContainer.SLOTS + CardItemContainer.FILTERSLOTS; i++) {
             if (i >= container.slots.size()) continue;
             Slot slot = container.getSlot(i);
             if (!(slot instanceof FilterBasicSlot)) continue;
@@ -684,10 +697,6 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
         return super.mouseScrolled(mouseX, mouseY, delta);
     }
 
-    private static MutableComponent getTrans(String key, Object... args) {
-        return Component.translatable(LaserIO.MODID + "." + key, args);
-    }
-
     public void setExtract(NumberButton amountButton, int btn) {
         if (btn == 0)
             changeAmount(1);
@@ -706,7 +715,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
     public boolean filterSlot(int btn) {
         ItemStack slotStack = hoveredSlot.getItem();
         if (slotStack.isEmpty()) return true;
-        if (btn == 2) { //Todo IMC Inventory Sorter so this works
+        if (btn == 2) {
             slotStack.setCount(0);
             PacketHandler.sendToServer(new PacketGhostSlot(hoveredSlot.index, slotStack, slotStack.getCount()));
             return true;
@@ -797,20 +806,6 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
                     PacketHandler.sendToServer(new PacketGhostSlot(hoveredSlot.index, stack, stack.getCount()));
                 } else {
                     filterSlot(btn);
-                    /*ItemStack slotStack = hoveredSlot.getItem();
-                    if (slotStack.isEmpty()) return true;
-                    if (btn == 2) { //Todo IMC Inventory Sorter so this works
-                        slotStack.setCount(0);
-                        PacketHandler.sendToServer(new PacketGhostSlot(hoveredSlot.index, slotStack, slotStack.getCount()));
-                        return true;
-                    }
-                    int amt = (btn == 0) ? 1 : -1;
-                    if (Screen.hasShiftDown()) amt *= 10;
-                    if (Screen.hasControlDown()) amt *= 64;
-                    if (amt + slotStack.getCount() > 4096) amt = 4096 - slotStack.getCount();
-                    //slotStack.grow(amt);
-
-                    PacketHandler.sendToServer(new PacketGhostSlot(hoveredSlot.index, slotStack, slotStack.getCount() + amt));*/
                 }
             }
             return true;

@@ -9,7 +9,6 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
 
 public class DireButton extends Button {
-
     public DireButton(int x, int y, int widthIn, int heightIn, Component buttonText, OnPress action) {
         super(x, y, widthIn, heightIn, buttonText, action, Button.DEFAULT_NARRATION);
     }

@@ -7,9 +7,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.network.NetworkEvent;
 
-import java.awt.*;
+import java.awt.Color;
 import java.util.function.Supplier;
-
 
 public class PacketChangeColor {
     private BlockPos sourcePos;
@@ -30,7 +29,6 @@ public class PacketChangeColor {
 
     public static PacketChangeColor decode(FriendlyByteBuf buffer) {
         return new PacketChangeColor(buffer.readBlockPos(), buffer.readInt(), buffer.readInt());
-
     }
 
     public static class Handler {

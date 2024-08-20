@@ -1,5 +1,6 @@
 package com.direwolf20.laserio.datagen.customrecipes;
 
+import com.direwolf20.laserio.common.LaserIO;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.setup.Registration;
 import com.google.gson.JsonArray;
@@ -58,11 +59,8 @@ public class CardClearRecipe extends ShapelessRecipe {
         return Registration.CARD_CLEAR_RECIPE_SERIALIZER.get();
     }
 
-    //@ObjectHolder("laserio:cardclear")
-    //public static CardClearRecipe.Serializer SERIALIZER;
-
     public static class Serializer extends ShapelessRecipe.Serializer {
-        private static final ResourceLocation NAME = new ResourceLocation("laserio", "cardclear");
+        private static final ResourceLocation NAME = new ResourceLocation(LaserIO.MODID, "cardclear");
 
         public CardClearRecipe fromJson(ResourceLocation resourceLocation, JsonObject jsonObject) {
             ShapelessRecipe vanilla = super.fromJson(resourceLocation, jsonObject);

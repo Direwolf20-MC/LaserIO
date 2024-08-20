@@ -119,5 +119,4 @@ public class LaserConnectorAdvBERender extends BaseLaserBERender<LaserConnectorA
     protected RenderType renderType() {
         return RenderType.endPortal();
     }
-
 }

@@ -1,0 +1,26 @@
+{
+  "type": "forge:conditional",
+  "recipes": [
+    {
+      "conditions": [
+        {
+          "type": "forge:mod_loaded",
+          "modid": "mekanism"
+        }
+      ],
+      "recipe": {
+        "type": "laserio:cardclear",
+        "category": "misc",
+        "group": "laserio",
+        "ingredients": [
+          {
+            "item": "laserio:card_chemical"
+          }
+        ],
+        "result": {
+          "item": "laserio:card_chemical"
+        }
+      }
+    }
+  ]
+}

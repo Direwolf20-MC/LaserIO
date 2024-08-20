@@ -1,0 +1,44 @@
+{
+  "type": "forge:conditional",
+  "recipes": [
+    {
+      "conditions": [
+        {
+          "type": "forge:mod_loaded",
+          "modid": "mekanism"
+        }
+      ],
+      "recipe": {
+        "type": "minecraft:crafting_shaped",
+        "category": "misc",
+        "group": "laserio",
+        "key": {
+          "g": {
+            "tag": "forge:nuggets/gold"
+          },
+          "l": {
+            "tag": "forge:circuits/basic"
+          },
+          "p": {
+            "item": "laserio:logic_chip"
+          },
+          "q": {
+            "tag": "forge:gems/quartz"
+          },
+          "r": {
+            "tag": "forge:dusts/redstone"
+          }
+        },
+        "pattern": [
+          "rlr",
+          "qpq",
+          "ggg"
+        ],
+        "result": {
+          "item": "laserio:card_chemical"
+        },
+        "show_notification": true
+      }
+    }
+  ]
+}

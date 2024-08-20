@@ -10,13 +10,15 @@ import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 
 import javax.annotation.Nonnull;
-import java.awt.*;
+
+import java.awt.Color;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Queue;
@@ -38,7 +40,10 @@ public class BaseLaserBE extends BlockEntity {
 
     /** Gets the node at a specific world position, returning null if not a node */
     public LaserNodeBE getNodeAt(DimBlockPos pos) {
-        BlockEntity be = pos.getLevel(level.getServer()).getBlockEntity(pos.blockPos);
+        if (level == null) return null;
+        Level targetLevel = pos.getLevel(level.getServer());
+        if (targetLevel == null) return null;
+        BlockEntity be = targetLevel.getBlockEntity(pos.blockPos);
         if (be instanceof LaserNodeBE) return (LaserNodeBE) be;
         return null;
     }
@@ -78,7 +83,10 @@ public class BaseLaserBE extends BlockEntity {
             DimBlockPos posToCheck = nodesToCheck.remove(); //Pop the stack
             if (!checkedNodes.add(posToCheck))
                 continue; //Don't check nodes we've checked before
-            BlockEntity be = posToCheck.getLevel(getLevel().getServer()).getBlockEntity(posToCheck.blockPos);
+            Level nodeLevel = posToCheck.getLevel(getLevel().getServer());
+            if (nodeLevel == null)
+                continue; //Never seen this before but Shartte found a way!
+            BlockEntity be = nodeLevel.getBlockEntity(posToCheck.blockPos);
             if (be instanceof BaseLaserBE baseLaserBE) {
                 Set<DimBlockPos> connectedNodes = baseLaserBE.getWorldConnections(); //Get all the nodes this node is connected to
                 if (be instanceof LaserConnectorAdvBE laserConnectorAdvBE && (laserConnectorAdvBE.getPartnerDimBlockPos() != null))
@@ -306,7 +314,6 @@ public class BaseLaserBE extends BlockEntity {
         }
         tag.put("renderedConnections", renderedConnections);
         tag.put("myWorldPos", NbtUtils.writeBlockPos(getBlockPos()));
-        Color color = getColor();
         tag.putInt("laserColor", getColor().getRGB());
         tag.putInt("wrenchAlpha", getWrenchAlpha());
     }
@@ -359,6 +366,4 @@ public class BaseLaserBE extends BlockEntity {
         //    validateConnections();
         super.clearRemoved();
     }
-
-
 }

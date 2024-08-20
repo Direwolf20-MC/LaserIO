@@ -17,7 +17,6 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.ItemStack;
@@ -25,7 +24,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.client.gui.widget.ExtendedButton;
 import net.minecraftforge.client.gui.widget.ForgeSlider;
 
-import java.awt.*;
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -33,6 +32,7 @@ import java.util.Map;
 
 public class LaserNodeSettingsScreen extends Screen {
     private final ResourceLocation GUI = new ResourceLocation(LaserIO.MODID, "textures/gui/laser_node_settings.png");
+
     protected final LaserNodeContainer container;
     protected int imageWidth = 176;
     protected int imageHeight = 166;
@@ -48,14 +48,6 @@ public class LaserNodeSettingsScreen extends Screen {
     private ForgeSlider sliderBlue;
     private ForgeSlider sliderAlpha;
     private ForgeSlider sliderWrenchAlpha;
-    private final MutableComponent[] sides = {
-            Component.translatable("screen.laserio.down"),
-            Component.translatable("screen.laserio.up"),
-            Component.translatable("screen.laserio.north"),
-            Component.translatable("screen.laserio.south"),
-            Component.translatable("screen.laserio.west"),
-            Component.translatable("screen.laserio.east"),
-    };
 
     private Map<ForgeSlider, IntConsumer> sliderMap = new HashMap<>();
 

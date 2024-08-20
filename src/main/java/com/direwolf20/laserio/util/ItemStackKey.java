@@ -11,7 +11,6 @@ public class ItemStackKey {
     public final CompoundTag nbt;
     private final int hash;
 
-
     public ItemStackKey(ItemStack stack, boolean compareNBT) {
         this.item = stack.getItem();
         this.nbt = compareNBT ? stack.getTag() : new CompoundTag();

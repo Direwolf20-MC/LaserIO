@@ -5,7 +5,6 @@ import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
 
 public class FilterBasicSlot extends SlotItemHandler {
-
     protected boolean enabled = true;
     public boolean isCount;
 

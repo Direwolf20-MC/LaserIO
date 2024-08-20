@@ -15,5 +15,4 @@ public class LaserConnectorBERender extends BaseLaserBERender<LaserConnectorBE> 
     public void render(LaserConnectorBE blockentity, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightsIn, int combinedOverlayIn) {
         super.render(blockentity, partialTicks, matrixStackIn, bufferIn, combinedLightsIn, combinedOverlayIn);
     }
-
 }

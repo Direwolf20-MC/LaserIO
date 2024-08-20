@@ -8,7 +8,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import org.joml.Vector3f;
 
-import java.awt.*;
+import java.awt.Color;
 
 public class LaserNodeBERender extends BaseLaserBERender<LaserNodeBE> {
     public static final Vector3f[] offsets = {

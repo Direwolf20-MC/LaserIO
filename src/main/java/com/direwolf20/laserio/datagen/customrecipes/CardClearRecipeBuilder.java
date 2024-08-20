@@ -19,6 +19,7 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.ItemLike;
 
 import javax.annotation.Nullable;
+
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -35,49 +36,51 @@ public class CardClearRecipeBuilder implements RecipeBuilder {
         this.count = count;
     }
 
-    public static CardClearRecipeBuilder shapeless(ItemLike p_126190_) {
-        return new CardClearRecipeBuilder(p_126190_, 1);
+    public static CardClearRecipeBuilder shapeless(ItemLike result) {
+        return new CardClearRecipeBuilder(result, 1);
     }
 
-    public static CardClearRecipeBuilder shapeless(ItemLike p_126192_, int p_126193_) {
-        return new CardClearRecipeBuilder(p_126192_, p_126193_);
+    public static CardClearRecipeBuilder shapeless(ItemLike result, int count) {
+        return new CardClearRecipeBuilder(result, count);
     }
 
-    public CardClearRecipeBuilder requires(TagKey<Item> p_206420_) {
-        return this.requires(Ingredient.of(p_206420_));
+    public CardClearRecipeBuilder requires(TagKey<Item> tag) {
+        return this.requires(Ingredient.of(tag));
     }
 
-    public CardClearRecipeBuilder requires(ItemLike p_126210_) {
-        return this.requires(p_126210_, 1);
+    public CardClearRecipeBuilder requires(ItemLike item) {
+        return this.requires(item, 1);
     }
 
-    public CardClearRecipeBuilder requires(ItemLike p_126212_, int p_126213_) {
-        for (int i = 0; i < p_126213_; ++i) {
-            this.requires(Ingredient.of(p_126212_));
+    public CardClearRecipeBuilder requires(ItemLike item, int quantity) {
+        for (int i = 0; i < quantity; ++i) {
+            this.requires(Ingredient.of(item));
         }
 
         return this;
     }
 
-    public CardClearRecipeBuilder requires(Ingredient p_126185_) {
-        return this.requires(p_126185_, 1);
+    public CardClearRecipeBuilder requires(Ingredient ingredient) {
+        return this.requires(ingredient, 1);
     }
 
-    public CardClearRecipeBuilder requires(Ingredient p_126187_, int p_126188_) {
-        for (int i = 0; i < p_126188_; ++i) {
-            this.ingredients.add(p_126187_);
+    public CardClearRecipeBuilder requires(Ingredient ingredient, int quantity) {
+        for (int i = 0; i < quantity; ++i) {
+            this.ingredients.add(ingredient);
         }
 
         return this;
     }
 
-    public CardClearRecipeBuilder unlockedBy(String p_126197_, CriterionTriggerInstance p_126198_) {
-        this.advancement.addCriterion(p_126197_, p_126198_);
+    public CardClearRecipeBuilder unlockedBy(String name, CriterionTriggerInstance criterionTrigger) {
+        this.advancement.addCriterion(name, criterionTrigger);
+
         return this;
     }
 
-    public CardClearRecipeBuilder group(@Nullable String p_126195_) {
-        this.group = p_126195_;
+    public CardClearRecipeBuilder group(@Nullable String groupName) {
+        this.group = groupName;
+
         return this;
     }
 
@@ -85,21 +88,19 @@ public class CardClearRecipeBuilder implements RecipeBuilder {
         return this.result;
     }
 
-    public void save(Consumer<FinishedRecipe> p_126205_, ResourceLocation p_126206_) {
-        this.ensureValid(p_126206_);
-        this.advancement.parent(new ResourceLocation("recipes/root")).addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(p_126206_)).rewards(AdvancementRewards.Builder.recipe(p_126206_)).requirements(RequirementsStrategy.OR);
-        String folder = ""; //Todo Check this?
-        p_126205_.accept(new CardClearRecipeBuilder.Result(p_126206_, this.result, this.count, this.group == null ? "" : this.group, this.ingredients, this.advancement, new ResourceLocation(p_126206_.getNamespace(), "recipes/" + folder + "/" + p_126206_.getPath())));
+    public void save(Consumer<FinishedRecipe> consumer, ResourceLocation id) {
+        this.ensureValid(id);
+        this.advancement.parent(new ResourceLocation("recipes/root")).addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(id)).rewards(AdvancementRewards.Builder.recipe(id)).requirements(RequirementsStrategy.OR);
+        consumer.accept(new CardClearRecipeBuilder.Result(id, this.result, this.count, this.group == null ? "" : this.group, this.ingredients, this.advancement, new ResourceLocation(id.getNamespace(), "recipes/misc/" + id.getPath())));
     }
 
-    private void ensureValid(ResourceLocation p_126208_) {
+    private void ensureValid(ResourceLocation consumer) {
         if (this.advancement.getCriteria().isEmpty()) {
-            throw new IllegalStateException("No way of obtaining recipe " + p_126208_);
+            throw new IllegalStateException("No way of obtaining recipe " + consumer);
         }
     }
 
     public static class Result extends ShapelessRecipeBuilder.Result {
-
         public Result(ResourceLocation resourceLocation, Item result, int count, String group, List<Ingredient> ingredients, Advancement.Builder advancement, ResourceLocation advancementId) {
             super(resourceLocation, result, count, group, CraftingBookCategory.MISC, ingredients, advancement, advancementId);
         }
@@ -108,6 +109,5 @@ public class CardClearRecipeBuilder implements RecipeBuilder {
         public RecipeSerializer<?> getType() {
             return Registration.CARD_CLEAR_RECIPE_SERIALIZER.get();
         }
-
     }
 }

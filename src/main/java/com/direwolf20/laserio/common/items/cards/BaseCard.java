@@ -19,6 +19,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
+
 import java.util.List;
 import java.util.Locale;
 
@@ -32,6 +33,7 @@ public class BaseCard extends Item {
         FLUID,
         ENERGY,
         REDSTONE,
+        CHEMICAL,
         MISSING
     }
 
@@ -45,7 +47,6 @@ public class BaseCard extends Item {
     public BaseCard() {
         super(new Item.Properties()
                 .stacksTo(1));
-
     }
 
     public CardType getCardType() {
@@ -118,15 +119,13 @@ public class BaseCard extends Item {
         return nonnulllist;
     }
 
-
     /**
      * If you override hasCraftingRemainingItem you MUST override this as well
      * Note: The real logic happens above in getContainerItems(Itemstack)
      * This is only here to deal with autocrafters who might crash
      */
     @Override
-    public ItemStack getCraftingRemainingItem(ItemStack itemStack)
-    {
+    public ItemStack getCraftingRemainingItem(ItemStack itemStack) {
         return ItemStack.EMPTY;
     }
 

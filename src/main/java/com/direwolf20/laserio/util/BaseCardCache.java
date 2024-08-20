@@ -5,12 +5,21 @@ import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.common.items.cards.CardEnergy;
 import com.direwolf20.laserio.common.items.cards.CardFluid;
 import com.direwolf20.laserio.common.items.cards.CardItem;
-import com.direwolf20.laserio.common.items.filters.*;
+import com.direwolf20.laserio.common.items.cards.CardRedstone;
+import com.direwolf20.laserio.common.items.filters.BaseFilter;
+import com.direwolf20.laserio.common.items.filters.FilterBasic;
+import com.direwolf20.laserio.common.items.filters.FilterCount;
+import com.direwolf20.laserio.common.items.filters.FilterMod;
+import com.direwolf20.laserio.common.items.filters.FilterNBT;
+import com.direwolf20.laserio.common.items.filters.FilterTag;
+import com.direwolf20.laserio.integration.mekanism.CardChemical;
+import com.direwolf20.laserio.integration.mekanism.MekanismCardCache;
 import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.core.Direction;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.capability.IFluidHandler;
@@ -18,7 +27,10 @@ import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.registries.ForgeRegistries;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 public class BaseCardCache {
     public final Direction direction;
@@ -47,6 +59,8 @@ public class BaseCardCache {
     public final Map<FluidStackKey, Boolean> filterCacheFluid = new Object2BooleanOpenHashMap<>();
     public final Map<FluidStackKey, Integer> filterCountsFluid = new Object2IntOpenHashMap<>();
 
+    public MekanismCardCache mekanismCardCache;
+
     public BaseCardCache(Direction direction, ItemStack cardItem, int cardSlot, LaserNodeBE be) {
         this.cardItem = cardItem;
         this.direction = direction;
@@ -56,19 +70,23 @@ public class BaseCardCache {
         this.redstoneChannel = BaseCard.getRedstoneChannel(cardItem);
         this.filterCard = BaseCard.getFilter(cardItem);
         this.cardSlot = cardSlot;
-        if (cardItem.getItem() instanceof CardItem)
+        if (cardItem.getItem() instanceof CardItem) {
             cardType = BaseCard.CardType.ITEM;
-        else if (cardItem.getItem() instanceof CardFluid)
+        } else if (cardItem.getItem() instanceof CardFluid) {
             cardType = BaseCard.CardType.FLUID;
-        else if (cardItem.getItem() instanceof CardEnergy) {
+        } else if (cardItem.getItem() instanceof CardEnergy) {
             cardType = BaseCard.CardType.ENERGY;
             this.insertLimit = CardEnergy.getInsertLimitPercent(cardItem);
             this.extractLimit = CardEnergy.getExtractLimitPercent(cardItem);
-        } else if (cardItem.getItem() instanceof CardEnergy)
+        } else if (cardItem.getItem() instanceof CardRedstone) {
             cardType = BaseCard.CardType.REDSTONE;
-        else cardType = BaseCard.CardType.MISSING;
+        } else if (cardItem.getItem() instanceof CardChemical) {
+            cardType = BaseCard.CardType.CHEMICAL;
+            mekanismCardCache = new MekanismCardCache(this);
+        } else
+            cardType = BaseCard.CardType.MISSING;
         this.be = be;
-        if (filterCard.equals(ItemStack.EMPTY)) {
+        if (filterCard.isEmpty()) {
             filteredItems = new ArrayList<>();
             filteredFluids = new ArrayList<>();
             filterTags = new ArrayList<>();
@@ -102,7 +120,7 @@ public class BaseCardCache {
     }
 
     public int getFilterAmt(ItemStack testStack) {
-        if (filterCard.equals(ItemStack.EMPTY))
+        if (filterCard.isEmpty())
             return 0; //If theres no filter in the card (This should never happen in theory)
         if (!(filterCard.getItem() instanceof FilterCount)) { //If this is a basic or tag Card return -1 which will mean infinite amount
             return -1;
@@ -121,7 +139,7 @@ public class BaseCardCache {
     }
 
     public int getFilterAmt(FluidStack testStack) {
-        if (filterCard.equals(ItemStack.EMPTY))
+        if (filterCard.isEmpty())
             return 0; //If theres no filter in the card (This should never happen in theory)
         if (!(filterCard.getItem() instanceof FilterCount)) { //If this is a basic or tag Card return -1 which will mean infinite amount
             return -1;
@@ -134,9 +152,9 @@ public class BaseCardCache {
         for (int i = 0; i < filterSlotHandler.getSlots(); i++) { //Gotta iterate the card's NBT because of the way we store amounts (in the MBAmt tag)
             ItemStack itemStack = filterSlotHandler.getStackInSlot(i);
             if (!itemStack.isEmpty()) {
-                Optional<IFluidHandlerItem> fluidHandlerLazyOptional = FluidUtil.getFluidHandler(itemStack).resolve();
-                if (fluidHandlerLazyOptional.isEmpty()) continue;
-                IFluidHandler fluidHandler = fluidHandlerLazyOptional.get();
+                LazyOptional<IFluidHandlerItem> fluidHandlerOptional = FluidUtil.getFluidHandler(itemStack);
+                if (!fluidHandlerOptional.isPresent()) continue;
+                IFluidHandler fluidHandler = fluidHandlerOptional.resolve().get();
                 for (int tank = 0; tank < fluidHandler.getTanks(); tank++) {
                     FluidStack fluidStack = fluidHandler.getFluidInTank(tank);
                     if (key.equals(new FluidStackKey(fluidStack, isCompareNBT))) {
@@ -176,9 +194,9 @@ public class BaseCardCache {
         for (int i = 0; i < filterSlotHandler.getSlots(); i++) {
             ItemStack itemStack = filterSlotHandler.getStackInSlot(i);
             if (!itemStack.isEmpty()) {
-                Optional<IFluidHandlerItem> fluidHandlerLazyOptional = FluidUtil.getFluidHandler(itemStack).resolve();
-                if (fluidHandlerLazyOptional.isEmpty()) continue;
-                IFluidHandler fluidHandler = fluidHandlerLazyOptional.get();
+                LazyOptional<IFluidHandlerItem> fluidHandlerOptional = FluidUtil.getFluidHandler(itemStack);
+                if (!fluidHandlerOptional.isPresent()) continue;
+                IFluidHandler fluidHandler = fluidHandlerOptional.resolve().get();
                 for (int tank = 0; tank < fluidHandler.getTanks(); tank++) {
                     FluidStack fluidStack = fluidHandler.getFluidInTank(tank);
                     if (!fluidStack.isEmpty())
@@ -206,7 +224,7 @@ public class BaseCardCache {
     }
 
     public boolean isStackValidForCard(ItemStack testStack) {
-        if (filterCard.equals(ItemStack.EMPTY)) return true; //If theres no filter in the card
+        if (filterCard.isEmpty()) return true; //If theres no filter in the card
         ItemStackKey key = new ItemStackKey(testStack, isCompareNBT);
         if (filterCache.containsKey(key)) return filterCache.get(key);
         if (filterCard.getItem() instanceof FilterMod) {
@@ -244,7 +262,7 @@ public class BaseCardCache {
     }
 
     public boolean isStackValidForCard(FluidStack testStack) {
-        if (filterCard.equals(ItemStack.EMPTY)) return true; //If theres no filter in the card
+        if (filterCard.isEmpty()) return true; //If theres no filter in the card
         FluidStackKey key = new FluidStackKey(testStack, isCompareNBT);
         if (filterCacheFluid.containsKey(key)) return filterCacheFluid.get(key);
         if (filterCard.getItem() instanceof FilterMod) {

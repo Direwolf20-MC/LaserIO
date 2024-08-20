@@ -1,7 +1,5 @@
 package com.direwolf20.laserio.client.screens;
 
-import com.direwolf20.laserio.client.renderer.LaserIOItemRenderer;
-import com.direwolf20.laserio.client.renderer.LaserIOItemRendererFluid;
 import com.direwolf20.laserio.client.screens.widgets.IconButton;
 import com.direwolf20.laserio.client.screens.widgets.ToggleButton;
 import com.direwolf20.laserio.common.LaserIO;
@@ -16,23 +14,23 @@ import com.direwolf20.laserio.util.MiscTools;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 
-import java.awt.*;
+import java.awt.Color;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
-import java.util.*;
+import java.util.Locale;
+import java.util.Objects;
 
 public class FilterNBTScreen extends AbstractContainerScreen<FilterNBTContainer> {
     private final ResourceLocation GUI = new ResourceLocation(LaserIO.MODID, "textures/gui/filtertag.png");
@@ -49,9 +47,6 @@ public class FilterNBTScreen extends AbstractContainerScreen<FilterNBTContainer>
     List<String> tags = new ArrayList<>();
     List<String> stackInSlotTags = new ArrayList<>();
     int cycleRenders = 0;
-    LaserIOItemRenderer tagItemRenderer;
-    LaserIOItemRendererFluid tagFluidRenderer;
-
 
     public FilterNBTScreen(FilterNBTContainer container, Inventory inv, Component name) {
         super(container, inv, name);
@@ -60,11 +55,7 @@ public class FilterNBTScreen extends AbstractContainerScreen<FilterNBTContainer>
         this.imageWidth = 200;
         this.imageHeight = 254;
         this.tags = FilterTag.getTags(filter);
-        Minecraft minecraft = Minecraft.getInstance();
-        BlockEntityWithoutLevelRenderer blockentitywithoutlevelrenderer = new BlockEntityWithoutLevelRenderer(minecraft.getBlockEntityRenderDispatcher(), minecraft.getEntityModels());
-        tagItemRenderer = new LaserIOItemRenderer(Minecraft.getInstance(), minecraft.getTextureManager(), minecraft.getModelManager(), minecraft.getItemColors(), blockentitywithoutlevelrenderer);
-        tagFluidRenderer = new LaserIOItemRendererFluid(minecraft, minecraft.getTextureManager(), minecraft.getModelManager(), minecraft.getItemColors(), blockentitywithoutlevelrenderer, this);
-    }
+     }
 
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
@@ -378,9 +369,5 @@ public class FilterNBTScreen extends AbstractContainerScreen<FilterNBTContainer>
         }
 
         return super.mouseScrolled(mouseX, mouseY, delta);
-    }
-
-    private static MutableComponent getTrans(String key, Object... args) {
-        return Component.translatable(LaserIO.MODID + "." + key, args);
     }
 }

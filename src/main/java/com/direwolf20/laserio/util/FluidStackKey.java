@@ -11,7 +11,6 @@ public class FluidStackKey {
     public final CompoundTag nbt;
     private final int hash;
 
-
     public FluidStackKey(FluidStack stack, boolean compareNBT) {
         this.fluid = stack.getFluid();
         this.nbt = compareNBT ? stack.getTag() : new CompoundTag();

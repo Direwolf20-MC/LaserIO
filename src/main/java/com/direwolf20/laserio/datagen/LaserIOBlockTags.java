@@ -12,7 +12,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.concurrent.CompletableFuture;
 
 public class LaserIOBlockTags extends BlockTagsProvider {
-
     public LaserIOBlockTags(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, @Nullable ExistingFileHelper existingFileHelper) {
         super(output, lookupProvider, LaserIO.MODID, existingFileHelper);
     }

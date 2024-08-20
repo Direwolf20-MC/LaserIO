@@ -1,7 +1,7 @@
 package com.direwolf20.laserio.common.items.cards;
 
 import com.direwolf20.laserio.common.containers.CardEnergyContainer;
-import com.direwolf20.laserio.common.containers.customhandler.CardItemHandler;
+import com.direwolf20.laserio.setup.Config;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -31,33 +31,11 @@ public class CardEnergy extends BaseCard {
             buf.writeByte(-1);
         }));
 
-        //System.out.println(itemstack.getItem().getRegistryName()+""+itemstack.getTag());
         return new InteractionResultHolder<>(InteractionResult.PASS, itemstack);
     }
 
-    public static CardItemHandler getInventory(ItemStack stack) {
-        CompoundTag compound = stack.getTag();
-        if (compound == null || !compound.contains("inv")) return new CardItemHandler(CardEnergyContainer.SLOTS, stack);
-        CardItemHandler handler = new CardItemHandler(CardEnergyContainer.SLOTS, stack);
-        handler.deserializeNBT(compound.getCompound("inv"));
-        if (handler.getSlots() < CardEnergyContainer.SLOTS)
-            handler.reSize(CardEnergyContainer.SLOTS);
-        return handler;
-    }
-
-    public static CardItemHandler setInventory(ItemStack stack, CardItemHandler handler) {
-        for (int i = 0; i < handler.getSlots(); i++) {
-            if (!handler.getStackInSlot(i).isEmpty()) {
-                stack.getOrCreateTag().put("inv", handler.serializeNBT());
-                return handler;
-            }
-        }
-        stack.removeTagKey("inv");
-        return handler;
-    }
-
     public static int setEnergyExtractAmt(ItemStack card, int energyextractamt) {
-        if (energyextractamt == 1000)
+        if (energyextractamt == Config.MAX_FE_TICK.get())
             card.removeTagKey("energyextractamt");
         else
             card.getOrCreateTag().putInt("energyextractamt", energyextractamt);
@@ -66,7 +44,7 @@ public class CardEnergy extends BaseCard {
 
     public static int getEnergyExtractAmt(ItemStack card) {
         CompoundTag compound = card.getTag();
-        if (compound == null || !compound.contains("energyextractamt")) return 1000;
+        if (compound == null || !compound.contains("energyextractamt")) return Config.MAX_FE_TICK.get();
         return compound.getInt("energyextractamt");
     }
 

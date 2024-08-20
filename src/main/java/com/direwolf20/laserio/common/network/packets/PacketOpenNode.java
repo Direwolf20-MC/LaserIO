@@ -30,7 +30,6 @@ import java.util.function.Supplier;
 import static com.direwolf20.laserio.common.blocks.LaserNode.SCREEN_LASERNODE;
 import static com.direwolf20.laserio.common.blocks.LaserNode.findCardHolders;
 
-
 public class PacketOpenNode {
     private BlockPos sourcePos;
     private byte side;
@@ -108,7 +107,6 @@ public class PacketOpenNode {
 
 
             });
-
 
             ctx.get().setPacketHandled(true);
         }

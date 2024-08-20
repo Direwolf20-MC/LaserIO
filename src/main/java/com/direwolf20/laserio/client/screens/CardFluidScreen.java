@@ -4,6 +4,7 @@ import com.direwolf20.laserio.client.screens.widgets.NumberButton;
 import com.direwolf20.laserio.client.screens.widgets.ToggleButton;
 import com.direwolf20.laserio.common.LaserIO;
 import com.direwolf20.laserio.common.containers.CardItemContainer;
+import com.direwolf20.laserio.common.containers.customslot.FilterBasicSlot;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.common.items.cards.CardFluid;
 import com.direwolf20.laserio.common.items.filters.FilterCount;
@@ -12,18 +13,23 @@ import com.direwolf20.laserio.common.network.packets.PacketGhostSlot;
 import com.direwolf20.laserio.common.network.packets.PacketOpenNode;
 import com.direwolf20.laserio.common.network.packets.PacketUpdateCard;
 import com.direwolf20.laserio.common.network.packets.PacketUpdateFilter;
+import com.direwolf20.laserio.setup.Config;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidUtil;
+import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 
 public class CardFluidScreen extends CardItemScreen {
-
     public int currentFluidExtractAmt;
     public final int filterStartX;
     public final int filterStartY;
@@ -42,14 +48,12 @@ public class CardFluidScreen extends CardItemScreen {
     public void init() {
         this.currentFluidExtractAmt = CardFluid.getFluidExtractAmt(card);
         super.init();
-        Minecraft minecraft = Minecraft.getInstance();
-        BlockEntityWithoutLevelRenderer blockentitywithoutlevelrenderer = new BlockEntityWithoutLevelRenderer(minecraft.getBlockEntityRenderDispatcher(), minecraft.getEntityModels());
         this.renderFluids = true;
     }
 
     @Override
     public void addAmtButton() {
-        buttons.put("amount", new NumberButton(getGuiLeft() + 147, getGuiTop() + 25, 24, 12, currentMode == 0 ? currentPriority : currentFluidExtractAmt, (button) -> {
+        buttons.put("amount", new NumberButton(getGuiLeft() + 141, getGuiTop() + 25, 30, 12, currentMode == 0 ? currentPriority : currentFluidExtractAmt, (button) -> {
             changeAmount(-1);
         }));
     }
@@ -70,9 +74,35 @@ public class CardFluidScreen extends CardItemScreen {
     }
 
     @Override
+    protected void renderTooltip(GuiGraphics pGuiGraphics, int pX, int pY) {
+        if (this.menu.getCarried().isEmpty() && this.hoveredSlot != null && this.hoveredSlot.hasItem()) {
+            ItemStack itemStack = this.hoveredSlot.getItem();
+            if (hoveredSlot instanceof FilterBasicSlot) {
+                LazyOptional<IFluidHandlerItem> fluidHandlerLazyOptional = FluidUtil.getFluidHandler(itemStack);
+                if (fluidHandlerLazyOptional.isPresent()) {
+                    IFluidHandler fluidHandler = fluidHandlerLazyOptional.resolve().get();
+                    FluidStack fluidStack = FluidStack.EMPTY;
+
+                    for (int tank = 0; tank < fluidHandler.getTanks(); tank++) {
+                        fluidStack = fluidHandler.getFluidInTank(tank);
+                        if (!fluidStack.isEmpty())
+                            break;
+                    }
+                    if (!fluidStack.isEmpty()) {
+                        pGuiGraphics.renderTooltip(this.font, fluidStack.getDisplayName(), pX, pY);
+                        return;
+                    }
+                }
+            }
+            pGuiGraphics.renderTooltip(this.font, this.getTooltipFromContainerItem(itemStack), itemStack.getTooltipImage(), itemStack, pX, pY);
+        }
+    }
+
+    @Override
     public void changeAmount(int change) {
         if (Screen.hasShiftDown()) change *= 10;
         if (Screen.hasControlDown()) change *= 100;
+        int overClockerCount = container.getSlot(1).getItem().getCount();
         if (change < 0) {
             if (currentMode == 0) {
                 currentPriority = (short) (Math.max(currentPriority + change, -4096));
@@ -83,7 +113,7 @@ public class CardFluidScreen extends CardItemScreen {
             if (currentMode == 0) {
                 currentPriority = (short) (Math.min(currentPriority + change, 4096));
             } else {
-                currentFluidExtractAmt = (Math.min(currentFluidExtractAmt + change, Math.max(container.getSlot(1).getItem().getCount() * 2000, 1000)));
+                currentFluidExtractAmt = (Math.min(currentFluidExtractAmt + change, Math.max(overClockerCount * Config.MULTIPLIER_MILLI_BUCKETS_FLUID.get(), Config.BASE_MILLI_BUCKETS_FLUID.get())));
             }
         }
     }
@@ -94,7 +124,7 @@ public class CardFluidScreen extends CardItemScreen {
         if (!FilterCount.doesItemStackHoldFluids(slotStack))
             return super.filterSlot(btn);
         if (slotStack.isEmpty()) return true;
-        if (btn == 2) { //Todo IMC Inventory Sorter so this works
+        if (btn == 2) {
             slotStack.setCount(0);
             PacketHandler.sendToServer(new PacketGhostSlot(hoveredSlot.index, slotStack, slotStack.getCount(), 0));
             return true;

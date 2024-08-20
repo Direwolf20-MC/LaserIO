@@ -71,7 +71,7 @@ public class FilterTag extends BaseFilter {
     }
 
     public static void clearTags(ItemStack card) {
-        List<String> tags = new ArrayList();
+        List<String> tags = new ArrayList<>();
         CompoundTag compound = card.getOrCreateTag();
         compound.put("tags", MiscTools.stringListToNBT(tags));
     }
@@ -87,7 +87,7 @@ public class FilterTag extends BaseFilter {
     }
 
     public static List<String> getTags(ItemStack card) {
-        List<String> tags = new ArrayList();
+        List<String> tags = new ArrayList<>();
         CompoundTag compound = card.getOrCreateTag();
         if (compound.contains("tags")) {
             ListTag listNBT = compound.getList("tags", Tag.TAG_COMPOUND);

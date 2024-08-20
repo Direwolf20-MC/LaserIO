@@ -1,0 +1,28 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "laserio:item/card_chemical",
+    "layer1": "laserio:item/cardlayers/insert",
+    "layer2": "laserio:item/cardlayers/channel"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "laserio:mode": 1
+      },
+      "model": "laserio:item/card_chemical_extract"
+    },
+    {
+      "predicate": {
+        "laserio:mode": 2
+      },
+      "model": "laserio:item/card_chemical_stock"
+    },
+    {
+      "predicate": {
+        "laserio:mode": 3
+      },
+      "model": "laserio:item/card_chemical_sensor"
+    }
+  ]
+}

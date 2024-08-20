@@ -6,7 +6,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.resources.language.I18n;
 
-import java.awt.*;
+import java.awt.Color;
 
 public class RenderGUIOverlay {
     public static void renderLocation(Font font, GuiGraphics guiGraphics, LaserConnectorAdvBE laserConnectorAdvBE) {

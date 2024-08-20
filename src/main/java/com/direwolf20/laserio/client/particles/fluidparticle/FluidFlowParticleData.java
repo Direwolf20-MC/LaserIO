@@ -15,6 +15,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fluids.FluidStack;
 
 import javax.annotation.Nonnull;
+
 import java.util.Locale;
 
 public class FluidFlowParticleData implements ParticleOptions {

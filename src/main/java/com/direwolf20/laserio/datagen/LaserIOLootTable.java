@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class LaserIOLootTable extends VanillaBlockLoot {
-
     @Override
     protected void generate() {
         dropSelf(Registration.LaserNode.get());

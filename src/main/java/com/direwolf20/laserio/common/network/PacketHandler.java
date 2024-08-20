@@ -1,7 +1,21 @@
 package com.direwolf20.laserio.common.network;
 
 import com.direwolf20.laserio.common.LaserIO;
-import com.direwolf20.laserio.common.network.packets.*;
+import com.direwolf20.laserio.common.network.packets.PacketChangeColor;
+import com.direwolf20.laserio.common.network.packets.PacketCopyPasteCard;
+import com.direwolf20.laserio.common.network.packets.PacketGhostSlot;
+import com.direwolf20.laserio.common.network.packets.PacketNodeParticles;
+import com.direwolf20.laserio.common.network.packets.PacketNodeParticlesChemical;
+import com.direwolf20.laserio.common.network.packets.PacketNodeParticlesFluid;
+import com.direwolf20.laserio.common.network.packets.PacketOpenCard;
+import com.direwolf20.laserio.common.network.packets.PacketOpenFilter;
+import com.direwolf20.laserio.common.network.packets.PacketOpenNode;
+import com.direwolf20.laserio.common.network.packets.PacketToggleParticles;
+import com.direwolf20.laserio.common.network.packets.PacketUpdateCard;
+import com.direwolf20.laserio.common.network.packets.PacketUpdateFilter;
+import com.direwolf20.laserio.common.network.packets.PacketUpdateFilterTag;
+import com.direwolf20.laserio.common.network.packets.PacketUpdateRedstoneCard;
+import com.direwolf20.laserio.integration.mekanism.MekanismIntegration;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -15,7 +29,6 @@ import net.minecraftforge.network.simple.SimpleChannel;
 
 public class PacketHandler {
     private static final String PROTOCOL_VERSION = Integer.toString(2);
-    private static short index = 0;
 
     public static final SimpleChannel HANDLER = NetworkRegistry.ChannelBuilder
             .named(new ResourceLocation(LaserIO.MODID, "main_network_channel"))
@@ -36,6 +49,7 @@ public class PacketHandler {
         HANDLER.registerMessage(id++, PacketGhostSlot.class, PacketGhostSlot::encode, PacketGhostSlot::decode, PacketGhostSlot.Handler::handle);
         HANDLER.registerMessage(id++, PacketOpenNode.class, PacketOpenNode::encode, PacketOpenNode::decode, PacketOpenNode.Handler::handle);
         HANDLER.registerMessage(id++, PacketUpdateFilterTag.class, PacketUpdateFilterTag::encode, PacketUpdateFilterTag::decode, PacketUpdateFilterTag.Handler::handle);
+        HANDLER.registerMessage(id++, PacketToggleParticles.class, PacketToggleParticles::encode, PacketToggleParticles::decode, PacketToggleParticles.Handler::handle);
         HANDLER.registerMessage(id++, PacketChangeColor.class, PacketChangeColor::encode, PacketChangeColor::decode, PacketChangeColor.Handler::handle);
         HANDLER.registerMessage(id++, PacketCopyPasteCard.class, PacketCopyPasteCard::encode, PacketCopyPasteCard::decode, PacketCopyPasteCard.Handler::handle);
         //HANDLER.registerMessage(id++, PacketExtractUpgrade.class,     PacketExtractUpgrade::encode,       PacketExtractUpgrade::decode,       PacketExtractUpgrade.Handler::handle);
@@ -45,6 +59,11 @@ public class PacketHandler {
         HANDLER.registerMessage(id++, PacketNodeParticlesFluid.class, PacketNodeParticlesFluid::encode, PacketNodeParticlesFluid::decode, PacketNodeParticlesFluid.Handler::handle);
         //HANDLER.registerMessage(id++, PacketDurabilitySync.class,     PacketDurabilitySync::encode,       PacketDurabilitySync::decode,       PacketDurabilitySync.Handler::handle);
 
+        //Mekanism Packets Only
+        if (MekanismIntegration.isLoaded()) {
+            //Client Side
+            HANDLER.registerMessage(id++, PacketNodeParticlesChemical.class, PacketNodeParticlesChemical::encode, PacketNodeParticlesChemical::decode, PacketNodeParticlesChemical.Handler::handle);
+        }
     }
 
     public static void sendTo(Object msg, ServerPlayer player) {

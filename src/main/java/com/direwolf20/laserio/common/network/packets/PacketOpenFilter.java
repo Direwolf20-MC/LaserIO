@@ -1,6 +1,10 @@
 package com.direwolf20.laserio.common.network.packets;
 
-import com.direwolf20.laserio.common.containers.*;
+import com.direwolf20.laserio.common.containers.CardItemContainer;
+import com.direwolf20.laserio.common.containers.FilterBasicContainer;
+import com.direwolf20.laserio.common.containers.FilterCountContainer;
+import com.direwolf20.laserio.common.containers.FilterNBTContainer;
+import com.direwolf20.laserio.common.containers.FilterTagContainer;
 import com.direwolf20.laserio.common.containers.customhandler.FilterBasicHandler;
 import com.direwolf20.laserio.common.items.filters.FilterBasic;
 import com.direwolf20.laserio.common.items.filters.FilterCount;
@@ -18,7 +22,6 @@ import net.minecraftforge.network.NetworkEvent;
 import net.minecraftforge.network.NetworkHooks;
 
 import java.util.function.Supplier;
-
 
 public class PacketOpenFilter {
     private int slotNumber;
