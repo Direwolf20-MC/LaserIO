@@ -10,7 +10,7 @@
     },
     {
       "type": "patchouli:text",
-      "text": "Unlike Item/Fluid cards that require overclockers to operate faster than once every 20 ticks, Energy Cards can operate every tick by default.$(br2)FE/T values (max) for Overclockers:$(br)$(li)0 Overclockers: 1,000fe/t$(li)1 Overclocker:  4,000fe/t$(li)2 Overclockers: 16,000fe/t$(li)3 Overclockers: 32,000fe/t$(li)4 Overclockers: 100,000fe/t"
+      "text": "Unlike Item/Fluid cards that require overclockers to operate faster than once every 20 ticks, Energy Cards can operate every tick by default.$(br2)Overclockers can't go into Energy cards. Energy cards always operate at 1,000,000 FE/tick max. This can be reduced if you wish."
     },
     {
       "type": "patchouli:text",
