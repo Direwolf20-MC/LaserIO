@@ -53,7 +53,7 @@ public class CardChemicalScreen extends CardItemScreen {
 
     @Override
     public void addAmtButton() {
-        buttons.put("amount", new NumberButton(getGuiLeft() + 147, getGuiTop() + 25, 24, 12, currentMode == 0 ? currentPriority : currentChemicalExtractAmt, (button) -> {
+        buttons.put("amount", new NumberButton(getGuiLeft() + 139, getGuiTop() + 25, 32, 12, currentMode == 0 ? currentPriority : currentChemicalExtractAmt, (button) -> {
             changeAmount(-1);
         }));
     }
@@ -97,7 +97,7 @@ public class CardChemicalScreen extends CardItemScreen {
             if (currentMode == 0) {
                 currentPriority = (short) (Math.max(currentPriority + change, -4096));
             } else {
-                currentChemicalExtractAmt = (Math.max(currentChemicalExtractAmt + change, 1));
+                currentChemicalExtractAmt = (Math.max(currentChemicalExtractAmt + change, 100));
             }
         } else {
             if (currentMode == 0) {
@@ -133,10 +133,11 @@ public class CardChemicalScreen extends CardItemScreen {
 
     @Override
     public void setExtract(NumberButton amountButton, int btn) {
+    	int change = currentMode == 0 ? 1 : 100;
         if (btn == 0)
-            changeAmount(1);
+            changeAmount(change);
         else if (btn == 1)
-            changeAmount(-1);
+            changeAmount(change * -1);
         amountButton.setValue(currentMode == 0 ? currentPriority : currentChemicalExtractAmt);
         amountButton.playDownSound(Minecraft.getInstance().getSoundManager());
     }

@@ -279,8 +279,9 @@ public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContaine
             addRenderableWidget(button.getValue());
         }
 
+        //TODO è davvero utile?
         if (card.getCount() > 1) {
-            for (int i = 0; i < container.SLOTS; i++) {
+            for (int i = 0; i < CardEnergyContainer.SLOTS; i++) {
                 if (i >= container.slots.size()) continue;
                 Slot slot = container.getSlot(i);
                 if (slot instanceof CardItemSlot cardItemSlot)
@@ -467,10 +468,6 @@ public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContaine
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
         return super.mouseScrolled(mouseX, mouseY, delta);
-    }
-
-    private static MutableComponent getTrans(String key, Object... args) {
-        return Component.translatable(LaserIO.MODID + "." + key, args);
     }
 
     public void setExtract(NumberButton amountButton, int btn) {

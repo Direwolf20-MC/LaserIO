@@ -24,9 +24,7 @@ public class LaserIORecipes extends RecipeProvider implements IConditionBuilder 
 
     @Override
     protected void buildRecipes(Consumer<FinishedRecipe> consumer) {
-
-
-        //Crafting Components
+    	//Crafting Components
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, Registration.Logic_Chip_Raw.get(), 4)
                 .pattern("rgr")
                 .pattern("cqc")
@@ -174,7 +172,7 @@ public class LaserIORecipes extends RecipeProvider implements IConditionBuilder 
         					.group("laserio")
         					.unlockedBy("has_logic_chip", InventoryChangeTrigger.TriggerInstance.hasItems(Registration.Logic_Chip.get()))
         					.save(t))
-        		.generateAdvancement(new ResourceLocation(LaserIO.MODID, "/misc/" + Registration.Card_Chemical.getId().getPath()))
+        		.generateAdvancement(new ResourceLocation(LaserIO.MODID, "recipes/misc/" + Registration.Card_Chemical.getId().getPath()))
         		.build(consumer, Registration.Card_Chemical.getId());
         
         //Filters
@@ -266,7 +264,7 @@ public class LaserIORecipes extends RecipeProvider implements IConditionBuilder 
 							.group("laserio")
 							.unlockedBy("has_card_chemical", InventoryChangeTrigger.TriggerInstance.hasItems(Registration.Card_Chemical.get()))
 							.save(t))
-				.generateAdvancement(new ResourceLocation(LaserIO.MODID, "/misc/" + Registration.Card_Chemical.getId().getPath() + "_nbtclear"))
+				.generateAdvancement(new ResourceLocation(LaserIO.MODID, "recipes/misc/" + Registration.Card_Chemical.getId().getPath() + "_nbtclear"))
 				.build(consumer, Registration.Card_Chemical.getId().withSuffix("_nbtclear"));
         
         ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, Registration.Filter_Basic.get())

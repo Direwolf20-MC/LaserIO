@@ -45,7 +45,6 @@ public class ItemStackHandlerProvider implements ICapabilitySerializable<Compoun
         return ForgeCapabilities.ITEM_HANDLER.orEmpty(cap, holder.cast());
     }
 
-    @SuppressWarnings("NullableProblems")
     @Override
     public CompoundTag serializeNBT() {
         return holder.map(ItemStackHandler::serializeNBT).orElse(new CompoundTag());

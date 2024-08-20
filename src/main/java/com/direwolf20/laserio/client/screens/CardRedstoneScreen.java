@@ -186,10 +186,6 @@ public class CardRedstoneScreen extends AbstractContainerScreen<CardRedstoneCont
         return super.mouseScrolled(mouseX, mouseY, delta);
     }
 
-    private static MutableComponent getTrans(String key, Object... args) {
-        return Component.translatable(LaserIO.MODID + "." + key, args);
-    }
-
     public void saveSettings() {
         PacketHandler.sendToServer(new PacketUpdateRedstoneCard(currentMode, currentRedstoneChannel, currentStrong));
     }

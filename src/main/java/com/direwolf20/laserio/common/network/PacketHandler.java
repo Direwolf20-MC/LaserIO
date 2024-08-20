@@ -17,7 +17,6 @@ import net.minecraftforge.network.simple.SimpleChannel;
 
 public class PacketHandler {
     private static final String PROTOCOL_VERSION = Integer.toString(2);
-    private static short index = 0;
 
     public static final SimpleChannel HANDLER = NetworkRegistry.ChannelBuilder
             .named(new ResourceLocation(LaserIO.MODID, "main_network_channel"))

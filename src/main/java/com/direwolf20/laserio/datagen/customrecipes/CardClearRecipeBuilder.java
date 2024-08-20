@@ -90,8 +90,7 @@ public class CardClearRecipeBuilder implements RecipeBuilder {
     public void save(Consumer<FinishedRecipe> consumer, ResourceLocation pId) {
         this.ensureValid(pId);
         this.advancement.parent(new ResourceLocation("recipes/root")).addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(pId)).rewards(AdvancementRewards.Builder.recipe(pId)).requirements(RequirementsStrategy.OR);
-        String folder = "misc";
-        consumer.accept(new CardClearRecipeBuilder.Result(pId, this.result, this.count, this.group == null ? "" : this.group, this.ingredients, this.advancement, new ResourceLocation(pId.getNamespace(), "recipes/" + folder + "/" + pId.getPath())));
+        consumer.accept(new CardClearRecipeBuilder.Result(pId, this.result, this.count, this.group == null ? "" : this.group, this.ingredients, this.advancement, new ResourceLocation(pId.getNamespace(), "recipes/misc/" + pId.getPath())));
     }
 
     private void ensureValid(ResourceLocation consumer) {

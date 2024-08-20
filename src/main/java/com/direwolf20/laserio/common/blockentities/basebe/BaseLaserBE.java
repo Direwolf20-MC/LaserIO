@@ -306,7 +306,6 @@ public class BaseLaserBE extends BlockEntity {
         }
         tag.put("renderedConnections", renderedConnections);
         tag.put("myWorldPos", NbtUtils.writeBlockPos(getBlockPos()));
-        Color color = getColor();
         tag.putInt("laserColor", getColor().getRGB());
         tag.putInt("wrenchAlpha", getWrenchAlpha());
     }

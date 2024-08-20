@@ -25,7 +25,6 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -236,7 +235,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
         IItemHandler handler = container.filterHandler;
         for (int i = 0; i < handler.getSlots(); i++) {
             ItemStack stack = handler.getStackInSlot(i);
-            stack.setCount(container.getStackSize(i + container.SLOTS));
+            stack.setCount(container.getStackSize(i + CardItemContainer.SLOTS));
         }
     }
 
@@ -281,8 +280,6 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
     @Override
     public void init() {
         super.init();
-        Minecraft minecraft = Minecraft.getInstance();
-        BlockEntityWithoutLevelRenderer blockentitywithoutlevelrenderer = new BlockEntityWithoutLevelRenderer(minecraft.getBlockEntityRenderDispatcher(), minecraft.getEntityModels());
         currentMode = BaseCard.getTransferMode(card);
         currentChannel = BaseCard.getChannel(card);
         currentItemExtractAmt = CardItem.getItemExtractAmt(card);
@@ -413,7 +410,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
 
 
         if (card.getCount() > 1) {
-            for (int i = 0; i < container.SLOTS; i++) {
+            for (int i = 0; i < CardItemContainer.SLOTS; i++) {
                 if (i >= container.slots.size()) continue;
                 Slot slot = container.getSlot(i);
                 if (slot instanceof CardItemSlot cardItemSlot)
@@ -585,7 +582,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
                 removeWidget(exactButton);
             }
         }
-        for (int i = container.SLOTS; i < container.SLOTS + container.FILTERSLOTS; i++) {
+        for (int i = CardItemContainer.SLOTS; i < CardItemContainer.SLOTS + CardItemContainer.FILTERSLOTS; i++) {
             if (i >= container.slots.size()) continue;
             Slot slot = container.getSlot(i);
             if (!(slot instanceof FilterBasicSlot)) continue;
@@ -689,10 +686,6 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
             }
         }
         return super.mouseScrolled(mouseX, mouseY, delta);
-    }
-
-    private static MutableComponent getTrans(String key, Object... args) {
-        return Component.translatable(LaserIO.MODID + "." + key, args);
     }
 
     public void setExtract(NumberButton amountButton, int btn) {

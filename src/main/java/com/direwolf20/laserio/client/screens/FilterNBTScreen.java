@@ -25,7 +25,6 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
@@ -380,7 +379,4 @@ public class FilterNBTScreen extends AbstractContainerScreen<FilterNBTContainer>
         return super.mouseScrolled(mouseX, mouseY, delta);
     }
 
-    private static MutableComponent getTrans(String key, Object... args) {
-        return Component.translatable(LaserIO.MODID + "." + key, args);
-    }
 }

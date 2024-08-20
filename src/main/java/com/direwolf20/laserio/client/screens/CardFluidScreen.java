@@ -17,7 +17,6 @@ import com.direwolf20.laserio.common.network.packets.PacketUpdateFilter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -50,8 +49,6 @@ public class CardFluidScreen extends CardItemScreen {
     public void init() {
         this.currentFluidExtractAmt = CardFluid.getFluidExtractAmt(card);
         super.init();
-        Minecraft minecraft = Minecraft.getInstance();
-        BlockEntityWithoutLevelRenderer blockentitywithoutlevelrenderer = new BlockEntityWithoutLevelRenderer(minecraft.getBlockEntityRenderDispatcher(), minecraft.getEntityModels());
         this.renderFluids = true;
     }
 

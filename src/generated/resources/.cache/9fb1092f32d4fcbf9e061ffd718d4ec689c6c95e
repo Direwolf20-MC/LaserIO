@@ -1,6 +1,6 @@
-// 1.20.1	2024-08-07T05:02:50.2321122	Recipes
-07072e97b1f7c6c79b5ea03bea581f7ac0cd5c88 ../../../../../../../../misc/card_chemical.json
-c7ca6d767ba349eecf27ad648581f731902df820 ../../../../../../../../misc/card_chemical_nbtclear.json
+// 1.20.1	2024-08-09T04:31:02.0614324	Recipes
+07072e97b1f7c6c79b5ea03bea581f7ac0cd5c88 data/laserio/advancements/recipes/misc/card_chemical.json
+c7ca6d767ba349eecf27ad648581f731902df820 data/laserio/advancements/recipes/misc/card_chemical_nbtclear.json
 3ec21380a00186742c5a6bea4e1cf076a74b6923 data/laserio/advancements/recipes/misc/card_cloner.json
 5735f4c97cf8090d5d8bb5964c14b89984751beb data/laserio/advancements/recipes/misc/card_energy.json
 ab3a9ecc26922c085d82557de600115b01082d19 data/laserio/advancements/recipes/misc/card_energy_nbtclear.json

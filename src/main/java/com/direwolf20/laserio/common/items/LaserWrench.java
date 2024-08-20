@@ -26,18 +26,6 @@ public class LaserWrench extends Item {
                 .stacksTo(1));
     }
 
-    /*public static ResourceLocation storeDimension(ItemStack wrench, ResourceLocation dim) {
-        wrench.getOrCreateTag().putString("dimension", dim.toString());
-        return dim;
-    }
-
-    public static ResourceLocation getDimension(ItemStack wrench, Level level) {
-        CompoundTag compound = wrench.getOrCreateTag();
-        String dimName = !compound.contains("dimension") ? level.dimension().location().toString() :compound.getString("dimension");
-        ResourceLocation dim = new ResourceLocation(dimName);
-        return dim;
-    }*/
-
     public static DimBlockPos storeConnectionPos(ItemStack wrench, Level level, BlockPos pos) {
         DimBlockPos dimBlockPos = new DimBlockPos(level, pos);
         wrench.getOrCreateTag().put("connectiondimpos", dimBlockPos.toNBT());

@@ -77,7 +77,6 @@ public class LaserNode extends BaseLaserBlock implements EntityBlock {
         super();
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult result) {
         ItemStack heldItem = player.getMainHandItem();
@@ -223,7 +222,6 @@ public class LaserNode extends BaseLaserBlock implements EntityBlock {
         return SHAPE;
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public VoxelShape getOcclusionShape(BlockState state, BlockGetter reader, BlockPos pos) {
         return SHAPE;

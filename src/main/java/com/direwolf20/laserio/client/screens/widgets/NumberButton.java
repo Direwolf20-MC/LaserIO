@@ -1,17 +1,14 @@
 package com.direwolf20.laserio.client.screens.widgets;
 
-import com.direwolf20.laserio.common.LaserIO;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.resources.ResourceLocation;
 
 import java.awt.*;
 
 public class NumberButton extends Button {
-    private final ResourceLocation resourceLocation = new ResourceLocation(LaserIO.MODID, "textures/gui/buttons/blankbutton.png");
     private int value;
 
     public NumberButton(int x, int y, int width, int height, int value, OnPress onPress) {

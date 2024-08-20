@@ -64,4 +64,5 @@ public class JEIIntegration implements IModPlugin {
         registration.addGhostIngredientHandler(FilterCountScreen.class, new GhostFilterCount());
         registration.addGhostIngredientHandler(FilterTagScreen.class, new GhostFilterTag());
     }
+    
 }

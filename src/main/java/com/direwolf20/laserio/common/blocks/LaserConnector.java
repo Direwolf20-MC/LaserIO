@@ -156,7 +156,6 @@ public class LaserConnector extends BaseLaserBlock implements EntityBlock {
         return shapes[state.getValue(FACING).get3DDataValue()];
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public VoxelShape getOcclusionShape(BlockState state, BlockGetter reader, BlockPos pos) {
         return shapes[state.getValue(FACING).get3DDataValue()];
