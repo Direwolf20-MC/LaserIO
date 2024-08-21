@@ -46,7 +46,9 @@ public class MekanismStatics {
     }
 
     public static ChemicalStack getFirstChemicalOnItemStack(ItemStack itemStack) {
-        IChemicalHandler handler = itemStack.getCapability(getItemCapabilityForChemical());
+        ItemStack testStack = itemStack.copy();
+        testStack.setCount(1);
+        IChemicalHandler handler = testStack.getCapability(getItemCapabilityForChemical());
         if (handler != null) {
             for (int tank = 0; tank < handler.getChemicalTanks(); tank++) {
                 ChemicalStack chemicalStack = handler.getChemicalInTank(tank);
