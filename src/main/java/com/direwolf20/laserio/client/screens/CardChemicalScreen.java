@@ -78,7 +78,7 @@ public class CardChemicalScreen extends CardItemScreen {
         if (this.menu.getCarried().isEmpty() && this.hoveredSlot != null && this.hoveredSlot.hasItem()) {
             ItemStack itemstack = this.hoveredSlot.getItem();
             if (hoveredSlot instanceof FilterBasicSlot) {
-                ChemicalStack<?> chemicalStack = MekanismStatics.getFirstChemicalOnItemStack(itemstack);
+                ChemicalStack chemicalStack = MekanismStatics.getFirstChemicalOnItemStack(itemstack);
                 if (chemicalStack.isEmpty())
                     pGuiGraphics.renderTooltip(this.font, this.getTooltipFromContainerItem(itemstack), itemstack.getTooltipImage(), itemstack, pX, pY);
                 else

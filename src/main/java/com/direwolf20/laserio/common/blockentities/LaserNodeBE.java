@@ -23,7 +23,6 @@ import it.unimi.dsi.fastutil.bytes.Byte2BooleanOpenHashMap;
 import it.unimi.dsi.fastutil.bytes.Byte2ByteMap;
 import it.unimi.dsi.fastutil.bytes.Byte2ByteOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import mekanism.api.chemical.ChemicalType;
 import mekanism.api.chemical.IChemicalHandler;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
@@ -2353,8 +2352,8 @@ public class LaserNodeBE extends BaseLaserBE {
                     redstoneCardSides.put((byte) direction.ordinal(), true);
                     cardRenders.add(new CardRender(direction, slot, card, getBlockPos(), level, enabled));
                 } else if (card.getItem() instanceof CardChemical) {
-                    Map<ChemicalType, IChemicalHandler<?, ?>> chemicalHandlers = mekanismCache.getAttachedChemicalTanksNoCache(direction, BaseCard.getSneaky(card));
-                    if (chemicalHandlers == null || chemicalHandlers.isEmpty())
+                    IChemicalHandler chemicalHandler = mekanismCache.getAttachedChemicalTanksNoCache(direction, BaseCard.getSneaky(card));
+                    if (chemicalHandler == null)
                         continue;
                     cardRenders.add(new CardRender(direction, slot, card, getBlockPos(), level, enabled));
                 }

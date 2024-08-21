@@ -107,7 +107,7 @@ public class LaserGuiGraphicsChemical extends GuiGraphics {
         } else if (!MiscTools.inBounds(cardChemicalScreen.filterStartX, cardChemicalScreen.filterStartY, cardChemicalScreen.filterEndX - cardChemicalScreen.filterStartX, cardChemicalScreen.filterEndY - cardChemicalScreen.filterStartY, pX, pY)) {
             return false;
         }
-        ChemicalStack<?> chemicalStack = getFirstChemicalOnItemStack(pStack);
+        ChemicalStack chemicalStack = getFirstChemicalOnItemStack(pStack);
         return !chemicalStack.isEmpty() && Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(chemicalStack.getChemical().getIcon()) != null;
     }
 
@@ -117,7 +117,7 @@ public class LaserGuiGraphicsChemical extends GuiGraphics {
             super.renderItem(pStack, pX, pY, something);
             return;
         }
-        ChemicalStack<?> chemicalStack = getFirstChemicalOnItemStack(pStack); //We checked above to ensure this isn't empty
+        ChemicalStack chemicalStack = getFirstChemicalOnItemStack(pStack); //We checked above to ensure this isn't empty
         TextureAtlasSprite chemicalSprite = Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(chemicalStack.getChemical().getIcon());
         int chemicalColor = chemicalStack.getChemicalColorRepresentation();
 

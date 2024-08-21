@@ -11,7 +11,7 @@ import net.minecraft.world.phys.Vec3;
 
 public class ChemicalFlowParticle extends BreakingItemParticle {
 
-    public ChemicalFlowParticle(ClientLevel world, double x, double y, double z, Vec3 target, ChemicalStack<?> chemicalStack, int ticksPerBlock) {
+    public ChemicalFlowParticle(ClientLevel world, double x, double y, double z, Vec3 target, ChemicalStack chemicalStack, int ticksPerBlock) {
         super(world, x, y, z, ItemStack.EMPTY);
         this.xd = 0;
         this.yd = 0;
@@ -55,5 +55,5 @@ public class ChemicalFlowParticle extends BreakingItemParticle {
     }
 
     public static ParticleProvider<ChemicalFlowParticleData> FACTORY = (data, world, x, y, z, xSpeed, ySpeed, zSpeed) ->
-            new ChemicalFlowParticle(world, x, y, z, data.target, data.getChemicalStack().getChemicalStack(), data.ticksPerBlock);
+            new ChemicalFlowParticle(world, x, y, z, data.target, data.getChemicalStack(), data.ticksPerBlock);
 }
