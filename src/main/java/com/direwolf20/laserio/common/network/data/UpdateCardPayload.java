@@ -1,7 +1,7 @@
 package com.direwolf20.laserio.common.network.data;
 
 import com.direwolf20.laserio.common.LaserIO;
-import com.mojang.datafixers.util.Function14;
+import com.mojang.datafixers.util.Function15;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -24,7 +24,8 @@ public record UpdateCardPayload(
         int insertLimit,
         byte redstoneMode,
         byte redstoneChannel,
-        boolean andMode
+        boolean andMode,
+        byte maxBackoff
 ) implements CustomPacketPayload {
     public static final Type<UpdateCardPayload> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "update_card"));
 
@@ -48,10 +49,11 @@ public record UpdateCardPayload(
             ByteBufCodecs.BYTE, UpdateCardPayload::redstoneMode,
             ByteBufCodecs.BYTE, UpdateCardPayload::redstoneChannel,
             ByteBufCodecs.BOOL, UpdateCardPayload::andMode,
+            ByteBufCodecs.BYTE, UpdateCardPayload::maxBackoff,
             UpdateCardPayload::new
     );
 
-    public static <B, C, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> StreamCodec<B, C> composite(
+    public static <B, C, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> StreamCodec<B, C> composite(
             final StreamCodec<? super B, T1> codec1,
             final Function<C, T1> getter1,
             final StreamCodec<? super B, T2> codec2,
@@ -80,8 +82,10 @@ public record UpdateCardPayload(
             final Function<C, T13> getter13,
             final StreamCodec<? super B, T14> codec14,
             final Function<C, T14> getter14,
-            final Function14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, C> p_331335_) {
-        return new StreamCodec<B, C>() {
+            final StreamCodec<? super B, T15> codec15,
+            final Function<C, T15> getter15,
+            final Function15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, C> p_331335_) {
+        return new StreamCodec<>() {
             @Override
             public C decode(B p_330310_) {
                 T1 t1 = codec1.decode(p_330310_);
@@ -98,7 +102,8 @@ public record UpdateCardPayload(
                 T12 t12 = codec12.decode(p_330310_);
                 T13 t13 = codec13.decode(p_330310_);
                 T14 t14 = codec14.decode(p_330310_);
-                return p_331335_.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14);
+                T15 t15 = codec15.decode(p_330310_);
+                return p_331335_.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15);
             }
 
             @Override
@@ -117,6 +122,7 @@ public record UpdateCardPayload(
                 codec12.encode(p_332052_, getter12.apply(p_331912_));
                 codec13.encode(p_332052_, getter13.apply(p_331912_));
                 codec14.encode(p_332052_, getter14.apply(p_331912_));
+                codec15.encode(p_332052_, getter15.apply(p_331912_));
             }
         };
     }

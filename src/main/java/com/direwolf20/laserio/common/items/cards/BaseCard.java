@@ -197,6 +197,18 @@ public class BaseCard extends Item {
         return card.getOrDefault(LaserIODataComponents.CARD_EXTRACT_SPEED, 20);
     }
 
+    public static int setMaxBackoff(ItemStack card, byte itemextractspeed) {
+        if (itemextractspeed == 0)
+            card.remove(LaserIODataComponents.CARD_MAX_BACKOFF);
+        else
+            card.set(LaserIODataComponents.CARD_MAX_BACKOFF, itemextractspeed);
+        return itemextractspeed;
+    }
+
+    public static byte getMaxBackoff(ItemStack card) {
+        return card.getOrDefault(LaserIODataComponents.CARD_MAX_BACKOFF, (byte) 0);
+    }
+
     public static short setPriority(ItemStack card, short priority) {
         if (priority == 0)
             card.remove(LaserIODataComponents.CARD_PRIORITY);

@@ -37,6 +37,7 @@ public class PacketUpdateCard {
                     stack = ((CardItemContainer) container).cardItem;
                 BaseCard.setTransferMode(stack, payload.mode());
                 BaseCard.setChannel(stack, payload.channel());
+                BaseCard.setMaxBackoff(stack, payload.maxBackoff());
                 int extractAmt = payload.extractAmt();
                 int overClockerCount = 0;
                 if (stack.getItem() instanceof CardItem) {
