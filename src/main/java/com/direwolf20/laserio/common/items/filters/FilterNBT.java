@@ -29,6 +29,7 @@ public class FilterNBT extends BaseFilter {
         player.openMenu(new SimpleMenuProvider(
                 (windowId, playerInventory, playerEntity) -> new FilterNBTContainer(windowId, playerInventory, player, itemstack), Component.translatable("")), (buf -> {
             ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, itemstack);
+            ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, ItemStack.EMPTY);
         }));
 
         return new InteractionResultHolder<>(InteractionResult.PASS, itemstack);
