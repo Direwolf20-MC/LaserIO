@@ -1,0 +1,16 @@
+{
+  "name": "Redstone Modu",
+  "sortnum": 11,
+  "category": "laserio:mechanics",
+  "icon": "laserio:textures/gui/buttons/redstonehigh.png",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Redstone modu, $(l:laserio:redstonechannel)Redstone Kanalındaki$(/l) bir redstone sinyalinin bir kartı nasıl etkileyeceğini belirler.$(br2)Varsayılan olarak, bu $(bold)yok sayıldı$() olarak ayarlanmıştır, bu da kartın her zaman çalışacağı ve redstone'un onu etkilemeyeceği anlamına gelir."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(br2)Düşük olarak ayarlanırsa, kartlar yalnızca redstone kanalında bir redstone sinyali OLMADIĞINDA çalışacaktır (kanal düğmesi redstone geçişinin sağındadır).$(br2)Redstone yüksek modunda, kartlar yalnızca redstone kanalında bir redstone sinyali olduğunda çalışacaktır."
+    }
+  ]
+}

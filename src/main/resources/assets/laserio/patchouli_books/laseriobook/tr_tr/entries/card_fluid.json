@@ -1,0 +1,21 @@
+{
+  "name": "Sıvı Kartları",
+  "sortnum": 2,
+  "category": "laserio:cards",
+  "icon": "laserio:card_fluid",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Sıvı Kartları, tanklar gibi envanterler arasında Sıvı göndermek için kullanılır.$(br2)Hız aşırtıcı değerleri aşağıdaki sayfada açıklanmıştır."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Hız Aşırtıcılar için MB/T değerleri (maks):$(br2)$(li)0 Hız Aşırtıcılar: 5,000mb/20t$(li)1 Hız Aşırtıcı:  10,000mb/15t$(li)2 Hız Aşırtıcılar: 20,000mb/10t$(li)3 Hız Aşırtıcılar: 30,000mb/5t$(li)4 Hız Aşırtıcılar: 40,000mb/1t"
+    },
+    {
+      "type": "patchouli:crafting",
+      "title": "Sıvı Kartı",
+      "recipe": "laserio:card_fluid"
+    }
+  ]
+}

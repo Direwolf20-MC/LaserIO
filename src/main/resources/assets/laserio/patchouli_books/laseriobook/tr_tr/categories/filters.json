@@ -1,0 +1,6 @@
+{
+  "name": "Filtreler",
+  "description": "Filtreler, kartlar tarafından hareket ettirilmesine izin verilen veya verilmeyen şeyleri kontrol etmenize olanak tanır.",
+  "sortnum": 3,
+  "icon": "laserio:filter_basic"
+}

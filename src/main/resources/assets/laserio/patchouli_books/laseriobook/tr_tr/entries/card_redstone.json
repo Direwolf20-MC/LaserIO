@@ -1,0 +1,29 @@
+{
+  "name": "Redstone Kartları",
+  "sortnum": 4,
+  "category": "laserio:cards",
+  "icon": "laserio:card_redstone",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Redstone kartları, tüm LaserIO ağı boyunca redstone sinyallerini iletmek için kullanılır. $(br2)Redstone kartları, diğer kartların kullandığı kanallardan ayrı, özel bir 'redstone kanalına' sahiptir. "
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Redstone kartlarının 2 modu vardır:$(br2)$(bold)Giriş$()$(br)Giriş modu, redstone tozu, bir şalter veya bir düğme gibi bir şeyden gelen redstone sinyalini kabul eder ve kartta yapılandırılan redstone kanalında ağ üzerinden iletir.$(br2)$(bold)Çıkış$()$(br)Çıkış, redstone tozu, lamba veya yineleyiciler gibi bloklara bir redstone sinyali yayacaktır."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Çıkış modunda Zayıf ve Güçlü için bir geçiş vardır. Zayıf modda, redstone tozunun nasıl çalıştığına benzer şekilde, yalnızca redstone gibi doğrudan bitişik bloklar sinyal alacaktır.$(br2)Güçlü modda, redstone sinyali bitişik bir bloktan geçerek diğer taraftaki bloğu etkileyebilir, tıpkı şalterlerin çalışması gibi."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Tüm kartlarda varsayılan olarak yok sayılan bir redstone modu geçişi vardır, bu da kartların her zaman çalışacağı anlamına gelir.$(br2)Düşük olarak ayarlanırsa, kartlar yalnızca redstone kanalında bir redstone sinyali OLMADIĞINDA çalışacaktır (kanal düğmesi redstone geçişinin sağındadır).$(br2)Redstone yüksek modunda, kartlar yalnızca redstone kanalında bir redstone sinyali olduğunda çalışacaktır."
+    },
+    {
+      "type": "patchouli:crafting",
+      "title": "Redstone Kartı",
+      "recipe": "laserio:card_redstone"
+    }
+  ]
+}

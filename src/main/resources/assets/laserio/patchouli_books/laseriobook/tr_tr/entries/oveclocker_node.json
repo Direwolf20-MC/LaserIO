@@ -1,0 +1,39 @@
+{
+  "name": "Bağlantı Noktası Hız Aşırtıcı",
+  "icon": "laserio:overclocker_node",
+  "sortnum": 3,
+  "category": "laserio:items",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Bağlantı Noktası Hız Aşırtıcıları daha karmaşık bir bileşendir.$(br2)Her bir $(l:laserio:laser_node)Bağlantı Noktası$(/l), tik başına her bir tarafta yalnızca 1 kart üzerinde çalışabilir. $(br2)Bir bağlantı noktasının yanında 3 çıkartıcı kart varsa, bir oyun tikinde yalnızca ilki çalışacak ve ikincisi yalnızca ilki bir şey yapamazsa çalışacaktır."
+    },
+    {
+      "type": "patchouli:image",
+      "title": "Bağlantı Noktası Hız Aşırtıcıları Yok",
+      "images": [
+        "laserio:textures/book/entries/overclocker_node1.png"
+      ],
+      "border": true,
+      "text": "Kurulu Bağlantı Noktası Hız Aşırtıcıları sayısı sıfır"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Bir Bağlantı Noktasının yan tarafına takılan her bir Bağlantı Noktası Hız Aşırtıcı, o tarafın tik başına daha fazla kart üzerinde çalışmasını sağlar. Toplam 8 Bağlantı Noktası Hız Aşırtıcıları kurulabilir ve böylece 9 düğümün tamamında işlem yapılabilir. $(br2)Yerleştirici kartların çalışması için hız aşırtıcılara ihtiyaç $(l)$(#ff0000)YOKTUR$(), $(l)SADECE$() Çıkartıcı ve Stoklayıcı kartlar bunlara ihtiyaç duyar."
+    },
+    {
+      "type": "patchouli:image",
+      "title": "2 Bağlantı Noktası Hız Aşırtıcısı",
+      "images": [
+        "laserio:textures/book/entries/overclocker_node2.png"
+      ],
+      "border": true,
+      "text": "İki adet Bağlantı Noktası Hız Aşırtıcıları kurulmuştur"
+    },
+    {
+      "type": "patchouli:crafting",
+      "title": "Bağlantı Noktası Hız Aşırtıcı",
+      "recipe": "laserio:overclocker_node"
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "name": "Etiket Filtresi",
+  "sortnum": 2,
+  "category": "laserio:filters",
+  "icon": "laserio:filter_tag",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Etiket filtresi, bir oyuncunun kaynaklar üzerindeki etiketlere göre filtreleme yapmasını sağlar.$(br2)Etiketler, Minecraft'ın benzer kaynakları gruplandırmasının bir yoludur. Örneğin, sağ tarafta bir Demir Külçesinin 'forge:ingots' etiketine sahip olduğunu görebiliriz. Altın, bakır, kalay vb. de öyle.$(br2)Etiket filtresi, tek bir girişle tüm külçeleri sıralamanıza olanak tanır!"
+    },
+    {
+      "type": "patchouli:image",
+      "title": "Etiket UI'si",
+      "images": [
+        "laserio:textures/book/entries/filter_tag.png"
+      ],
+      "border": true,
+      "text": "Etiket UI'si"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "İlk olarak, sağ üstteki yuvaya bir eşya yerleştirerek başlayın. Bu öğe üzerindeki etiketlerin bir listesi $(#0000ff)mavi$() renkte görünecektir. Eklenmesini istediğiniz etikete tıklayın ve + düğmesine basın. Shift tuşunu basılı tutup + düğmesine basmak tüm etiketleri listeye ekleyecektir.$(br2)Listeden bir etiketi kaldırmak için etiketi seçin ve - düğmesine basın. $(br2)Alternatif olarak, etiketi otomatik olarak eklemek/kaldırmak için shift tuşuna basarak tıklayabilirsiniz."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "X düğmesi tüm listeyi temizleyecektir.$(br2)Liste bir 'veya' listesi olarak ele alınır - yani listedeki etiketlerden herhangi biriyle eşleşen bir eşya filtrelenir.$(br2)Etiket Filtreleri NBT karşılaştırmalarını desteklemez, çünkü bu herhangi bir anlam ifade etmez."
+    }
+  ]
+}

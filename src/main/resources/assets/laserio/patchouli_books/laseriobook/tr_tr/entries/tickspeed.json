@@ -1,0 +1,20 @@
+{
+  "name": "Tik Hızı",
+  "sortnum": 8,
+  "category": "laserio:mechanics",
+  "icon": "minecraft:textures/item/clock_00.png",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Tik Hızı yalnızca Çıkartıcı ve Stoklayıcı Modlarında kullanılabilir.$(br2)Bu ayar bir kartın ne kadar hızlı çalışacağını belirler. Varsayılan değer olan 20 tik, bir çıkartıcı kartın yalnızca her 20 tikte veya 1 saniyede bir eşya çıkartacağı anlamına gelir."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Çıkartıcı ve Stoklayıcı kartlarının varsayılan ve minimum değeri 20'dir ve $(l:laserio:overclocker_card)Kart Hız Aşırtıcıları$(/l) kurulu değilse maksimum değer 1200'dür. Belirlenmiş hız aşırtıcılar takılıyken aşağıdaki minimum tik hızlarına izin verilir:$(br)1. 15$(br)2. 10$(br)3. 5$(br)4. 1$(br2)Her tikte eşya çıkarmak istiyorsanız, 4 hız aşırtıcının kurulu olması gerekir."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Bu değeri 1 artırmak için üzerine sol tıklayın, azaltmak için sağ tıklayın. Shift tuşunu basılı tutmak değişim miktarını 10 ile çarparken, Control tuşunu basılı tutmak değişim miktarını 64 ile çarpacaktır.$(br2)Bunlar birleştirilebilir, yani Shift+Ctrl tuşlarına basılı tutulduğunda 640 ile çarpılır.$(br2)Örneğin, Shift sağ tıklama 10 azaltacaktır."
+    }
+  ]
+}

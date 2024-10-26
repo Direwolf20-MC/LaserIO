@@ -1,0 +1,6 @@
+{
+  "name": "Kart Mekanikleri",
+  "description": "Aşağıdaki bölümler kartların temel mekaniklerini tanımlamaktadır. Eğer bir mekanik bir kart türüne özgü ise, girişin ilk sayfasında tanımlanacaktır.",
+  "sortnum": 2,
+  "icon": "laserio:logic_chip"
+}

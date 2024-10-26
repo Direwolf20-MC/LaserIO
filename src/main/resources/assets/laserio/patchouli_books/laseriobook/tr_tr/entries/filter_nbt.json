@@ -1,0 +1,29 @@
+{
+  "name": "NBT Filtresi",
+  "sortnum": 3,
+  "category": "laserio:filters",
+  "icon": "laserio:filter_nbt",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "NBT filtresi, $(l:laserio:filter_tag)Etiket Filtresi$(/l) ile çok benzer bir UI ve işlevselliğe sahiptir .$(br2)Bir eşyayı sağ üstteki yuvaya yerleştirmek size o eşya üzerindeki tüm nbt etiketlerini gösterecektir. Bunları listeye eklemek (etiket filtresi ile yaptığınız gibi), bu etiketlere atanan değerlerden bağımsız olarak bu etiketleri içeren eşyaları filtreleyecektir."
+    },
+    {
+      "type": "patchouli:image",
+      "title": "NBT UI'si",
+      "images": [
+        "laserio:textures/book/entries/nbt_filter.png"
+      ],
+      "border": true,
+      "text": "NBT UI'si"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Örneğin, tüm büyülü eşyaların Ganimet, keskinlik vb. gibi şeyleri belirten bir 'Büyüler' etiketi vardır. Eğer bu listeye 'enchantments' etiketini eklerseniz, filtre tüm büyülü eşyaları filtreleyecektir.$(br2)Büyülenmiş kılıçlar bir envantere, büyülenmemiş kılıçlar ise başka bir envantere konabilir. Hangi efsunların uygulandığına bakılmaksızın."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Diğer tüm işlevler $(l:laserio:filter_tag)Etiket Filtresi$(/l) ile aynıdır, daha fazla bilgi için bu girdiye bakın."
+    }
+  ]
+}

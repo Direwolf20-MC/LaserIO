@@ -1,0 +1,21 @@
+{
+  "name": "Eşya Kartları",
+  "sortnum": 1,
+  "category": "laserio:cards",
+  "icon": "laserio:card_item",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Eşya Kartları, sandıklar ve ocaklar gibi envanterler arasında eşya göndermek için kullanılır.$(br2)Hız aşırtıcı değerleri aşağıdaki sayfada açıklanmıştır."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Hız Aşırtıcılar için Eşya/T değerleri (maks.):$(br2)$(li)0 Hız Aşırtıcılar: 8 Eşya/20t$(li)1 Hız Aşırtıcı:  16 Eşya/15t$(li)2 Hız Aşırtıcılar: 32 Eşya/10t$(li)3 Hız Aşırtıcılar: 48 Eşya/5t$(li)4 Hız Aşırtıcılar: 64 Eşya/1t"
+    },
+    {
+      "type": "patchouli:crafting",
+      "title": "Eşya Kartı",
+      "recipe": "laserio:card_item"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "name": "Kanal",
+  "sortnum": 4,
+  "category": "laserio:mechanics",
+  "icon": "laserio:textures/gui/buttons/blankbutton.png",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Kartlar yalnızca aynı kanaldaki diğer kartlarla etkileşime girebilir. Bu, bir oyuncunun aynı ağ üzerinde birden fazla yönlendirme mantığı setine sahip olmasını sağlar.$(br2)Örneğin, 'Turuncu' kanaldaki Çıkartıcı kartlar yalnızca 'Turuncu' renkli Yerleştirme Kartlarına takılmaya çalışacak ve diğer tüm kartları yok sayacaktır."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Örneğin, bir Çıkartma Kartını kırık taş filtresi ile 'Turuncu Kanal'a ve başka bir çıkartma kartını kömür filtresi ile 'Siyah Kanal'a ayarlayın. Sonra bunları aynı bağlantı noktasına yerleştirin. $(br2)Turuncu kanal yerleştirici bir ocağın üstünde, siyah kanal yerleştirici ise altında yer alabilir. Bu, ocağın üst kısmına yalnızca kırık taş girmesini, altına ise kömür girmesini sağlayacaktır."
+    }
+  ]
+}

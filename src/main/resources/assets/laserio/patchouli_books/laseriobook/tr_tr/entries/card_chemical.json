@@ -1,0 +1,21 @@
+{
+  "name": "Kimyasal Kartları",
+  "sortnum": 5,
+  "category": "laserio:cards",
+  "icon": "laserio:card_chemical",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Kimyasal Kartları, Mekanism Tankları gibi envanterler arasında Kimyasal göndermek için kullanılır. Bu kartlar yalnızca Mekanism kuruluysa kullanılabilir.$(br2)Hız Aşırtıcı değerleri aşağıdaki sayfada belgelenmiştir."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Hız Aşırtıcılar için MB/T değerleri (maks.):$(br2)$(li)0 Hız Aşırtıcılar: 15,000mb/20t$(li)1 Hız Aşırtıcı:  60,000mb/15t$(li)2 Hız Aşırtıcılar: 120,000mb/10t$(li)3 Hız Aşırtıcılar: 180,000mb/5t$(li)4 Hız Aşırtıcılar: 240,000mb/1t"
+    },
+    {
+      "type": "patchouli:crafting",
+      "title": "Kimyasal Kartı",
+      "recipe": "laserio:card_chemical"
+    }
+  ]
+}

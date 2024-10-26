@@ -1,0 +1,26 @@
+{
+  "name": "Lazer Anahtarı",
+  "icon": "laserio:laser_wrench",
+  "sortnum": 1,
+  "category": "laserio:items",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Lazer Anahtarı öncelikle birden fazla Bloğu birbirine bağlamak için kullanılır.$(br2)$(l:laserio:laser_node)Bağlantı Noktaları$(/l) ve $(l:laserio:laser_connector)Bağlayıcılar$(/l), bir bloğu seçmek için Shift-SağTıklayarak ve ardından bir bağlantı oluşturmak için başka bir bloğa sağ tıklayarak bağlanabilir.$(br2)Maks bağlantı aralığı 8 bloktur."
+    },
+    {
+      "type": "patchouli:image",
+      "title": "Lazer Anahtarı",
+      "images": [
+        "laserio:textures/book/entries/laser_wrench.png"
+      ],
+      "border": true,
+      "text": "O anda seçili olan blok yeşil renkle vurgulanır."
+    },
+    {
+      "type": "patchouli:crafting",
+      "title": "Lazer Anahtarı",
+      "recipe": "laserio:laser_wrench"
+    }
+  ]
+}

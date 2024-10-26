@@ -1,0 +1,16 @@
+{
+  "name": "Eğilirken",
+  "sortnum": 2,
+  "category": "laserio:mechanics",
+  "icon": "laserio:textures/gui/buttons/sneaky-up.png",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Eğilirken ayarı, kartın bitişik envanterin hangi tarafında işlem yapmaya çalışacağını belirler.$(br2)Örneğin, bir ocak eşyaları bloğun 'Üst Tarafından' kabul eder. Bağlantı Noktası ocağın bir tarafındaysa, yerleştirme kartının eğilirken modunu 'Yukarı' olarak ayarlayın."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Bu kart şimdi eşyaları ocağın 'üst' tarafına yerleştirmeye çalışacaktır.$(br2)Ocağın tabanına yakıt yerleştirmek için başka bir kart 'Eğilirken Aşağı' olarak ayarlanabilir."
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "name": "Algılayıcı Modu",
+  "sortnum": 12,
+  "category": "laserio:mechanics",
+  "icon": "laserio:textures/gui/buttons/modesensor.png",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Algılayıcı modu, diğer kart modlarından farklı olarak nesneleri hareket ettirmez. Bunun yerine, bitişik bir envanter/tank/hücreye bakar ve içeriğin filtreyle eşleşip eşleşmediğine bakar.  Eğer uyuyorsa, belirlenen redstone kanalında 15 gücünde bir redstone sinyali yayar.$(br2)Algılayıcı modu kartlarının çalışması için bir filtre gerekir - filtre olmadan hiçbir şey yapmazlar."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Basit bir filtre ile sensör herhangi bir miktarda nesne arar. Örneğin, içinde bir parça kırık taş bulunan bir basit filtre, bitişik sandıkta herhangi bir kırık taş olup olmadığını kontrol edecektir. Eğer varsa, belirtilen redstone kanalında bir redstone sinyali yayacaktır.$(br2)Bu, ister 1 adet kırık taş, ister 1000 adet kırık taş olsun geçerli olacaktır."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Bir sayma filtresi ile algılayıcı, belirtilen miktardan büyük veya eşit olanları arar. Örneğin, sayma filtresi 32 adet kırık taşa ayarlanmışsa, 32, 33, 34 ve benzeri için doğru sinyali verir.$(br2)Ancak, filtreleri saymak için birebir aynı mod düğmesi mevcuttur. Etkinleştirilirse, yalnızca 32 kırık taş için doğru sinyali verir, ne daha fazla ne daha az."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Algılayıcı modunda yeni bir düğme mevcuttur - Ve/Veya düğmesi. 'Veya' modunda, önceki kuralları izleyerek filtrelerden yalnızca birinin eşleşmesi gerekir.$(br2)Algılayıcı modunda yeni bir düğme mevcuttur - Ve/Veya düğmesi. 'Veya' modunda, önceki kuralları izleyerek filtrelerden yalnızca birinin eşleşmesi gerekir.$(br2)Örneğin, filtrede 32 kırık taş ve 16 cam varken, 'veya' modunda, sandığın bir sinyal yayması için yalnızca 32 kırık taş içermesi gerekir. Ya da 16 cam. Ya da her ikisi de.$(br2)'Ve' modunda, tüm filtreler eşleşmelidir, örneğin, sandık 32 kırık taş VE 16 cam içermelidir."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Etiket ve mod filtreleri beklediğiniz gibi çalışır. 'Ve' içindeki etiket filtreleri için, konteynerin içeriği tüm etiketlerle eşleşmelidir, bu ister tüm etiketlerle eşleşen 1 eşya, ister birden fazla eşya anlamına gelsin.$(br2)Redstone kanalı başına taraf başına yalnızca 1 algılayıcı kartı önerilir, çünkü birden fazla olması beklenmedik sonuçlara neden olan yarış koşullarına yol açabilir."
+    }
+  ]
+}

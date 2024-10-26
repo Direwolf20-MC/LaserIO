@@ -1,0 +1,6 @@
+{
+  "name": "Kartlar",
+  "description": "Kartlar, Bağlantı Noktalarının bitişik bloklarla nasıl etkileşime girdiğini gösterir. Onlar olmadan Bağlantı Noktaları değersizdir!",
+  "sortnum": 1,
+  "icon": "laserio:card_item"
+}

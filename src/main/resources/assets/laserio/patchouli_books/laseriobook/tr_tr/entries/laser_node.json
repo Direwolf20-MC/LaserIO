@@ -1,0 +1,65 @@
+{
+  "name": "Lazer Bağlantı Noktası",
+  "icon": "laserio:laser_node",
+  "sortnum": 0,
+  "category": "laserio:blocks",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Lazer Bağlantı Noktası, komşu bloklarla etkileşime izin verdiği için LaserIO'daki en önemli bloktur. $(br2)$(l:laserio:card_item)Eşya Kartı$(/l) gibi Kartları kullanarak, Eşyaları, Sıvıları, Enerjiyi veya Redstone'u aktarmak için bitişik blokla etkileşime girebilirsiniz."
+    },
+    {
+      "type": "patchouli:image",
+      "title": "Lazer Bağlantı Noktası",
+      "images": [
+        "laserio:textures/book/entries/laser_node1.png"
+      ],
+      "border": true,
+      "text": "Sandık ile etkileşime giren bağlantı noktası"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Bir bağlantı noktasının her bir tarafında Kart kabul eden 3x3'lük bir envanter yuvası ızgarası vardır. UI'sini açmak için bir bağlantı noktasının yan tarafına sağ tıklayın. $(br2)Değiştirmek istediğiniz tarafın kolayca erişilebilir olmaması durumunda, hangi tarafta çalıştığınızı değiştirmek için üstteki düğmeleri kullanın.$(br2)Yandaki ekran görüntüsü, batı tarafındaki bir envanterle etkileşime giren bir bağlantı noktasını göstermektedir. "
+    },
+    {
+      "type": "patchouli:image",
+      "title": "Lazer Bağlantı Noktası UI'si",
+      "images": [
+        "laserio:textures/book/entries/laser_node_gui1.png"
+      ],
+      "border": true,
+      "text": "Kart ile Bağlantı Noktası UI'si"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Bağlantı Noktaları aynı anda birden fazla bitişik envanterle etkileşime girebilir."
+    },
+    {
+      "type": "patchouli:image",
+      "title": "Lazer Bağlantı Noktası Çalışıyor",
+      "images": [
+        "laserio:textures/book/entries/laser_node2.png"
+      ],
+      "border": true,
+      "text": "2 sandık arasındaki bağlantı noktası"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Bağlantı Noktaları $(l:laserio:laser_wrench)Lazer Anahtarı$(/l) kullanılarak birbirine bağlanabilir ve böylece uzak envanterler arasında bağlantı kurulabilir.  Bağlantılar arasındaki maksimum aralık 8 bloktur.$(br2)Node'larınız birbirinden uzaksa, $(l:laserio:laser_connector)Lazer Bağlayıcıların$() kullanılması önerilir."
+    },
+    {
+      "type": "patchouli:image",
+      "title": "Lazer Bağlantı Noktaları Bağlı",
+      "images": [
+        "laserio:textures/book/entries/laser_node3.png"
+      ],
+      "border": true,
+      "text": "İki Bağlantı Noktası Bağlı"
+    },
+    {
+      "type": "patchouli:crafting",
+      "title": "Lazer Bağlantı Noktası",
+      "recipe": "laserio:laser_node"
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "name": "Kart Tutucu",
+  "icon": "laserio:card_holder",
+  "sortnum": 2,
+  "category": "laserio:items",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Kart tutucu tüm envanter sorunlarınızın çözümüdür! En azından bu modun neden olduğu....Bir Kart Tutucu üretin ve kullanıcı arayüzünü açmak için sağ tıklayın. Bu kullanıcı arayüzüne yerleştirilen kartlar, NBT verilerinin eşleşmesi koşuluyla 64'e kadar istiflenebilir. (Hatırlatma: NBT'lerini sıfırlamak için kartları kendi başlarına üretebilirsiniz)"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Kartlar tutucu içinden değiştirilebilir - bir kart istifine sağ tıklayarak (Tıpkı bir lazer bağlantı noktasında olduğu gibi).$(br2)NOT: Kartın istif boyutu 1'den büyükse, eşya kopyalamayı önlemek için Filtre ve Hız Aşırtıcı yuvalarını devre dışı bırakacaktır. #BlameSoaryn"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Shift tuşunu basılı tutup Kart tutucuya sağ tıkladığınızda, envanterinizden otomatik olarak kart çekmeye başlayacaktır! Bunun etkinleştirildiğini anlayabilirsiniz çünkü kart tutucu büyülenmiş gibi parlamaya başlar. Kapatmak için tekrar Shift-sağ tıklayın. Bir bağlantı noktasını açtığınızda envanterinizde kart tutucu varsa, kartlarının görüntülendiğini göreceksiniz"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "NOT: Filtreler ve Hız Aşırtıcılar artık kart tutucuda saklanabilir!  Filtreler yalnızca kayıtlı verileri yoksa kart tutucuya otomatik olarak eklenecektir. Kayıtlı verileri temizlemek için bunları kendi başlarına üretin.$(br2)Saklanan verilere sahip filtreler kart tutucuya hâlâ manuel olarak eklenebilir."
+    },
+    {
+      "type": "patchouli:crafting",
+      "title": "Kart Tutucu",
+      "recipe": "laserio:card_holder"
+    }
+  ]
+}

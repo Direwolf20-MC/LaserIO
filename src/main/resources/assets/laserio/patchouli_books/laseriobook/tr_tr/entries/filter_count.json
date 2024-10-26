@@ -1,0 +1,20 @@
+{
+  "name": "Sayma Filtresi",
+  "sortnum": 2,
+  "category": "laserio:filters",
+  "icon": "laserio:filter_count",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Sayma Filtresi belirli sayıda eşya belirleyebilir ve kartın moduna bağlı olarak farklı bir rol oynar.$(br2)Eşyaların istif boyutları 1'den 4096'ya kadar çıkabilir. Sol tıklama istif boyutunu artırırken, sağ tıklama azaltacaktır. Shift veya Control tuşunu basılı tutmak bu miktarı sırasıyla 10 veya 64 olarak değiştirecektir."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Bir stokçu modu kartında bir sayma filtresi kullanılırsa, belirtilen miktarda kaynağı stokta tutmaya çalışacaktır. Örneğin, bir sandıkta 64 kırık taş tutmak, 64 kırık taşlı bir Sayma Filtresi kullanılarak yapılır.$(br2)Bir Yerleştirici kartında bir sayma filtresi kullanılırsa, çıkartıcı kartları tarafından o envantere kaç eşya gönderilmesine izin verileceği sınırlandırılır."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Bir çıkartma modu kartında bir sayma filtresi kullanılırsa, belirlenen sayıda eşyayı geride bırakacaktır. Örneğin, bir çıkartma kartını 8 kırık taş filtresiyle ayarlarsanız, bir sandıktan son 8 kırık taş hariç hepsini çıkaracaktır.$(br2)Sayma filtrelerinde İzin Ver vs Reddet düğmesi yoktur - çünkü Reddet modu bir sayma filtresi için herhangi bir anlam ifade etmez. Tüm sayma filtreleri 'İzin Ver modu'ndadır.  JEI Etkileşimi, $(l:laserio:filter_basic)Basit Filtrede$(/l) olduğu gibi çalışır."
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "name": "Kart Klonlayıcı",
+  "icon": "laserio:card_cloner",
+  "sortnum": 2,
+  "category": "laserio:items",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Kart Klonlayıcı, kart ayarlarını bir karttan diğerine 'kopyalamak ve yapıştırmak' için kullanılabilir! Bir $(l:laserio:laser_node)Lazer Bağlantı Noktası$(/l) ekranında, Kart Klonlayıcı'yı (imlecinizle) alın ve ayarlarını kopyalamak için bir karta sol tıklayın. $(br2)Kayıtlı ayarları yapıştırmak için bir karta sağ tıklayın."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Yapıştırırken, $(l:laserio:overclocker_card)Hız Aşırtıcılar$(/l) ve $(l:laserio:filters)Filtreler$(/l) otomatik olarak mevcut $(l:laserio:card_holder)Kart Tutucu'nun$(/l) içine alınacaktır (veya geri yerleştirilecektir. Bu eşyalar oyuncunun envanterinden çıkarılmayacaktır.$(br2)Gerekli eşyalardan herhangi biri eksikse yapıştırma işlemi başarısız olur. Ayarları kısmen YAPIŞTIRMAYACAKTIR."
+    },
+    {
+      "type": "patchouli:crafting",
+      "title": "Kart Klonlayıcı",
+      "recipe": "laserio:card_cloner"
+    }
+  ]
+}

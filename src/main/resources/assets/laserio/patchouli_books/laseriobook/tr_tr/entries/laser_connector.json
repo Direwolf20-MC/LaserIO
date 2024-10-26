@@ -1,0 +1,26 @@
+{
+  "name": "Lazer Bağlayıcısı",
+  "icon": "laserio:laser_connector",
+  "sortnum": 1,
+  "category": "laserio:blocks",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Birden fazla $(l:laserio:laser_node)Lazer Bağlantı Noktaları$(/l), $(l:laserio:laser_wrench)Lazer Anahtarı$(/l) kullanılarak doğrudan birbirine bağlanabilir, ancak maksimum aralık 8 bloktur. $(br2)Lazer Bağlayıcıları, bağlantı noktaları arasında daha ucuz bir ara nokta olarak işlev görebilir ve birbirine bağlı envanterlerden oluşan bir ağ kurmanıza olanak tanır."
+    },
+    {
+      "type": "patchouli:image",
+      "title": "Lazer Bağlantı Noktası",
+      "images": [
+        "laserio:textures/book/entries/laser_connector1.png"
+      ],
+      "border": true,
+      "text": "2 bağlantı noktası arasındaki bağlayıcı"
+    },
+    {
+      "type": "patchouli:crafting",
+      "title": "Lazer Bağlayıcısı",
+      "recipe": "laserio:laser_connector"
+    }
+  ]
+}

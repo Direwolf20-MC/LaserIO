@@ -1,0 +1,20 @@
+{
+  "name": "Çıkartma Miktarı",
+  "sortnum": 7,
+  "category": "laserio:mechanics",
+  "icon": "laserio:textures/gui/buttons/modeextractor.png",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Çıkartma Miktarı yalnızca Çıkartıcı ve Stoklayıcı Modlarında kullanılabilir.$(br2)Bu ayar, işlem başına kaç eşyanın (veya ne kadar sıvı/fe) çıkarılacağını belirler.$(br2)Örneğin, 20 tik başına 8 eşya olarak ayarlanırsa, çıkartıcı her 20 tikte bir, bir seferde 8 eşya çıkartacaktır."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Çıkartıcı ve Stoklayıcı kartlarının varsayılan değeri 1'dir ve $(l:laserio:overclocker_card)Kart Hız Aşırtıcıları$(/l) kurulu değilse maksimum değer 8'dir.  Belirlenmiş hız aşırtıcılar takılıyken aşağıdaki çıkartma miktarlarına izin verilir:$(br)1. 16$(br)2. 32$(br)3. 48$(br)4. 64$(br2)Bir seferde 64 eşya çıkartmak istiyorsanız, 4 hız aşırtıcının kurulu olması gerekir."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Bu değeri 1 artırmak için üzerine sol tıklayın, azaltmak için sağ tıklayın. Shift tuşunu basılı tutmak değişim miktarını 10 ile çarparken, Control tuşunu basılı tutmak değişim miktarını 64 ile çarpacaktır.$(br2)Bunlar birleştirilebilir, yani Shift+Ctrl tuşlarına basılı tutulduğunda 640 ile çarpılır.$(br2)Örneğin, shift sağ tıklamak 10 azaltacaktır."
+    }
+  ]
+}

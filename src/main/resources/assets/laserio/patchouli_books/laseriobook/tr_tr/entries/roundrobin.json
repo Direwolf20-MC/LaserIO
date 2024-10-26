@@ -1,0 +1,20 @@
+{
+  "name": "Round Robin",
+  "sortnum": 5,
+  "category": "laserio:mechanics",
+  "icon": "laserio:textures/gui/buttons/roundrobintrue.png",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Round Robin yalnızca Çıkartıcı Modunda kullanılabilir.$(br2)Round robin, bir çıkartıcıya eşyaları birden fazla yerleştirici arasında eşit olarak dağıtması talimatını verir.$(br2)Kullanılabilir üç mod vardır:$(br)1. Yanlış$(br)2. Doğru$(br)3. Zorunlu"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Yanlış$() olarak ayarlandığında, round robin devre dışı bırakılır ve $(l:laserio:priority)öncelik$(/l) sistemi takip edilir. Nesneler ikinci envantere gönderilmeden önce ilk envanter tamamen dolacaktır. $(br2)$(l)Doğru$() olarak ayarlandığında, eşyalar sandıklara öncelik sırasına göre gönderilecek ve eşit olarak dağıtılacaktır.$(br2)Bir ağda 3 sandık varsa, ilk eşya seti ilk sandığa, 2. set 2. sandığa vb. gidecektir.."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Zorunlu$() olarak ayarlandığında, 'doğru' ile aynı kurallar izlenir. Ancak, hedeflerden biri dolarsa, çıkartıcı tekrar kullanılabilir hale gelene kadar çalışmayı durduracaktır.$(br2)Not: Yığın Boşaltma, özellikle bazı bağlantı noktaları boşaltılırken diğerleri boşaltılmıyorsa, round robin mekaniğinde bir değişikliğe neden olabilir."
+    }
+  ]
+}

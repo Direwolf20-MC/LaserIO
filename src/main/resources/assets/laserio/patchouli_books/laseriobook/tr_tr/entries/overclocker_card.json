@@ -1,0 +1,17 @@
+{
+  "name": "Kart Hız Aşırtıcı",
+  "icon": "laserio:overclocker_card",
+  "sortnum": 2,
+  "category": "laserio:items",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Kart Hız Aşırtıcıları bireysel kartların daha hızlı çalışmasını sağlar.$(br2)Örneğin, Eşya Kartları her 20 tikte (1 saniye) en fazla 8 eşya çıkarabilir. 4 hız aşırtıcı takılıyken 1 tik başına 64 eşyaya ulaşabilirler!$(br2)Her bir kartın hız aşırtıcılardan nasıl etkilendiğine dair daha fazla ayrıntı için Kartlar bölümüne bakın."
+    },
+    {
+      "type": "patchouli:crafting",
+      "title": "Kart Hız Aşırtıcı",
+      "recipe": "laserio:overclocker_card"
+    }
+  ]
+}

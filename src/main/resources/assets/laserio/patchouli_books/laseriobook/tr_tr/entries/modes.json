@@ -1,0 +1,32 @@
+{
+  "name": "Modlar",
+  "sortnum": 1,
+  "category": "laserio:mechanics",
+  "icon": "laserio:textures/gui/buttons/modestocker.png",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Modlar bir kartın temel olarak ne yaptığını belirler. Aşağıdaki sayfalarda şu anda mevcut olan her mod türü tanımlanmaktadır.$(br2)Her kart türü (Eşya/Sıvı/Enerji) aşağıdaki üç modu destekler. Eşya kartları örnek olarak kullanılmıştır.$(br2)Redstone kartları farklı bir mod setini destekleyecek."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "laserio:card_item[laserio:card_transfer_mode=0b]",
+      "text": "Yerleştirme Modu kartları, Çıkartma Modu kartları tarafından çıkarılan nesneler için bir doğrulama hedefidir.$(br2)Stok modu kartları Yerleştirme Modu kartlarından çekilmeye çalışılacaktır."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "laserio:card_item[laserio:card_transfer_mode=1b]",
+      "text": "Çıkartma Modu kartları nesneleri bitişik bloklarından çıkarmaya çalışır. Örneğin, eşyalar bitişik bir sandıktan çıkarılacak ve bir yerleştirme kartına gönderilecektir."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "laserio:card_item[laserio:card_transfer_mode=2b]",
+      "text": "Stok Modu kartları, belirlenen eşyaları filtrelerinde bulmaya çalışır ve bunları aynı ağdaki diğer Yerleştirme Bağlantı Noktalarından çeker.$(br2)Stok modu kartları için filtrenin İzin Ver olarak ayarlanması gerekir."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "laserio:card_item[laserio:card_transfer_mode=3b]",
+      "text": "Algılayıcı kartlar nesneleri hareket ettirmez, bunun yerine bitişikteki bir envantere bakar ve envanter filtreyle eşleşirse redstone kanalında bir redstone sinyali yayar.$(br2)Algılayıcı modu kartları bir filtre gerektirir."
+    }
+  ]
+}

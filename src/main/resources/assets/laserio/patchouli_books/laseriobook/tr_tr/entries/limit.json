@@ -1,0 +1,20 @@
+{
+  "name": "Sınır",
+  "sortnum": 10,
+  "category": "laserio:mechanics",
+  "icon": "laserio:card_energy",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Sınır % sadece Enerji Kartlarında mevcuttur. Sınır %, bitişik enerji kabul eden blokta çalışacak FE yüzdesini belirtir.$(br2)İki farklı metrik vardır: Stok/Yerleştirme modu için Yerleştirme %'si, ve Çıkartma modu için Çıkartma %'si."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Yerleştirme/Stok Sınırı$()$(br2)Varsayılan olarak, sınır% 100 olarak ayarlanmıştır.  Belirtilen enerji bloğunun ne kadar doldurulacağını belirtir.$(br2)Örneğin: Blok 1.000.000 FE tutabiliyorsa ve %50 olarak belirttiyseniz, yalnızca 500.000FE'ye kadar dolacaktır.$(br2)Varsayılan değer (%100) tamamen dolduracaktır."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Çıkartma Sınırı$()$(br2)Varsayılan olarak sınır% %0 olarak ayarlanmıştır. Belirtilen enerji bloğunda ne kadar bırakılacağını belirtir.$(br2)Örneğin: Blok 1.000.000 FE tutabiliyorsa ve %50 belirtirseniz, blokta 500.000 FE kalana kadar çıkaracak ve daha fazla çıkarmayacaktır.$(br2)Varsayılan değer (%0) tüm enerjiyi çıkaracaktır."
+    }
+  ]
+}

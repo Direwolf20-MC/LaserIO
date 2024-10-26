@@ -1,0 +1,12 @@
+{
+  "name": "Redstone Kanalı",
+  "sortnum": 11,
+  "category": "laserio:mechanics",
+  "icon": "laserio:textures/gui/buttons/redstoneignore.png",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Kartların ana kanaldan ayrı bir ' redstone kanalı' vardır.$(br2)Bu, kartı etkileyecek olan Redstone Sinyali kanalıdır. $(l:laserio:redstonemode)Redstone Modu$(/l) ve $(l:laserio:card_redstone)Redstone Kartı$(/l) bölümlerinde daha fazla ayrıntıya bakın."
+    }
+  ]
+}

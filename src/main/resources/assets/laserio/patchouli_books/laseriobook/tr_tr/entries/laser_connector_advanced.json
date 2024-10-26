@@ -1,0 +1,43 @@
+{
+  "name": "Glş. Bağlayıcı",
+  "icon": "laserio:laser_connector_advanced",
+  "sortnum": 2,
+  "category": "laserio:blocks",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Gelişmiş Lazer Bağlayıcıları tıpkı $(l:laserio:laser_connector)Lazer Bağlayıcıları$(/l) gibi çalışır ve 8 blok ötedeki diğer ( basit) bağlayıcılara ve node'lara bağlanır. $(br2)Ancak bir çift oluşturacak şekilde yalnızca bir başka Gelişmiş Bağlayıcıya bağlanabilirler.  Bir gelişmiş bağlayıcıdan ortağına bağlantı aralığı sonsuzdur - boyutlar arası dahil!"
+    },
+    {
+      "type": "patchouli:image",
+      "title": "Glş. Bağlayıcı",
+      "images": [
+        "laserio:textures/book/entries/laser_connector_advanced1.png"
+      ],
+      "border": true,
+      "text": "Birbirine bağlı iki Gelişmiş Bağlayıcı"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Bir Gelişmiş Bağlayıcının zaten bir ortağı varsa ve onu yeni bir ortakla eşleştirmeye çalışırsanız, yeni bağlantıyı oluşturmak için orijinal bağlantı kesilecektir.  $(br2)Elinizde $(l:laserio:laser_wrench)Lazer Anahtarı$(/l) varken bloğa baktığınızda, ortak bloğun koordinatlarını göreceksiniz."
+    },
+    {
+      "type": "patchouli:image",
+      "title": "Ortak Koordinatları",
+      "images": [
+        "laserio:textures/book/entries/laser_connector_advanced2.png"
+      ],
+      "border": true,
+      "text": "Ortak bağlayıcının koordinatlarını gösterme"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Gelişmiş Lazer Bağlayıcıları sizin için yığın yüklemesi YAPMAZ. Tüm yığın yüklemelerini kendiniz yapmaktan sorumlusunuz! Yüklenmemiş yığınlardaki bağlantı noktaları çalışmayacaktır."
+    },
+    {
+      "type": "patchouli:crafting",
+      "title": "Glş. Lazer Bağlayıcısı",
+      "recipe": "laserio:laser_connector_advanced"
+    }
+  ]
+}

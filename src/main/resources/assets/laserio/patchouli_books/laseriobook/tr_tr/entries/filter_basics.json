@@ -1,0 +1,29 @@
+{
+  "name": "Basit Mekanikler",
+  "icon": "laserio:logic_chip",
+  "sortnum": 0,
+  "category": "laserio:filters",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "UI'sini açmak için bir filtre eşyasına sağ tıklayın. Alternatif olarak, filtreler kartların içindeyken de UI kullanılabilir.$(br2)Filtreler, hangi eşyaların yerleştirilebileceğini, çıkartılabileceğini veya stoklanabileceğini kısıtlamanıza olanak tanır.$(br2)1. İzin Ver vs Reddet$(br)2. NBT'yi Karşılaştır$(br)3. Filtre Slotları"
+    },
+    {
+      "type": "patchouli:image",
+      "title": "Filtre UI'si",
+      "images": [
+        "laserio:textures/book/entries/filter_basic.png"
+      ],
+      "border": true,
+      "text": "Basit Filter UI'si"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "İzin Ver vs Reddet$(br2)İzin ver modunda, filtredeki eşyalara filtre tarafından izin verilecektir. Yani yerleştiriciler kırık taşı kabul edebilir veya çıkartıcılar kırık taşı çıkartabilir.$(br2)Reddetme modunda bunun tam tersi olur."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "NBT Karşılaştırma$(br2)NBT karşılaştırması etkinleştirildiğinde, eşyalardaki NBT etiketleri filtre tarafından dikkate alınacaktır. Örneğin, bir kılıç NBT'de ne kadar hasar aldığını kaydeder. 'NBT'yi Karşılaştır' etkinleştirildiğinde, hiç hasar görmemiş bir elmas kılıç, hasar görmüş veya büyülenmiş bir kılıçtan farklıdır.$(br2)NBT'yi Karşılaştır devre dışı bırakıldığında, durumlarına bakılmaksızın tüm elmas kılıçlar eşleşecektir. "
+    }
+  ]
+}

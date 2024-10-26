@@ -1,0 +1,16 @@
+{
+  "name": "Basit Filtre",
+  "sortnum": 1,
+  "category": "laserio:filters",
+  "icon": "laserio:filter_basic",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Basit filtre, bir envanterde hangi eşyalara izin verileceğini sınırlamak için kullanılabilir.$(br2)Bu yuvalar 'hayalet yuvalardır', yani GERÇEKTEN eşya tutmazlar, sadece bir eşyanın görüntüsünü tutarlar."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "JEI yüklüyse, eşyaları JEI'den bu 'hayalet yuvalara' sürükleyebilirsiniz. Sadece sol tıklayın ve JEI'den filtre UI'sine sürükleyin."
+    }
+  ]
+}

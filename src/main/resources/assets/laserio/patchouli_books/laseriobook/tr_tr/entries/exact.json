@@ -1,0 +1,16 @@
+{
+  "name": "Birebir Aynı",
+  "sortnum": 6,
+  "category": "laserio:mechanics",
+  "icon": "laserio:textures/gui/buttons/exacttrue.png",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Birebir Aynı yalnızca Çıkartıcı ve Stokçu Modlarında kullanılabilir.$(br2)Birebir Aynı modu, ''Çıkartma Miktarı'' alanında ayarlanan eşyaların tam miktarının çıkarılmasını sağlar. Örneğin, Çıkartma Miktarı 8 olarak ayarlanmışsa ve bitişik bir sandıkta yalnızca 5 eşya varsa, çıkartıcı 8 tane olana kadar bunları çıkartmayacaktır."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Birebir Aynı modu, Stok Modu kartları için biraz farklı çalışır. Birebir Aynı, yalnızca stoklama talebini karşılamak için gereken miktar VEYA Çıkartma Miktarı ağda mevcutsa, hangisi daha küçükse, eşyaların hareket etmesine izin verecektir.$(br2)Örneğin, bir stoklayıcı 13 eşyaya daha ihtiyaç duyuyorsa ve bir seferde 32 eşya çıkarabiliyorsa, yalnızca ağda bir yerde 13 eşya mevcutsa çıkaracaktır."
+    }
+  ]
+}

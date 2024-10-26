@@ -1,0 +1,16 @@
+{
+  "name": "Düzenle",
+  "sortnum": 9,
+  "category": "laserio:mechanics",
+  "icon": "laserio:textures/gui/buttons/regulatetrue.png",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Düzenle yalnızca Stokçu Modunda kullanılabilir.$(br2)Düzenle, sayma filtresinin envanterde belirtilen miktarda kaynak tutmasını sağlar, ne daha fazla ne daha az."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Düzenle modu devre dışı bırakıldığında, fazla eşyalar kaldırılmayacaktır. Bir stokçu Sayma Filtresi ile 32 kırık taş talep ediyorsa ve bir oyuncu veya başka bir kart daha fazla kırık taş eklerse, fazla kırık taş kaldırılmayacaktır.$(br2)Düzenle modu etkinleştirildiğinde, kabul edebilecek bir yerleştirici varsa fazla kırık taş kaldırılacaktır."
+    }
+  ]
+}

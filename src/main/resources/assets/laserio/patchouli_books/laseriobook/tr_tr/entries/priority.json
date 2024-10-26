@@ -1,0 +1,20 @@
+{
+  "name": "Öncelik",
+  "sortnum": 3,
+  "category": "laserio:mechanics",
+  "icon": "laserio:textures/gui/buttons/modeinserter.png",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Öncelik yalnızca Yerleştirici Modunda kullanılabilir.$(br2)Öncelik, yerleştirici kartlarının çalıştırılma sırasını kontrol etmenize olanak tanır. Varsayılan olarak, Yerleştirici kartları 'en yakın ilk' modunda çalışır, bu da çıkarıcıların önce en yakın envantere yerleştirmeye çalıştığı anlamına gelir."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Bir Yerleştirme Kartının öncelik ayarını değiştirerek, hangi envanterin önce yerleştirileceğini ayarlayabilirsiniz. Örneğin, en yüksek öncelikli yerleştirici listede ilk sırada yer alacaktır: Öncelik 10, -10'dan daha yüksek olan 0'dan daha yüksektir. $(br2)Birden fazla envanter aynı önceliğe sahipse, bunlar 'En Yakın İlk' olacaktır."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Bu değeri 1 artırmak için üzerine sol tıklayın, azaltmak için sağ tıklayın. Shift tuşunu basılı tutmak değişim miktarını 10 ile çarparken, Control tuşunu basılı tutmak değişim miktarını 64 ile çarpacaktır.$(br2)Bunlar birleştirilebilir, yani Shift+Ctrl tuşlarına basılı tutulduğunda 640 ile çarpılır.$(br2)Örneğin, Shift sağ tıklama 10 azaltacaktır."
+    }
+  ]
+}

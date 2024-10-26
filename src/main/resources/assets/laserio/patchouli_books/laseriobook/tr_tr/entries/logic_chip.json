@@ -1,0 +1,22 @@
+{
+  "name": "Mantık Çipleri",
+  "icon": "laserio:logic_chip",
+  "sortnum": 0,
+  "category": "laserio:items",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Mantık Çipleri LaserIO'nun birincil üretim malzemesidir. $(br2)'Vanilla' malzemelerle üretilen tek eşyadır ve sonraki tüm eşyalar bir şekilde çip kullanır."
+    },
+    {
+      "type": "patchouli:crafting",
+      "title": "Ham Mantık Çipi",
+      "recipe": "laserio:logic_chip_raw"
+    },
+    {
+      "type": "patchouli:smelting",
+      "title": "Mantık Çipi",
+      "recipe": "laserio:logic_chip"
+    }
+  ]
+}

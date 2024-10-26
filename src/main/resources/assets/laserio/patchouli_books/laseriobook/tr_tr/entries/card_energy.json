@@ -1,0 +1,33 @@
+{
+  "name": "Enerji Kartları",
+  "sortnum": 3,
+  "category": "laserio:cards",
+  "icon": "laserio:card_energy",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Enerji Kartları, makineler ve bataryalar gibi envanterler arasında Enerji göndermek için kullanılır.$(br2)Enerji kartları diğer kartlardan biraz farklı mekaniklere sahiptir ve ilerleyen sayfalarda açıklanacaktır."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Hız aşırtıcıların her 20 tikte bir defadan daha hızlı çalışmasını gerektiren Eşya/Sıvı kartların aksine, Enerji Kartları varsayılan olarak her tikte çalışabilir.$(br2)Hız aşırtıcılar Enerji kartlarına giremezler. Enerji kartları her zaman maksimum 1.000.000 FE/tick hızında çalışır. İsterseniz bu azaltılabilir."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Enerji kartlarının ayrıca bir 'Enerji Sınırı %' ayarı vardır -- Varsayılan olarak, yerleştir/stok modlarında bu %100, çıkartma modlarında ise %0'dır. Yerleştir/stok modunda, belirtilen enerji alıcısının ne kadar doldurulacağını belirtir. $(br2)Örneğin: Blok 1.000.000 FE tutabiliyorsa ve %50 olarak belirttiyseniz, yalnızca 500.000FE'ye kadar dolacaktır."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Çıkartma modunda, bu yüzde kaçının geride bırakılacağını belirler.$(br2)Örneğin: Eğer 1.000.000FE tutabilen bir enerji hücresinden FE çıkarıyorsanız ve %25'lik bir sınır belirlerseniz, 250.000 FE'nin altında FE çıkarmayacaktır."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Teknik Not: Forge Enerji sistemi yaklaşık 2,14 milyar FE olan MAX_INT'ye kadar enerji depolamayı destekler. Draconic Evolution veya Mekanism gibi bir mod kullanıyorsanız, Forge Energy'nin çalışma şeklini “hackleyerek” depolama hücreleri bu miktardan daha fazlasını depolayabilir. Sonuç olarak, bu % göstergesi 2,14 milyar FE'den daha büyük depolama hücrelerinde çalışmayacaktır. Üzgünüm! :)"
+    },
+    {
+      "type": "patchouli:crafting",
+      "title": "Enerji Kartı",
+      "recipe": "laserio:card_energy"
+    }
+  ]
+}

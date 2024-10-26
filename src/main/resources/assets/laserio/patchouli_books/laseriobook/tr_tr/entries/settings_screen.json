@@ -1,0 +1,37 @@
+{
+  "name": "Ağ Ayarları",
+  "icon": "laserio:textures/gui/buttons/settings.png",
+  "sortnum": 1,
+  "category": "laserio:mechanics",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Ağ ayarları ekranına herhangi bir $(l:laserio:laser_node)Lazer Bağlantı Noktası$(/l) ekranından ulaşılabilir. Bu ayarlar ekranında ağın rengini değiştirebilirsiniz. Bu renk şunları etkiler:$(li)Lazer Bağlantı Noktası Bloğu (dünyada)$(li)Lazer Bağlayıcısı Bloğu (dünyada)$(li)Bloklar arasındaki lazerlerin rengi. "
+    },
+    {
+      "type": "patchouli:image",
+      "title": "Renkli Bağlantı Noktaları",
+      "images": [
+        "laserio:textures/book/entries/settings1.png"
+      ],
+      "border": true,
+      "text": "Farklı Renkteki Ağlar"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Bağlantı noktası ve envanterler (Sandıklar veya tanklar gibi) arasındaki lazerlerin rengi etkilenmeyecektir.$(br2)Bir ağ üzerindeki bir bağlantı noktasında yapılan bir değişiklik, aynı ağ üzerindeki diğer tüm bağlantı noktalarına otomatik olarak yayılacaktır. Bu şekilde, dünyanızda farklı renklerde ağlara sahip olabilirsiniz!$(br2)Bu tamamen kozmetiktir ve işlevsellik üzerinde pratik bir etkisi yoktur."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Bir bağlantı noktası veya ağı başka bir ağa eklerken aşağıdaki kurallar geçerlidir:$(br2)Bağlantı Noktalarından/Ağlardan biri renk ayarına sahipse ve diğeri varsayılan ise, varsayılan her zaman geçersiz kılınacaktır.$(br2)Aksi takdirde, vurgulanan blok ayarlarını bağlamak için tıkladığınız bloğa gönderecektir. Örneğin, yeşil bir düğüme Shift tuşunu basılı tutarak tıklar ve ardından mavi bir düğüme tıklarsanız, mavi düğüm yeşile dönecektir. "
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Alfa, Alfa ve Anahtar Alfa için iki ayar vardır.$(br2)Alfa yalnızca herhangi iki blok arasındaki lazeri etkiler ve bu lazerin şeffaflığını belirler. 0 olarak ayarlanırsa, bağlantı noktaları/bağlayıcılar arasındaki lazerleri hiç görmezsiniz.$(br2)Anahtar Alfa, oyuncu anahtarı tutarken bu ayarı alfaya EKLEYECEKTİR."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Örneğin, alfa değerini 0 ve anahtar alfa değerini 80 olarak ayarlarsanız, lazerleri yalnızca bir anahtar tutarken görürsünüz!$(br2)Eğer alfayı 80'e ve anahtar alfasını 200'e ayarlarsanız, anahtarı tutarken lazerleri daha parlak görürsünüz. İki sayıyı toplarken 255'in üzerine çıkmanın bir zararı yoktur, otomatik olarak kendini 255 ile sınırlayacaktır."
+    }
+  ]
+}

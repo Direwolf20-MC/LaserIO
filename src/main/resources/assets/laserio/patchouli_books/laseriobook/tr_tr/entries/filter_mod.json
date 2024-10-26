@@ -1,0 +1,12 @@
+{
+  "name": "Mod Filtresi",
+  "sortnum": 3,
+  "category": "laserio:filters",
+  "icon": "laserio:filter_mod",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Mod filtresi, bir eşyanın/blokun hangi moddan geldiğine göre sıralanacaktır. Örneğin, filtreye bir Lazer Anahtarı yerleştirirseniz, tüm LaserIO eşyaları ve blokları bu filtreyle eşleşecektir."
+    }
+  ]
+}
