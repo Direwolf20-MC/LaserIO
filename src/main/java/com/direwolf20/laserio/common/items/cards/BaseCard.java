@@ -19,8 +19,10 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import static com.direwolf20.laserio.util.MiscTools.tooltipMaker;
 
@@ -149,6 +151,21 @@ public class BaseCard extends Item {
         if (handler.getSlots() < CardItemContainer.SLOTS)
             handler.reSize(CardItemContainer.SLOTS);
         return handler;
+    }
+    public static Map<Item, Integer> getCardContents(ItemStack card){
+        Map<Item, Integer> cardContents = new HashMap<Item,Integer>();
+        if(card.getTag() == null || card.isEmpty())
+            return cardContents;
+
+        CardItemHandler cardItemHandler = BaseCard.getInventory(card);
+        // These slot assumptions might not be correct(an Energy card has overlcocks in slot 0) Need a polymorphic interface for getInventory.
+        ItemStack filterSlot = cardItemHandler.getStackInSlot(0);
+        ItemStack overclockSlot = cardItemHandler.getStackInSlot(1);
+        if (!filterSlot.isEmpty())
+            cardContents.put(filterSlot.getItem(), filterSlot.getCount());
+        if (!overclockSlot.isEmpty())
+            cardContents.put(overclockSlot.getItem(), overclockSlot.getCount());
+        return cardContents;
     }
 
     public static CardItemHandler setInventory(ItemStack stack, CardItemHandler handler) {

@@ -87,6 +87,8 @@ public class LaserIOLanguageProvider extends LanguageProvider {
         add("screen.laserio.nbtfalse", "Ignore NBT");
 
         add("message.laserio.wrenchrange", "Connection exceeds maximum range of %d");
+        add("message.laserio.cloner.cardcount", "Insufficient materials");
+        add("message.laserio.cloner.nodata", "Nothing to paste");
 
         //Card Tooltips
         add("laserio.tooltip.item.show_settings", "Hold shift to show settings");
@@ -114,6 +116,12 @@ public class LaserIOLanguageProvider extends LanguageProvider {
         add("laserio.tooltip.item.filter.nbt", "Match NBT: ");
         add("laserio.tooltip.item.filter.nbt.allow", "True");
         add("laserio.tooltip.item.filter.nbt.deny", "False");
+
+        //Card Cloner Tooltips
+        add("laserio.tooltip.item.cloner.card.header", "Saved Card: ");
+        add("laserio.tooltip.item.cloner.node.position", "Pos: ");
+        add("laserio.tooltip.item.cloner.node.header", "Saved Node: ");
+        add("laserio.tooltip.item.cloner.node.dimension", "Dim: ");
 
         //add("", "");
     }

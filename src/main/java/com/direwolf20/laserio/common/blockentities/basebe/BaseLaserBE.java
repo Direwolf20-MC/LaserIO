@@ -267,6 +267,14 @@ public class BaseLaserBE extends BlockEntity {
     @Override
     public void load(CompoundTag tag) {
         super.load(tag);
+        if (tag.contains("laserColor")) {
+            int wrenchA = tag.contains("wrenchAlpha") ? tag.getInt("wrenchAlpha") : 0;
+            setColor(new Color(tag.getInt("laserColor"), true), wrenchA);
+        }
+        // Return and do not alter connections when loading a cloned node.
+        if(tag.contains("cloned"))
+            return;
+
         connections.clear();
         ListTag connections = tag.getList("connections", Tag.TAG_COMPOUND);
         for (int i = 0; i < connections.size(); i++) {
@@ -282,10 +290,7 @@ public class BaseLaserBE extends BlockEntity {
         BlockPos originalPos = NbtUtils.readBlockPos(tag.getCompound("myWorldPos"));
         if (!originalPos.equals(getBlockPos()) && !originalPos.equals(BlockPos.ZERO))
             validateConnections(originalPos);
-        if (tag.contains("laserColor")) {
-            int wrenchA = tag.contains("wrenchAlpha") ? tag.getInt("wrenchAlpha") : 0;
-            setColor(new Color(tag.getInt("laserColor"), true), wrenchA);
-        }
+
     }
 
     @Override

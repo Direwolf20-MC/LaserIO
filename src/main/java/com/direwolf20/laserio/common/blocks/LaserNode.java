@@ -4,6 +4,7 @@ import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import com.direwolf20.laserio.common.blocks.baseblocks.BaseLaserBlock;
 import com.direwolf20.laserio.common.containers.LaserNodeContainer;
 import com.direwolf20.laserio.common.containers.customhandler.LaserNodeItemHandler;
+import com.direwolf20.laserio.common.items.CardCloner;
 import com.direwolf20.laserio.common.items.CardHolder;
 import com.direwolf20.laserio.common.items.LaserWrench;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
@@ -81,7 +82,7 @@ public class LaserNode extends BaseLaserBlock implements EntityBlock {
     @Override
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult result) {
         ItemStack heldItem = player.getMainHandItem();
-        if (heldItem.getItem() instanceof LaserWrench)
+        if (heldItem.getItem() instanceof LaserWrench || heldItem.getItem() instanceof CardCloner)
             return InteractionResult.PASS;
         if (!level.isClientSide) {
             BlockEntity be = level.getBlockEntity(pos);

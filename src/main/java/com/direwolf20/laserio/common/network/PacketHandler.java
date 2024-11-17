@@ -39,6 +39,7 @@ public class PacketHandler {
         HANDLER.registerMessage(id++, PacketChangeColor.class, PacketChangeColor::encode, PacketChangeColor::decode, PacketChangeColor.Handler::handle);
         HANDLER.registerMessage(id++, PacketCopyPasteCard.class, PacketCopyPasteCard::encode, PacketCopyPasteCard::decode, PacketCopyPasteCard.Handler::handle);
         //HANDLER.registerMessage(id++, PacketExtractUpgrade.class,     PacketExtractUpgrade::encode,       PacketExtractUpgrade::decode,       PacketExtractUpgrade.Handler::handle);
+        HANDLER.registerMessage(id++, PacketCopyPasteNode.class, PacketCopyPasteNode::encode, PacketCopyPasteNode::decode, PacketCopyPasteNode.Handler::handle);
 
         //Client Side
         HANDLER.registerMessage(id++, PacketNodeParticles.class, PacketNodeParticles::encode, PacketNodeParticles::decode, PacketNodeParticles.Handler::handle);
