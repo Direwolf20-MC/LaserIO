@@ -1,6 +1,7 @@
 package com.direwolf20.laserio.common.containers.customhandler;
 
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
+import com.direwolf20.laserio.common.containers.LaserNodeContainer;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.common.items.upgrades.OverclockerNode;
 import net.minecraft.core.NonNullList;
@@ -31,9 +32,9 @@ public class LaserNodeItemHandler extends ItemStackHandler {
 
     @Override
     public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
-        if (slot == 9)
+        if (slot == LaserNodeContainer.CARDSLOTS)
             return stack.getItem() instanceof OverclockerNode;
-        return stack.getItem() instanceof BaseCard;
+        return slot < LaserNodeContainer.CARDSLOTS && stack.getItem() instanceof BaseCard;
     }
 
     @Nonnull
