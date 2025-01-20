@@ -2306,7 +2306,7 @@ public class LaserNodeBE extends BaseLaserBE {
         for (Direction direction : Direction.values()) {
             IItemHandler h = level.getCapability(Capabilities.ItemHandler.BLOCK, getBlockPos(), direction);
             if (h == null) h = new ItemStackHandler(0);
-            for (int slot = 0; slot < h.getSlots(); slot++) {
+            for (int slot = 0; slot < LaserNodeContainer.CARDSLOTS; slot++) {
                 ItemStack card = h.getStackInSlot(slot);
                 if (!(card.getItem() instanceof BaseCard)) continue;
                 byte redstoneMode = BaseCard.getRedstoneMode(card);
