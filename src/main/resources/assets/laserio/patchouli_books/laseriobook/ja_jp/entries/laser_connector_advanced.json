@@ -1,0 +1,43 @@
+{
+  "name": "発展中継器",
+  "icon": "laserio:laser_connector_advanced",
+  "sortnum": 2,
+  "category": "laserio:blocks",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "発展レーザー中継器は$(l:laserio:laser_connector)レーザー中継器$(/l)と同じように機能し、最大8ブロック離れた他の基本中継器又はノードに接続します。$(br2)ただし、他の発展中継器一つにのみ接続でき、ペアを形成します。一つの発展中継器からそのペアへの接続範囲は無限であり、ディメンションを跨ぐこともできます。"
+    },
+    {
+      "type": "patchouli:image",
+      "title": "発展中継器",
+      "images": [
+        "laserio:textures/book/entries/laser_connector_advanced1.png"
+      ],
+      "border": true,
+      "text": "相互に接続された2つの発展中継器"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "発展中継器にすでにペアが存在する状態で、新たに他の発展中継器と接続しようとすると、元の接続が切断され、新たなペアリングが形成されます。$(br2)$(l:laserio:laser_wrench)レーザーレンチ$(/l)を持って中継器を見るとペアリングされた中継器の座標が表示されます。"
+    },
+    {
+      "type": "patchouli:image",
+      "title": "パートナー座標",
+      "images": [
+        "laserio:textures/book/entries/laser_connector_advanced2.png"
+      ],
+      "border": true,
+      "text": "パートナー中継器の座標を表示"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "発展レーザー中継器はチャンクのロードは行いません。チャンクのロードはすべて自分で処理する必要があります。ロードされていないチャンク内のノードは動作しません。"
+    },
+    {
+      "type": "patchouli:crafting",
+      "title": "発展レーザー中継器",
+      "recipe": "laserio:laser_connector_advanced"
+    }
+  ]
+}

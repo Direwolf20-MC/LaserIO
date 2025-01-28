@@ -1,0 +1,32 @@
+{
+  "name": "モード",
+  "sortnum": 1,
+  "category": "laserio:mechanics",
+  "icon": "laserio:textures/gui/buttons/modestocker.png",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "モードは、カードの基本的な動作を決定します。次のページでは、現在利用可能な各モードタイプを定義します。$(br2)各カードタイプ (アイテム/液体/エネルギー) は、次の3つのモードをサポートします。アイテムカードは例として使用されています。$(br2)レッドストーンカードは、異なるモードセットをサポートします。"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "laserio:card_item{channel:0b,exact:0b,inv:{Items:[],Size:2},itemextractamt:1b,itemextractspeed:20,mode:0b,priority:0s,regulate:0b,roundRobin:0,sneaky:-1b}",
+      "text": "搬入モードカードは、搬出モードカードが抽出したオブジェクトの有効な宛先となります。$(br2)ストックモードカードは、搬入モードカードからデータを取得しようとします。"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "laserio:card_item{channel:0b,exact:0b,inv:{Items:[],Size:2},itemextractamt:1b,itemextractspeed:20,mode:1b,priority:0s,regulate:0b,roundRobin:0,sneaky:-1b}",
+      "text": "搬出モードカードは、隣接するブロックからオブジェクトを取り出そうとします。たとえば、アイテムは隣接するチェストから取り出され、搬入カードに送られます。"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "laserio:card_item{channel:0b,exact:0b,inv:{Items:[],Size:2},itemextractamt:1b,itemextractspeed:20,mode:2b,priority:0s,regulate:0b,roundRobin:0,sneaky:-1b}",
+      "text": "ストックモードカードは、フィルターで指定されたアイテムを探し、同じネットワーク内の他の搬入ノードからそれらを引き出そうとします。$(br2)ストックモードカードには、フィルターが「許可」に設定されている必要があります。"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "laserio:card_item{channel:0b,exact:0b,inv:{Items:[],Size:2},itemextractamt:1b,itemextractspeed:20,mode:3b,priority:0s,regulate:0b,roundRobin:0,sneaky:-1b}",
+      "text": "センサーカードはオブジェクトを移動させることはありませんが、隣接するインベントリを確認し、そのインベントリがフィルターと一致すると、レッドストーンチャンネルでレッドストーン信号を発信します。$(br2)センサーモードカードにはフィルターが必要です。"
+    }
+  ]
+}

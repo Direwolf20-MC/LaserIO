@@ -1,0 +1,17 @@
+{
+  "name": "カードオーバークロッカー",
+  "icon": "laserio:overclocker_card",
+  "sortnum": 2,
+  "category": "laserio:items",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "カードオーバークロッカーを使用すると、個々のカードの動作が速くなります。$(br2)たとえば、アイテムカードは20ティック(1秒)ごとに最大8つのアイテムしか抽出できません。4つのオーバークロッカーをインストールすると、1ティックごとに64個のアイテムを抽出できます。$(br2)各カードがオーバークロッカーによってどのように影響を受けるかについては、カードの項目を参照してください。"
+    },
+    {
+      "type": "patchouli:crafting",
+      "title": "カードオーバークロッカー",
+      "recipe": "laserio:overclocker_card"
+    }
+  ]
+}

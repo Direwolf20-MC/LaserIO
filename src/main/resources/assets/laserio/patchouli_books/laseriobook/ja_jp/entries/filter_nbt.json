@@ -1,0 +1,29 @@
+{
+  "name": "NBTフィルター",
+  "sortnum": 3,
+  "category": "laserio:filters",
+  "icon": "laserio:filter_nbt",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "NBTフィルターは、$(l:laserio:filter_tag)タグフィルター$(/l)と非常によく似たUIと機能を備えています。$(br2)右上のスロットにアイテムを配置すると、そのアイテムのすべてのNBTタグラベルが表示されます。それらをリストに追加すると (タグフィルターと同じ方法で)、それらのタグに割り当てられている値に関係なく、それらのタグを含むアイテムがフィルターされます。"
+    },
+    {
+      "type": "patchouli:image",
+      "title": "NBT UI",
+      "images": [
+        "laserio:textures/book/entries/nbt_filter.png"
+      ],
+      "border": true,
+      "text": "NBT UI"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "たとえば、すべてのエンチャントされたアイテムには「エンチャント」タグが付いており、ドロップ増加、ダメージ増加などが指定されています。このリストに「エンチャント」タグを追加すると、フィルターによってすべてのエンチャントされたアイテムが除外されます。$(br2)エンチャントされた剣は1つのインベントリに入れ、エンチャントされていない剣は別のインベントリに入れることができます。どのエンチャントが適用されているかに関係なく。"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "その他のすべての機能は $(l:laserio:filter_tag)タグフィルター$(/l) と同じです。詳細については、その項目を参照してください。"
+    }
+  ]
+}

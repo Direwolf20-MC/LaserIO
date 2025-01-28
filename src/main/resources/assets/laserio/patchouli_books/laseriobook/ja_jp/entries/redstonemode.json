@@ -1,0 +1,16 @@
+{
+  "name": "レッドストーンモード",
+  "sortnum": 11,
+  "category": "laserio:mechanics",
+  "icon": "laserio:textures/gui/buttons/redstonehigh.png",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "レッドストーンモードは、$(l:laserio:redstonechannel)レッドストーンチャンネル$(/l)のレッドストーン信号がカードにどのように影響するかを決定します。$(br2)デフォルトでは、これは$(bold)無視$()に設定されており、カードは常に動作し、レッドストーンは影響しません。"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(br2)低に設定すると、カードはレッドストーンチャンネルにレッドストーン信号がない場合にのみ機能します (チャンネルボタンはレッドストーン切り替えの右側にあります)。$(br2)レッドストーン高モードでは、カードはレッドストーンチャンネルにレッドストーン信号がある場合にのみ機能します。"
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "name": "レッドストーンチャンネル",
+  "sortnum": 11,
+  "category": "laserio:mechanics",
+  "icon": "laserio:textures/gui/buttons/redstoneignore.png",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "カードには、メインチャンネルとは別に「レッドストーンチャンネル」があります。$(br2)これは、カードに影響を与えるレッドストーン信号のチャンネルです。詳細については、$(l:laserio:redstonemode)レッドストーンモード$(/l) および $(l:laserio:card_redstone)レッドストーンカード$(/l) の項目を参照してください。"
+    }
+  ]
+}

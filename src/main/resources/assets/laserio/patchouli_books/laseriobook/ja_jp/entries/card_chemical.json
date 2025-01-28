@@ -1,0 +1,22 @@
+{
+  "flag": "mod:mekanism",
+  "name": "化学物質カード",
+  "sortnum": 5,
+  "category": "laserio:cards",
+  "icon": "laserio:card_chemical",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "化学物質カードはMekanism製タンクなどのインベントリ間で化学物質を運搬するために使用されます。このカードは、Mekanismがインストールされているときのみ使用できます。$(br2)オーバークロッカー時の値は次のページに記載されています。"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "オーバークロッカーの MB/t 値 (最大):$(br2)$(li)0 オーバークロッカー: 15,000mb/20t$(li)1 オーバークロッカー: 60,000mb/15t$(li)2 オーバークロッカー: 120,000mb/10t$(li)3 オーバークロッカー: 180,000mb/5t$(li)4 オーバークロッカー: 240,000mb/1t"
+    },
+    {
+      "type": "patchouli:crafting",
+      "title": "化学物質カード",
+      "recipe": "laserio:card_chemical"
+    }
+  ]
+}
