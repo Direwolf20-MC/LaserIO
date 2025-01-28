@@ -1,0 +1,22 @@
+{
+  "name": "論理チップ",
+  "icon": "laserio:logic_chip",
+  "sortnum": 0,
+  "category": "laserio:items",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "論理チップは、LaserIOにおける主要なクラフト材料です。$(br2) これらは、「バニラ」材料で作成される唯一のアイテムであり、後続のアイテムはすべて何らかの形でチップを使用します。"
+    },
+    {
+      "type": "patchouli:crafting",
+      "title": "未処理論理チップ",
+      "recipe": "laserio:logic_chip_raw"
+    },
+    {
+      "type": "patchouli:smelting",
+      "title": "論理チップ",
+      "recipe": "laserio:logic_chip"
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "name": "ノードオーバークロッカー",
+  "icon": "laserio:overclocker_node",
+  "sortnum": 2,
+  "category": "laserio:items",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "ノードオーバークロッカーは、より複雑なコンポーネントです。$(br2)各$(l:laserio:laser_node)ノード$(/l)は、1ティックにつき1面につき1枚のカードのみを操作できます。$(br2)ノードの側面に3枚の抽出カードがある場合、ゲームティック中は最初のカードのみが操作され、2枚目は最初のカードが何も実行できなかった場合にのみ操作されます。"
+    },
+    {
+      "type": "patchouli:image",
+      "title": "ノードオーバークロッカー無し",
+      "images": [
+        "laserio:textures/book/entries/overclocker_node1.png"
+      ],
+      "border": true,
+      "text": "ノードオーバークロッカー未インストールのノード"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "ノードの側面にインストールされたノードオーバークロッカーにより、その側面は1ティック当たりより多くのカードが動作できます。合計8つのノードオーバークロッカーをインストールして9つのカード全てが動作できます。$(br2)搬入カードは機能するためにノードオーバークロッカーを必要と$(l)$(#ff0000)しません$()。搬出カードとストックカード$(l)のみ$()がオーバークロッカーを必要とします。"
+    },
+    {
+      "type": "patchouli:image",
+      "title": "二つのノードオーバークロッカー",
+      "images": [
+        "laserio:textures/book/entries/overclocker_node2.png"
+      ],
+      "border": true,
+      "text": "2つのノードオーバークロッカーがインストールされたノード"
+    },
+    {
+      "type": "patchouli:crafting",
+      "title": "ノードオーバークロッカー",
+      "recipe": "laserio:overclocker_node"
+    }
+  ]
+}

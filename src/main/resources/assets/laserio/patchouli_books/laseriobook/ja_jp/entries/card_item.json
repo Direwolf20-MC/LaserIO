@@ -1,0 +1,21 @@
+{
+  "name": "アイテムカード",
+  "sortnum": 1,
+  "category": "laserio:cards",
+  "icon": "laserio:card_item",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "アイテムカードはチェストやかまどなどのインベントリ間でアイテムを運搬するために使用されます。$(br2)オーバークロッカー時の値は次のページに記載されています。"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "オーバークロッカーのアイテム/t 値 (最大):$(br2)$(li)0 オーバークロッカー: 8 アイテム/20t$(li)1 オーバークロッカー: 16 アイテム/15t$(li)2 オーバークロッカー: 32 アイテム/10t$(li)3 オーバークロッカー: 48 アイテム/5t$(li)4 オーバークロッカー: 64 アイテム/1t"
+    },
+    {
+      "type": "patchouli:crafting",
+      "title": "アイテムカード",
+      "recipe": "laserio:card_item"
+    }
+  ]
+}
