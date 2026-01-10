@@ -1,0 +1,21 @@
+{
+  "name": "卡片克隆器",
+  "icon": "laserio:card_cloner",
+  "sortnum": 2,
+  "category": "laserio:items",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "卡片克隆器可用于在卡之间“复制和粘贴”设置！在$(l:laserio:laser_node)激光节点$(/l)界面中，拿起卡片克隆器（在光标上），左键点击一张卡以复制其设置。$(br2)右键点击一张卡以粘贴存储的设置。"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "粘贴时，$(l:laserio:overclocker_card)超频元件$(/l)和$(l:laserio:filters)过滤器$(/l)会自动从当前可用的$(l:laserio:card_holder)卡存储器$(/l)中取出（或放回）。这些物品不会从玩家的物品栏中提取。$(br2)如果缺少任何必要的物品，粘贴将会失败。它$(bold)不会$()部分粘贴设置。"
+    },
+    {
+      "type": "patchouli:crafting",
+      "title": "卡片克隆器",
+      "recipe": "laserio:card_cloner"
+    }
+  ]
+}

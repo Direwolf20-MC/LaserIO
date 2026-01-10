@@ -1,0 +1,21 @@
+{
+  "name": "化学品卡",
+  "sortnum": 5,
+  "category": "laserio:cards",
+  "icon": "laserio:card_chemical",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "化学品卡用于在容器（例如通用机械 Mekanism 的储罐）之间传输化学品。只有安装了通用机械模组，这些卡才可用。$(br2)超频后的数据详见后页。"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "超频后的最大传输速度：$(br2)$(li)无超频：15,000mb/20t$(li)1 个超频：60,000mb/15t$(li)2 个超频：120,000mb/10t$(li)3 个超频：180,000mb/5t$(li)4 个超频：240,000mb/1t"
+    },
+    {
+      "type": "patchouli:crafting",
+      "title": "化学品卡",
+      "recipe": "laserio:card_chemical"
+    }
+  ]
+}
