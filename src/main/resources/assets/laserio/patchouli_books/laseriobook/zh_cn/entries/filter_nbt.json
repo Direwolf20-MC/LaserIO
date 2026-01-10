@@ -1,0 +1,29 @@
+{
+  "name": "数据过滤器",
+  "sortnum": 3,
+  "category": "laserio:filters",
+  "icon": "laserio:filter_nbt",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "数据过滤器的界面和功能与$(l:laserio:filter_tag)标签过滤器$(/l)非常相似。$(br2)将物品放入右上角的插槽中，将显示该物品上的所有数据（NBT）标签。将它们添加到列表中（与标签过滤器一样），将过滤包含这些标签的物品，无论这些标签的值是多少。"
+    },
+    {
+      "type": "patchouli:image",
+      "title": "数据过滤器界面",
+      "images": [
+        "laserio:textures/book/entries/nbt_filter.png"
+      ],
+      "border": true,
+      "text": "数据过滤器界面"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "例如，所有附魔物品都有一个“Enchantments”标签，其中指定了诸如抢夺、锋利等内容。如果你将“Enchantments”标签添加到列表中，过滤器将筛选出所有附魔物品。$(br2)附魔的剑可以进入一个容器，未附魔的进入另一个。无论应用了什么附魔。"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "所有其他功能与$(l:laserio:filter_tag)标签过滤器$(/l)相同，请参阅该条目以获取更多信息。"
+    }
+  ]
+}
