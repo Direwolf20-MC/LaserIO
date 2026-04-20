@@ -51,7 +51,8 @@ public class LaserIODataComponents {
 
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Boolean>> REDSTONE_CARD_STRONG = COMPONENTS.register("redstone_card_strong", () -> DataComponentType.<Boolean>builder().persistent(Codec.BOOL).networkSynchronized(ByteBufCodecs.BOOL).build());
 
-    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> CHEMICAL_CARD_EXTRACT_AMT = COMPONENTS.register("chemical_card_extract_amt", () -> DataComponentType.<Integer>builder().persistent(Codec.INT).networkSynchronized(ByteBufCodecs.VAR_INT).build());
+    // TODO(port, mek): re-enable CHEMICAL_CARD_EXTRACT_AMT data component when Mekanism 26.1 ships.
+    // public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> CHEMICAL_CARD_EXTRACT_AMT = COMPONENTS.register("chemical_card_extract_amt", () -> DataComponentType.<Integer>builder().persistent(Codec.INT).networkSynchronized(ByteBufCodecs.VAR_INT).build());
 
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Boolean>> FILTER_ALLOW = COMPONENTS.register("filter_allow", () -> DataComponentType.<Boolean>builder().persistent(Codec.BOOL).networkSynchronized(ByteBufCodecs.BOOL).build());
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Boolean>> FILTER_COMPARE = COMPONENTS.register("filter_compare", () -> DataComponentType.<Boolean>builder().persistent(Codec.BOOL).networkSynchronized(ByteBufCodecs.BOOL).build());

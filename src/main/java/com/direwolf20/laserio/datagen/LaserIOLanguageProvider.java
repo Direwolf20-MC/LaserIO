@@ -24,7 +24,8 @@ public class LaserIOLanguageProvider extends LanguageProvider {
         add(Registration.Card_Fluid.get(), "Fluid Card");
         add(Registration.Card_Energy.get(), "Energy Card");
         add(Registration.Card_Redstone.get(), "Redstone Card");
-        add(Registration.Card_Chemical.get(), "Chemical Card");
+        // TODO(port, mek): re-enable Chemical Card lang entry when Mekanism 26.1 ships.
+        // add(Registration.Card_Chemical.get(), "Chemical Card");
         add(Registration.Filter_Basic.get(), "Basic Filter");
         add(Registration.Filter_Count.get(), "Counting Filter");
         add(Registration.Filter_Tag.get(), "Tag Filter");

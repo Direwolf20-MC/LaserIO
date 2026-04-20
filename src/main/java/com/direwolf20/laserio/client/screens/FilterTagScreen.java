@@ -9,7 +9,8 @@ import com.direwolf20.laserio.common.items.filters.FilterTag;
 import com.direwolf20.laserio.common.network.data.GhostSlotPayload;
 import com.direwolf20.laserio.common.network.data.UpdateFilterTagPayload;
 import com.direwolf20.laserio.integration.mekanism.MekanismIntegration;
-import com.direwolf20.laserio.integration.mekanism.MekanismStatics;
+// TODO(port, mek): Mekanism 26.1 not yet released. Chemical tag scan disabled.
+// import com.direwolf20.laserio.integration.mekanism.MekanismStatics;
 import com.direwolf20.laserio.util.MagicHelpers;
 import com.direwolf20.laserio.util.MiscTools;
 import com.mojang.blaze3d.platform.InputConstants;
@@ -212,9 +213,12 @@ public class FilterTagScreen extends AbstractContainerScreen<FilterTagContainer>
                     fluidStack.getFluid().builtInRegistryHolder().tags().forEach(this::checkTag);
                 }
             }
+            // TODO(port, mek): re-enable Mekanism tag scan when Mekanism 26.1 ships.
+            /*
             if (MekanismIntegration.isLoaded()) {
                 MekanismStatics.getTagsFromItemStack(stackInSlot).forEach(this::checkTag);
             }
+            */
         }
     }
 

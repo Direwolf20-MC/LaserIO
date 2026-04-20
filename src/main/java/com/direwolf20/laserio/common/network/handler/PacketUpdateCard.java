@@ -7,7 +7,8 @@ import com.direwolf20.laserio.common.items.cards.CardEnergy;
 import com.direwolf20.laserio.common.items.cards.CardFluid;
 import com.direwolf20.laserio.common.items.cards.CardItem;
 import com.direwolf20.laserio.common.network.data.UpdateCardPayload;
-import com.direwolf20.laserio.integration.mekanism.CardChemical;
+// TODO(port, mek): Mekanism 26.1 not yet released. Chemical card branch disabled.
+// import com.direwolf20.laserio.integration.mekanism.CardChemical;
 import com.direwolf20.laserio.setup.Config;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -71,7 +72,10 @@ public class PacketUpdateCard {
                     CardEnergy.setExtractSpeed(stack, ticks);
                     CardEnergy.setExtractLimitPercent(stack, payload.extractLimit());
                     CardEnergy.setInsertLimitPercent(stack, payload.insertLimit());
-                } else if (stack.getItem() instanceof CardChemical) {
+                }
+                // TODO(port, mek): re-enable CardChemical branch when Mekanism 26.1 ships.
+                /*
+                else if (stack.getItem() instanceof CardChemical) {
                     overClockerCount = container.getSlot(1).getItem().getCount();
                     if (extractAmt > Math.max(overClockerCount * Config.MULTIPLIER_MILLI_BUCKETS_CHEMICAL.get(), Config.BASE_MILLI_BUCKETS_CHEMICAL.get())) {
                         extractAmt = Math.max(overClockerCount * Config.MULTIPLIER_MILLI_BUCKETS_CHEMICAL.get(), Config.BASE_MILLI_BUCKETS_CHEMICAL.get());
@@ -82,6 +86,7 @@ public class PacketUpdateCard {
                         ticks = (short) Math.max(20 - overClockerCount * 5, 1);
                     BaseCard.setExtractSpeed(stack, ticks);
                 }
+                */
                 BaseCard.setPriority(stack, payload.priority());
                 BaseCard.setSneaky(stack, payload.sneaky());
                 BaseCard.setExact(stack, payload.exact());

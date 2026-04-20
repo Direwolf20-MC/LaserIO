@@ -1,5 +1,5 @@
 package com.direwolf20.laserio.integration.mekanism.client.chemicalparticle;
-
+/*
 import mekanism.api.chemical.ChemicalStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -57,3 +57,4 @@ public class ChemicalFlowParticle extends BreakingItemParticle {
     public static ParticleProvider<ChemicalFlowParticleData> FACTORY = (data, world, x, y, z, xSpeed, ySpeed, zSpeed) ->
             new ChemicalFlowParticle(world, x, y, z, data.target, data.getChemicalStack(), data.ticksPerBlock);
 }
+*/

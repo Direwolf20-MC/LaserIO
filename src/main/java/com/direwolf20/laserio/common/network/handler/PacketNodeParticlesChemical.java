@@ -1,5 +1,5 @@
 package com.direwolf20.laserio.common.network.handler;
-
+/*
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import com.direwolf20.laserio.common.network.data.NodeParticlesChemicalPayload;
 import com.direwolf20.laserio.integration.mekanism.client.chemicalparticle.ParticleDataChemical;
@@ -45,3 +45,4 @@ public class PacketNodeParticlesChemical {
         });
     }
 }
+*/

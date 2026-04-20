@@ -8,7 +8,8 @@ import com.direwolf20.laserio.common.items.cards.CardItem;
 import com.direwolf20.laserio.common.items.cards.CardRedstone;
 import com.direwolf20.laserio.common.items.filters.BaseFilter;
 import com.direwolf20.laserio.common.network.data.OpenCardPayload;
-import com.direwolf20.laserio.integration.mekanism.CardChemical;
+// TODO(port, mek): Mekanism 26.1 not yet released. Chemical card open branch disabled.
+// import com.direwolf20.laserio.integration.mekanism.CardChemical;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.MenuProvider;
@@ -140,7 +141,10 @@ public class PacketOpenCard {
                     ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, itemStack);
                     buf.writeByte(side);
                 }));
-            } else if (itemStack.getItem() instanceof CardChemical) {
+            }
+            // TODO(port, mek): re-enable CardChemical open branch when Mekanism 26.1 ships.
+            /*
+            else if (itemStack.getItem() instanceof CardChemical) {
                 if (!payload.hasShiftDown()) {
                     MenuProvider containerProvider = new MenuProvider() {
                         @Override
@@ -168,6 +172,7 @@ public class PacketOpenCard {
                         PacketOpenFilter.doOpenFilter(filterItem, itemStack, (ServerPlayer) sender, payload.sourcePos());
                 }
             }
+            */
         });
     }
 }

@@ -30,9 +30,12 @@ public class PacketHandler {
         registrar.playToClient(NodeParticlesFluidPayload.TYPE, NodeParticlesFluidPayload.STREAM_CODEC, PacketNodeParticlesFluid.get()::handle);
 
         //Mekanism Packets Only
+        // TODO(port, mek): re-enable chemical payload registration when Mekanism 26.1 ships.
+        /*
         if (MekanismIntegration.isLoaded()) {
             //Client Side
             registrar.playToClient(NodeParticlesChemicalPayload.TYPE, NodeParticlesChemicalPayload.STREAM_CODEC, PacketNodeParticlesChemical.get()::handle);
         }
+        */
     }
 }

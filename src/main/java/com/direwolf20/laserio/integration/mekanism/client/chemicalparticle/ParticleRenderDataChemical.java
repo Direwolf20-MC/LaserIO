@@ -1,5 +1,5 @@
 package com.direwolf20.laserio.integration.mekanism.client.chemicalparticle;
-
+/*
 import mekanism.api.chemical.ChemicalStack;
 import net.minecraft.core.BlockPos;
 
@@ -19,3 +19,4 @@ public class ParticleRenderDataChemical {
     }
 
 }
+*/

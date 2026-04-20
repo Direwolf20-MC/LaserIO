@@ -1,5 +1,5 @@
 package com.direwolf20.laserio.integration.mekanism.client.chemicalparticle;
-
+/*
 import com.direwolf20.laserio.util.SharedRecords;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -53,3 +53,4 @@ public class ParticleDataChemical {
         return toData;
     }
 }
+*/

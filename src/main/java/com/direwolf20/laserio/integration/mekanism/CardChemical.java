@@ -1,5 +1,5 @@
 package com.direwolf20.laserio.integration.mekanism;
-
+/*
 import com.direwolf20.laserio.common.containers.CardChemicalContainer;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.setup.Config;
@@ -45,3 +45,4 @@ public class CardChemical extends BaseCard {
         return card.getOrDefault(LaserIODataComponents.CHEMICAL_CARD_EXTRACT_AMT, Config.BASE_MILLI_BUCKETS_CHEMICAL.get());
     }
 }
+*/

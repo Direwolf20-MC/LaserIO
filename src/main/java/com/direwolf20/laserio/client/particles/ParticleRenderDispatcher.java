@@ -4,8 +4,9 @@ import com.direwolf20.laserio.client.particles.fluidparticle.FluidFlowParticle;
 import com.direwolf20.laserio.client.particles.itemparticle.ItemFlowParticle;
 import com.direwolf20.laserio.common.LaserIO;
 import com.direwolf20.laserio.integration.mekanism.MekanismIntegration;
-import com.direwolf20.laserio.integration.mekanism.client.chemicalparticle.ChemicalFlowParticle;
-import com.direwolf20.laserio.integration.mekanism.client.chemicalparticle.MekanismModParticles;
+// TODO(port, mek): Mekanism 26.1 not yet released. Chemical particle provider disabled.
+// import com.direwolf20.laserio.integration.mekanism.client.chemicalparticle.ChemicalFlowParticle;
+// import com.direwolf20.laserio.integration.mekanism.client.chemicalparticle.MekanismModParticles;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -19,8 +20,11 @@ public class ParticleRenderDispatcher {
     public static void registerProviders(RegisterParticleProvidersEvent evt) {
         evt.registerSpecial(ModParticles.ITEMFLOWPARTICLE.get(), ItemFlowParticle.FACTORY);
         evt.registerSpecial(ModParticles.FLUIDFLOWPARTICLE.get(), FluidFlowParticle.FACTORY);
+        // TODO(port, mek): re-enable chemical particle provider when Mekanism 26.1 ships.
+        /*
         if (MekanismIntegration.isLoaded()) {
             evt.registerSpecial(MekanismModParticles.CHEMICALFLOWPARTICLE.get(), ChemicalFlowParticle.FACTORY);
         }
+        */
     }
 }

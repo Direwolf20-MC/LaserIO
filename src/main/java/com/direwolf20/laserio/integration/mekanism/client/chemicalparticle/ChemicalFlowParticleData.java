@@ -1,5 +1,5 @@
 package com.direwolf20.laserio.integration.mekanism.client.chemicalparticle;
-
+/*
 import com.direwolf20.laserio.util.MiscTools;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
@@ -63,3 +63,4 @@ public class ChemicalFlowParticleData implements ParticleOptions {
         return ticksPerBlock;
     }
 }
+*/

@@ -1,6 +1,7 @@
 package com.direwolf20.laserio.common.network.handler;
 
-import com.direwolf20.laserio.common.containers.CardChemicalContainer;
+// TODO(port, mek): Mekanism 26.1 not yet released. Chemical container branch disabled.
+// import com.direwolf20.laserio.common.containers.CardChemicalContainer;
 import com.direwolf20.laserio.common.containers.CardFluidContainer;
 import com.direwolf20.laserio.common.containers.CardItemContainer;
 import com.direwolf20.laserio.common.containers.FilterCountContainer;
@@ -35,14 +36,16 @@ public class PacketGhostSlot {
                 ItemStack stack = payload.stack().copy();
                 FilterCountHandler handler = (FilterCountHandler) ((CardItemContainer) container).filterHandler;
                 int mbAmt = payload.mbAmt();
-                if (mbAmt == 0 && (container instanceof CardFluidContainer || container instanceof CardChemicalContainer)) {
+                // TODO(port, mek): re-add `|| container instanceof CardChemicalContainer` when Mekanism 26.1 ships.
+                if (mbAmt == 0 && (container instanceof CardFluidContainer /* || container instanceof CardChemicalContainer */)) {
                     stack.setCount(0);
                 } else {
                     stack.setCount(payload.count());
                 }
                 handler.setStackInSlot(payload.slotNumber() - CardItemContainer.SLOTS, stack);
 
-                if (mbAmt != -1 && (container instanceof CardFluidContainer || container instanceof CardChemicalContainer)) { //MB amt is only done in CardFluidContainers
+                // TODO(port, mek): re-add `|| container instanceof CardChemicalContainer` when Mekanism 26.1 ships.
+                if (mbAmt != -1 && (container instanceof CardFluidContainer /* || container instanceof CardChemicalContainer */)) { //MB amt is only done in CardFluidContainers
                     handler.setMBAmountInSlot(payload.slotNumber() - CardItemContainer.SLOTS, mbAmt);
                 }
             } else if (container instanceof FilterCountContainer) {

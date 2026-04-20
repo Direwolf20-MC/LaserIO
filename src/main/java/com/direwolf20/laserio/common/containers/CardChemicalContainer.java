@@ -1,6 +1,6 @@
 package com.direwolf20.laserio.common.containers;
 
-
+/*
 import com.direwolf20.laserio.common.items.CardHolder;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.setup.Registration;
@@ -49,3 +49,4 @@ public class CardChemicalContainer extends CardItemContainer {
         this.direction = direction;
     }
 }
+*/

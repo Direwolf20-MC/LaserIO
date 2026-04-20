@@ -1,5 +1,5 @@
 package com.direwolf20.laserio.common.network.data;
-
+/*
 import com.direwolf20.laserio.common.LaserIO;
 import com.direwolf20.laserio.integration.mekanism.client.chemicalparticle.ParticleDataChemical;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -25,3 +25,4 @@ public record NodeParticlesChemicalPayload(
             NodeParticlesChemicalPayload::new
     );
 }
+*/

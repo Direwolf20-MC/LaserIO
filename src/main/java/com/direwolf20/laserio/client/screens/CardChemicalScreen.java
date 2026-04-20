@@ -1,5 +1,5 @@
 package com.direwolf20.laserio.client.screens;
-
+/*
 import com.direwolf20.laserio.client.screens.widgets.NumberButton;
 import com.direwolf20.laserio.client.screens.widgets.ToggleButton;
 import com.direwolf20.laserio.common.LaserIO;
@@ -162,3 +162,4 @@ public class CardChemicalScreen extends CardItemScreen {
         PacketDistributor.sendToServer(new UpdateCardPayload(currentMode, currentChannel, currentChemicalExtractAmt, currentPriority, currentSneaky, (short) currentTicks, currentExact, currentRegulate, (byte) currentRoundRobin, 0, 0, currentRedstoneMode, currentRedstoneChannel, currentAndMode));
     }
 }
+*/

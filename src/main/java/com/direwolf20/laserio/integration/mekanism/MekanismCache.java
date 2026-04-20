@@ -1,5 +1,5 @@
 package com.direwolf20.laserio.integration.mekanism;
-
+/*
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import com.direwolf20.laserio.common.blocks.LaserNode;
 import com.direwolf20.laserio.common.events.ServerTickHandler;
@@ -286,7 +286,7 @@ public class MekanismCache {
         return false;
     }
 
-    /** Extractor Cards call this, and try to find an inserter card to send their items to **/
+    // Extractor Cards call this, and try to find an inserter card to send their items to
     public boolean sendChemicals(ExtractorCardCache extractorCardCache) {
         BlockPos adjacentPos = laserNodeBE.getBlockPos().relative(extractorCardCache.direction);
         Level level = laserNodeBE.getLevel();
@@ -456,7 +456,7 @@ public class MekanismCache {
         return true;
     }
 
-    /** Finds all inserters that can be extracted to **/
+    // Finds all inserters that can be extracted to
     private List<InserterCardCache> getPossibleInserters(ExtractorCardCache extractorCardCache, ChemicalStack stack) {
         return inserterCacheChemical.computeIfAbsent(extractorCardCache, cache -> new Reference2ObjectOpenHashMap<>())
                 .computeIfAbsent(stack.getChemical(), k -> laserNodeBE.getInserterNodes().stream()
@@ -480,7 +480,7 @@ public class MekanismCache {
         return chemicalHandler;
     }
 
-    /** Somehow this makes it so if you break an adjacent chest it immediately invalidates the cache of it **/
+    //Somehow this makes it so if you break an adjacent chest it immediately invalidates the cache of it
     private IChemicalHandler getAttachedChemicalTanks(Direction direction, Byte sneakySide) {
         Direction inventorySide;
         if (sneakySide != -1)
@@ -570,3 +570,4 @@ public class MekanismCache {
         }
     }
 }
+*/

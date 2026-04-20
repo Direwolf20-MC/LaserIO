@@ -1,5 +1,5 @@
 package com.direwolf20.laserio.client.screens;
-
+/*
 import com.direwolf20.laserio.common.items.filters.FilterCount;
 import com.direwolf20.laserio.util.MiscTools;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -127,3 +127,4 @@ public class LaserGuiGraphicsChemical extends GuiGraphics {
         blit(pX, pY, 100, 16, 16, chemicalSprite, red, green, blue, 1.0f);
     }
 }
+*/

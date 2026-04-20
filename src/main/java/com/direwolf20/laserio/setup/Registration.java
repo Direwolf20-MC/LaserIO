@@ -17,7 +17,8 @@ import com.direwolf20.laserio.common.items.filters.*;
 import com.direwolf20.laserio.common.items.upgrades.OverclockerCard;
 import com.direwolf20.laserio.common.items.upgrades.OverclockerNode;
 import com.direwolf20.laserio.datagen.customrecipes.CardClearRecipe;
-import com.direwolf20.laserio.integration.mekanism.CardChemical;
+// TODO(port, mek): Mekanism 26.1 not yet released. Chemical card/container registration disabled.
+// import com.direwolf20.laserio.integration.mekanism.CardChemical;
 import com.direwolf20.laserio.integration.mekanism.MekanismIntegration;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.inventory.MenuType;
@@ -37,7 +38,8 @@ import java.util.function.Supplier;
 
 import static com.direwolf20.laserio.client.particles.ModParticles.PARTICLE_TYPES;
 import static com.direwolf20.laserio.common.LaserIO.MODID;
-import static com.direwolf20.laserio.integration.mekanism.client.chemicalparticle.MekanismModParticles.PARTICLE_TYPES_MEKANISM;
+// TODO(port, mek): re-enable chemical particle DeferredRegister when Mekanism 26.1 ships.
+// import static com.direwolf20.laserio.integration.mekanism.client.chemicalparticle.MekanismModParticles.PARTICLE_TYPES_MEKANISM;
 
 public class Registration {
 
@@ -50,15 +52,19 @@ public class Registration {
     // Create the DeferredRegister for attachment types
     private static final DeferredRegister<AttachmentType<?>> ATTACHMENT_TYPES = DeferredRegister.create(NeoForgeRegistries.ATTACHMENT_TYPES, LaserIO.MODID);
 
-    public static final DeferredRegister<Item> ITEMS_MEKANISM = DeferredRegister.create(Registries.ITEM, MODID);
+    // TODO(port, mek): re-enable ITEMS_MEKANISM DeferredRegister when Mekanism 26.1 ships.
+    // public static final DeferredRegister<Item> ITEMS_MEKANISM = DeferredRegister.create(Registries.ITEM, MODID);
 
     public static void init(IEventBus eventBus) {
         BLOCKS.register(eventBus);
         ITEMS.register(eventBus);
+        // TODO(port, mek): re-enable Mekanism-gated registrations when Mekanism 26.1 ships.
+        /*
         if (MekanismIntegration.isLoaded()) {
             ITEMS_MEKANISM.register(eventBus);
             PARTICLE_TYPES_MEKANISM.register(eventBus);
         }
+        */
         BLOCK_ENTITIES.register(eventBus);
         CONTAINERS.register(eventBus);
         PARTICLE_TYPES.register(eventBus);
@@ -96,7 +102,8 @@ public class Registration {
     public static final DeferredHolder<Item, CardRedstone> Card_Redstone = ITEMS.register("card_redstone", CardRedstone::new);
 
     //Mekanism
-    public static final DeferredHolder<Item, CardChemical> Card_Chemical = ITEMS_MEKANISM.register("card_chemical", CardChemical::new);
+    // TODO(port, mek): re-enable Card_Chemical registration when Mekanism 26.1 ships.
+    // public static final DeferredHolder<Item, CardChemical> Card_Chemical = ITEMS_MEKANISM.register("card_chemical", CardChemical::new);
 
     //Filters
     public static final DeferredHolder<Item, FilterBasic> Filter_Basic = ITEMS.register("filter_basic", FilterBasic::new);
@@ -122,8 +129,11 @@ public class Registration {
             () -> IMenuTypeExtension.create((windowId, inv, data) -> new CardEnergyContainer(windowId, inv, inv.player, data)));
     public static final DeferredHolder<MenuType<?>, MenuType<CardRedstoneContainer>> CardRedstone_Container = CONTAINERS.register("cardredstone",
             () -> IMenuTypeExtension.create((windowId, inv, data) -> new CardRedstoneContainer(windowId, inv, inv.player, data)));
+    // TODO(port, mek): re-enable CardChemical_Container registration when Mekanism 26.1 ships.
+    /*
     public static final DeferredHolder<MenuType<?>, MenuType<CardChemicalContainer>> CardChemical_Container = CONTAINERS.register("cardchemical",
             () -> IMenuTypeExtension.create((windowId, inv, data) -> new CardChemicalContainer(windowId, inv, inv.player, data)));
+    */
     public static final DeferredHolder<MenuType<?>, MenuType<CardHolderContainer>> CardHolder_Container = CONTAINERS.register("cardholder",
             () -> IMenuTypeExtension.create((windowId, inv, data) -> new CardHolderContainer(windowId, inv, inv.player, data)));
     public static final DeferredHolder<MenuType<?>, MenuType<FilterBasicContainer>> FilterBasic_Container = CONTAINERS.register("filterbasic",

@@ -12,7 +12,8 @@ import com.direwolf20.laserio.common.blockentities.LaserConnectorBE;
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.common.items.cards.CardRedstone;
-import com.direwolf20.laserio.integration.mekanism.CardChemical;
+// TODO(port, mek): Mekanism 26.1 not yet released. Chemical card client setup disabled.
+// import com.direwolf20.laserio.integration.mekanism.CardChemical;
 import com.direwolf20.laserio.integration.mekanism.MekanismIntegration;
 import net.minecraft.client.color.item.ItemColors;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
@@ -69,6 +70,8 @@ public class ClientSetup {
                         return (int) CardRedstone.getTransferMode(stack);
                     });
         });
+        // TODO(port, mek): re-enable chemical card ItemProperties when Mekanism 26.1 ships.
+        /*
         if (MekanismIntegration.isLoaded()) {
             event.enqueueWork(() -> {
                 ItemProperties.register(Registration.Card_Chemical.get(),
@@ -77,6 +80,7 @@ public class ClientSetup {
                         });
             });
         }
+        */
     }
 
     @SubscribeEvent
@@ -86,7 +90,8 @@ public class ClientSetup {
         event.register(Registration.CardFluid_Container.get(), CardFluidScreen::new);
         event.register(Registration.CardEnergy_Container.get(), CardEnergyScreen::new);
         event.register(Registration.CardRedstone_Container.get(), CardRedstoneScreen::new);
-        event.register(Registration.CardChemical_Container.get(), CardChemicalScreen::new);
+        // TODO(port, mek): re-enable CardChemical screen registration when Mekanism 26.1 ships.
+        // event.register(Registration.CardChemical_Container.get(), CardChemicalScreen::new);
         event.register(Registration.CardHolder_Container.get(), CardHolderScreen::new);
         event.register(Registration.FilterBasic_Container.get(), FilterBasicScreen::new);
         event.register(Registration.FilterCount_Container.get(), FilterCountScreen::new);
@@ -137,6 +142,8 @@ public class ClientSetup {
             }
             return 0xFFFFFFFF;
         }, Registration.Card_Fluid.get());
+        // TODO(port, mek): re-enable Card_Chemical color handler when Mekanism 26.1 ships.
+        /*
         if (MekanismIntegration.isLoaded()) {
             colors.register((stack, index) -> {
                 if (index == 2) {
@@ -151,6 +158,7 @@ public class ClientSetup {
                 return 0xFFFFFFFF;
             }, Registration.Card_Chemical.get());
         }
+        */
         colors.register((stack, index) -> {
             if (index == 2) {
                 if (BaseCard.getTransferMode(stack) == (byte) 3) {

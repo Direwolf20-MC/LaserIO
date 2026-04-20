@@ -91,9 +91,13 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
         validateHolder();
         //this.renderBackground(guiGraphics);
         toggleFilterSlots();
+        // TODO(port, mek): re-enable LaserGuiGraphicsChemical branch when Mekanism 26.1 ships.
+        /*
         if (renderChemicals) {
             guiGraphics = new LaserGuiGraphicsChemical(Minecraft.getInstance(), guiGraphics.bufferSource(), this);
-        } else if (renderFluids) {
+        } else
+        */
+        if (renderFluids) {
             guiGraphics = new LaserGuiGraphicsFluid(Minecraft.getInstance(), guiGraphics.bufferSource(), this);
         } else {
             guiGraphics = new LaserGuiGraphics(Minecraft.getInstance(), guiGraphics.bufferSource());

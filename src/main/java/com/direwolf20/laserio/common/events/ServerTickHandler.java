@@ -1,9 +1,10 @@
 package com.direwolf20.laserio.common.events;
 
-import com.direwolf20.laserio.common.network.data.NodeParticlesChemicalPayload;
+// TODO(port, mek): Mekanism 26.1 not yet released. Chemical particle list disabled.
+// import com.direwolf20.laserio.common.network.data.NodeParticlesChemicalPayload;
 import com.direwolf20.laserio.common.network.data.NodeParticlesFluidPayload;
 import com.direwolf20.laserio.common.network.data.NodeParticlesPayload;
-import com.direwolf20.laserio.integration.mekanism.client.chemicalparticle.ParticleDataChemical;
+// import com.direwolf20.laserio.integration.mekanism.client.chemicalparticle.ParticleDataChemical;
 import com.direwolf20.laserio.util.MiscTools;
 import com.direwolf20.laserio.util.ParticleData;
 import com.direwolf20.laserio.util.ParticleDataFluid;
@@ -21,7 +22,8 @@ import java.util.Set;
 public class ServerTickHandler {
     private static List<ParticleData> particleList = new ArrayList<>();
     private static List<ParticleDataFluid> particleListFluid = new ArrayList<>();
-    private static List<ParticleDataChemical> particleListChemical = new ArrayList<>();
+    // TODO(port, mek): re-enable chemical particle list when Mekanism 26.1 ships.
+    // private static List<ParticleDataChemical> particleListChemical = new ArrayList<>();
 
     @SubscribeEvent
     public static void handleTickEndEvent(ServerTickEvent.Post event) {
@@ -45,6 +47,8 @@ public class ServerTickHandler {
                 PacketDistributor.sendToPlayersInDimension((ServerLevel) level, new NodeParticlesFluidPayload(List.copyOf(particleListFluid)));
             particleListFluid.clear();
         }
+        // TODO(port, mek): re-enable chemical particle dispatch when Mekanism 26.1 ships.
+        /*
         if (!particleListChemical.isEmpty()) {
             Set<Level> levels = new HashSet<>();
             for (ParticleDataChemical data : particleListChemical) {
@@ -55,6 +59,7 @@ public class ServerTickHandler {
                 PacketDistributor.sendToPlayersInDimension((ServerLevel) level, new NodeParticlesChemicalPayload(List.copyOf(particleListChemical)));
             particleListChemical.clear();
         }
+        */
 
     }
 
@@ -67,8 +72,11 @@ public class ServerTickHandler {
             particleListFluid.add(particleData);
     }
 
+    // TODO(port, mek): re-enable chemical particle overload when Mekanism 26.1 ships.
+    /*
     public static void addToListFluid(ParticleDataChemical particleData) {
         if (!particleData.chemicalStack.isEmpty())
             particleListChemical.add(particleData);
     }
+    */
 }

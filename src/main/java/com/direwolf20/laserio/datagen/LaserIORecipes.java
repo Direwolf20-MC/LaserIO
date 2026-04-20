@@ -158,6 +158,8 @@ public class LaserIORecipes extends RecipeProvider {
                 .group("laserio")
                 .unlockedBy("has_logic_chip", InventoryChangeTrigger.TriggerInstance.hasItems(Registration.Logic_Chip.get()))
                 .save(recipeOutput);
+        // TODO(port, mek): re-enable Chemical Card recipe when Mekanism 26.1 ships.
+        /*
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, Registration.Card_Chemical.get(), 1)
                 .pattern("rlr")
                 .pattern("qpq")
@@ -170,6 +172,7 @@ public class LaserIORecipes extends RecipeProvider {
                 .group("laserio")
                 .unlockedBy("has_logic_chip", InventoryChangeTrigger.TriggerInstance.hasItems(Registration.Logic_Chip.get()))
                 .save(recipeOutput.withConditions(new ModLoadedCondition("mekanism")));
+        */
 
         //Filters
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, Registration.Filter_Basic.get(), 4)
@@ -250,11 +253,14 @@ public class LaserIORecipes extends RecipeProvider {
                 .group("laserio")
                 .unlockedBy("has_card_redstone", InventoryChangeTrigger.TriggerInstance.hasItems(Registration.Card_Redstone.get()))
                 .save(recipeOutput, Registration.Card_Redstone.getId() + "_nbtclear");
+        // TODO(port, mek): re-enable Chemical Card NBT-clear recipe when Mekanism 26.1 ships.
+        /*
         CardClearRecipeBuilder.shapeless(Registration.Card_Chemical.get())
                 .requires(Registration.Card_Chemical.get())
                 .group("laserio")
                 .unlockedBy("has_card_chemical", InventoryChangeTrigger.TriggerInstance.hasItems(Registration.Card_Chemical.get()))
                 .save(recipeOutput.withConditions(new ModLoadedCondition("mekanism")), Registration.Card_Chemical.getId() + "_nbtclear");
+        */
 
         ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, Registration.Filter_Basic.get())
                 .requires(Registration.Filter_Basic.get())

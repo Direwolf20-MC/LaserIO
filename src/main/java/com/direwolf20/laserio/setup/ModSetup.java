@@ -31,6 +31,8 @@ public class ModSetup {
                 Registration.ITEMS.getEntries().forEach(e -> {
                     Item item = e.get();
                     output.accept(item);
+                    // TODO(port, mek): re-enable Mekanism creative-tab entries when Mekanism 26.1 ships.
+                    /*
                     if (item instanceof CardRedstone) { //Doing it this way puts the Mekanism card after the redstone card.
                         if (MekanismIntegration.isLoaded()) {
                             Registration.ITEMS_MEKANISM.getEntries().forEach(f -> {
@@ -39,6 +41,7 @@ public class ModSetup {
                             });
                         }
                     }
+                    */
                 });
             })
             .build());

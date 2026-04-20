@@ -1,5 +1,5 @@
 package com.direwolf20.laserio.integration.mekanism.client.chemicalparticle;
-
+/*
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -24,3 +24,4 @@ public class ChemicalFlowParticleType extends ParticleType<ChemicalFlowParticleD
         return ChemicalFlowParticleData.STREAM_CODEC;
     }
 }
+*/
