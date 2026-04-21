@@ -12,37 +12,29 @@ import com.direwolf20.laserio.common.items.filters.FilterCount;
 import com.direwolf20.laserio.common.items.filters.FilterMod;
 import com.direwolf20.laserio.common.items.filters.FilterTag;
 import com.direwolf20.laserio.common.items.upgrades.OverclockerNode;
-// TODO(port, mek): Mekanism 26.1 not yet released. All chemical branches disabled.
-// import com.direwolf20.laserio.integration.mekanism.CardChemical;
-// import com.direwolf20.laserio.integration.mekanism.MekanismCache;
-import com.direwolf20.laserio.integration.mekanism.MekanismIntegration;
-// import com.direwolf20.laserio.integration.mekanism.client.chemicalparticle.ParticleRenderDataChemical;
-import com.direwolf20.laserio.setup.Registration;
 import com.direwolf20.laserio.util.*;
 import it.unimi.dsi.fastutil.bytes.Byte2BooleanMap;
 import it.unimi.dsi.fastutil.bytes.Byte2BooleanOpenHashMap;
 import it.unimi.dsi.fastutil.bytes.Byte2ByteMap;
 import it.unimi.dsi.fastutil.bytes.Byte2ByteOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-// TODO(port, mek): re-enable mekanism.api.* imports when Mekanism 26.1 ships.
-// import mekanism.api.chemical.IChemicalHandler;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.Connection;
-import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.Containers;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
 import net.neoforged.neoforge.capabilities.Capabilities;
@@ -52,6 +44,10 @@ import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
 import net.neoforged.neoforge.items.ItemStackHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.energy.EnergyHandler;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
@@ -62,6 +58,13 @@ import java.util.stream.Collectors;
 import static com.direwolf20.laserio.util.MiscTools.findOffset;
 import static net.minecraft.world.level.block.Block.UPDATE_ALL;
 import static net.neoforged.neoforge.fluids.FluidStack.isSameFluidSameComponents;
+
+// TODO(port, mek): Mekanism 26.1 not yet released. All chemical branches disabled.
+// import com.direwolf20.laserio.integration.mekanism.CardChemical;
+// import com.direwolf20.laserio.integration.mekanism.MekanismCache;
+// import com.direwolf20.laserio.integration.mekanism.client.chemicalparticle.ParticleRenderDataChemical;
+// TODO(port, mek): re-enable mekanism.api.* imports when Mekanism 26.1 ships.
+// import mekanism.api.chemical.IChemicalHandler;
 
 public class LaserNodeBE extends BaseLaserBE {
     private static final Vector3f[] offsets = { //Used for where to draw particles from
@@ -98,9 +101,9 @@ public class LaserNodeBE extends BaseLaserBE {
 
     public Map<ExtractorCardCache, Integer> roundRobinMap = new Object2IntOpenHashMap<>();
 
-    private final Map<SideConnection, BlockCapabilityCache<IItemHandler, Direction>> facingHandlerItem = new HashMap<>();
-    private final Map<SideConnection, BlockCapabilityCache<IFluidHandler, Direction>> facingHandlerFluid = new HashMap<>();
-    private final Map<SideConnection, BlockCapabilityCache<IEnergyStorage, Direction>> facingHandlerEnergy = new HashMap<>();
+    private final Map<SideConnection, BlockCapabilityCache<ResourceHandler<ItemResource>, Direction>> facingHandlerItem = new HashMap<>();
+    private final Map<SideConnection, BlockCapabilityCache<ResourceHandler<FluidResource>, Direction>> facingHandlerFluid = new HashMap<>();
+    private final Map<SideConnection, BlockCapabilityCache<EnergyHandler, Direction>> facingHandlerEnergy = new HashMap<>();
 
     /** Variables for tracking and sending items/filters/etc **/
     private final Set<GlobalPos> otherNodesInNetwork = new HashSet<>();
@@ -496,8 +499,8 @@ public class LaserNodeBE extends BaseLaserBE {
                     myRedstoneOut.put(side, myRedstoneOutTemp.get(side));
                 else
                     myRedstoneOut.remove(side);
-                level.neighborChanged(getBlockPos().relative(direction), this.getBlockState().getBlock(), getBlockPos());
-                level.updateNeighborsAtExceptFromFacing(getBlockPos().relative(direction), this.getBlockState().getBlock(), direction.getOpposite());
+                level.neighborChanged(getBlockPos().relative(direction), this.getBlockState().getBlock(), null);
+                level.updateNeighborsAtExceptFromFacing(getBlockPos().relative(direction), this.getBlockState().getBlock(), direction.getOpposite(), null);
 
             }
         }
@@ -2133,13 +2136,13 @@ public class LaserNodeBE extends BaseLaserBE {
         BlockPos targetPos = getBlockPos().relative(direction);
         if (facingHandlerItem.get(sideConnection) == null)
             facingHandlerItem.put(sideConnection, BlockCapabilityCache.create(
-                    Capabilities.ItemHandler.BLOCK, // capability to cache
+                    Capabilities.Item.BLOCK, // capability to cache
                     (ServerLevel) level, // level
                     targetPos, // target position
                     inventorySide // context (The side of the block we're trying to pull/push from?)
             ));
-        IItemHandler testHandler = facingHandlerItem.get(sideConnection).getCapability();
-        return testHandler;
+        ResourceHandler<ItemResource> testHandler = facingHandlerItem.get(sideConnection).getCapability();
+        return testHandler == null ? null : IItemHandler.of(testHandler);
 
 
         /*BlockState blockState = level.getBlockState(targetPos);
@@ -2170,8 +2173,8 @@ public class LaserNodeBE extends BaseLaserBE {
         BlockEntity be = level.getBlockEntity(getBlockPos().relative(direction));
         // if we have a TE and its an item handler, try extracting from that
         if (be != null) {
-            IItemHandler handler = level.getCapability(Capabilities.ItemHandler.BLOCK, getBlockPos().relative(direction), inventorySide);
-            return handler;
+            ResourceHandler<ItemResource> handler = level.getCapability(Capabilities.Item.BLOCK, getBlockPos().relative(direction), inventorySide);
+            return handler == null ? null : IItemHandler.of(handler);
         }
         return null;
     }
@@ -2195,13 +2198,13 @@ public class LaserNodeBE extends BaseLaserBE {
         BlockPos targetPos = getBlockPos().relative(direction);
         if (facingHandlerFluid.get(sideConnection) == null)
             facingHandlerFluid.put(sideConnection, BlockCapabilityCache.create(
-                    Capabilities.FluidHandler.BLOCK, // capability to cache
+                    Capabilities.Fluid.BLOCK, // capability to cache
                     (ServerLevel) level, // level
                     targetPos, // target position
                     inventorySide // context (The side of the block we're trying to pull/push from?)
             ));
-        IFluidHandler testHandler = facingHandlerFluid.get(sideConnection).getCapability();
-        return testHandler;
+        ResourceHandler<FluidResource> testHandler = facingHandlerFluid.get(sideConnection).getCapability();
+        return testHandler == null ? null : IFluidHandler.of(testHandler);
         /*
         // if no inventory cached yet, find a new one
         assert level != null;
@@ -2232,8 +2235,8 @@ public class LaserNodeBE extends BaseLaserBE {
         BlockEntity be = level.getBlockEntity(getBlockPos().relative(direction));
         // if we have a TE and its an item handler, try extracting from that
         if (be != null) {
-            IFluidHandler handler = level.getCapability(Capabilities.FluidHandler.BLOCK, getBlockPos().relative(direction), inventorySide);
-            return handler;
+            ResourceHandler<FluidResource> handler = level.getCapability(Capabilities.Fluid.BLOCK, getBlockPos().relative(direction), inventorySide);
+            return handler == null ? null : IFluidHandler.of(handler);
         }
         return null;
     }
@@ -2263,13 +2266,13 @@ public class LaserNodeBE extends BaseLaserBE {
         BlockPos targetPos = getBlockPos().relative(direction);
         if (facingHandlerEnergy.get(sideConnection) == null)
             facingHandlerEnergy.put(sideConnection, BlockCapabilityCache.create(
-                    Capabilities.EnergyStorage.BLOCK, // capability to cache
+                    Capabilities.Energy.BLOCK, // capability to cache
                     (ServerLevel) level, // level
                     targetPos, // target position
                     inventorySide // context (The side of the block we're trying to pull/push from?)
             ));
-        IEnergyStorage testHandler = facingHandlerEnergy.get(sideConnection).getCapability();
-        return testHandler;
+        EnergyHandler testHandler = facingHandlerEnergy.get(sideConnection).getCapability();
+        return testHandler == null ? null : IEnergyStorage.of(testHandler);
 
         /*
         // if no inventory cached yet, find a new one
@@ -2301,8 +2304,8 @@ public class LaserNodeBE extends BaseLaserBE {
         BlockEntity be = level.getBlockEntity(getBlockPos().relative(direction));
         // if we have a TE and its an item handler, try extracting from that
         if (be != null) {
-            IEnergyStorage handler = level.getCapability(Capabilities.EnergyStorage.BLOCK, getBlockPos().relative(direction), inventorySide);
-            return handler;
+            EnergyHandler handler = level.getCapability(Capabilities.Energy.BLOCK, getBlockPos().relative(direction), inventorySide);
+            return handler == null ? null : IEnergyStorage.of(handler);
         }
         return null;
     }
@@ -2339,12 +2342,12 @@ public class LaserNodeBE extends BaseLaserBE {
 
     public void populateRenderList() {
         //System.out.println("Refreshing Renders at: " + getBlockPos());
-        if (level == null || !level.isClientSide) return;
+        if (level == null || !level.isClientSide()) return;
         this.cardRenders.clear();
         redstoneCardSides.clear();
         for (Direction direction : Direction.values()) {
-            IItemHandler h = level.getCapability(Capabilities.ItemHandler.BLOCK, getBlockPos(), direction);
-            if (h == null) h = new ItemStackHandler(0);
+            ResourceHandler<ItemResource> rh = level.getCapability(Capabilities.Item.BLOCK, getBlockPos(), direction);
+            IItemHandler h = rh == null ? new ItemStackHandler(0) : IItemHandler.of(rh);
             for (int slot = 0; slot < h.getSlots(); slot++) {
                 ItemStack card = h.getStackInSlot(slot);
                 if (!(card.getItem() instanceof BaseCard)) continue;
@@ -2446,66 +2449,74 @@ public class LaserNodeBE extends BaseLaserBE {
     }*/
     @Override
     public CompoundTag getUpdateTag(HolderLookup.Provider provider) {
-        CompoundTag tag = new CompoundTag();
-        saveAdditional(tag, provider);
-        ListTag redstoneNetworkTag = new ListTag();
-        for (Map.Entry<Byte, Byte> entry : redstoneNetwork.byte2ByteEntrySet()) {
-            CompoundTag comp = new CompoundTag();
-            comp.putByte("channel", entry.getKey());
-            comp.putByte("strength", entry.getValue());
-            redstoneNetworkTag.add(comp);
-        }
-        tag.put("redstoneNetworkTag", redstoneNetworkTag);
-        //System.out.println(redstoneNetworkTag + " at " + getBlockPos());
-        return tag;
+        return saveCustomOnly(provider);
     }
 
     @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, HolderLookup.Provider lookupProvider) {
-        CompoundTag tag = pkt.getTag();
-        this.loadAdditional(tag, lookupProvider);
-        redstoneNetwork.clear();
-        ListTag redstoneNetworkTag = tag.getList("redstoneNetworkTag", Tag.TAG_COMPOUND);
-        for (int i = 0; i < redstoneNetworkTag.size(); i++) {
-            byte channel = redstoneNetworkTag.getCompound(i).getByte("channel");
-            byte strength = redstoneNetworkTag.getCompound(i).getByte("strength");
-            redstoneNetwork.put(channel, strength);
-        }
-    }
-
-    @Override
-    public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+    protected void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
         for (int i = 0; i < Direction.values().length; i++) {
             NodeSideCache nodeSideCache = nodeSideCaches[i];
-            if (tag.contains("Inventory" + i)) {
-                nodeSideCache.itemHandler.deserializeNBT(provider, tag.getCompound("Inventory" + i));
+            nodeSideCache.itemHandler.serialize(output.child("Inventory" + i));
+        }
+        output.putBoolean("showParticles", showParticles);
+        int[] redstonePacked = new int[redstoneNetwork.size()];
+        int idx = 0;
+        for (Map.Entry<Byte, Byte> entry : redstoneNetwork.byte2ByteEntrySet()) {
+            redstonePacked[idx++] = ((entry.getKey() & 0xFF) << 8) | (entry.getValue() & 0xFF);
+        }
+        output.putIntArray("redstoneNetwork", redstonePacked);
+    }
+
+    @Override
+    public void onDataPacket(Connection net, ValueInput input) {
+        this.loadAdditional(input);
+    }
+
+    @Override
+    protected void loadAdditional(ValueInput input) {
+        for (int i = 0; i < Direction.values().length; i++) {
+            NodeSideCache nodeSideCache = nodeSideCaches[i];
+            Optional<ValueInput> inv = input.child("Inventory" + i);
+            if (inv.isPresent()) {
+                nodeSideCache.itemHandler.deserialize(inv.get());
                 if (nodeSideCache.itemHandler.getSlots() < LaserNodeContainer.SLOTS) {
                     nodeSideCache.itemHandler.reSize(LaserNodeContainer.SLOTS);
                 }
             }
         }
-        if (tag.contains("showParticles"))
-            showParticles = tag.getBoolean("showParticles");
-        super.loadAdditional(tag, provider);
+        showParticles = input.getBooleanOr("showParticles", true);
+        redstoneNetwork.clear();
+        input.getIntArray("redstoneNetwork").ifPresent(packed -> {
+            for (int entry : packed) {
+                byte channel = (byte) ((entry >> 8) & 0xFF);
+                byte strength = (byte) (entry & 0xFF);
+                redstoneNetwork.put(channel, strength);
+            }
+        });
+        super.loadAdditional(input);
         rendersChecked = false;
-
     }
 
     @Override
-    public void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
-        super.saveAdditional(tag, provider);
-        for (int i = 0; i < Direction.values().length; i++) {
-            NodeSideCache nodeSideCache = nodeSideCaches[i];
-            tag.put("Inventory" + i, nodeSideCache.itemHandler.serializeNBT(provider));
+    public void preRemoveSideEffects(BlockPos pos, BlockState state) {
+        if (level != null && !level.isClientSide()) {
+            for (Direction direction : Direction.values()) {
+                NodeSideCache nodeSideCache = nodeSideCaches[direction.ordinal()];
+                for (int slot = 0; slot < nodeSideCache.itemHandler.getSlots(); slot++) {
+                    ItemStack stack = nodeSideCache.itemHandler.getStackInSlot(slot);
+                    if (!stack.isEmpty()) {
+                        Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), stack);
+                    }
+                }
+            }
         }
-        tag.putBoolean("showParticles", showParticles);
+        super.preRemoveSideEffects(pos, state);
     }
 
     @Override
     public void setRemoved() {
         super.setRemoved();
-        //Arrays.stream(nodeSideCaches).forEach(e -> e.handlerLazyOptional.invalidate());
-        //Arrays.stream(nodeSideCaches).forEach(e -> e.laserEnergyStorage.invalidate());
     }
 
     public class LaserEnergyStorage implements IEnergyStorage {

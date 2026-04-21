@@ -7,21 +7,18 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.NbtUtils;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 import java.awt.*;
-import java.util.HashSet;
-import java.util.LinkedList;
+import java.util.*;
 import java.util.Queue;
-import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import static com.direwolf20.laserio.common.items.LaserWrench.maxDistance;
@@ -227,7 +224,7 @@ public class BaseLaserBE extends BlockEntity {
 
     /** Validates the connections are still valid -- for use if a block is moved **/
     public void validateConnections(BlockPos originalPos) {
-        if (level == null || level.isClientSide) {
+        if (level == null || level.isClientSide()) {
             return;
         }
         Set<BaseLaserBE> connectionsToUpdate = new HashSet<>(); //We're going to want to rediscover the network on each disconnected node, but not until all disconnections are done
@@ -269,50 +266,57 @@ public class BaseLaserBE extends BlockEntity {
 
     /** Misc Methods for TE's */
     @Override
-    public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
-        super.loadAdditional(tag, provider);
+    protected void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
         connections.clear();
-        ListTag connections = tag.getList("connections", Tag.TAG_COMPOUND);
-        for (int i = 0; i < connections.size(); i++) {
-            BlockPos blockPos = NbtUtils.readBlockPos(connections.getCompound(i), "pos").orElse(BlockPos.ZERO);
-            this.connections.add(blockPos);
-        }
+        input.getIntArray("connections").ifPresent(packed -> {
+            for (int i = 0; i + 2 < packed.length; i += 3) {
+                connections.add(new BlockPos(packed[i], packed[i + 1], packed[i + 2]));
+            }
+        });
         renderedConnections.clear();
-        ListTag renderedConnections = tag.getList("renderedConnections", Tag.TAG_COMPOUND);
-        for (int i = 0; i < renderedConnections.size(); i++) {
-            BlockPos blockPos = NbtUtils.readBlockPos(renderedConnections.getCompound(i), "pos").orElse(BlockPos.ZERO);
-            this.renderedConnections.add(blockPos);
+        input.getIntArray("renderedConnections").ifPresent(packed -> {
+            for (int i = 0; i + 2 < packed.length; i += 3) {
+                renderedConnections.add(new BlockPos(packed[i], packed[i + 1], packed[i + 2]));
+            }
+        });
+        Optional<int[]> worldPosArr = input.getIntArray("myWorldPos");
+        if (worldPosArr.isPresent() && worldPosArr.get().length == 3) {
+            int[] w = worldPosArr.get();
+            BlockPos originalPos = new BlockPos(w[0], w[1], w[2]);
+            if (!originalPos.equals(getBlockPos()) && !originalPos.equals(BlockPos.ZERO))
+                validateConnections(originalPos);
         }
-        BlockPos originalPos = NbtUtils.readBlockPos(tag, "myWorldPos").orElse(BlockPos.ZERO);
-        if (!originalPos.equals(getBlockPos()) && !originalPos.equals(BlockPos.ZERO))
-            validateConnections(originalPos);
-        if (tag.contains("laserColor")) {
-            int wrenchA = tag.contains("wrenchAlpha") ? tag.getInt("wrenchAlpha") : 0;
-            setColor(new Color(tag.getInt("laserColor"), true), wrenchA);
+        Optional<Integer> laserColor = input.getInt("laserColor");
+        if (laserColor.isPresent()) {
+            int wrenchA = input.getIntOr("wrenchAlpha", 0);
+            setColor(new Color(laserColor.get(), true), wrenchA);
         }
     }
 
     @Override
-    public void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
-        super.saveAdditional(tag, provider);
-        ListTag connections = new ListTag();
+    protected void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
+        int[] connectionsPacked = new int[this.connections.size() * 3];
+        int idx = 0;
         for (BlockPos blockPos : this.connections) {
-            CompoundTag comp = new CompoundTag();
-            comp.put("pos", NbtUtils.writeBlockPos(blockPos));
-            connections.add(comp);
+            connectionsPacked[idx++] = blockPos.getX();
+            connectionsPacked[idx++] = blockPos.getY();
+            connectionsPacked[idx++] = blockPos.getZ();
         }
-        tag.put("connections", connections);
-        ListTag renderedConnections = new ListTag();
+        output.putIntArray("connections", connectionsPacked);
+        int[] renderedPacked = new int[this.renderedConnections.size() * 3];
+        idx = 0;
         for (BlockPos blockPos : this.renderedConnections) {
-            CompoundTag comp = new CompoundTag();
-            comp.put("pos", NbtUtils.writeBlockPos(blockPos));
-            renderedConnections.add(comp);
+            renderedPacked[idx++] = blockPos.getX();
+            renderedPacked[idx++] = blockPos.getY();
+            renderedPacked[idx++] = blockPos.getZ();
         }
-        tag.put("renderedConnections", renderedConnections);
-        tag.put("myWorldPos", NbtUtils.writeBlockPos(getBlockPos()));
-        Color color = getColor();
-        tag.putInt("laserColor", getColor().getRGB());
-        tag.putInt("wrenchAlpha", getWrenchAlpha());
+        output.putIntArray("renderedConnections", renderedPacked);
+        BlockPos myPos = getBlockPos();
+        output.putIntArray("myWorldPos", new int[]{myPos.getX(), myPos.getY(), myPos.getZ()});
+        output.putInt("laserColor", getColor().getRGB());
+        output.putInt("wrenchAlpha", getWrenchAlpha());
     }
 
     @Override
@@ -322,20 +326,18 @@ public class BaseLaserBE extends BlockEntity {
     }
 
     @Override
-    public void handleUpdateTag(CompoundTag tag, HolderLookup.Provider lookupProvider) {
-        this.loadAdditional(tag, lookupProvider);
+    public void handleUpdateTag(ValueInput input) {
+        this.loadAdditional(input);
     }
 
     @Override
     public CompoundTag getUpdateTag(HolderLookup.Provider provider) {
-        CompoundTag tag = new CompoundTag();
-        saveAdditional(tag, provider);
-        return tag;
+        return saveCustomOnly(provider);
     }
 
     @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, HolderLookup.Provider lookupProvider) {
-        super.onDataPacket(net, pkt, lookupProvider);
+    public void onDataPacket(Connection net, ValueInput input) {
+        this.loadAdditional(input);
     }
 
     public void markDirtyClient() {
@@ -343,6 +345,14 @@ public class BaseLaserBE extends BlockEntity {
         if (this.getLevel() != null) {
             BlockState state = this.getLevel().getBlockState(this.getBlockPos());
             this.getLevel().sendBlockUpdated(this.getBlockPos(), state, state, 3);
+        }
+    }
+
+    @Override
+    public void preRemoveSideEffects(BlockPos pos, BlockState state) {
+        super.preRemoveSideEffects(pos, state);
+        if (level != null && !level.isClientSide()) {
+            disconnectAllNodes();
         }
     }
 

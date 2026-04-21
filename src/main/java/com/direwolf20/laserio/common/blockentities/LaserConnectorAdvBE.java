@@ -1,7 +1,6 @@
 package com.direwolf20.laserio.common.blockentities;
 
 import com.direwolf20.laserio.common.blockentities.basebe.BaseLaserBE;
-import com.direwolf20.laserio.setup.Registration;
 import com.direwolf20.laserio.util.MiscTools;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
@@ -11,6 +10,8 @@ import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 public class LaserConnectorAdvBE extends BaseLaserBE {
     protected GlobalPos partnerGlobalPos;
@@ -113,19 +114,19 @@ public class LaserConnectorAdvBE extends BaseLaserBE {
 
     /** Misc Methods for TE's */
     @Override
-    public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
-        if (tag.contains("partnerDimPos"))
-            setPartnerGlobalPos(MiscTools.nbtToGlobalPos(tag.getCompound("partnerDimPos")));
-        else
-            setPartnerGlobalPos(null);
-        super.loadAdditional(tag, provider);
+    protected void loadAdditional(ValueInput input) {
+        input.read("partnerDimPos", CompoundTag.CODEC).ifPresentOrElse(
+                partnerTag -> setPartnerGlobalPos(MiscTools.nbtToGlobalPos(partnerTag)),
+                () -> setPartnerGlobalPos(null)
+        );
+        super.loadAdditional(input);
     }
 
     @Override
-    public void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
-        super.saveAdditional(tag, provider);
+    protected void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
         if (getPartnerGlobalPos() != null)
-            tag.put("partnerDimPos", MiscTools.globalPosToNBT(getPartnerGlobalPos()));
+            output.store("partnerDimPos", CompoundTag.CODEC, MiscTools.globalPosToNBT(getPartnerGlobalPos()));
     }
 
     @Override
@@ -135,20 +136,18 @@ public class LaserConnectorAdvBE extends BaseLaserBE {
     }
 
     @Override
-    public void handleUpdateTag(CompoundTag tag, HolderLookup.Provider lookupProvider) {
-        this.loadAdditional(tag, lookupProvider);
+    public void handleUpdateTag(ValueInput input) {
+        this.loadAdditional(input);
     }
 
     @Override
     public CompoundTag getUpdateTag(HolderLookup.Provider provider) {
-        CompoundTag tag = new CompoundTag();
-        saveAdditional(tag, provider);
-        return tag;
+        return saveCustomOnly(provider);
     }
 
     @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, HolderLookup.Provider lookupProvider) {
-        this.loadAdditional(pkt.getTag(), lookupProvider);
+    public void onDataPacket(Connection net, ValueInput input) {
+        this.loadAdditional(input);
     }
 
 }

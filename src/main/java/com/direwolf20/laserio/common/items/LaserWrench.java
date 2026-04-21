@@ -9,6 +9,7 @@ import com.direwolf20.laserio.util.VectorHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -97,7 +98,7 @@ public class LaserWrench extends Item {
             }
             //If we're too far away - send an error to the client
             if (!targetPos.closerThan(sourceDimPos.pos(), maxDistance) || !level.equals(MiscTools.getLevel(level.getServer(), sourceDimPos))) {
-                player.displayClientMessage(Component.translatable("message.laserio.wrenchrange", maxDistance), true);
+                ((ServerPlayer) player).sendSystemMessage(Component.translatable("message.laserio.wrenchrange", maxDistance), true);
                 return InteractionResult.PASS;
             }
             //Connect or disconnect the nodes, depending on current state

@@ -2,8 +2,9 @@ package com.direwolf20.laserio.util;
 
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -45,7 +46,7 @@ public class TransferResult {
             remainingStack.grow(newResult.remainingStack.getCount());
     }
 
-    public void addOtherCard(IItemHandler handler, int slot, BaseCardCache card, LaserNodeBE be) {
+    public void addOtherCard(ResourceHandler<ItemResource> handler, int slot, BaseCardCache card, LaserNodeBE be) {
         for (Result result : results) {
             if (result.inserterCardCache == null)
                 result.addInserter(handler, slot, card, be);
@@ -74,8 +75,8 @@ public class TransferResult {
     }
 
     public static class Result {
-        public IItemHandler extractHandler; //The inventory being extracted from
-        public IItemHandler insertHandler; //The inventory being inserted to
+        public ResourceHandler<ItemResource> extractHandler; //The inventory being extracted from
+        public ResourceHandler<ItemResource> insertHandler; //The inventory being inserted to
         public int insertSlot; //The slot we inserted to
         public int extractSlot; //The slot we extract from
         public BaseCardCache inserterCardCache;
@@ -85,7 +86,7 @@ public class TransferResult {
         public LaserNodeBE toBE;
 
 
-        public Result(IItemHandler insertHandler, IItemHandler extractHandler, int insertSlot, int extractSlot, BaseCardCache inserterCardCache, BaseCardCache extractorCardCache, LaserNodeBE fromBE, LaserNodeBE toBE, ItemStack itemStack) {
+        public Result(ResourceHandler<ItemResource> insertHandler, ResourceHandler<ItemResource> extractHandler, int insertSlot, int extractSlot, BaseCardCache inserterCardCache, BaseCardCache extractorCardCache, LaserNodeBE fromBE, LaserNodeBE toBE, ItemStack itemStack) {
             this.insertHandler = insertHandler;
             this.extractHandler = extractHandler;
             this.insertSlot = insertSlot;
@@ -97,7 +98,7 @@ public class TransferResult {
             this.itemStack = itemStack;
         }
 
-        public Result(IItemHandler handler, int slot, BaseCardCache cardCache, ItemStack itemStack, LaserNodeBE be, boolean extractor) {
+        public Result(ResourceHandler<ItemResource> handler, int slot, BaseCardCache cardCache, ItemStack itemStack, LaserNodeBE be, boolean extractor) {
             if (extractor) {
                 this.extractHandler = handler;
                 this.extractSlot = slot;
@@ -113,14 +114,14 @@ public class TransferResult {
             }
         }
 
-        public void addInserter(IItemHandler handler, int slot, BaseCardCache inserterCardCache, LaserNodeBE be) {
+        public void addInserter(ResourceHandler<ItemResource> handler, int slot, BaseCardCache inserterCardCache, LaserNodeBE be) {
             this.insertHandler = handler;
             this.insertSlot = slot;
             this.inserterCardCache = inserterCardCache;
             this.toBE = be;
         }
 
-        public void addExtractor(IItemHandler handler, int slot, BaseCardCache extractorCardCache, LaserNodeBE be) {
+        public void addExtractor(ResourceHandler<ItemResource> handler, int slot, BaseCardCache extractorCardCache, LaserNodeBE be) {
             this.extractHandler = handler;
             this.extractSlot = slot;
             this.extractorCardCache = extractorCardCache;
@@ -131,16 +132,20 @@ public class TransferResult {
             if (fromBE == null || toBE == null || extractorCardCache == null || inserterCardCache == null) //Happens if we forgot to set this!
                 return;
 
-            //Extract
-            if (extractSlot == -1) //We don't know which slot to pull from
-                ItemHandlerUtil.extractItem(extractHandler, itemStack, false, extractorCardCache.isCompareNBT).itemStack();
-            else
-                extractHandler.extractItem(extractSlot, itemStack.getCount(), false);
-            //Insert
-            if (insertSlot == -1) //We don't know which slot to insert to
-                ItemHandlerHelper.insertItem(insertHandler, itemStack, false);
-            else
-                insertHandler.insertItem(insertSlot, itemStack, false);
+            ItemResource resource = ItemResource.of(itemStack);
+            try (Transaction tx = Transaction.openRoot()) {
+                //Extract
+                if (extractSlot == -1) //We don't know which slot to pull from
+                    extractHandler.extract(resource, itemStack.getCount(), tx);
+                else
+                    extractHandler.extract(extractSlot, resource, itemStack.getCount(), tx);
+                //Insert
+                if (insertSlot == -1) //We don't know which slot to insert to
+                    insertHandler.insert(resource, itemStack.getCount(), tx);
+                else
+                    insertHandler.insert(insertSlot, resource, itemStack.getCount(), tx);
+                tx.commit();
+            }
             if (extractorCardCache instanceof StockerCardCache)
                 fromBE.drawParticles(itemStack, inserterCardCache.direction, toBE, fromBE, extractorCardCache.direction, inserterCardCache.cardSlot, extractorCardCache.cardSlot);
             else

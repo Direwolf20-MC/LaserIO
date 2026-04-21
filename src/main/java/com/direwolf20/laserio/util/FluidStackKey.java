@@ -14,7 +14,7 @@ public class FluidStackKey {
 
 
     public FluidStackKey(FluidStack stack, boolean compareNBT) {
-        this.fluid = stack.getFluidHolder();
+        this.fluid = stack.typeHolder();
         this.dataComponents = compareNBT ? stack.getComponentsPatch() : DataComponentPatch.EMPTY;
         ;
         this.hash = Objects.hash(fluid, dataComponents);

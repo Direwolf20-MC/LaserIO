@@ -7,6 +7,7 @@ import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import com.direwolf20.laserio.common.blocks.LaserConnector;
 import com.direwolf20.laserio.common.blocks.LaserConnectorAdv;
 import com.direwolf20.laserio.common.blocks.LaserNode;
+import com.direwolf20.laserio.common.blocks.baseblocks.BaseLaserBlock;
 import com.direwolf20.laserio.common.containers.*;
 import com.direwolf20.laserio.common.items.*;
 import com.direwolf20.laserio.common.items.cards.CardEnergy;
@@ -43,7 +44,7 @@ import static com.direwolf20.laserio.common.LaserIO.MODID;
 
 public class Registration {
 
-    private static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(Registries.BLOCK, MODID);
+    private static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MODID);
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(Registries.ITEM, MODID);
     private static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, MODID);
     private static final DeferredRegister<MenuType<?>> CONTAINERS = DeferredRegister.create(Registries.MENU, MODID);
@@ -77,11 +78,11 @@ public class Registration {
     //public static final Item.Properties ITEM_PROPERTIES = new Item.Properties().tab(ModSetup.ITEM_GROUP);
 
     //Blocks
-    public static final DeferredHolder<Block, LaserConnector> LaserConnector = BLOCKS.register("laser_connector", LaserConnector::new);
+    public static final DeferredHolder<Block, LaserConnector> LaserConnector = BLOCKS.registerBlock("laser_connector", LaserConnector::new, BaseLaserBlock::defaultProperties);
     public static final DeferredHolder<Item, BlockItem> LaserConnector_ITEM = ITEMS.register("laser_connector", () -> new BlockItem(LaserConnector.get(), new Item.Properties()));
-    public static final DeferredHolder<Block, LaserNode> LaserNode = BLOCKS.register("laser_node", LaserNode::new);
+    public static final DeferredHolder<Block, LaserNode> LaserNode = BLOCKS.registerBlock("laser_node", LaserNode::new, BaseLaserBlock::defaultProperties);
     public static final DeferredHolder<Item, BlockItem> LaserNode_ITEM = ITEMS.register("laser_node", () -> new BlockItem(LaserNode.get(), new Item.Properties()));
-    public static final DeferredHolder<Block, Block> LaserConnectorAdv = BLOCKS.register("laser_connector_advanced", LaserConnectorAdv::new);
+    public static final DeferredHolder<Block, LaserConnectorAdv> LaserConnectorAdv = BLOCKS.registerBlock("laser_connector_advanced", LaserConnectorAdv::new, BaseLaserBlock::defaultProperties);
     public static final DeferredHolder<Item, BlockItem> LaserConnectorAdv_ITEM = ITEMS.register("laser_connector_advanced", () -> new BlockItem(LaserConnectorAdv.get(), new Item.Properties()));
 
 

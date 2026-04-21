@@ -8,7 +8,8 @@ import net.minecraft.core.GlobalPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.NbtUtils;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
@@ -24,6 +25,7 @@ import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class MiscTools {
     public static StreamCodec<ByteBuf, Vec3> VEC3_STREAM_CODEC = StreamCodec.composite(
@@ -45,18 +47,21 @@ public class MiscTools {
 
     public static CompoundTag globalPosToNBT(GlobalPos globalPos) {
         CompoundTag tag = new CompoundTag();
-        tag.putString("dimension", globalPos.dimension().location().toString());
-        tag.put("blockpos", NbtUtils.writeBlockPos(globalPos.pos()));
+        tag.putString("dimension", globalPos.dimension().identifier().toString());
+        tag.put("blockpos", BlockPos.CODEC.encodeStart(NbtOps.INSTANCE, globalPos.pos()).getOrThrow());
         return tag;
     }
 
     public static GlobalPos nbtToGlobalPos(CompoundTag tag) {
         ResourceKey<Level> levelKey;
-        if (tag.contains("dimension"))
-            levelKey = ResourceKey.create(Registries.DIMENSION, Identifier.parse(tag.getString("dimension")));
+        Optional<String> dimension = tag.getString("dimension");
+        if (dimension.isPresent())
+            levelKey = ResourceKey.create(Registries.DIMENSION, Identifier.parse(dimension.get()));
         else
             return null;
-        BlockPos blockPos = NbtUtils.readBlockPos(tag, "blockpos").orElse(BlockPos.ZERO);
+        Tag posTag = tag.get("blockpos");
+        if (posTag == null) return null;
+        BlockPos blockPos = BlockPos.CODEC.parse(NbtOps.INSTANCE, posTag).result().orElse(BlockPos.ZERO);
         return blockPos.equals(BlockPos.ZERO) ? null : GlobalPos.of(levelKey, blockPos);
     }
 
@@ -116,8 +121,8 @@ public class MiscTools {
     public static List<String> NBTToStringList(ListTag nbtList) {
         List<String> list = new ArrayList<>();
         for (int i = 0; i < nbtList.size(); i++) {
-            CompoundTag tag = nbtList.getCompound(i);
-            list.add(tag.getString("list"));
+            CompoundTag tag = nbtList.getCompound(i).orElse(new CompoundTag());
+            list.add(tag.getString("list").orElse(""));
         }
         return list;
     }

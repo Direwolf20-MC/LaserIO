@@ -5,23 +5,27 @@ import com.direwolf20.laserio.common.items.filters.BaseFilter;
 import com.direwolf20.laserio.common.items.upgrades.OverclockerCard;
 import com.direwolf20.laserio.common.items.upgrades.OverclockerNode;
 import com.direwolf20.laserio.setup.LaserIODataComponents;
-import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.items.ComponentItemHandler;
-import org.jetbrains.annotations.NotNull;
+import net.neoforged.neoforge.transfer.access.ItemAccess;
+import net.neoforged.neoforge.transfer.item.ItemAccessItemHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
-public class CardHolderItemStackHandler extends ComponentItemHandler {
-    public CardHolderItemStackHandler(int size, ItemStack itemStack) {
-        super(itemStack, LaserIODataComponents.ITEMSTACK_HANDLER.get(), size);
+public class CardHolderItemStackHandler extends ItemAccessItemHandler {
+    public CardHolderItemStackHandler(int size, ItemAccess itemAccess) {
+        super(itemAccess, LaserIODataComponents.ITEMSTACK_HANDLER.get(), size);
     }
 
     @Override
-    public boolean isItemValid(int slot, @NotNull ItemStack stack) {
-        if (stack.isEmpty()) return true;
-        return (stack.getItem() instanceof BaseCard || stack.getItem() instanceof BaseFilter || stack.getItem() instanceof OverclockerCard || stack.getItem() instanceof OverclockerNode);
+    public boolean isValid(int index, ItemResource resource) {
+        if (!super.isValid(index, resource)) return false;
+        if (resource.isEmpty()) return true;
+        return (resource.getItem() instanceof BaseCard
+                || resource.getItem() instanceof BaseFilter
+                || resource.getItem() instanceof OverclockerCard
+                || resource.getItem() instanceof OverclockerNode);
     }
 
     @Override
-    public int getSlotLimit(int slot) {
+    protected int getCapacity(int index, ItemResource resource) {
         return 64;
     }
 }

@@ -14,11 +14,13 @@ import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.FluidUtil;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
 import net.neoforged.neoforge.items.ComponentItemHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.access.ItemAccess;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
+import net.neoforged.neoforge.transfer.fluid.FluidUtil;
 
 import java.util.*;
 
@@ -148,11 +150,10 @@ public class BaseCardCache {
         for (int i = 0; i < filterSlotHandler.getSlots(); i++) { //Gotta iterate the card's NBT because of the way we store amounts (in the MBAmt tag)
             ItemStack itemStack = filterSlotHandler.getStackInSlot(i);
             if (!itemStack.isEmpty()) {
-                Optional<IFluidHandlerItem> fluidHandlerLazyOptional = FluidUtil.getFluidHandler(itemStack);
-                if (fluidHandlerLazyOptional.isEmpty()) continue;
-                IFluidHandler fluidHandler = fluidHandlerLazyOptional.get();
-                for (int tank = 0; tank < fluidHandler.getTanks(); tank++) {
-                    FluidStack fluidStack = fluidHandler.getFluidInTank(tank);
+                ResourceHandler<FluidResource> fluidHandler = ItemAccess.forStack(itemStack).getCapability(Capabilities.Fluid.ITEM);
+                if (fluidHandler == null) continue;
+                for (int tank = 0; tank < fluidHandler.size(); tank++) {
+                    FluidStack fluidStack = FluidUtil.getStack(fluidHandler, tank);
                     if (key.equals(new FluidStackKey(fluidStack, isCompareNBT))) {
                         int mbAmt = FilterCount.getSlotAmount(filterCard, i) + (FilterCount.getSlotCount(filterCard, i) * 1000);
                         filterCountsFluid.put(key, mbAmt);
@@ -190,11 +191,10 @@ public class BaseCardCache {
         for (int i = 0; i < filterSlotHandler.getSlots(); i++) {
             ItemStack itemStack = filterSlotHandler.getStackInSlot(i);
             if (!itemStack.isEmpty()) {
-                Optional<IFluidHandlerItem> fluidHandlerLazyOptional = FluidUtil.getFluidHandler(itemStack);
-                if (fluidHandlerLazyOptional.isEmpty()) continue;
-                IFluidHandler fluidHandler = fluidHandlerLazyOptional.get();
-                for (int tank = 0; tank < fluidHandler.getTanks(); tank++) {
-                    FluidStack fluidStack = fluidHandler.getFluidInTank(tank);
+                ResourceHandler<FluidResource> fluidHandler = ItemAccess.forStack(itemStack).getCapability(Capabilities.Fluid.ITEM);
+                if (fluidHandler == null) continue;
+                for (int tank = 0; tank < fluidHandler.size(); tank++) {
+                    FluidStack fluidStack = FluidUtil.getStack(fluidHandler, tank);
                     if (!fluidStack.isEmpty())
                         filteredFluids.add(fluidStack); //If this is a basic card it'll always be one, but getFilterAmt handles the proper logic of returning a value
                 }
@@ -225,7 +225,7 @@ public class BaseCardCache {
         if (filterCache.containsKey(key)) return filterCache.get(key);
         if (filterCard.getItem() instanceof FilterMod) {
             for (ItemStack stack : filteredItems) {
-                if (stack.getItem().getCreatorModId(stack).equals(testStack.getItem().getCreatorModId(testStack))) {
+                if (BuiltInRegistries.ITEM.getKey(stack.getItem()).getNamespace().equals(BuiltInRegistries.ITEM.getKey(testStack.getItem()).getNamespace())) {
                     filterCache.put(key, isAllowList);
                     return isAllowList;
                 }

@@ -10,7 +10,6 @@ import com.direwolf20.laserio.common.items.cards.BaseCard;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.SimpleMenuProvider;
@@ -26,11 +25,14 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.redstone.Orientation;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -40,23 +42,23 @@ public class LaserNode extends BaseLaserBlock implements EntityBlock {
     private static final VoxelShape SHAPE = Block.box(3.0D, 3.0D, 3.0D, 13.0D, 13.0D, 13.0D);
     public static final String SCREEN_LASERNODE = "screen.laserio.lasernode";
 
-    public LaserNode() {
-        super();
+    public LaserNode(Properties properties) {
+        super(properties);
     }
 
     @SuppressWarnings("deprecation")
     @Override
-    public InteractionResult useWithoutItem(BlockState blockState, Level level, BlockPos blockPos, Player player, BlockHitResult hit) {
+    protected InteractionResult useWithoutItem(BlockState blockState, Level level, BlockPos blockPos, Player player, BlockHitResult hit) {
         ItemStack heldItem = player.getMainHandItem();
         if (heldItem.getItem() instanceof LaserWrench)
             return InteractionResult.PASS;
-        if (!level.isClientSide) {
+        if (!level.isClientSide()) {
             BlockEntity be = level.getBlockEntity(blockPos);
             if (be instanceof LaserNodeBE) {
 
                 if (heldItem.getItem() instanceof BaseCard) {
-                    IItemHandler itemHandler = level.getCapability(Capabilities.ItemHandler.BLOCK, blockPos, hit.getDirection());
-                    ItemStack remainingStack = insertItemToNode(itemHandler, heldItem, false);
+                    ResourceHandler<ItemResource> itemHandler = level.getCapability(Capabilities.Item.BLOCK, blockPos, hit.getDirection());
+                    ItemStack remainingStack = insertItemToNode(itemHandler, heldItem);
                     player.setItemInHand(InteractionHand.MAIN_HAND, remainingStack);
                 } else {
                     Direction direction;
@@ -64,12 +66,12 @@ public class LaserNode extends BaseLaserBlock implements EntityBlock {
                         direction = hit.getDirection().getOpposite();
                     else
                         direction = hit.getDirection();
-                    IItemHandler itemHandler = level.getCapability(Capabilities.ItemHandler.BLOCK, blockPos, direction);
+                    LaserNodeItemHandler itemHandler = ((LaserNodeBE) be).nodeSideCaches[direction.ordinal()].itemHandler;
                     ItemStack cardHolder = findCardHolders(player);
                     if (!cardHolder.isEmpty()) CardHolder.getUUID(cardHolder);
 
                     player.openMenu(new SimpleMenuProvider(
-                            (windowId, playerInventory, playerEntity) -> new LaserNodeContainer((LaserNodeBE) be, windowId, (byte) direction.ordinal(), playerInventory, playerEntity, (LaserNodeItemHandler) itemHandler, ContainerLevelAccess.create(be.getLevel(), be.getBlockPos()), cardHolder), Component.translatable("")), (buf -> {
+                            (windowId, playerInventory, playerEntity) -> new LaserNodeContainer((LaserNodeBE) be, windowId, (byte) direction.ordinal(), playerInventory, playerEntity, itemHandler, ContainerLevelAccess.create(be.getLevel(), be.getBlockPos()), cardHolder), Component.translatable("")), (buf -> {
                         buf.writeBlockPos(blockPos);
                         buf.writeByte((byte) direction.ordinal());
                         ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, cardHolder);
@@ -84,28 +86,32 @@ public class LaserNode extends BaseLaserBlock implements EntityBlock {
     }
 
     /** Custom Implementation of ItemHandlerHelper.insertItem for right clicking nodes with **/
-    public static ItemStack insertItemToNode(IItemHandler dest, @Nonnull ItemStack stack, boolean simulate) {
+    public static ItemStack insertItemToNode(ResourceHandler<ItemResource> dest, @Nonnull ItemStack stack) {
         if (dest == null || stack.isEmpty())
             return stack;
 
-        for (int i = 0; i < LaserNodeContainer.CARDSLOTS; i++) {
-            stack = dest.insertItem(i, stack, simulate);
-            if (stack.isEmpty()) {
-                return ItemStack.EMPTY;
+        ItemResource resource = ItemResource.of(stack);
+        int remaining = stack.getCount();
+        for (int i = 0; i < LaserNodeContainer.CARDSLOTS && remaining > 0; i++) {
+            try (Transaction tx = Transaction.openRoot()) {
+                int inserted = dest.insert(i, resource, remaining, tx);
+                if (inserted > 0) {
+                    tx.commit();
+                    remaining -= inserted;
+                }
             }
         }
 
-        return stack;
+        return remaining <= 0 ? ItemStack.EMPTY : resource.toStack(remaining);
     }
 
     public static ItemStack findCardHolders(Player player) {
-        ItemStack cardHolder = ItemStack.EMPTY;
         Inventory playerInventory = player.getInventory();
-        for (int i = 0; i < playerInventory.items.size(); i++) {
-            ItemStack itemStack = playerInventory.items.get(i);
+        for (int i = 0; i < playerInventory.getContainerSize(); i++) {
+            ItemStack itemStack = playerInventory.getItem(i);
             if (itemStack.getItem() instanceof CardHolder) return itemStack;
         }
-        return cardHolder;
+        return ItemStack.EMPTY;
     }
 
     @Nullable
@@ -125,19 +131,18 @@ public class LaserNode extends BaseLaserBlock implements EntityBlock {
         };
     }
 
-    public void neighborChanged(BlockState blockState, Level level, BlockPos pos, Block blockIn, BlockPos fromPos, boolean isMoving) {
-        //System.out.println("Neighbor changed at: " + pos + " from: " + fromPos);
+    @Override
+    protected void neighborChanged(BlockState blockState, Level level, BlockPos pos, Block blockIn, @Nullable Orientation orientation, boolean movedByPiston) {
         BlockEntity blockEntity = level.getBlockEntity(pos);
         if (blockEntity instanceof LaserNodeBE laserNodeBE) {
             laserNodeBE.rendersChecked = false;
             laserNodeBE.clearCachedInventories();
             laserNodeBE.redstoneChecked = false;
-            //laserNodeBE.populateThisRedstoneNetwork(true);
         }
     }
 
     @Override
-    public int getSignal(BlockState pBlockState, BlockGetter pBlockAccess, BlockPos pPos, Direction pSide) {
+    protected int getSignal(BlockState pBlockState, BlockGetter pBlockAccess, BlockPos pPos, Direction pSide) {
         BlockEntity blockEntity = pBlockAccess.getBlockEntity(pPos);
         if (blockEntity instanceof LaserNodeBE laserNodeBE) {
             return laserNodeBE.getRedstoneSide(pSide.getOpposite());
@@ -157,7 +162,7 @@ public class LaserNode extends BaseLaserBlock implements EntityBlock {
     }
 
     @Override
-    public int getDirectSignal(BlockState pBlockState, BlockGetter pBlockAccess, BlockPos pPos, Direction pSide) {
+    protected int getDirectSignal(BlockState pBlockState, BlockGetter pBlockAccess, BlockPos pPos, Direction pSide) {
         BlockEntity blockEntity = pBlockAccess.getBlockEntity(pPos);
         if (blockEntity instanceof LaserNodeBE laserNodeBE) {
             if (laserNodeBE.getRedstoneSideStrong(pSide.getOpposite()))
@@ -173,45 +178,24 @@ public class LaserNode extends BaseLaserBlock implements EntityBlock {
     }
 
     @Override
-    public VoxelShape getShape(BlockState state, BlockGetter getter, BlockPos pos, CollisionContext context) {
+    protected VoxelShape getShape(BlockState state, BlockGetter getter, BlockPos pos, CollisionContext context) {
         return SHAPE;
     }
 
     @SuppressWarnings("deprecation")
     @Override
-    public VoxelShape getOcclusionShape(BlockState state, BlockGetter reader, BlockPos pos) {
+    protected VoxelShape getOcclusionShape(BlockState state) {
         return SHAPE;
     }
 
     @Override
-    public float getShadeBrightness(BlockState p_48731_, BlockGetter p_48732_, BlockPos p_48733_) {
+    protected float getShadeBrightness(BlockState p_48731_, BlockGetter p_48732_, BlockPos p_48733_) {
         return 1.0F;
     }
 
     @Override
-    public boolean propagatesSkylightDown(BlockState p_48740_, BlockGetter p_48741_, BlockPos p_48742_) {
+    protected boolean propagatesSkylightDown(BlockState p_48740_) {
         return true;
-    }
-
-    @Override
-    public void onRemove(BlockState state, Level worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
-        if (newState.getBlock() != this) {
-            BlockEntity tileEntity = worldIn.getBlockEntity(pos);
-            if (tileEntity != null) {
-                for (Direction direction : Direction.values()) {
-                    //LazyOptional<IItemHandler> cap = tileEntity.getCapability(ForgeCapabilities.ITEM_HANDLER, direction);
-                    //cap.ifPresent(handler -> {
-                    var cap = worldIn.getCapability(Capabilities.ItemHandler.BLOCK, pos, state, tileEntity, direction);
-                    if (cap != null) {
-                        for (int i = 0; i < cap.getSlots(); ++i) {
-                            Containers.dropItemStack(worldIn, pos.getX(), pos.getY(), pos.getZ(), cap.getStackInSlot(i));
-                        }
-                    }
-                }
-            }
-
-        }
-        super.onRemove(state, worldIn, pos, newState, isMoving);
     }
 
 

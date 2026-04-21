@@ -3,6 +3,7 @@ package com.direwolf20.laserio.common.blocks;
 import com.direwolf20.laserio.common.blockentities.LaserConnectorBE;
 import com.direwolf20.laserio.common.blocks.baseblocks.BaseLaserBlock;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
@@ -11,7 +12,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -138,10 +139,10 @@ public class LaserConnector extends BaseLaserBlock implements EntityBlock {
             }).get()//EAST
     };
 
-    public static final DirectionProperty FACING = BlockStateProperties.FACING;
+    public static final EnumProperty<Direction> FACING = BlockStateProperties.FACING;
 
-    public LaserConnector() {
-        super();
+    public LaserConnector(Properties properties) {
+        super(properties);
         //defaultBlockState(getStateDefinition().any().setValue(FACING, Direction.NORTH));
     }
 
@@ -152,13 +153,13 @@ public class LaserConnector extends BaseLaserBlock implements EntityBlock {
     }
 
     @Override
-    public VoxelShape getShape(BlockState state, BlockGetter getter, BlockPos pos, CollisionContext context) {
+    protected VoxelShape getShape(BlockState state, BlockGetter getter, BlockPos pos, CollisionContext context) {
         return shapes[state.getValue(FACING).get3DDataValue()];
     }
 
     @SuppressWarnings("deprecation")
     @Override
-    public VoxelShape getOcclusionShape(BlockState state, BlockGetter reader, BlockPos pos) {
+    protected VoxelShape getOcclusionShape(BlockState state) {
         return shapes[state.getValue(FACING).get3DDataValue()];
     }
 
@@ -173,12 +174,12 @@ public class LaserConnector extends BaseLaserBlock implements EntityBlock {
     }
 
     @Override
-    public float getShadeBrightness(BlockState p_48731_, BlockGetter p_48732_, BlockPos p_48733_) {
+    protected float getShadeBrightness(BlockState p_48731_, BlockGetter p_48732_, BlockPos p_48733_) {
         return 1.0F;
     }
 
     @Override
-    public boolean propagatesSkylightDown(BlockState p_48740_, BlockGetter p_48741_, BlockPos p_48742_) {
+    protected boolean propagatesSkylightDown(BlockState p_48740_) {
         return true;
     }
 

@@ -7,17 +7,17 @@ import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.setup.LaserIODataComponents;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
-import java.util.List;
+import java.util.function.Consumer;
 
 import static com.direwolf20.laserio.util.MiscTools.tooltipMaker;
 
@@ -30,17 +30,17 @@ public class CardCloner extends Item {
 
     @OnlyIn(Dist.CLIENT)
     @Override
-    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flagIn) {
-        super.appendHoverText(stack, context, tooltip, flagIn);
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flagIn) {
+        super.appendHoverText(stack, context, display, tooltip, flagIn);
         Minecraft mc = Minecraft.getInstance();
         if (mc.level == null || mc.player == null) {
             return;
         }
 
-        boolean sneakPressed = Screen.hasShiftDown();
+        boolean sneakPressed = mc.hasShiftDown();
 
         if (!sneakPressed) {
-            tooltip.add(Component.translatable("laserio.tooltip.item.show_settings")
+            tooltip.accept(Component.translatable("laserio.tooltip.item.show_settings")
                     .withStyle(ChatFormatting.GRAY));
         } else {
             String cardType = getItemType(stack);
@@ -58,7 +58,7 @@ public class CardCloner extends Item {
                 toWrite.append(tooltipMaker("laserio.tooltip.item.card.None", cardColor));
             else
                 toWrite.append(tooltipMaker("item.laserio." + cardType, cardColor));
-            tooltip.add(toWrite);
+            tooltip.accept(toWrite);
             if (cardType.equals(""))
                 return;
 
@@ -76,13 +76,13 @@ public class CardCloner extends Item {
             else if (currentMode.equals("SENSOR"))
                 modeColor = ChatFormatting.YELLOW.getColor();
             toWrite.append(tooltipMaker("laserio.tooltip.item.card.mode." + currentMode, modeColor));
-            tooltip.add(toWrite);
+            tooltip.accept(toWrite);
 
             toWrite = tooltipMaker("laserio.tooltip.item.card.channel", ChatFormatting.GRAY.getColor());
             int channel = stack.getOrDefault(LaserIODataComponents.CARD_CHANNEL, 0).intValue();
 
             toWrite.append(tooltipMaker(String.valueOf(channel), LaserNodeBERender.colors[channel].getRGB()));
-            tooltip.add(toWrite);
+            tooltip.accept(toWrite);
 
             toWrite = tooltipMaker("laserio.tooltip.item.card.Filter", ChatFormatting.GRAY.getColor());
             ItemStack filterStack = getFilter(stack);
@@ -90,7 +90,7 @@ public class CardCloner extends Item {
                 toWrite.append(tooltipMaker("laserio.tooltip.item.card.None", ChatFormatting.WHITE.getColor()));
             else
                 toWrite.append(tooltipMaker("item.laserio." + filterStack.getItem(), ChatFormatting.DARK_AQUA.getColor()));
-            tooltip.add(toWrite);
+            tooltip.accept(toWrite);
 
             toWrite = tooltipMaker("laserio.tooltip.item.card.Overclockers", ChatFormatting.GRAY.getColor());
             ItemStack overclockStack = getOverclocker(stack);
@@ -98,7 +98,7 @@ public class CardCloner extends Item {
                 toWrite.append(tooltipMaker(String.valueOf(0), ChatFormatting.WHITE.getColor()));
             else
                 toWrite.append(tooltipMaker(String.valueOf(overclockStack.getCount()), ChatFormatting.DARK_AQUA.getColor()));
-            tooltip.add(toWrite);
+            tooltip.accept(toWrite);
         }
     }
 

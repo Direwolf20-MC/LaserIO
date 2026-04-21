@@ -6,19 +6,18 @@ import com.direwolf20.laserio.common.containers.customhandler.CardItemHandler;
 import com.direwolf20.laserio.setup.LaserIODataComponents;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.Direction;
-import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
-import java.util.List;
 import java.util.Locale;
+import java.util.function.Consumer;
 
 import static com.direwolf20.laserio.util.MiscTools.tooltipMaker;
 
@@ -53,17 +52,17 @@ public class BaseCard extends Item {
 
     @OnlyIn(Dist.CLIENT)
     @Override
-    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flagIn) {
-        super.appendHoverText(stack, context, tooltip, flagIn);
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flagIn) {
+        super.appendHoverText(stack, context, display, tooltip, flagIn);
         Minecraft mc = Minecraft.getInstance();
         if (mc.level == null || mc.player == null) {
             return;
         }
 
-        boolean sneakPressed = Screen.hasShiftDown();
+        boolean sneakPressed = mc.hasShiftDown();
 
         if (!sneakPressed) {
-            tooltip.add(Component.translatable("laserio.tooltip.item.show_settings")
+            tooltip.accept(Component.translatable("laserio.tooltip.item.show_settings")
                     .withStyle(ChatFormatting.GRAY));
         } else {
             String currentMode = getNamedTransferMode(stack).toString();
@@ -78,18 +77,18 @@ public class BaseCard extends Item {
             else if (currentMode.equals("SENSOR"))
                 modeColor = ChatFormatting.YELLOW.getColor();
             toWrite.append(tooltipMaker("laserio.tooltip.item.card.mode." + currentMode, modeColor));
-            tooltip.add(toWrite);
+            tooltip.accept(toWrite);
 
             toWrite = tooltipMaker("laserio.tooltip.item.card.channel", ChatFormatting.GRAY.getColor());
             int channel = getChannel(stack);
             toWrite.append(tooltipMaker(String.valueOf(channel), LaserNodeBERender.colors[channel].getRGB()));
-            tooltip.add(toWrite);
+            tooltip.accept(toWrite);
 
             int sneakyMode = getSneaky(stack);
             if (sneakyMode != -1) {
                 toWrite = tooltipMaker("laserio.tooltip.item.card.sneaky", ChatFormatting.GRAY.getColor());
                 toWrite.append(tooltipMaker("laserio.tooltip.item.card.sneaky." + Direction.values()[sneakyMode].toString().toUpperCase(Locale.ROOT), ChatFormatting.DARK_GREEN.getColor()));
-                tooltip.add(toWrite);
+                tooltip.accept(toWrite);
             }
         }
     }
@@ -97,44 +96,6 @@ public class BaseCard extends Item {
     @Override
     public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged) {
         return false;
-    }
-
-    /**
-     * ItemStack sensitive version of getContainerItem. Returns a full ItemStack
-     * instance of the result.
-     * Custom Implementation by Dire: get multiples
-     *
-     * @param itemStack The current ItemStack
-     * @return The resulting ItemStack
-     */
-    public NonNullList<ItemStack> getContainerItems(ItemStack itemStack) {
-        NonNullList<ItemStack> nonnulllist = NonNullList.withSize(2, ItemStack.EMPTY);
-        nonnulllist.set(0, getInventory(itemStack).getStackInSlot(0));
-        nonnulllist.set(1, getInventory(itemStack).getStackInSlot(1));
-
-        return nonnulllist;
-    }
-
-
-    /**
-     * If you override hasCraftingRemainingItem you MUST override this as well
-     * Note: The real logic happens above in getContainerItems(Itemstack)
-     * This is only here to deal with autocrafters who might crash
-     */
-    @Override
-    public ItemStack getCraftingRemainingItem(ItemStack itemStack) {
-        return ItemStack.EMPTY;
-    }
-
-    /**
-     * ItemStack sensitive version of hasContainerItem
-     *
-     * @param stack The current item stack
-     * @return True if this item has a 'container'
-     */
-    @Override
-    public boolean hasCraftingRemainingItem(ItemStack stack) {
-        return !(getInventory(stack).getStackInSlot(0).isEmpty() && getInventory(stack).getStackInSlot(1).isEmpty());
     }
 
     public static CardItemHandler getInventory(ItemStack stack) {
