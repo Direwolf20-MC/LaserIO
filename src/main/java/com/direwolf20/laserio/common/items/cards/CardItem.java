@@ -5,7 +5,6 @@ import com.direwolf20.laserio.setup.LaserIODataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -19,9 +18,9 @@ public class CardItem extends BaseCard {
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+    public InteractionResult use(Level level, Player player, InteractionHand hand) {
         ItemStack itemstack = player.getItemInHand(hand);
-        if (level.isClientSide()) return new InteractionResultHolder<>(InteractionResult.PASS, itemstack);
+        if (level.isClientSide()) return InteractionResult.PASS;
 
         player.openMenu(new SimpleMenuProvider(
                 (windowId, playerInventory, playerEntity) -> new CardItemContainer(windowId, playerInventory, player, itemstack), Component.translatable("")), (buf -> {
@@ -29,7 +28,7 @@ public class CardItem extends BaseCard {
             buf.writeByte(-1);
         }));
 
-        return new InteractionResultHolder<>(InteractionResult.PASS, itemstack);
+        return InteractionResult.PASS;
     }
 
     //TODO: 1.22 Consider setting default to 8

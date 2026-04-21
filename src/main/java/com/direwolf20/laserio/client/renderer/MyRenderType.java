@@ -4,14 +4,14 @@ import com.direwolf20.laserio.common.LaserIO;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.OptionalDouble;
 
 public class MyRenderType extends RenderType {
-    private final static ResourceLocation laserBeam = ResourceLocation.parse(LaserIO.MODID + ":textures/misc/laser.png");
-    private final static ResourceLocation laserBeam2 = ResourceLocation.parse(LaserIO.MODID + ":textures/misc/laser2.png");
-    private final static ResourceLocation laserBeamGlow = ResourceLocation.parse(LaserIO.MODID + ":textures/misc/laser_glow.png");
+    private final static Identifier laserBeam = Identifier.parse(LaserIO.MODID + ":textures/misc/laser.png");
+    private final static Identifier laserBeam2 = Identifier.parse(LaserIO.MODID + ":textures/misc/laser2.png");
+    private final static Identifier laserBeamGlow = Identifier.parse(LaserIO.MODID + ":textures/misc/laser_glow.png");
 
     // Dummy
     public MyRenderType(String name, VertexFormat format, VertexFormat.Mode p_i225992_3_, int p_i225992_4_, boolean p_i225992_5_, boolean p_i225992_6_, Runnable runnablePre, Runnable runnablePost) {

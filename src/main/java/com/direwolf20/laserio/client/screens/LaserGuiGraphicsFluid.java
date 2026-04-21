@@ -14,7 +14,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemStack;
@@ -215,7 +215,7 @@ public class LaserGuiGraphicsFluid extends GuiGraphics {
         if (fluid == null) {
             return reverseBounds;
         }
-        ResourceLocation fluidStill = IClientFluidTypeExtensions.of(fluid).getStillTexture();
+        Identifier fluidStill = IClientFluidTypeExtensions.of(fluid).getStillTexture();
         TextureAtlasSprite fluidStillSprite = null;
         if (fluidStill != null) {
             fluidStillSprite = Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(fluidStill);
@@ -229,7 +229,7 @@ public class LaserGuiGraphicsFluid extends GuiGraphics {
 
     public void renderFluid(FluidStack fluidStack, int pX, int pY, int size) {
         Fluid fluid = fluidStack.getFluid();
-        ResourceLocation fluidStill = IClientFluidTypeExtensions.of(fluid).getStillTexture();
+        Identifier fluidStill = IClientFluidTypeExtensions.of(fluid).getStillTexture();
         TextureAtlasSprite fluidStillSprite = Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(fluidStill);
         int fluidColor = IClientFluidTypeExtensions.of(fluid).getTintColor(fluidStack);
 
@@ -275,7 +275,7 @@ public class LaserGuiGraphicsFluid extends GuiGraphics {
                 break;
         }
         Fluid fluid = fluidStack.getFluid();
-        ResourceLocation fluidStill = IClientFluidTypeExtensions.of(fluid).getStillTexture();
+        Identifier fluidStill = IClientFluidTypeExtensions.of(fluid).getStillTexture();
         TextureAtlasSprite fluidStillSprite = Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(fluidStill);
         int fluidColor = IClientFluidTypeExtensions.of(fluid).getTintColor(fluidStack);
 

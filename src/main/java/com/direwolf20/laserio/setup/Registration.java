@@ -17,9 +17,6 @@ import com.direwolf20.laserio.common.items.filters.*;
 import com.direwolf20.laserio.common.items.upgrades.OverclockerCard;
 import com.direwolf20.laserio.common.items.upgrades.OverclockerNode;
 import com.direwolf20.laserio.datagen.customrecipes.CardClearRecipe;
-// TODO(port, mek): Mekanism 26.1 not yet released. Chemical card/container registration disabled.
-// import com.direwolf20.laserio.integration.mekanism.CardChemical;
-import com.direwolf20.laserio.integration.mekanism.MekanismIntegration;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.BlockItem;
@@ -38,6 +35,9 @@ import java.util.function.Supplier;
 
 import static com.direwolf20.laserio.client.particles.ModParticles.PARTICLE_TYPES;
 import static com.direwolf20.laserio.common.LaserIO.MODID;
+
+// TODO(port, mek): Mekanism 26.1 not yet released. Chemical card/container registration disabled.
+// import com.direwolf20.laserio.integration.mekanism.CardChemical;
 // TODO(port, mek): re-enable chemical particle DeferredRegister when Mekanism 26.1 ships.
 // import static com.direwolf20.laserio.integration.mekanism.client.chemicalparticle.MekanismModParticles.PARTICLE_TYPES_MEKANISM;
 
@@ -86,9 +86,9 @@ public class Registration {
 
 
     //BlockEntities (Not TileEntities - Honest)
-    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<LaserNodeBE>> LaserNode_BE = BLOCK_ENTITIES.register("lasernode", () -> BlockEntityType.Builder.of(LaserNodeBE::new, LaserNode.get()).build(null));
-    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<LaserConnectorBE>> LaserConnector_BE = BLOCK_ENTITIES.register("laserconnector", () -> BlockEntityType.Builder.of(LaserConnectorBE::new, LaserConnector.get()).build(null));
-    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<LaserConnectorAdvBE>> LaserConnectorAdv_BE = BLOCK_ENTITIES.register("laserconnectoradv", () -> BlockEntityType.Builder.of(LaserConnectorAdvBE::new, LaserConnectorAdv.get()).build(null));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<LaserNodeBE>> LaserNode_BE = BLOCK_ENTITIES.register("lasernode", () -> new BlockEntityType<>(LaserNodeBE::new, LaserNode.get()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<LaserConnectorBE>> LaserConnector_BE = BLOCK_ENTITIES.register("laserconnector", () -> new BlockEntityType<>(LaserConnectorBE::new, LaserConnector.get()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<LaserConnectorAdvBE>> LaserConnectorAdv_BE = BLOCK_ENTITIES.register("laserconnectoradv", () -> new BlockEntityType<>(LaserConnectorAdvBE::new, LaserConnectorAdv.get()));
 
     //Items
     public static final DeferredHolder<Item, LaserWrench> Laser_Wrench = ITEMS.register("laser_wrench", LaserWrench::new);

@@ -7,7 +7,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -21,9 +20,9 @@ public class CardFluid extends BaseCard {
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+    public InteractionResult use(Level level, Player player, InteractionHand hand) {
         ItemStack itemstack = player.getItemInHand(hand);
-        if (level.isClientSide()) return new InteractionResultHolder<>(InteractionResult.PASS, itemstack);
+        if (level.isClientSide()) return InteractionResult.PASS;
 
         ((ServerPlayer) player).openMenu(new SimpleMenuProvider(
                 (windowId, playerInventory, playerEntity) -> new CardFluidContainer(windowId, playerInventory, player, itemstack), Component.translatable("")), (buf -> {
@@ -32,7 +31,7 @@ public class CardFluid extends BaseCard {
         }));
 
         //System.out.println(itemstack.getItem().getRegistryName()+""+itemstack.getTag());
-        return new InteractionResultHolder<>(InteractionResult.PASS, itemstack);
+        return InteractionResult.PASS;
     }
 
     public static int setFluidExtractAmt(ItemStack card, int fluidextractamt) {

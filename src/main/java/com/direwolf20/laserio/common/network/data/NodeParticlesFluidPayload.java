@@ -6,14 +6,14 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.List;
 
 public record NodeParticlesFluidPayload(
         List<ParticleDataFluid> particleList
 ) implements CustomPacketPayload {
-    public static final Type<NodeParticlesFluidPayload> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "node_particles_fluid"));
+    public static final Type<NodeParticlesFluidPayload> TYPE = new Type<>(Identifier.fromNamespaceAndPath(LaserIO.MODID, "node_particles_fluid"));
 
     @Override
     public Type<NodeParticlesFluidPayload> type() {

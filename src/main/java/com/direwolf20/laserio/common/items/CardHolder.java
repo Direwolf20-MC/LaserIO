@@ -10,7 +10,6 @@ import com.direwolf20.laserio.util.CardHolderItemStackHandler;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -31,13 +30,13 @@ public class CardHolder extends Item {
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+    public InteractionResult use(Level level, Player player, InteractionHand hand) {
         ItemStack itemstack = player.getItemInHand(hand);
-        if (level.isClientSide()) return new InteractionResultHolder<>(InteractionResult.PASS, itemstack);
+        if (level.isClientSide()) return InteractionResult.PASS;
 
         if (player.isShiftKeyDown()) {
             setActive(itemstack, !getActive(itemstack));
-            return new InteractionResultHolder<>(InteractionResult.PASS, itemstack);
+            return InteractionResult.PASS;
         }
 
         player.openMenu(new SimpleMenuProvider(
@@ -46,7 +45,7 @@ public class CardHolder extends Item {
         }));
 
 
-        return new InteractionResultHolder<>(InteractionResult.PASS, itemstack);
+        return InteractionResult.PASS;
     }
 
     @Override

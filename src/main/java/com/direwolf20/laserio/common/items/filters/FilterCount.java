@@ -6,7 +6,6 @@ import com.direwolf20.laserio.setup.LaserIODataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -27,9 +26,9 @@ public class FilterCount extends BaseFilter {
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+    public InteractionResult use(Level level, Player player, InteractionHand hand) {
         ItemStack itemstack = player.getItemInHand(hand);
-        if (level.isClientSide()) return new InteractionResultHolder<>(InteractionResult.PASS, itemstack);
+        if (level.isClientSide()) return InteractionResult.PASS;
 
         player.openMenu(new SimpleMenuProvider(
                 (windowId, playerInventory, playerEntity) -> new FilterCountContainer(windowId, playerInventory, player, itemstack), Component.translatable("")), (buf -> {
@@ -37,7 +36,7 @@ public class FilterCount extends BaseFilter {
             ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, ItemStack.EMPTY);
         }));
 
-        return new InteractionResultHolder<>(InteractionResult.PASS, itemstack);
+        return InteractionResult.PASS;
     }
 
     /** Get MB for fluids - should be less than 1000 **/

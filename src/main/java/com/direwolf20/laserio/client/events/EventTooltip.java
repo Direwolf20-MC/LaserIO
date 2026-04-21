@@ -13,7 +13,7 @@ import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
@@ -142,13 +142,13 @@ public class EventTooltip {
 
     private static void renderTagStack(GuiGraphics guiGraphics, String tag, int x, int y) {
         Minecraft mc = Minecraft.getInstance();
-        List<Holder<Item>> tagItems = BuiltInRegistries.ITEM.getTag(ItemTags.create(ResourceLocation.parse(tag))).stream().flatMap(HolderSet.ListBacked::stream).toList();
+        List<Holder<Item>> tagItems = BuiltInRegistries.ITEM.getTag(ItemTags.create(Identifier.parse(tag))).stream().flatMap(HolderSet.ListBacked::stream).toList();
         if (tagItems.size() > 0) {
             ItemStack drawStack = new ItemStack(tagItems.get((int) (mc.level.getGameTime() / 20) % tagItems.size()));
             renderFilterStack(guiGraphics, drawStack, x, y);
         }
 
-        List<Holder<Fluid>> tagFluids = BuiltInRegistries.FLUID.getTag(FluidTags.create(ResourceLocation.parse(tag))).stream().flatMap(HolderSet.ListBacked::stream).toList();
+        List<Holder<Fluid>> tagFluids = BuiltInRegistries.FLUID.getTag(FluidTags.create(Identifier.parse(tag))).stream().flatMap(HolderSet.ListBacked::stream).toList();
         if (tagFluids.size() > 0) {
             FluidStack drawFluidStack = new FluidStack(tagFluids.get((int) (mc.level.getGameTime() / 20) % tagFluids.size()), 1000);
             if (!drawFluidStack.isEmpty()) {

@@ -16,16 +16,16 @@ import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class FilterBasicScreen extends AbstractContainerScreen<FilterBasicContainer> {
-    private final ResourceLocation GUI = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/basicfilter.png");
+    private final Identifier GUI = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/basicfilter.png");
 
     protected final FilterBasicContainer container;
     private ItemStack filter;
@@ -67,9 +67,9 @@ public class FilterBasicScreen extends AbstractContainerScreen<FilterBasicContai
         this.isAllowList = FilterBasic.getAllowList(filter);
         this.isCompareNBT = FilterBasic.getCompareNBT(filter);
 
-        ResourceLocation[] allowListTextures = new ResourceLocation[2];
-        allowListTextures[0] = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/allowlistfalse.png");
-        allowListTextures[1] = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/allowlisttrue.png");
+        Identifier[] allowListTextures = new Identifier[2];
+        allowListTextures[0] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/allowlistfalse.png");
+        allowListTextures[1] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/allowlisttrue.png");
 
         leftWidgets.add(new ToggleButton(getGuiLeft() + 5, getGuiTop() + 5, 16, 16, allowListTextures, isAllowList ? 1 : 0, (button) -> {
             isAllowList = !isAllowList;
@@ -77,9 +77,9 @@ public class FilterBasicScreen extends AbstractContainerScreen<FilterBasicContai
         }));
 
         if (!(filter.getItem() instanceof FilterMod)) {
-            ResourceLocation[] nbtTextures = new ResourceLocation[2];
-            nbtTextures[0] = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/matchnbtfalse.png");
-            nbtTextures[1] = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/matchnbttrue.png");
+            Identifier[] nbtTextures = new Identifier[2];
+            nbtTextures[0] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/matchnbtfalse.png");
+            nbtTextures[1] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/matchnbttrue.png");
 
             leftWidgets.add(new ToggleButton(getGuiLeft() + 5, getGuiTop() + 25, 16, 16, nbtTextures, isCompareNBT ? 1 : 0, (button) -> {
                 isCompareNBT = !isCompareNBT;
@@ -116,7 +116,7 @@ public class FilterBasicScreen extends AbstractContainerScreen<FilterBasicContai
 
     @Override
     public void onClose() {
-        PacketDistributor.sendToServer(new UpdateFilterPayload(isAllowList, isCompareNBT));
+        ClientPacketDistributor.sendToServer(new UpdateFilterPayload(isAllowList, isCompareNBT));
         super.onClose();
     }
 
@@ -142,7 +142,7 @@ public class FilterBasicScreen extends AbstractContainerScreen<FilterBasicContai
         stack = stack.copy().split(hoveredSlot.getMaxStackSize()); // Limit to slot limit
         if (ItemStack.isSameItemSameComponents(stack, container.filterItem)) return true;
         hoveredSlot.set(stack); // Temporarily update the client for continuity purposes
-        PacketDistributor.sendToServer(new GhostSlotPayload(hoveredSlot.index, stack, stack.getCount(), -1));
+        ClientPacketDistributor.sendToServer(new GhostSlotPayload(hoveredSlot.index, stack, stack.getCount(), -1));
 
         return true;
     }

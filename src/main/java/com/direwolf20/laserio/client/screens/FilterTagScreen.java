@@ -8,9 +8,6 @@ import com.direwolf20.laserio.common.containers.customslot.FilterBasicSlot;
 import com.direwolf20.laserio.common.items.filters.FilterTag;
 import com.direwolf20.laserio.common.network.data.GhostSlotPayload;
 import com.direwolf20.laserio.common.network.data.UpdateFilterTagPayload;
-import com.direwolf20.laserio.integration.mekanism.MekanismIntegration;
-// TODO(port, mek): Mekanism 26.1 not yet released. Chemical tag scan disabled.
-// import com.direwolf20.laserio.integration.mekanism.MekanismStatics;
 import com.direwolf20.laserio.util.MagicHelpers;
 import com.direwolf20.laserio.util.MiscTools;
 import com.mojang.blaze3d.platform.InputConstants;
@@ -26,7 +23,7 @@ import net.minecraft.core.HolderSet;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
@@ -34,18 +31,21 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidUtil;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
-import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.awt.*;
-import java.util.List;
 import java.util.*;
+import java.util.List;
+
+// TODO(port, mek): Mekanism 26.1 not yet released. Chemical tag scan disabled.
+// import com.direwolf20.laserio.integration.mekanism.MekanismStatics;
 
 public class FilterTagScreen extends AbstractContainerScreen<FilterTagContainer> {
-    private final ResourceLocation GUI = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/filtertag.png");
+    private final Identifier GUI = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/filtertag.png");
 
     protected final FilterTagContainer container;
     private ItemStack filter;
@@ -123,7 +123,7 @@ public class FilterTagScreen extends AbstractContainerScreen<FilterTagContainer>
         overSlot = -1;
         LaserGuiGraphics laserGuiGraphics = new LaserGuiGraphics(minecraft, guiGraphics.bufferSource());
         for (String tag : displayTags) {
-            List<Holder<Item>> tagItems = BuiltInRegistries.ITEM.getTag(ItemTags.create(ResourceLocation.parse(tag))).stream().flatMap(HolderSet.ListBacked::stream).toList();
+            List<Holder<Item>> tagItems = BuiltInRegistries.ITEM.getTag(ItemTags.create(Identifier.parse(tag))).stream().flatMap(HolderSet.ListBacked::stream).toList();
             ItemStack drawStack = ItemStack.EMPTY;
             if (tagItems.size() > 0) {
                 drawStack = new ItemStack(tagItems.get((cycleRenders / 120) % tagItems.size()));
@@ -133,7 +133,7 @@ public class FilterTagScreen extends AbstractContainerScreen<FilterTagContainer>
                 matrixStack.popPose();
             }
 
-            List<Holder<Fluid>> tagFluids = BuiltInRegistries.FLUID.getTag(FluidTags.create(ResourceLocation.parse(tag))).stream().flatMap(HolderSet.ListBacked::stream).toList();
+            List<Holder<Fluid>> tagFluids = BuiltInRegistries.FLUID.getTag(FluidTags.create(Identifier.parse(tag))).stream().flatMap(HolderSet.ListBacked::stream).toList();
             FluidStack drawFluidStack = FluidStack.EMPTY;
             ItemStack bucketStack = ItemStack.EMPTY;
             if (tagFluids.size() > 0) {
@@ -229,16 +229,16 @@ public class FilterTagScreen extends AbstractContainerScreen<FilterTagContainer>
 
         this.isAllowList = FilterTag.getAllowList(filter);
 
-        ResourceLocation[] allowListTextures = new ResourceLocation[2];
-        allowListTextures[0] = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/allowlistfalse.png");
-        allowListTextures[1] = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/allowlisttrue.png");
+        Identifier[] allowListTextures = new Identifier[2];
+        allowListTextures[0] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/allowlistfalse.png");
+        allowListTextures[1] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/allowlisttrue.png");
 
         leftWidgets.add(new ToggleButton(getGuiLeft() + 5, getGuiTop() + 5, 16, 16, allowListTextures, isAllowList ? 1 : 0, (button) -> {
             isAllowList = !isAllowList;
             ((ToggleButton) button).setTexturePosition(isAllowList ? 1 : 0);
         }));
 
-        ResourceLocation add = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/add.png");
+        Identifier add = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/add.png");
         Button addButton = new IconButton(getGuiLeft() + 155, getGuiTop() + 5, 16, 16, add, (button) -> {
             if (!tagField.getValue().isEmpty()) {
                 String tag = tagField.getValue().toLowerCase(Locale.ROOT);
@@ -270,7 +270,7 @@ public class FilterTagScreen extends AbstractContainerScreen<FilterTagContainer>
         });
         leftWidgets.add(addButton);
 
-        ResourceLocation remove = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/remove.png");
+        Identifier remove = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/remove.png");
         Button removeButton = new IconButton(getGuiLeft() + 135, getGuiTop() + 5, 16, 16, remove, (button) -> {
             if (selectedSlot != -1) {
                 tags.remove(displayTags.get(selectedSlot));
@@ -279,19 +279,19 @@ public class FilterTagScreen extends AbstractContainerScreen<FilterTagContainer>
         });
         leftWidgets.add(removeButton);
 
-        ResourceLocation clear = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/clear.png");
+        Identifier clear = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/clear.png");
         Button clearButton = new IconButton(getGuiLeft() + 115, getGuiTop() + 5, 16, 16, clear, (button) -> {
             tags.clear();
         });
         leftWidgets.add(clearButton);
 
-        ResourceLocation pageup = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/pageup.png");
+        Identifier pageup = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/pageup.png");
         Button pageUp = new IconButton(getGuiLeft() + 100, getGuiTop() + 157, 12, 12, pageup, (button) -> {
             if (page < maxPages) page++;
         });
         leftWidgets.add(pageUp);
 
-        ResourceLocation pagedown = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/pagedown.png");
+        Identifier pagedown = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/pagedown.png");
         Button pageDown = new IconButton(getGuiLeft() + 58, getGuiTop() + 157, 12, 12, pagedown, (button) -> {
             if (page > 0) page--;
         });
@@ -328,7 +328,7 @@ public class FilterTagScreen extends AbstractContainerScreen<FilterTagContainer>
 
     @Override
     public void onClose() {
-        PacketDistributor.sendToServer(new UpdateFilterTagPayload(isAllowList, tags));
+        ClientPacketDistributor.sendToServer(new UpdateFilterTagPayload(isAllowList, tags));
         super.onClose();
     }
 
@@ -402,7 +402,7 @@ public class FilterTagScreen extends AbstractContainerScreen<FilterTagContainer>
             ItemStack stack = this.menu.getCarried();// getMinecraft().player.inventoryMenu.getCarried();
             stack = stack.copy().split(hoveredSlot.getMaxStackSize()); // Limit to slot limit
             hoveredSlot.set(stack); // Temporarily update the client for continuity purposes
-            PacketDistributor.sendToServer(new GhostSlotPayload(hoveredSlot.index, stack, stack.getCount(), -1));
+            ClientPacketDistributor.sendToServer(new GhostSlotPayload(hoveredSlot.index, stack, stack.getCount(), -1));
             return true;
         }
         return super.mouseClicked(x, y, btn);

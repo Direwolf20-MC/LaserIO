@@ -5,13 +5,13 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public record CopyPasteCardPayload(
         int slot,
         boolean copy
 ) implements CustomPacketPayload {
-    public static final Type<CopyPasteCardPayload> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "copy_paste_card"));
+    public static final Type<CopyPasteCardPayload> TYPE = new Type<>(Identifier.fromNamespaceAndPath(LaserIO.MODID, "copy_paste_card"));
 
     @Override
     public Type<CopyPasteCardPayload> type() {

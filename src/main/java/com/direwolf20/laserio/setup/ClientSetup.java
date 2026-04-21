@@ -12,14 +12,11 @@ import com.direwolf20.laserio.common.blockentities.LaserConnectorBE;
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.common.items.cards.CardRedstone;
-// TODO(port, mek): Mekanism 26.1 not yet released. Chemical card client setup disabled.
-// import com.direwolf20.laserio.integration.mekanism.CardChemical;
-import com.direwolf20.laserio.integration.mekanism.MekanismIntegration;
 import net.minecraft.client.color.item.ItemColors;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.item.ItemProperties;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.FastColor;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -33,7 +30,10 @@ import net.neoforged.neoforge.common.NeoForge;
 
 import java.awt.*;
 
-@EventBusSubscriber(modid = LaserIO.MODID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
+// TODO(port, mek): Mekanism 26.1 not yet released. Chemical card client setup disabled.
+// import com.direwolf20.laserio.integration.mekanism.CardChemical;
+
+@EventBusSubscriber(modid = LaserIO.MODID, value = Dist.CLIENT)
 public class ClientSetup {
     public static void init(final FMLClientSetupEvent event) {
         ItemBlockRenderTypes.setRenderLayer(Registration.LaserNode.get(), RenderType.cutout());
@@ -48,25 +48,25 @@ public class ClientSetup {
         //Item Properties -- For giving the Cards an Insert/Extract on the itemstack
         event.enqueueWork(() -> {
             ItemProperties.register(Registration.Card_Item.get(),
-                    ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "mode"), (stack, level, living, id) -> {
+                    Identifier.fromNamespaceAndPath(LaserIO.MODID, "mode"), (stack, level, living, id) -> {
                         return (int) BaseCard.getTransferMode(stack);
                     });
         });
         event.enqueueWork(() -> {
             ItemProperties.register(Registration.Card_Fluid.get(),
-                    ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "mode"), (stack, level, living, id) -> {
+                    Identifier.fromNamespaceAndPath(LaserIO.MODID, "mode"), (stack, level, living, id) -> {
                         return (int) BaseCard.getTransferMode(stack);
                     });
         });
         event.enqueueWork(() -> {
             ItemProperties.register(Registration.Card_Energy.get(),
-                    ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "mode"), (stack, level, living, id) -> {
+                    Identifier.fromNamespaceAndPath(LaserIO.MODID, "mode"), (stack, level, living, id) -> {
                         return (int) BaseCard.getTransferMode(stack);
                     });
         });
         event.enqueueWork(() -> {
             ItemProperties.register(Registration.Card_Redstone.get(),
-                    ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "mode"), (stack, level, living, id) -> {
+                    Identifier.fromNamespaceAndPath(LaserIO.MODID, "mode"), (stack, level, living, id) -> {
                         return (int) CardRedstone.getTransferMode(stack);
                     });
         });

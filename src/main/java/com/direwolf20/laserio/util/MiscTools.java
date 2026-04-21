@@ -14,8 +14,8 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
@@ -53,7 +53,7 @@ public class MiscTools {
     public static GlobalPos nbtToGlobalPos(CompoundTag tag) {
         ResourceKey<Level> levelKey;
         if (tag.contains("dimension"))
-            levelKey = ResourceKey.create(Registries.DIMENSION, ResourceLocation.parse(tag.getString("dimension")));
+            levelKey = ResourceKey.create(Registries.DIMENSION, Identifier.parse(tag.getString("dimension")));
         else
             return null;
         BlockPos blockPos = NbtUtils.readBlockPos(tag, "blockpos").orElse(BlockPos.ZERO);

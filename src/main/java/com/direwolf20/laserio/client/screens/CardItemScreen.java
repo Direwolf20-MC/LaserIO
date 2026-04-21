@@ -28,20 +28,20 @@ import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.client.gui.widget.ExtendedButton;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
-    private final ResourceLocation GUI = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/itemcard.png");
+    private final Identifier GUI = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/itemcard.png");
 
     protected final CardItemContainer container;
     protected byte currentMode;
@@ -251,11 +251,11 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
     }
 
     public void addModeButton() {
-        ResourceLocation[] modeTextures = new ResourceLocation[4];
-        modeTextures[0] = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/modeinserter.png");
-        modeTextures[1] = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/modeextractor.png");
-        modeTextures[2] = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/modestocker.png");
-        modeTextures[3] = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/modesensor.png");
+        Identifier[] modeTextures = new Identifier[4];
+        modeTextures[0] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/modeinserter.png");
+        modeTextures[1] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/modeextractor.png");
+        modeTextures[2] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/modestocker.png");
+        modeTextures[3] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/modesensor.png");
         buttons.put("mode", new ToggleButton(getGuiLeft() + 5, getGuiTop() + 5, 16, 16, modeTextures, currentMode, (button) -> {
             currentMode = BaseCard.nextTransferMode(card);
             ((ToggleButton) button).setTexturePosition(currentMode);
@@ -265,10 +265,10 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
     }
 
     public void addRedstoneButton() {
-        ResourceLocation[] redstoneTextures = new ResourceLocation[3];
-        redstoneTextures[0] = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/redstoneignore.png");
-        redstoneTextures[1] = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/redstonelow.png");
-        redstoneTextures[2] = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/redstonehigh.png");
+        Identifier[] redstoneTextures = new Identifier[3];
+        redstoneTextures[0] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/redstoneignore.png");
+        redstoneTextures[1] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/redstonelow.png");
+        redstoneTextures[2] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/redstonehigh.png");
         buttons.put("redstoneMode", new ToggleButton(getGuiLeft() + 105, getGuiTop() + 5, 16, 16, redstoneTextures, currentRedstoneMode, (button) -> {
             currentRedstoneMode = (byte) (currentRedstoneMode == 2 ? 0 : currentRedstoneMode + 1);
             ((ToggleButton) button).setTexturePosition(currentRedstoneMode);
@@ -324,18 +324,18 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
             isCompareNBT = -1;
         }
 
-        ResourceLocation[] allowListTextures = new ResourceLocation[2];
-        allowListTextures[0] = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/allowlistfalse.png");
-        allowListTextures[1] = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/allowlisttrue.png");
+        Identifier[] allowListTextures = new Identifier[2];
+        allowListTextures[0] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/allowlistfalse.png");
+        allowListTextures[1] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/allowlisttrue.png");
 
         buttons.put("allowList", new ToggleButton(getGuiLeft() + 135, getGuiTop() + 61, 16, 16, allowListTextures, isAllowList == 1 ? 1 : 0, (button) -> {
             isAllowList = isAllowList == 1 ? 0 : 1;
             ((ToggleButton) button).setTexturePosition(isAllowList == 1 ? 1 : 0);
         }));
 
-        ResourceLocation[] nbtTextures = new ResourceLocation[2];
-        nbtTextures[0] = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/matchnbtfalse.png");
-        nbtTextures[1] = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/matchnbttrue.png");
+        Identifier[] nbtTextures = new Identifier[2];
+        nbtTextures[0] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/matchnbtfalse.png");
+        nbtTextures[1] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/matchnbttrue.png");
 
         buttons.put("nbt", new ToggleButton(getGuiLeft() + 153, getGuiTop() + 61, 16, 16, nbtTextures, isCompareNBT == 1 ? 1 : 0, (button) -> {
             isCompareNBT = isCompareNBT == 1 ? 0 : 1;
@@ -348,34 +348,34 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
             changeTick(-1);
         }));
 
-        ResourceLocation[] exactTextures = new ResourceLocation[2];
-        exactTextures[0] = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/exactfalse.png");
-        exactTextures[1] = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/exacttrue.png");
+        Identifier[] exactTextures = new Identifier[2];
+        exactTextures[0] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/exactfalse.png");
+        exactTextures[1] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/exacttrue.png");
         buttons.put("exact", new ToggleButton(getGuiLeft() + 25, getGuiTop() + 25, 16, 16, exactTextures, currentExact ? 1 : 0, (button) -> {
             currentExact = !currentExact;
             ((ToggleButton) button).setTexturePosition(currentExact ? 1 : 0);
         }));
 
-        ResourceLocation[] roundRobinTextures = new ResourceLocation[3];
-        roundRobinTextures[0] = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/roundrobinfalse.png");
-        roundRobinTextures[1] = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/roundrobintrue.png");
-        roundRobinTextures[2] = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/roundrobinenforced.png");
+        Identifier[] roundRobinTextures = new Identifier[3];
+        roundRobinTextures[0] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/roundrobinfalse.png");
+        roundRobinTextures[1] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/roundrobintrue.png");
+        roundRobinTextures[2] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/roundrobinenforced.png");
         buttons.put("roundrobin", new ToggleButton(getGuiLeft() + 5, getGuiTop() + 25, 16, 16, roundRobinTextures, currentRoundRobin, (button) -> {
             currentRoundRobin = currentRoundRobin == 2 ? 0 : currentRoundRobin + 1;
             ((ToggleButton) button).setTexturePosition(currentRoundRobin);
         }));
 
-        ResourceLocation[] regulateTextures = new ResourceLocation[2];
-        regulateTextures[0] = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/regulatefalse.png");
-        regulateTextures[1] = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/regulatetrue.png");
+        Identifier[] regulateTextures = new Identifier[2];
+        regulateTextures[0] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/regulatefalse.png");
+        regulateTextures[1] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/regulatetrue.png");
         buttons.put("regulate", new ToggleButton(getGuiLeft() + 5, getGuiTop() + 25, 16, 16, regulateTextures, currentRegulate ? 1 : 0, (button) -> {
             currentRegulate = !currentRegulate;
             ((ToggleButton) button).setTexturePosition(currentRegulate ? 1 : 0);
         }));
 
-        ResourceLocation[] andTextures = new ResourceLocation[2];
-        andTextures[0] = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/or.png");
-        andTextures[1] = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/and.png");
+        Identifier[] andTextures = new Identifier[2];
+        andTextures[0] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/or.png");
+        andTextures[1] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/and.png");
         buttons.put("and", new ToggleButton(getGuiLeft() + 5, getGuiTop() + 25, 16, 16, andTextures, currentAndMode ? 1 : 0, (button) -> {
             currentAndMode = !currentAndMode;
             ((ToggleButton) button).setTexturePosition(currentAndMode ? 1 : 0);
@@ -390,14 +390,14 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
             ((ChannelButton) button).setChannel(currentChannel);
         }));
 
-        ResourceLocation[] sneakyTextures = new ResourceLocation[7];
-        sneakyTextures[0] = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/sneaky.png");
-        sneakyTextures[1] = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/sneaky-down.png");
-        sneakyTextures[2] = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/sneaky-up.png");
-        sneakyTextures[3] = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/sneaky-north.png");
-        sneakyTextures[4] = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/sneaky-south.png");
-        sneakyTextures[5] = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/sneaky-west.png");
-        sneakyTextures[6] = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/sneaky-east.png");
+        Identifier[] sneakyTextures = new Identifier[7];
+        sneakyTextures[0] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/sneaky.png");
+        sneakyTextures[1] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/sneaky-down.png");
+        sneakyTextures[2] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/sneaky-up.png");
+        sneakyTextures[3] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/sneaky-north.png");
+        sneakyTextures[4] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/sneaky-south.png");
+        sneakyTextures[5] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/sneaky-west.png");
+        sneakyTextures[6] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/sneaky-east.png");
         buttons.put("sneaky", new ToggleButton(getGuiLeft() + 25, getGuiTop() + 5, 16, 16, sneakyTextures, currentSneaky + 1, (button) -> {
             currentSneaky = BaseCard.nextSneaky(card);
             ((ToggleButton) button).setTexturePosition(currentSneaky + 1);
@@ -648,7 +648,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
             guiGraphics.blit(GUI, relX, relY, 0, 167, slotsWidth, slotsHeight);
         }
         if (showCardHolderUI) {
-            ResourceLocation CardHolderGUI = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/cardholder_node.png");
+            Identifier CardHolderGUI = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/cardholder_node.png");
             RenderSystem.setShaderTexture(0, CardHolderGUI);
             guiGraphics.blit(CardHolderGUI, getGuiLeft() - 100, getGuiTop() + 24, 0, 0, this.imageWidth, this.imageHeight);
         }
@@ -710,8 +710,8 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
 
     public void saveSettings() {
         if (showFilter)
-            PacketDistributor.sendToServer(new UpdateFilterPayload(isAllowList == 1, isCompareNBT == 1));
-        PacketDistributor.sendToServer(new UpdateCardPayload(currentMode, currentChannel, currentItemExtractAmt, currentPriority, currentSneaky, (short) currentTicks, currentExact, currentRegulate, (byte) currentRoundRobin, 0, 0, currentRedstoneMode, currentRedstoneChannel, currentAndMode));
+            ClientPacketDistributor.sendToServer(new UpdateFilterPayload(isAllowList == 1, isCompareNBT == 1));
+        ClientPacketDistributor.sendToServer(new UpdateCardPayload(currentMode, currentChannel, currentItemExtractAmt, currentPriority, currentSneaky, (short) currentTicks, currentExact, currentRegulate, (byte) currentRoundRobin, 0, 0, currentRedstoneMode, currentRedstoneChannel, currentAndMode));
     }
 
     public boolean filterSlot(int btn) {
@@ -719,7 +719,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
         if (slotStack.isEmpty()) return true;
         if (btn == 2) {
             slotStack.setCount(0);
-            PacketDistributor.sendToServer(new GhostSlotPayload(hoveredSlot.index, slotStack, slotStack.getCount(), -1));
+            ClientPacketDistributor.sendToServer(new GhostSlotPayload(hoveredSlot.index, slotStack, slotStack.getCount(), -1));
             return true;
         }
         int amt = (btn == 0) ? 1 : -1;
@@ -728,13 +728,13 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
         if (amt + slotStack.getCount() > 4096) amt = 4096 - slotStack.getCount();
 
 
-        PacketDistributor.sendToServer(new GhostSlotPayload(hoveredSlot.index, slotStack, slotStack.getCount() + amt, -1));
+        ClientPacketDistributor.sendToServer(new GhostSlotPayload(hoveredSlot.index, slotStack, slotStack.getCount() + amt, -1));
         return true;
     }
 
     public void openNode() {
         saveSettings();
-        PacketDistributor.sendToServer(new OpenNodePayload(container.sourceContainer, container.direction));
+        ClientPacketDistributor.sendToServer(new OpenNodePayload(container.sourceContainer, container.direction));
         Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
     }
 
@@ -798,14 +798,14 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
                 stack = stack.copy().split(hoveredSlot.getMaxStackSize()); // Limit to slot limit
                 if (ItemStack.isSameItemSameComponents(stack, container.cardItem)) return true;
                 hoveredSlot.set(stack); // Temporarily update the client for continuity purposes
-                PacketDistributor.sendToServer(new GhostSlotPayload(hoveredSlot.index, stack, stack.getCount(), -1));
+                ClientPacketDistributor.sendToServer(new GhostSlotPayload(hoveredSlot.index, stack, stack.getCount(), -1));
             } else if (filter.getItem() instanceof FilterCount) {
                 ItemStack stack = this.menu.getCarried();// getMinecraft().player.inventoryMenu.getCarried();
                 if (!stack.isEmpty()) {
                     stack = stack.copy();
                     if (ItemStack.isSameItemSameComponents(stack, container.cardItem)) return true;
                     hoveredSlot.set(stack); // Temporarily update the client for continuity purposes
-                    PacketDistributor.sendToServer(new GhostSlotPayload(hoveredSlot.index, stack, stack.getCount(), -1));
+                    ClientPacketDistributor.sendToServer(new GhostSlotPayload(hoveredSlot.index, stack, stack.getCount(), -1));
                 } else {
                     filterSlot(btn);
                 }
@@ -815,11 +815,11 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
         if (hoveredSlot instanceof CardItemSlot) { //Right click
             if (btn == 0) {
                 if (filter.getItem() instanceof BaseFilter && !(filter.getItem() instanceof FilterTag) && !(filter.getItem() instanceof FilterNBT)) //Save the filter before removing it from the slot
-                    PacketDistributor.sendToServer(new UpdateFilterPayload(isAllowList == 1, isCompareNBT == 1));
+                    ClientPacketDistributor.sendToServer(new UpdateFilterPayload(isAllowList == 1, isCompareNBT == 1));
             } else if (btn == 1) {
                 int slot = hoveredSlot.getSlotIndex();
                 saveSettings();
-                PacketDistributor.sendToServer(new OpenFilterPayload(slot));
+                ClientPacketDistributor.sendToServer(new OpenFilterPayload(slot));
                 return true;
             }
         }

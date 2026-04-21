@@ -6,12 +6,12 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.awt.*;
 
 public class ChannelButton extends Button {
-    private final ResourceLocation resourceLocation = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/blankbutton.png");
+    private final Identifier resourceLocation = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/blankbutton.png");
     private int channel;
     private final Color colors[] = {
             new Color(0xf9ffff),

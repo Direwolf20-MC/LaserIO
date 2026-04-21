@@ -19,15 +19,15 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidUtil;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
-import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.Optional;
 
@@ -65,11 +65,11 @@ public class CardFluidScreen extends CardItemScreen {
 
     @Override
     public void addModeButton() {
-        ResourceLocation[] modeTextures = new ResourceLocation[4];
-        modeTextures[0] = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/modeinserter.png");
-        modeTextures[1] = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/modeextractor.png");
-        modeTextures[2] = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/modestocker.png");
-        modeTextures[3] = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/modesensor.png");
+        Identifier[] modeTextures = new Identifier[4];
+        modeTextures[0] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/modeinserter.png");
+        modeTextures[1] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/modeextractor.png");
+        modeTextures[2] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/modestocker.png");
+        modeTextures[3] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/modesensor.png");
         buttons.put("mode", new ToggleButton(getGuiLeft() + 5, getGuiTop() + 5, 16, 16, modeTextures, currentMode, (button) -> {
             currentMode = BaseCard.nextTransferMode(card);
             ((ToggleButton) button).setTexturePosition(currentMode);
@@ -130,7 +130,7 @@ public class CardFluidScreen extends CardItemScreen {
         if (slotStack.isEmpty()) return true;
         if (btn == 2) {
             slotStack.setCount(0);
-            PacketDistributor.sendToServer(new GhostSlotPayload(hoveredSlot.index, slotStack, slotStack.getCount(), 0));
+            ClientPacketDistributor.sendToServer(new GhostSlotPayload(hoveredSlot.index, slotStack, slotStack.getCount(), 0));
             return true;
         }
         int amt = (btn == 0) ? 1 : -1;
@@ -142,7 +142,7 @@ public class CardFluidScreen extends CardItemScreen {
         if (newMBAmt < 0) newMBAmt = 0;
         if (newMBAmt > 4096000) newMBAmt = 4096000;
         FilterCount.setSlotAmount(slotStack, filterSlot, newMBAmt);
-        PacketDistributor.sendToServer(new GhostSlotPayload(hoveredSlot.index, slotStack, 1, newMBAmt));
+        ClientPacketDistributor.sendToServer(new GhostSlotPayload(hoveredSlot.index, slotStack, 1, newMBAmt));
         return true;
     }
 
@@ -159,7 +159,7 @@ public class CardFluidScreen extends CardItemScreen {
     @Override
     public void openNode() {
         saveSettings();
-        PacketDistributor.sendToServer(new OpenNodePayload(container.sourceContainer, container.direction));
+        ClientPacketDistributor.sendToServer(new OpenNodePayload(container.sourceContainer, container.direction));
         Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
     }
 
@@ -171,7 +171,7 @@ public class CardFluidScreen extends CardItemScreen {
     @Override
     public void saveSettings() {
         if (showFilter)
-            PacketDistributor.sendToServer(new UpdateFilterPayload(isAllowList == 1, isCompareNBT == 1));
-        PacketDistributor.sendToServer(new UpdateCardPayload(currentMode, currentChannel, currentFluidExtractAmt, currentPriority, currentSneaky, (short) currentTicks, currentExact, currentRegulate, (byte) currentRoundRobin, 0, 0, currentRedstoneMode, currentRedstoneChannel, currentAndMode));
+            ClientPacketDistributor.sendToServer(new UpdateFilterPayload(isAllowList == 1, isCompareNBT == 1));
+        ClientPacketDistributor.sendToServer(new UpdateCardPayload(currentMode, currentChannel, currentFluidExtractAmt, currentPriority, currentSneaky, (short) currentTicks, currentExact, currentRegulate, (byte) currentRoundRobin, 0, 0, currentRedstoneMode, currentRedstoneChannel, currentAndMode));
     }
 }

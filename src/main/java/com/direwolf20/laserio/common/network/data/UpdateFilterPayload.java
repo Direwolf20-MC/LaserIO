@@ -5,13 +5,13 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public record UpdateFilterPayload(
         boolean allowList,
         boolean compareNBT
 ) implements CustomPacketPayload {
-    public static final Type<UpdateFilterPayload> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "update_filter"));
+    public static final Type<UpdateFilterPayload> TYPE = new Type<>(Identifier.fromNamespaceAndPath(LaserIO.MODID, "update_filter"));
 
     @Override
     public Type<UpdateFilterPayload> type() {

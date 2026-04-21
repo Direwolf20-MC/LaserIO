@@ -5,7 +5,7 @@ import com.direwolf20.laserio.setup.Registration;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.ItemTagsProvider;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
@@ -19,11 +19,11 @@ public class LaserIOItemTags extends ItemTagsProvider {
     public static final TagKey<Item> TOOLS_WRENCH = forgeTag("tools/wrench");
     public static final TagKey<Item> CIRCUITS_BASIC = forgeTag("circuits/basic");
 
-    public static final TagKey<Item> FILTERS_TAG = ItemTags.create(ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "filters"));
+    public static final TagKey<Item> FILTERS_TAG = ItemTags.create(Identifier.fromNamespaceAndPath(LaserIO.MODID, "filters"));
 
 
     private static TagKey<Item> forgeTag(String name) {
-        return ItemTags.create(ResourceLocation.fromNamespaceAndPath("c", name));
+        return ItemTags.create(Identifier.fromNamespaceAndPath("c", name));
     }
 
     public LaserIOItemTags(PackOutput packOutput, CompletableFuture<HolderLookup.Provider> lookupProvider, BlockTagsProvider blockTags, ExistingFileHelper helper) {

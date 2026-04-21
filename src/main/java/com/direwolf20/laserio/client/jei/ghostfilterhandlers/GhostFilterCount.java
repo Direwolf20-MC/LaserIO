@@ -8,7 +8,7 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +36,7 @@ public class GhostFilterCount implements IGhostIngredientHandler<FilterCountScre
                     public void accept(I ingredient) {
                         slot.set((ItemStack) ingredient);
                         gui.getMenu().handler.setStackInSlot(slot.index, (ItemStack) ingredient); //We do this for continuity between client/server -- not needed in cardItemScreen
-                        PacketDistributor.sendToServer(new GhostSlotPayload(slot.index, (ItemStack) ingredient, ((ItemStack) ingredient).getCount(), -1));
+                        ClientPacketDistributor.sendToServer(new GhostSlotPayload(slot.index, (ItemStack) ingredient, ((ItemStack) ingredient).getCount(), -1));
                     }
                 });
             }

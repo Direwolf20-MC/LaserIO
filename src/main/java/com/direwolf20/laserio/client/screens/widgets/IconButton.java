@@ -5,12 +5,12 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public class IconButton extends Button {
-    private ResourceLocation texture;
+    private Identifier texture;
 
-    public IconButton(int x, int y, int width, int height, ResourceLocation texture, OnPress onPress) {
+    public IconButton(int x, int y, int width, int height, Identifier texture, OnPress onPress) {
         super(x, y, width, height, Component.empty(), onPress, Button.DEFAULT_NARRATION);
 
         this.texture = texture;

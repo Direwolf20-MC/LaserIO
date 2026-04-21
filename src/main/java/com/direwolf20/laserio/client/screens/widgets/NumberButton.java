@@ -6,12 +6,12 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.awt.*;
 
 public class NumberButton extends Button {
-    private final ResourceLocation resourceLocation = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/blankbutton.png");
+    private final Identifier resourceLocation = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/blankbutton.png");
     private int value;
 
     public NumberButton(int x, int y, int width, int height, int value, OnPress onPress) {

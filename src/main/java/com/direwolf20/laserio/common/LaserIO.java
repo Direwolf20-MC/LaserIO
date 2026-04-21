@@ -13,10 +13,9 @@ import com.mojang.logging.LogUtils;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.loading.FMLLoader;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
-import net.neoforged.neoforge.items.ItemStackHandler;
 import org.slf4j.Logger;
 
 // The value here should match an entry in the META-INF/neoforge.mods.toml file
@@ -45,23 +44,21 @@ public class LaserIO {
         eventBus.addListener(PacketHandler::registerNetworking);
         //modbus.addGenericListener(RecipeSerializer.class, this::registerRecipeSerializers);
         // Register 'ClientSetup::init' to be called at mod setup time (client only)
-        if (FMLLoader.getDist().isClient()) {
+        if (FMLEnvironment.getDist().isClient()) {
             eventBus.addListener(ClientSetup::init);
         }
     }
 
     private void registerCapabilities(RegisterCapabilitiesEvent event) {
-        //TODO 1.22 REMOVE
-        event.registerBlock(Capabilities.ItemHandler.BLOCK,
+        event.registerBlock(Capabilities.Item.BLOCK,
                 (level, pos, state, be, side) -> {
                     if (side != null)
                         return ((LaserNodeBE) be).nodeSideCaches[side.ordinal()].itemHandler;
-                    else
-                        return new ItemStackHandler(0);
+                    return null;
                 },
                 // blocks to register for
                 Registration.LaserNode.get());
-        event.registerItem(Capabilities.ItemHandler.ITEM, (itemStack, context) -> {
+        event.registerItem(Capabilities.Item.ITEM, (itemStack, access) -> {
                     if (itemStack.getItem() instanceof CardHolder holder)
                         return new CardHolderItemStackHandler(CardHolderContainer.SLOTS, itemStack);
                     return null;

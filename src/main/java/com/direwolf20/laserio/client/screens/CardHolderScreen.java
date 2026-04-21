@@ -7,11 +7,11 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 
 public class CardHolderScreen extends AbstractContainerScreen<CardHolderContainer> {
-    private final ResourceLocation GUI = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/cardholder.png");
+    private final Identifier GUI = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/cardholder.png");
     protected final CardHolderContainer container;
 
     public CardHolderScreen(CardHolderContainer container, Inventory inv, Component name) {

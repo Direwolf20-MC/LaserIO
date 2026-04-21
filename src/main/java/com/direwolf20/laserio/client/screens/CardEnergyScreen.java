@@ -22,18 +22,18 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.client.gui.widget.ExtendedButton;
-import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContainer> {
-    private final ResourceLocation GUI = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/energycard.png");
+    private final Identifier GUI = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/energycard.png");
 
     protected final CardEnergyContainer container;
     protected byte currentMode;
@@ -164,11 +164,11 @@ public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContaine
     }
 
     public void addModeButton() {
-        ResourceLocation[] modeTextures = new ResourceLocation[4];
-        modeTextures[0] = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/modeinserter.png");
-        modeTextures[1] = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/modeextractor.png");
-        modeTextures[2] = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/modestocker.png");
-        modeTextures[3] = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/modesensor.png");
+        Identifier[] modeTextures = new Identifier[4];
+        modeTextures[0] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/modeinserter.png");
+        modeTextures[1] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/modeextractor.png");
+        modeTextures[2] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/modestocker.png");
+        modeTextures[3] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/modesensor.png");
         buttons.put("mode", new ToggleButton(getGuiLeft() + 5, getGuiTop() + 5, 16, 16, modeTextures, currentMode, (button) -> {
             currentMode = BaseCard.nextTransferMode(card);
             ((ToggleButton) button).setTexturePosition(currentMode);
@@ -179,10 +179,10 @@ public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContaine
     }
 
     public void addRedstoneButton() {
-        ResourceLocation[] redstoneTextures = new ResourceLocation[3];
-        redstoneTextures[0] = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/redstoneignore.png");
-        redstoneTextures[1] = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/redstonelow.png");
-        redstoneTextures[2] = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/redstonehigh.png");
+        Identifier[] redstoneTextures = new Identifier[3];
+        redstoneTextures[0] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/redstoneignore.png");
+        redstoneTextures[1] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/redstonelow.png");
+        redstoneTextures[2] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/redstonehigh.png");
         buttons.put("redstoneMode", new ToggleButton(getGuiLeft() + 105, getGuiTop() + 5, 16, 16, redstoneTextures, currentRedstoneMode, (button) -> {
             currentRedstoneMode = (byte) (currentRedstoneMode == 2 ? 0 : currentRedstoneMode + 1);
             ((ToggleButton) button).setTexturePosition(currentRedstoneMode);
@@ -220,26 +220,26 @@ public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContaine
             changeTick(-1);
         }));
 
-        ResourceLocation[] exactTextures = new ResourceLocation[2];
-        exactTextures[0] = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/exactfalse.png");
-        exactTextures[1] = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/exacttrue.png");
+        Identifier[] exactTextures = new Identifier[2];
+        exactTextures[0] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/exactfalse.png");
+        exactTextures[1] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/exacttrue.png");
         buttons.put("exact", new ToggleButton(getGuiLeft() + 25, getGuiTop() + 25, 16, 16, exactTextures, currentExact ? 1 : 0, (button) -> {
             currentExact = !currentExact;
             ((ToggleButton) button).setTexturePosition(currentExact ? 1 : 0);
         }));
 
-        ResourceLocation[] roundRobinTextures = new ResourceLocation[3];
-        roundRobinTextures[0] = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/roundrobinfalse.png");
-        roundRobinTextures[1] = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/roundrobintrue.png");
-        roundRobinTextures[2] = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/roundrobinenforced.png");
+        Identifier[] roundRobinTextures = new Identifier[3];
+        roundRobinTextures[0] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/roundrobinfalse.png");
+        roundRobinTextures[1] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/roundrobintrue.png");
+        roundRobinTextures[2] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/roundrobinenforced.png");
         buttons.put("roundrobin", new ToggleButton(getGuiLeft() + 5, getGuiTop() + 25, 16, 16, roundRobinTextures, currentRoundRobin, (button) -> {
             currentRoundRobin = currentRoundRobin == 2 ? 0 : currentRoundRobin + 1;
             ((ToggleButton) button).setTexturePosition(currentRoundRobin);
         }));
 
-        ResourceLocation[] regulateTextures = new ResourceLocation[2];
-        regulateTextures[0] = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/regulatefalse.png");
-        regulateTextures[1] = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/regulatetrue.png");
+        Identifier[] regulateTextures = new Identifier[2];
+        regulateTextures[0] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/regulatefalse.png");
+        regulateTextures[1] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/regulatetrue.png");
         buttons.put("regulate", new ToggleButton(getGuiLeft() + 5, getGuiTop() + 25, 16, 16, regulateTextures, currentRegulate ? 1 : 0, (button) -> {
             currentRegulate = !currentRegulate;
             ((ToggleButton) button).setTexturePosition(currentRegulate ? 1 : 0);
@@ -254,14 +254,14 @@ public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContaine
             ((ChannelButton) button).setChannel(currentChannel);
         }));
 
-        ResourceLocation[] sneakyTextures = new ResourceLocation[7];
-        sneakyTextures[0] = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/sneaky.png");
-        sneakyTextures[1] = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/sneaky-down.png");
-        sneakyTextures[2] = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/sneaky-up.png");
-        sneakyTextures[3] = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/sneaky-north.png");
-        sneakyTextures[4] = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/sneaky-south.png");
-        sneakyTextures[5] = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/sneaky-west.png");
-        sneakyTextures[6] = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/sneaky-east.png");
+        Identifier[] sneakyTextures = new Identifier[7];
+        sneakyTextures[0] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/sneaky.png");
+        sneakyTextures[1] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/sneaky-down.png");
+        sneakyTextures[2] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/sneaky-up.png");
+        sneakyTextures[3] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/sneaky-north.png");
+        sneakyTextures[4] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/sneaky-south.png");
+        sneakyTextures[5] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/sneaky-west.png");
+        sneakyTextures[6] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/sneaky-east.png");
         buttons.put("sneaky", new ToggleButton(getGuiLeft() + 25, getGuiTop() + 5, 16, 16, sneakyTextures, currentSneaky + 1, (button) -> {
             currentSneaky = BaseCard.nextSneaky(card);
             ((ToggleButton) button).setTexturePosition(currentSneaky + 1);
@@ -466,12 +466,12 @@ public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContaine
     }
 
     public void saveSettings() {
-        PacketDistributor.sendToServer(new UpdateCardPayload(currentMode, currentChannel, currentEnergyExtractAmt, currentPriority, currentSneaky, (short) currentTicks, currentExact, currentRegulate, (byte) currentRoundRobin, currentExtractLimitPercent, currentInsertLimitPercent, currentRedstoneMode, currentRedstoneChannel, false));
+        ClientPacketDistributor.sendToServer(new UpdateCardPayload(currentMode, currentChannel, currentEnergyExtractAmt, currentPriority, currentSneaky, (short) currentTicks, currentExact, currentRegulate, (byte) currentRoundRobin, currentExtractLimitPercent, currentInsertLimitPercent, currentRedstoneMode, currentRedstoneChannel, false));
     }
 
     public void openNode() {
         saveSettings();
-        PacketDistributor.sendToServer(new OpenNodePayload(container.sourceContainer, container.direction));
+        ClientPacketDistributor.sendToServer(new OpenNodePayload(container.sourceContainer, container.direction));
         Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
     }
 

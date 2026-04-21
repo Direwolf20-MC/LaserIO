@@ -18,17 +18,17 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class FilterCountScreen extends AbstractContainerScreen<FilterCountContainer> {
-    private final ResourceLocation GUI = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/filtercount.png");
+    private final Identifier GUI = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/filtercount.png");
 
     protected final FilterCountContainer container;
     private ItemStack filter;
@@ -74,9 +74,9 @@ public class FilterCountScreen extends AbstractContainerScreen<FilterCountContai
         this.isAllowList = FilterCount.getAllowList(filter);
         this.isCompareNBT = FilterCount.getCompareNBT(filter);
 
-        ResourceLocation[] nbtTextures = new ResourceLocation[2];
-        nbtTextures[0] = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/matchnbtfalse.png");
-        nbtTextures[1] = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/matchnbttrue.png");
+        Identifier[] nbtTextures = new Identifier[2];
+        nbtTextures[0] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/matchnbtfalse.png");
+        nbtTextures[1] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/matchnbttrue.png");
 
         leftWidgets.add(new ToggleButton(getGuiLeft() + 5, getGuiTop() + 25, 16, 16, nbtTextures, isCompareNBT ? 1 : 0, (button) -> {
             isCompareNBT = !isCompareNBT;
@@ -112,7 +112,7 @@ public class FilterCountScreen extends AbstractContainerScreen<FilterCountContai
 
     @Override
     public void onClose() {
-        PacketDistributor.sendToServer(new UpdateFilterPayload(isAllowList, isCompareNBT));
+        ClientPacketDistributor.sendToServer(new UpdateFilterPayload(isAllowList, isCompareNBT));
         super.onClose();
     }
 
@@ -139,14 +139,14 @@ public class FilterCountScreen extends AbstractContainerScreen<FilterCountContai
             stack = stack.copy();
             hoveredSlot.set(stack); // Temporarily update the client for continuity purposes
             if (ItemStack.isSameItemSameComponents(stack, container.filterItem)) return true;
-            PacketDistributor.sendToServer(new GhostSlotPayload(hoveredSlot.index, stack, stack.getCount(), -1));
+            ClientPacketDistributor.sendToServer(new GhostSlotPayload(hoveredSlot.index, stack, stack.getCount(), -1));
             container.handler.setStackInSlot(hoveredSlot.index, stack); //We do this for continuity between client/server -- not needed in cardItemScreen
         } else {
             ItemStack slotStack = hoveredSlot.getItem();
             if (slotStack.isEmpty()) return true;
             if (btn == 2) {
                 slotStack.setCount(0);
-                PacketDistributor.sendToServer(new GhostSlotPayload(hoveredSlot.index, slotStack, slotStack.getCount(), -1));
+                ClientPacketDistributor.sendToServer(new GhostSlotPayload(hoveredSlot.index, slotStack, slotStack.getCount(), -1));
                 return true;
             }
             int amt = (btn == 0) ? 1 : -1;
@@ -155,7 +155,7 @@ public class FilterCountScreen extends AbstractContainerScreen<FilterCountContai
             if (amt + slotStack.getCount() > 4096) amt = 4096 - slotStack.getCount();
             slotStack.grow(amt);
 
-            PacketDistributor.sendToServer(new GhostSlotPayload(hoveredSlot.index, slotStack, slotStack.getCount(), -1));
+            ClientPacketDistributor.sendToServer(new GhostSlotPayload(hoveredSlot.index, slotStack, slotStack.getCount(), -1));
             container.handler.setStackInSlot(hoveredSlot.index, slotStack); //We do this for continuity between client/server -- not needed in cardItemScreen
         }
 
@@ -182,7 +182,7 @@ public class FilterCountScreen extends AbstractContainerScreen<FilterCountContai
             amt = (slotStack.getCount() * -1) + 1;
         slotStack.grow(amt);
 
-        PacketDistributor.sendToServer(new GhostSlotPayload(hoveredSlot.index, slotStack, slotStack.getCount(), -1));
+        ClientPacketDistributor.sendToServer(new GhostSlotPayload(hoveredSlot.index, slotStack, slotStack.getCount(), -1));
         return true;
     }
 

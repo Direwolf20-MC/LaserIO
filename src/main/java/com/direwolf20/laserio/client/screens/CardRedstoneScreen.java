@@ -17,18 +17,18 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.client.gui.widget.ExtendedButton;
-import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class CardRedstoneScreen extends AbstractContainerScreen<CardRedstoneContainer> {
-    private final ResourceLocation GUI = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/redstonecard.png");
+    private final Identifier GUI = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/redstonecard.png");
 
     protected final CardRedstoneContainer container;
     protected byte currentMode;
@@ -71,9 +71,9 @@ public class CardRedstoneScreen extends AbstractContainerScreen<CardRedstoneCont
     }
 
     public void addModeButton() {
-        ResourceLocation[] modeTextures = new ResourceLocation[2];
-        modeTextures[0] = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/redstoneinput.png");
-        modeTextures[1] = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/redstoneoutput.png");
+        Identifier[] modeTextures = new Identifier[2];
+        modeTextures[0] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/redstoneinput.png");
+        modeTextures[1] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/redstoneoutput.png");
         buttons.put("mode", new ToggleButton(getGuiLeft() + 5, getGuiTop() + 5, 16, 16, modeTextures, currentMode, (button) -> {
             currentMode = CardRedstone.nextTransferMode(card);
             ((ToggleButton) button).setTexturePosition(currentMode);
@@ -82,9 +82,9 @@ public class CardRedstoneScreen extends AbstractContainerScreen<CardRedstoneCont
     }
 
     public void addStrongButton() {
-        ResourceLocation[] strongTextures = new ResourceLocation[2];
-        strongTextures[0] = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/redstonelow.png");
-        strongTextures[1] = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/redstonehigh.png");
+        Identifier[] strongTextures = new Identifier[2];
+        strongTextures[0] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/redstonelow.png");
+        strongTextures[1] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/redstonehigh.png");
         buttons.put("strong", new ToggleButton(getGuiLeft() + 5, getGuiTop() + 25, 16, 16, strongTextures, currentStrong ? 1 : 0, (button) -> {
             currentStrong = !currentStrong;
             ((ToggleButton) button).setTexturePosition(currentStrong ? 1 : 0);
@@ -191,12 +191,12 @@ public class CardRedstoneScreen extends AbstractContainerScreen<CardRedstoneCont
     }
 
     public void saveSettings() {
-        PacketDistributor.sendToServer(new UpdateRedstoneCardPayload(currentMode, currentRedstoneChannel, currentStrong));
+        ClientPacketDistributor.sendToServer(new UpdateRedstoneCardPayload(currentMode, currentRedstoneChannel, currentStrong));
     }
 
     public void openNode() {
         saveSettings();
-        PacketDistributor.sendToServer(new OpenNodePayload(container.sourceContainer, container.direction));
+        ClientPacketDistributor.sendToServer(new OpenNodePayload(container.sourceContainer, container.direction));
         Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
     }
 

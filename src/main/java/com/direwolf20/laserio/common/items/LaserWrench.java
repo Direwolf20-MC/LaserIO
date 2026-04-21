@@ -10,7 +10,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -53,23 +53,23 @@ public class LaserWrench extends Item {
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+    public InteractionResult use(Level level, Player player, InteractionHand hand) {
         ItemStack wrench = player.getItemInHand(hand);
         if (level.isClientSide()) //No client
-            return InteractionResultHolder.success(wrench);
+            return InteractionResult.SUCCESS;
 
         int range = 10; // How far away you can click on blocks from
         BlockHitResult lookingAt = VectorHelper.getLookingAt(player, ClipContext.Fluid.NONE, range);
         if (lookingAt == null || !((level.getBlockState(VectorHelper.getLookingAt(player, wrench, range).getBlockPos()).getBlock() instanceof BaseLaserBlock))) {
             if (player.isShiftKeyDown()) {
                 storeConnectionPos(wrench, level, BlockPos.ZERO);
-                return InteractionResultHolder.pass(wrench);
+                return InteractionResult.PASS;
             }
         }
         BlockPos targetPos = lookingAt.getBlockPos();
         BlockEntity targetBE = level.getBlockEntity(targetPos);
         if (!(targetBE instanceof BaseLaserBE))
-            return InteractionResultHolder.pass(wrench);
+            return InteractionResult.PASS;
 
         //((ServerLevel) level).server.getLevel(ResourceKey.create(Registries.DIMENSION, getDimension(wrench, level)))
 
@@ -77,34 +77,34 @@ public class LaserWrench extends Item {
             //If the wrench's position equals this one, erase it
             if (targetPos.equals(getConnectionPos(wrench, level))) {
                 storeConnectionPos(wrench, level, BlockPos.ZERO);
-                return InteractionResultHolder.pass(wrench);
+                return InteractionResult.PASS;
             }
             //Store this position
             storeConnectionPos(wrench, level, targetPos);
-            return InteractionResultHolder.pass(wrench);
+            return InteractionResult.PASS;
         } else {
             GlobalPos sourceDimPos = getConnectionPos(wrench, level);
             BlockEntity sourceBE = MiscTools.getLevel(level.getServer(), sourceDimPos).getBlockEntity(sourceDimPos.pos());
             //If the Source TE is not one of ours, erase it
             if (!(sourceBE instanceof BaseLaserBE)) {
                 storeConnectionPos(wrench, level, BlockPos.ZERO);
-                return InteractionResultHolder.pass(wrench);
+                return InteractionResult.PASS;
             }
             //If both nodes are Advanced, we can connect them despite distance, so skip that check and connect now
             if (targetBE instanceof LaserConnectorAdvBE targetAdv && sourceBE instanceof LaserConnectorAdvBE sourceAdv) {
                 targetAdv.handleAdvancedConnection(sourceAdv);
-                return InteractionResultHolder.success(wrench);
+                return InteractionResult.SUCCESS;
             }
             //If we're too far away - send an error to the client
             if (!targetPos.closerThan(sourceDimPos.pos(), maxDistance) || !level.equals(MiscTools.getLevel(level.getServer(), sourceDimPos))) {
                 player.displayClientMessage(Component.translatable("message.laserio.wrenchrange", maxDistance), true);
-                return InteractionResultHolder.pass(wrench);
+                return InteractionResult.PASS;
             }
             //Connect or disconnect the nodes, depending on current state
             ((BaseLaserBE) targetBE).handleConnection((BaseLaserBE) sourceBE);
         }
 
         //System.out.println(getConnectionPos(wrench));
-        return InteractionResultHolder.success(wrench);
+        return InteractionResult.SUCCESS;
     }
 }

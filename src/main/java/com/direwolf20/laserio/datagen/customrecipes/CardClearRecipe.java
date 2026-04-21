@@ -12,7 +12,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.StackedContents;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.*;
@@ -135,7 +135,7 @@ public class CardClearRecipe implements CraftingRecipe {
 
 
     public static class Serializer implements RecipeSerializer<CardClearRecipe> {
-        private static final net.minecraft.resources.ResourceLocation NAME = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "cardclear");
+        private static final net.minecraft.resources.Identifier NAME = Identifier.fromNamespaceAndPath(LaserIO.MODID, "cardclear");
         private static final MapCodec<CardClearRecipe> CODEC = RecordCodecBuilder.mapCodec(
                 p_311734_ -> p_311734_.group(
                                 Codec.STRING.fieldOf("group").forGetter(p_301127_ -> p_301127_.group),

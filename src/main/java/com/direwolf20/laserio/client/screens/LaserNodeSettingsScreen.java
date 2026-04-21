@@ -17,13 +17,13 @@ import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.client.gui.widget.ExtendedButton;
 import net.neoforged.neoforge.client.gui.widget.ExtendedSlider;
-import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.Map;
 
 public class LaserNodeSettingsScreen extends Screen {
-    private final ResourceLocation GUI = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/laser_node_settings.png");
+    private final Identifier GUI = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/laser_node_settings.png");
     protected final LaserNodeContainer container;
     protected int imageWidth = 176;
     protected int imageHeight = 166;
@@ -90,7 +90,7 @@ public class LaserNodeSettingsScreen extends Screen {
 
         if (container.side != -1) {
             Button returnButton = new ExtendedButton(getGuiLeft() - 25, getGuiTop() + 1, 25, 20, Component.literal("<--"), (button) -> {
-                PacketDistributor.sendToServer(new OpenNodePayload(container.tile.getBlockPos(), (byte) container.side));
+                ClientPacketDistributor.sendToServer(new OpenNodePayload(container.tile.getBlockPos(), (byte) container.side));
                 Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
             });
             leftWidgets.add(returnButton);
@@ -188,7 +188,7 @@ public class LaserNodeSettingsScreen extends Screen {
     }
 
     private void syncColors() {
-        PacketDistributor.sendToServer(new ChangeColorPayload(container.tile.getBlockPos(), new Color(laserRed, laserGreen, laserBlue, laserAlpha).getRGB(), wrenchAlpha));
+        ClientPacketDistributor.sendToServer(new ChangeColorPayload(container.tile.getBlockPos(), new Color(laserRed, laserGreen, laserBlue, laserAlpha).getRGB(), wrenchAlpha));
     }
 
     protected void renderLabels(GuiGraphics guiGraphics, int mouseX, int mouseY) {
@@ -238,32 +238,32 @@ public class LaserNodeSettingsScreen extends Screen {
     @Override
     public boolean mouseClicked(double x, double y, int btn) {
         if (MiscTools.inBounds(getGuiLeft() + tabs[1].x, getGuiTop() + tabs[1].y, 24, 12, x, y)) {
-            PacketDistributor.sendToServer(new OpenNodePayload(container.tile.getBlockPos(), (byte) 1));
+            ClientPacketDistributor.sendToServer(new OpenNodePayload(container.tile.getBlockPos(), (byte) 1));
             Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
             return true;
         }
         if (MiscTools.inBounds(getGuiLeft() + tabs[0].x, getGuiTop() + tabs[0].y, 24, 12, x, y)) {
-            PacketDistributor.sendToServer(new OpenNodePayload(container.tile.getBlockPos(), (byte) 0));
+            ClientPacketDistributor.sendToServer(new OpenNodePayload(container.tile.getBlockPos(), (byte) 0));
             Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
             return true;
         }
         if (MiscTools.inBounds(getGuiLeft() + tabs[2].x, getGuiTop() + tabs[2].y, 24, 12, x, y)) {
-            PacketDistributor.sendToServer(new OpenNodePayload(container.tile.getBlockPos(), (byte) 2));
+            ClientPacketDistributor.sendToServer(new OpenNodePayload(container.tile.getBlockPos(), (byte) 2));
             Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
             return true;
         }
         if (MiscTools.inBounds(getGuiLeft() + tabs[3].x, getGuiTop() + tabs[3].y, 24, 12, x, y)) {
-            PacketDistributor.sendToServer(new OpenNodePayload(container.tile.getBlockPos(), (byte) 3));
+            ClientPacketDistributor.sendToServer(new OpenNodePayload(container.tile.getBlockPos(), (byte) 3));
             Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
             return true;
         }
         if (MiscTools.inBounds(getGuiLeft() + tabs[4].x, getGuiTop() + tabs[4].y, 24, 12, x, y)) {
-            PacketDistributor.sendToServer(new OpenNodePayload(container.tile.getBlockPos(), (byte) 4));
+            ClientPacketDistributor.sendToServer(new OpenNodePayload(container.tile.getBlockPos(), (byte) 4));
             Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
             return true;
         }
         if (MiscTools.inBounds(getGuiLeft() + tabs[5].x, getGuiTop() + tabs[5].y, 24, 12, x, y)) {
-            PacketDistributor.sendToServer(new OpenNodePayload(container.tile.getBlockPos(), (byte) 5));
+            ClientPacketDistributor.sendToServer(new OpenNodePayload(container.tile.getBlockPos(), (byte) 5));
             Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
             return true;
         }

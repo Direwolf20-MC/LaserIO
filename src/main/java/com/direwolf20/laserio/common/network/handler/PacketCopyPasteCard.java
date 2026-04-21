@@ -8,7 +8,7 @@ import com.direwolf20.laserio.common.network.data.CopyPasteCardPayload;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.network.protocol.game.ClientboundSoundPacket;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -51,7 +51,7 @@ public class PacketCopyPasteCard {
                 DataComponentPatch dataComponentPatch = slotStack.getComponentsPatch();
                 CardCloner.saveSettings(clonerStack, dataComponentPatch);
                 CardCloner.setItemType(clonerStack, slotStack.getItem().toString());
-                playSound((ServerPlayer) player, Holder.direct(SoundEvent.createVariableRangeEvent(ResourceLocation.parse(SoundEvents.UI_CARTOGRAPHY_TABLE_TAKE_RESULT.getLocation().toString()))));
+                playSound((ServerPlayer) player, Holder.direct(SoundEvent.createVariableRangeEvent(Identifier.parse(SoundEvents.UI_CARTOGRAPHY_TABLE_TAKE_RESULT.location().toString()))));
             } else {
                 if (slotStack.getItem().toString().equals(CardCloner.getItemType(clonerStack))) {
                     CardItemHandler cardItemHandler = BaseCard.getInventory(slotStack);
@@ -118,13 +118,13 @@ public class PacketCopyPasteCard {
                         DataComponentPatch dataComponentPatch = CardCloner.getSettings(clonerStack);
                         tempStack.applyComponents(dataComponentPatch);
                         container.getSlot(payload.slot()).set(tempStack);
-                        playSound((ServerPlayer) player, Holder.direct(SoundEvent.createVariableRangeEvent(ResourceLocation.parse(SoundEvents.ENCHANTMENT_TABLE_USE.getLocation().toString()))));
+                        playSound((ServerPlayer) player, Holder.direct(SoundEvent.createVariableRangeEvent(Identifier.parse(SoundEvents.ENCHANTMENT_TABLE_USE.location().toString()))));
                         ((LaserNodeContainer) container).tile.updateThisNode();
                     } else {
-                        playSound((ServerPlayer) player, Holder.direct(SoundEvent.createVariableRangeEvent(ResourceLocation.parse(SoundEvents.WAXED_SIGN_INTERACT_FAIL.getLocation().toString()))));
+                        playSound((ServerPlayer) player, Holder.direct(SoundEvent.createVariableRangeEvent(Identifier.parse(SoundEvents.WAXED_SIGN_INTERACT_FAIL.location().toString()))));
                     }
                 } else {
-                    playSound((ServerPlayer) player, Holder.direct(SoundEvent.createVariableRangeEvent(ResourceLocation.parse(SoundEvents.WAXED_SIGN_INTERACT_FAIL.getLocation().toString()))));
+                    playSound((ServerPlayer) player, Holder.direct(SoundEvent.createVariableRangeEvent(Identifier.parse(SoundEvents.WAXED_SIGN_INTERACT_FAIL.location().toString()))));
                 }
             }
         });

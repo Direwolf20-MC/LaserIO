@@ -27,7 +27,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
@@ -35,14 +35,14 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class LaserNodeScreen extends AbstractContainerScreen<LaserNodeContainer> {
-    private final ResourceLocation GUI = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/laser_node.png");
+    private final Identifier GUI = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/laser_node.png");
     protected final LaserNodeContainer container;
     private boolean showCardHolderUI;
     private boolean currentParticles;
@@ -78,19 +78,19 @@ public class LaserNodeScreen extends AbstractContainerScreen<LaserNodeContainer>
     public void init() {
         super.init();
         List<AbstractWidget> leftWidgets = new ArrayList<>();
-        ResourceLocation settings = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/settings.png");
+        Identifier settings = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/settings.png");
         settingsButton = new IconButton(getGuiLeft() + 155, getGuiTop() + 25, 16, 16, settings, (button) -> {
             Minecraft.getInstance().setScreen(new LaserNodeSettingsScreen(container, Component.translatable("screen.laserio.settings")));
         });
         leftWidgets.add(settingsButton);
 
-        ResourceLocation[] regulateTextures = new ResourceLocation[2];
-        regulateTextures[0] = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/regulatefalse.png");
-        regulateTextures[1] = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/regulatetrue.png");
+        Identifier[] regulateTextures = new Identifier[2];
+        regulateTextures[0] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/regulatefalse.png");
+        regulateTextures[1] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/regulatetrue.png");
         particlesButton = new ToggleButton(getGuiLeft() + 155, getGuiTop() + 45, 16, 16, regulateTextures, currentParticles ? 1 : 0, (button) -> {
             currentParticles = !currentParticles;
             ((ToggleButton) button).setTexturePosition(currentParticles ? 1 : 0);
-            PacketDistributor.sendToServer(new ToggleParticlesPayload(currentParticles));
+            ClientPacketDistributor.sendToServer(new ToggleParticlesPayload(currentParticles));
         });
         leftWidgets.add(particlesButton);
 
@@ -165,7 +165,7 @@ public class LaserNodeScreen extends AbstractContainerScreen<LaserNodeContainer>
         int relY = (this.height - this.imageHeight) / 2;
         guiGraphics.blit(GUI, relX, relY, 0, 0, this.imageWidth, this.imageHeight);
         if (showCardHolderUI) {
-            ResourceLocation CardHolderGUI = ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/cardholder_node.png");
+            Identifier CardHolderGUI = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/cardholder_node.png");
             RenderSystem.setShaderTexture(0, CardHolderGUI);
             guiGraphics.blit(CardHolderGUI, getGuiLeft() - 100, getGuiTop() + 24, 0, 0, this.imageWidth, this.imageHeight);
         }
@@ -202,40 +202,40 @@ public class LaserNodeScreen extends AbstractContainerScreen<LaserNodeContainer>
         if (hoveredSlot != null && container.getCarried().getItem() instanceof CardCloner) {
             if (hoveredSlot instanceof LaserNodeSlot && !hoveredSlot.getItem().isEmpty())
                 if (btn == 0) { //Left click
-                    PacketDistributor.sendToServer(new CopyPasteCardPayload(hoveredSlot.getSlotIndex(), true));
+                    ClientPacketDistributor.sendToServer(new CopyPasteCardPayload(hoveredSlot.getSlotIndex(), true));
                 }
             if (btn == 1) { //Right click
-                PacketDistributor.sendToServer(new CopyPasteCardPayload(hoveredSlot.getSlotIndex(), false));
+                ClientPacketDistributor.sendToServer(new CopyPasteCardPayload(hoveredSlot.getSlotIndex(), false));
             }
             return true;
         }
         if (MiscTools.inBounds(getGuiLeft() + tabs[1].x, getGuiTop() + tabs[1].y, 24, 12, x, y) && container.side != 1) {
-            PacketDistributor.sendToServer(new OpenNodePayload(container.tile.getBlockPos(), (byte) 1));
+            ClientPacketDistributor.sendToServer(new OpenNodePayload(container.tile.getBlockPos(), (byte) 1));
             Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
             return true;
         }
         if (MiscTools.inBounds(getGuiLeft() + tabs[0].x, getGuiTop() + tabs[0].y, 24, 12, x, y) && container.side != 0) {
-            PacketDistributor.sendToServer(new OpenNodePayload(container.tile.getBlockPos(), (byte) 0));
+            ClientPacketDistributor.sendToServer(new OpenNodePayload(container.tile.getBlockPos(), (byte) 0));
             Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
             return true;
         }
         if (MiscTools.inBounds(getGuiLeft() + tabs[2].x, getGuiTop() + tabs[2].y, 24, 12, x, y) && container.side != 2) {
-            PacketDistributor.sendToServer(new OpenNodePayload(container.tile.getBlockPos(), (byte) 2));
+            ClientPacketDistributor.sendToServer(new OpenNodePayload(container.tile.getBlockPos(), (byte) 2));
             Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
             return true;
         }
         if (MiscTools.inBounds(getGuiLeft() + tabs[3].x, getGuiTop() + tabs[3].y, 24, 12, x, y) && container.side != 3) {
-            PacketDistributor.sendToServer(new OpenNodePayload(container.tile.getBlockPos(), (byte) 3));
+            ClientPacketDistributor.sendToServer(new OpenNodePayload(container.tile.getBlockPos(), (byte) 3));
             Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
             return true;
         }
         if (MiscTools.inBounds(getGuiLeft() + tabs[4].x, getGuiTop() + tabs[4].y, 24, 12, x, y) && container.side != 4) {
-            PacketDistributor.sendToServer(new OpenNodePayload(container.tile.getBlockPos(), (byte) 4));
+            ClientPacketDistributor.sendToServer(new OpenNodePayload(container.tile.getBlockPos(), (byte) 4));
             Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
             return true;
         }
         if (MiscTools.inBounds(getGuiLeft() + tabs[5].x, getGuiTop() + tabs[5].y, 24, 12, x, y) && container.side != 5) {
-            PacketDistributor.sendToServer(new OpenNodePayload(container.tile.getBlockPos(), (byte) 5));
+            ClientPacketDistributor.sendToServer(new OpenNodePayload(container.tile.getBlockPos(), (byte) 5));
             Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
             return true;
         }
@@ -245,7 +245,7 @@ public class LaserNodeScreen extends AbstractContainerScreen<LaserNodeContainer>
 
         if (btn == 1 && hoveredSlot instanceof LaserNodeSlot) { //Right click
             int slot = hoveredSlot.getSlotIndex();
-            PacketDistributor.sendToServer(new OpenCardPayload(slot, container.tile.getBlockPos(), hasShiftDown()));
+            ClientPacketDistributor.sendToServer(new OpenCardPayload(slot, container.tile.getBlockPos(), hasShiftDown()));
             return true;
         }
         return super.mouseClicked(x, y, btn);

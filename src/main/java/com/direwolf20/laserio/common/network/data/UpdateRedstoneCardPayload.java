@@ -5,14 +5,14 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public record UpdateRedstoneCardPayload(
         byte mode,
         byte channel,
         boolean strong
 ) implements CustomPacketPayload {
-    public static final Type<UpdateRedstoneCardPayload> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "update_redstone_card"));
+    public static final Type<UpdateRedstoneCardPayload> TYPE = new Type<>(Identifier.fromNamespaceAndPath(LaserIO.MODID, "update_redstone_card"));
 
     @Override
     public Type<UpdateRedstoneCardPayload> type() {

@@ -6,14 +6,14 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public record OpenCardPayload(
         int slotNumber,
         BlockPos sourcePos,
         boolean hasShiftDown
 ) implements CustomPacketPayload {
-    public static final Type<OpenCardPayload> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "open_card"));
+    public static final Type<OpenCardPayload> TYPE = new Type<>(Identifier.fromNamespaceAndPath(LaserIO.MODID, "open_card"));
 
     @Override
     public Type<OpenCardPayload> type() {

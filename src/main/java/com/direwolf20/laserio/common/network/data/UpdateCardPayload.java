@@ -6,7 +6,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.function.Function;
 
@@ -26,7 +26,7 @@ public record UpdateCardPayload(
         byte redstoneChannel,
         boolean andMode
 ) implements CustomPacketPayload {
-    public static final Type<UpdateCardPayload> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "update_card"));
+    public static final Type<UpdateCardPayload> TYPE = new Type<>(Identifier.fromNamespaceAndPath(LaserIO.MODID, "update_card"));
 
     @Override
     public Type<UpdateCardPayload> type() {
