@@ -3,84 +3,41 @@ package com.direwolf20.laserio.setup;
 import com.direwolf20.laserio.client.blockentityrenders.LaserConnectorAdvBERender;
 import com.direwolf20.laserio.client.blockentityrenders.LaserConnectorBERender;
 import com.direwolf20.laserio.client.blockentityrenders.LaserNodeBERender;
+import com.direwolf20.laserio.client.color.CardChannelTintSource;
+import com.direwolf20.laserio.client.color.CardRedstoneTintSource;
+import com.direwolf20.laserio.client.color.LaserBlockTintSource;
 import com.direwolf20.laserio.client.events.ClientEvents;
 import com.direwolf20.laserio.client.events.EventTooltip;
+import com.direwolf20.laserio.client.model.CardTransferModeProperty;
+import com.direwolf20.laserio.client.renderer.MyRenderType;
 import com.direwolf20.laserio.client.screens.*;
 import com.direwolf20.laserio.common.LaserIO;
-import com.direwolf20.laserio.common.blockentities.LaserConnectorAdvBE;
-import com.direwolf20.laserio.common.blockentities.LaserConnectorBE;
-import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
-import com.direwolf20.laserio.common.items.cards.BaseCard;
-import com.direwolf20.laserio.common.items.cards.CardRedstone;
-import net.minecraft.client.color.item.ItemColors;
-import net.minecraft.client.renderer.ItemBlockRenderTypes;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.resources.Identifier;
-import net.minecraft.util.FastColor;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
-import net.neoforged.neoforge.client.event.EntityRenderersEvent;
-import net.neoforged.neoforge.client.event.RegisterClientTooltipComponentFactoriesEvent;
-import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
-import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
+import net.neoforged.neoforge.client.event.*;
 import net.neoforged.neoforge.common.NeoForge;
 
-import java.awt.*;
+import java.util.List;
 
 // TODO(port, mek): Mekanism 26.1 not yet released. Chemical card client setup disabled.
 // import com.direwolf20.laserio.integration.mekanism.CardChemical;
 
 @EventBusSubscriber(modid = LaserIO.MODID, value = Dist.CLIENT)
 public class ClientSetup {
+    public static final Identifier CARD_MODE_PROPERTY = Identifier.fromNamespaceAndPath(LaserIO.MODID, "mode");
+    public static final Identifier CARD_CHANNEL_TINT = Identifier.fromNamespaceAndPath(LaserIO.MODID, "card_channel");
+    public static final Identifier CARD_REDSTONE_CHANNEL_TINT = Identifier.fromNamespaceAndPath(LaserIO.MODID, "card_redstone_channel");
+
     public static void init(final FMLClientSetupEvent event) {
-        ItemBlockRenderTypes.setRenderLayer(Registration.LaserNode.get(), RenderType.cutout());
-        ItemBlockRenderTypes.setRenderLayer(Registration.LaserConnector.get(), RenderType.cutout());
-
-        //Register Custom Tooltips
-        //MinecraftForgeClient.registerTooltipComponentFactory(EventTooltip.CopyPasteTooltipComponent.Data.class, EventTooltip.CopyPasteTooltipComponent::new);
-
-        //Register our Render Events Class
         NeoForge.EVENT_BUS.register(ClientEvents.class);
+    }
 
-        //Item Properties -- For giving the Cards an Insert/Extract on the itemstack
-        event.enqueueWork(() -> {
-            ItemProperties.register(Registration.Card_Item.get(),
-                    Identifier.fromNamespaceAndPath(LaserIO.MODID, "mode"), (stack, level, living, id) -> {
-                        return (int) BaseCard.getTransferMode(stack);
-                    });
-        });
-        event.enqueueWork(() -> {
-            ItemProperties.register(Registration.Card_Fluid.get(),
-                    Identifier.fromNamespaceAndPath(LaserIO.MODID, "mode"), (stack, level, living, id) -> {
-                        return (int) BaseCard.getTransferMode(stack);
-                    });
-        });
-        event.enqueueWork(() -> {
-            ItemProperties.register(Registration.Card_Energy.get(),
-                    Identifier.fromNamespaceAndPath(LaserIO.MODID, "mode"), (stack, level, living, id) -> {
-                        return (int) BaseCard.getTransferMode(stack);
-                    });
-        });
-        event.enqueueWork(() -> {
-            ItemProperties.register(Registration.Card_Redstone.get(),
-                    Identifier.fromNamespaceAndPath(LaserIO.MODID, "mode"), (stack, level, living, id) -> {
-                        return (int) CardRedstone.getTransferMode(stack);
-                    });
-        });
-        // TODO(port, mek): re-enable chemical card ItemProperties when Mekanism 26.1 ships.
-        /*
-        if (MekanismIntegration.isLoaded()) {
-            event.enqueueWork(() -> {
-                ItemProperties.register(Registration.Card_Chemical.get(),
-                        ResourceLocation.fromNamespaceAndPath(LaserIO.MODID, "mode"), (stack, level, living, id) -> {
-                            return (int) CardChemical.getTransferMode(stack);
-                        });
-            });
-        }
-        */
+    @SubscribeEvent
+    public static void registerRenderPipelines(RegisterRenderPipelinesEvent event) {
+        MyRenderType.registerPipelines(event);
     }
 
     @SubscribeEvent
@@ -101,7 +58,6 @@ public class ClientSetup {
 
     @SubscribeEvent
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
-        //Register Block Entity Renders
         event.registerBlockEntityRenderer(Registration.LaserConnector_BE.get(), LaserConnectorBERender::new);
         event.registerBlockEntityRenderer(Registration.LaserNode_BE.get(), LaserNodeBERender::new);
         event.registerBlockEntityRenderer(Registration.LaserConnectorAdv_BE.get(), LaserConnectorAdvBERender::new);
@@ -109,135 +65,24 @@ public class ClientSetup {
 
     @SubscribeEvent
     public static void registerTooltipFactory(RegisterClientTooltipComponentFactoriesEvent event) {
-        //LOGGER.debug("Registering custom tooltip component factories for {}", Reference.MODID);
         event.register(EventTooltip.CopyPasteTooltipComponent.Data.class, EventTooltip.CopyPasteTooltipComponent::new);
     }
 
-    //For giving the cards their channel color on the itemstack
     @SubscribeEvent
-    static void itemColors(RegisterColorHandlersEvent.Item event) {
-        final ItemColors colors = event.getItemColors();
-
-        colors.register((stack, index) -> {
-            if (index == 2) {
-                if (BaseCard.getTransferMode(stack) == (byte) 3) {
-                    Color color = LaserNodeBERender.colors[BaseCard.getRedstoneChannel(stack)];
-                    return color.getRGB();
-                } else {
-                    Color color = LaserNodeBERender.colors[BaseCard.getChannel(stack)];
-                    return color.getRGB();
-                }
-            }
-            return 0xFFFFFFFF;
-        }, Registration.Card_Item.get());
-        colors.register((stack, index) -> {
-            if (index == 2) {
-                if (BaseCard.getTransferMode(stack) == (byte) 3) {
-                    Color color = LaserNodeBERender.colors[BaseCard.getRedstoneChannel(stack)];
-                    return color.getRGB();
-                } else {
-                    Color color = LaserNodeBERender.colors[BaseCard.getChannel(stack)];
-                    return color.getRGB();
-                }
-            }
-            return 0xFFFFFFFF;
-        }, Registration.Card_Fluid.get());
-        // TODO(port, mek): re-enable Card_Chemical color handler when Mekanism 26.1 ships.
-        /*
-        if (MekanismIntegration.isLoaded()) {
-            colors.register((stack, index) -> {
-                if (index == 2) {
-                    if (BaseCard.getTransferMode(stack) == (byte) 3) {
-                        Color color = LaserNodeBERender.colors[BaseCard.getRedstoneChannel(stack)];
-                        return color.getRGB();
-                    } else {
-                        Color color = LaserNodeBERender.colors[BaseCard.getChannel(stack)];
-                        return color.getRGB();
-                    }
-                }
-                return 0xFFFFFFFF;
-            }, Registration.Card_Chemical.get());
-        }
-        */
-        colors.register((stack, index) -> {
-            if (index == 2) {
-                if (BaseCard.getTransferMode(stack) == (byte) 3) {
-                    Color color = LaserNodeBERender.colors[BaseCard.getRedstoneChannel(stack)];
-                    return color.getRGB();
-                } else {
-                    Color color = LaserNodeBERender.colors[BaseCard.getChannel(stack)];
-                    return color.getRGB();
-                }
-            }
-            return 0xFFFFFFFF;
-        }, Registration.Card_Energy.get());
-        colors.register((stack, index) -> {
-            if (index == 2) {
-                Color color = LaserNodeBERender.colors[CardRedstone.getRedstoneChannel(stack)];
-                return color.getRGB();
-            }
-            return 0xFFFFFFFF;
-        }, Registration.Card_Redstone.get());
-        colors.register((stack, index) -> {
-            if (index == 1) {
-                Color color = new Color(255, 0, 0, 255);
-                return color.getRGB();
-            }
-            return 0xFFFFFFFF;
-        }, Registration.LaserNode_ITEM.get());
-        colors.register((stack, index) -> {
-            if (index == 1) {
-                Color color = new Color(255, 0, 0, 255);
-                return color.getRGB();
-            }
-            return 0xFFFFFFFF;
-        }, Registration.LaserConnector_ITEM.get());
-        colors.register((stack, index) -> {
-            if (index == 1) {
-                Color color = new Color(255, 0, 0, 255);
-                return color.getRGB();
-            }
-            return 0xFFFFFFFF;
-        }, Registration.LaserConnectorAdv_ITEM.get());
+    public static void registerRangeSelectProperties(RegisterRangeSelectItemModelPropertyEvent event) {
+        event.register(CARD_MODE_PROPERTY, CardTransferModeProperty.MAP_CODEC);
     }
 
     @SubscribeEvent
-    public static void blockColors(RegisterColorHandlersEvent.Block event) {
-        event.register(
-                (state, env, pos, index) -> {
-                    assert env != null;
-                    assert pos != null;
-                    if (env.getBlockEntity(pos) instanceof LaserNodeBE laserNodeBE) {
-                        Color color = laserNodeBE.getColor();
-                        return FastColor.ARGB32.color(color.getAlpha(), color.getRed(), color.getGreen(), color.getBlue());
-                    }
-                    return FastColor.ARGB32.color(255, 255, 0, 0);
-                },
-                Registration.LaserNode.get()
-        );
-        event.register(
-                (state, env, pos, index) -> {
-                    assert env != null;
-                    assert pos != null;
-                    if (env.getBlockEntity(pos) instanceof LaserConnectorBE laserConnectorBE) {
-                        Color color = laserConnectorBE.getColor();
-                        return FastColor.ARGB32.color(color.getAlpha(), color.getRed(), color.getGreen(), color.getBlue());
-                    }
-                    return FastColor.ARGB32.color(255, 255, 0, 0);
-                },
-                Registration.LaserConnector.get()
-        );
-        event.register(
-                (state, env, pos, index) -> {
-                    assert env != null;
-                    assert pos != null;
-                    if (env.getBlockEntity(pos) instanceof LaserConnectorAdvBE laserConnectorAdvBE) {
-                        Color color = laserConnectorAdvBE.getColor();
-                        return FastColor.ARGB32.color(color.getAlpha(), color.getRed(), color.getGreen(), color.getBlue());
-                    }
-                    return FastColor.ARGB32.color(255, 255, 0, 0);
-                },
-                Registration.LaserConnectorAdv.get()
-        );
+    public static void registerItemTintSources(RegisterColorHandlersEvent.ItemTintSources event) {
+        event.register(CARD_CHANNEL_TINT, CardChannelTintSource.MAP_CODEC);
+        event.register(CARD_REDSTONE_CHANNEL_TINT, CardRedstoneTintSource.MAP_CODEC);
+    }
+
+    @SubscribeEvent
+    public static void registerBlockTintSources(RegisterColorHandlersEvent.BlockTintSources event) {
+        event.register(List.of(LaserBlockTintSource.INSTANCE), Registration.LaserNode.get());
+        event.register(List.of(LaserBlockTintSource.INSTANCE), Registration.LaserConnector.get());
+        event.register(List.of(LaserBlockTintSource.INSTANCE), Registration.LaserConnectorAdv.get());
     }
 }
