@@ -23,9 +23,8 @@ import net.minecraft.world.phys.BlockHitResult;
 public class LaserWrench extends Item {
     public static int maxDistance = 8;
 
-    public LaserWrench() {
-        super(new Item.Properties()
-                .stacksTo(1));
+    public LaserWrench(Properties properties) {
+        super(properties);
     }
 
     /*public static ResourceLocation storeDimension(ItemStack wrench, ResourceLocation dim) {

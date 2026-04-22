@@ -4,7 +4,7 @@ import net.minecraft.world.item.Item;
 
 public class LogicChipRaw extends Item {
 
-    public LogicChipRaw() {
-        super(new Item.Properties());
+    public LogicChipRaw(Properties properties) {
+        super(properties);
     }
 }

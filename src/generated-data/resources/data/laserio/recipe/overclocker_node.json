@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "group": "laserio",
+  "key": {
+    "g": "#c:gems/diamond",
+    "p": "laserio:logic_chip",
+    "r": "#c:dusts/redstone"
+  },
+  "pattern": [
+    " g ",
+    "rpr",
+    "ggg"
+  ],
+  "result": {
+    "id": "laserio:overclocker_node"
+  }
+}

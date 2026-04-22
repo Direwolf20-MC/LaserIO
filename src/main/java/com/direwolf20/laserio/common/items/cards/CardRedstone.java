@@ -13,8 +13,8 @@ import net.minecraft.world.level.Level;
 
 public class CardRedstone extends BaseCard {
 
-    public CardRedstone() {
-        super();
+    public CardRedstone(Properties properties) {
+        super(properties);
         CARDTYPE = BaseCard.CardType.REDSTONE;
     }
 

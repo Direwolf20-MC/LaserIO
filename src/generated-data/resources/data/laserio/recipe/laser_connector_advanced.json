@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "group": "laserio",
+  "key": {
+    "b": "laserio:laser_connector",
+    "d": "#c:gems/diamond",
+    "e": "#c:ender_pearls",
+    "i": "#c:ingots/gold",
+    "r": "#c:dusts/redstone"
+  },
+  "pattern": [
+    "ede",
+    "rbr",
+    "iii"
+  ],
+  "result": {
+    "id": "laserio:laser_connector_advanced"
+  }
+}

@@ -18,8 +18,8 @@ import java.util.List;
 ;
 
 public class FilterTag extends BaseFilter {
-    public FilterTag() {
-        super();
+    public FilterTag(Properties properties) {
+        super(properties);
     }
 
     @Override

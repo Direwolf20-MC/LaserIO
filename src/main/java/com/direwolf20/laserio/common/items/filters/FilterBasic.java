@@ -12,8 +12,8 @@ import net.minecraft.world.level.Level;
 
 
 public class FilterBasic extends BaseFilter {
-    public FilterBasic() {
-        super();
+    public FilterBasic(Properties properties) {
+        super(properties);
     }
 
     @Override

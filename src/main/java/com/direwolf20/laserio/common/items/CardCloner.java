@@ -23,9 +23,8 @@ import static com.direwolf20.laserio.util.MiscTools.tooltipMaker;
 
 public class CardCloner extends Item {
 
-    public CardCloner() {
-        super(new Properties()
-                .stacksTo(1));
+    public CardCloner(Properties properties) {
+        super(properties);
     }
 
     @OnlyIn(Dist.CLIENT)

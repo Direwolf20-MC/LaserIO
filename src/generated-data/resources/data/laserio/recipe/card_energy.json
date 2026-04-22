@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "group": "laserio",
+  "key": {
+    "g": "#c:nuggets/gold",
+    "l": "#c:storage_blocks/redstone",
+    "p": "laserio:logic_chip",
+    "q": "#c:gems/quartz",
+    "r": "#c:dusts/redstone"
+  },
+  "pattern": [
+    "rlr",
+    "qpq",
+    "ggg"
+  ],
+  "result": {
+    "id": "laserio:card_energy"
+  }
+}

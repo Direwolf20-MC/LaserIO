@@ -16,8 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FilterNBT extends BaseFilter {
-    public FilterNBT() {
-        super();
+    public FilterNBT(Properties properties) {
+        super(properties);
     }
 
     @Override

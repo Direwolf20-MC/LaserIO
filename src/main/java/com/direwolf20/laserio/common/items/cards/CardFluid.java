@@ -14,8 +14,8 @@ import net.minecraft.world.level.Level;
 
 
 public class CardFluid extends BaseCard {
-    public CardFluid() {
-        super();
+    public CardFluid(Properties properties) {
+        super(properties);
         CARDTYPE = CardType.FLUID;
     }
 

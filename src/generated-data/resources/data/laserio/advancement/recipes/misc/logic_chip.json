@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_raw_chip": {
+      "conditions": {
+        "items": [
+          {
+            "items": "laserio:logic_chip_raw"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "laserio:logic_chip"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_raw_chip"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "laserio:logic_chip"
+    ]
+  }
+}

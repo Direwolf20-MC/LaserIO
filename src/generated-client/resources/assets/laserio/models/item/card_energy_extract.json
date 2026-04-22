@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "laserio:item/card_energy",
+    "layer1": "laserio:item/cardlayers/extract",
+    "layer2": "laserio:item/cardlayers/channel"
+  }
+}

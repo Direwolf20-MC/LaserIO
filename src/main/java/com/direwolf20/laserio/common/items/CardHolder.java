@@ -29,9 +29,8 @@ import java.util.List;
 import java.util.UUID;
 
 public class CardHolder extends Item {
-    public CardHolder() {
-        super(new Item.Properties()
-                .stacksTo(1));
+    public CardHolder(Properties properties) {
+        super(properties);
     }
 
     @Override

@@ -21,8 +21,8 @@ import java.util.Optional;
 
 
 public class FilterCount extends BaseFilter {
-    public FilterCount() {
-        super();
+    public FilterCount(Properties properties) {
+        super(properties);
     }
 
     @Override

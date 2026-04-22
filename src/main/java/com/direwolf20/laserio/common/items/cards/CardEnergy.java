@@ -12,8 +12,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
 public class CardEnergy extends BaseCard {
-    public CardEnergy() {
-        super();
+    public CardEnergy(Properties properties) {
+        super(properties);
         CARDTYPE = CardType.ENERGY;
     }
 

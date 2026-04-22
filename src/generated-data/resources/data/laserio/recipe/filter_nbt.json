@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "group": "laserio",
+  "ingredients": [
+    "laserio:filter_basic",
+    "minecraft:white_wool"
+  ],
+  "result": {
+    "id": "laserio:filter_nbt"
+  }
+}

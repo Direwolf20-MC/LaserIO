@@ -1,0 +1,85 @@
+{
+  "model": {
+    "type": "minecraft:range_dispatch",
+    "entries": [
+      {
+        "model": {
+          "type": "minecraft:model",
+          "model": "laserio:item/card_item_extract",
+          "tints": [
+            {
+              "type": "minecraft:constant",
+              "value": -1
+            },
+            {
+              "type": "minecraft:constant",
+              "value": -1
+            },
+            {
+              "type": "laserio:card_channel"
+            }
+          ]
+        },
+        "threshold": 1.0
+      },
+      {
+        "model": {
+          "type": "minecraft:model",
+          "model": "laserio:item/card_item_stock",
+          "tints": [
+            {
+              "type": "minecraft:constant",
+              "value": -1
+            },
+            {
+              "type": "minecraft:constant",
+              "value": -1
+            },
+            {
+              "type": "laserio:card_channel"
+            }
+          ]
+        },
+        "threshold": 2.0
+      },
+      {
+        "model": {
+          "type": "minecraft:model",
+          "model": "laserio:item/card_item_sensor",
+          "tints": [
+            {
+              "type": "minecraft:constant",
+              "value": -1
+            },
+            {
+              "type": "minecraft:constant",
+              "value": -1
+            },
+            {
+              "type": "laserio:card_channel"
+            }
+          ]
+        },
+        "threshold": 3.0
+      }
+    ],
+    "fallback": {
+      "type": "minecraft:model",
+      "model": "laserio:item/card_item",
+      "tints": [
+        {
+          "type": "minecraft:constant",
+          "value": -1
+        },
+        {
+          "type": "minecraft:constant",
+          "value": -1
+        },
+        {
+          "type": "laserio:card_channel"
+        }
+      ]
+    },
+    "property": "laserio:mode"
+  }
+}

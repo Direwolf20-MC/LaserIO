@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "group": "laserio",
+  "key": {
+    "g": "#c:glass_panes",
+    "i": "minecraft:iron_bars",
+    "q": "laserio:logic_chip"
+  },
+  "pattern": [
+    "igi",
+    "gqg",
+    "igi"
+  ],
+  "result": {
+    "count": 4,
+    "id": "laserio:filter_basic"
+  }
+}

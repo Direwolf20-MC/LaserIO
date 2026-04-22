@@ -12,8 +12,8 @@ import net.minecraft.world.level.Level;
 
 
 public class CardItem extends BaseCard {
-    public CardItem() {
-        super();
+    public CardItem(Properties properties) {
+        super(properties);
         CARDTYPE = CardType.ITEM;
     }
 

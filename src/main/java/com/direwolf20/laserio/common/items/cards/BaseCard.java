@@ -40,10 +40,8 @@ public class BaseCard extends Item {
         SENSOR
     }
 
-    public BaseCard() {
-        super(new Item.Properties()
-                .stacksTo(1));
-
+    public BaseCard(Properties properties) {
+        super(properties);
     }
 
     public CardType getCardType() {

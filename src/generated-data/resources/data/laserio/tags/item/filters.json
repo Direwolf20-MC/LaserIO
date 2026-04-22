@@ -1,0 +1,9 @@
+{
+  "values": [
+    "laserio:filter_basic",
+    "laserio:filter_count",
+    "laserio:filter_tag",
+    "laserio:filter_mod",
+    "laserio:filter_nbt"
+  ]
+}

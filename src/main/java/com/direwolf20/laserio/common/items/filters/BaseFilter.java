@@ -20,8 +20,8 @@ import java.util.function.Consumer;
 import static com.direwolf20.laserio.util.MiscTools.tooltipMaker;
 
 public class BaseFilter extends Item {
-    public BaseFilter() {
-        super(new Item.Properties());
+    public BaseFilter(Properties properties) {
+        super(properties);
     }
 
     @OnlyIn(Dist.CLIENT)

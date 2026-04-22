@@ -45,7 +45,7 @@ import static com.direwolf20.laserio.common.LaserIO.MODID;
 public class LaserIORegistration {
 
     private static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MODID);
-    public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(Registries.ITEM, MODID);
+    public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
     private static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, MODID);
     private static final DeferredRegister<MenuType<?>> CONTAINERS = DeferredRegister.create(Registries.MENU, MODID);
     public static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZERS = DeferredRegister.create(Registries.RECIPE_SERIALIZER, LaserIO.MODID);
@@ -79,11 +79,11 @@ public class LaserIORegistration {
 
     //Blocks
     public static final DeferredHolder<Block, LaserConnector> LaserConnector = BLOCKS.registerBlock("laser_connector", LaserConnector::new, BaseLaserBlock::defaultProperties);
-    public static final DeferredHolder<Item, BlockItem> LaserConnector_ITEM = ITEMS.register("laser_connector", () -> new BlockItem(LaserConnector.get(), new Item.Properties()));
+    public static final DeferredHolder<Item, BlockItem> LaserConnector_ITEM = ITEMS.registerItem("laser_connector", props -> new BlockItem(LaserConnector.get(), props), Item.Properties::new);
     public static final DeferredHolder<Block, LaserNode> LaserNode = BLOCKS.registerBlock("laser_node", LaserNode::new, BaseLaserBlock::defaultProperties);
-    public static final DeferredHolder<Item, BlockItem> LaserNode_ITEM = ITEMS.register("laser_node", () -> new BlockItem(LaserNode.get(), new Item.Properties()));
+    public static final DeferredHolder<Item, BlockItem> LaserNode_ITEM = ITEMS.registerItem("laser_node", props -> new BlockItem(LaserNode.get(), props), Item.Properties::new);
     public static final DeferredHolder<Block, LaserConnectorAdv> LaserConnectorAdv = BLOCKS.registerBlock("laser_connector_advanced", LaserConnectorAdv::new, BaseLaserBlock::defaultProperties);
-    public static final DeferredHolder<Item, BlockItem> LaserConnectorAdv_ITEM = ITEMS.register("laser_connector_advanced", () -> new BlockItem(LaserConnectorAdv.get(), new Item.Properties()));
+    public static final DeferredHolder<Item, BlockItem> LaserConnectorAdv_ITEM = ITEMS.registerItem("laser_connector_advanced", props -> new BlockItem(LaserConnectorAdv.get(), props), Item.Properties::new);
 
 
     //BlockEntities (Not TileEntities - Honest)
@@ -92,32 +92,32 @@ public class LaserIORegistration {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<LaserConnectorAdvBE>> LaserConnectorAdv_BE = BLOCK_ENTITIES.register("laserconnectoradv", () -> new BlockEntityType<>(LaserConnectorAdvBE::new, LaserConnectorAdv.get()));
 
     //Items
-    public static final DeferredHolder<Item, LaserWrench> Laser_Wrench = ITEMS.register("laser_wrench", LaserWrench::new);
-    public static final DeferredHolder<Item, CardHolder> Card_Holder = ITEMS.register("card_holder", CardHolder::new);
-    public static final DeferredHolder<Item, CardCloner> Card_Cloner = ITEMS.register("card_cloner", CardCloner::new);
+    public static final DeferredHolder<Item, LaserWrench> Laser_Wrench = ITEMS.registerItem("laser_wrench", LaserWrench::new, () -> new Item.Properties().stacksTo(1));
+    public static final DeferredHolder<Item, CardHolder> Card_Holder = ITEMS.registerItem("card_holder", CardHolder::new, () -> new Item.Properties().stacksTo(1));
+    public static final DeferredHolder<Item, CardCloner> Card_Cloner = ITEMS.registerItem("card_cloner", CardCloner::new, () -> new Item.Properties().stacksTo(1));
 
     //Cards
-    public static final DeferredHolder<Item, CardItem> Card_Item = ITEMS.register("card_item", CardItem::new);
-    public static final DeferredHolder<Item, CardFluid> Card_Fluid = ITEMS.register("card_fluid", CardFluid::new);
-    public static final DeferredHolder<Item, CardEnergy> Card_Energy = ITEMS.register("card_energy", CardEnergy::new);
-    public static final DeferredHolder<Item, CardRedstone> Card_Redstone = ITEMS.register("card_redstone", CardRedstone::new);
+    public static final DeferredHolder<Item, CardItem> Card_Item = ITEMS.registerItem("card_item", CardItem::new, () -> new Item.Properties().stacksTo(1));
+    public static final DeferredHolder<Item, CardFluid> Card_Fluid = ITEMS.registerItem("card_fluid", CardFluid::new, () -> new Item.Properties().stacksTo(1));
+    public static final DeferredHolder<Item, CardEnergy> Card_Energy = ITEMS.registerItem("card_energy", CardEnergy::new, () -> new Item.Properties().stacksTo(1));
+    public static final DeferredHolder<Item, CardRedstone> Card_Redstone = ITEMS.registerItem("card_redstone", CardRedstone::new, () -> new Item.Properties().stacksTo(1));
 
     //Mekanism
     // TODO(port, mek): re-enable Card_Chemical registration when Mekanism 26.1 ships.
     // public static final DeferredHolder<Item, CardChemical> Card_Chemical = ITEMS_MEKANISM.register("card_chemical", CardChemical::new);
 
     //Filters
-    public static final DeferredHolder<Item, FilterBasic> Filter_Basic = ITEMS.register("filter_basic", FilterBasic::new);
-    public static final DeferredHolder<Item, FilterCount> Filter_Count = ITEMS.register("filter_count", FilterCount::new);
-    public static final DeferredHolder<Item, FilterTag> Filter_Tag = ITEMS.register("filter_tag", FilterTag::new);
-    public static final DeferredHolder<Item, FilterMod> Filter_Mod = ITEMS.register("filter_mod", FilterMod::new);
-    public static final DeferredHolder<Item, FilterNBT> Filter_NBT = ITEMS.register("filter_nbt", FilterNBT::new);
+    public static final DeferredHolder<Item, FilterBasic> Filter_Basic = ITEMS.registerItem("filter_basic", FilterBasic::new, Item.Properties::new);
+    public static final DeferredHolder<Item, FilterCount> Filter_Count = ITEMS.registerItem("filter_count", FilterCount::new, Item.Properties::new);
+    public static final DeferredHolder<Item, FilterTag> Filter_Tag = ITEMS.registerItem("filter_tag", FilterTag::new, Item.Properties::new);
+    public static final DeferredHolder<Item, FilterMod> Filter_Mod = ITEMS.registerItem("filter_mod", FilterMod::new, Item.Properties::new);
+    public static final DeferredHolder<Item, FilterNBT> Filter_NBT = ITEMS.registerItem("filter_nbt", FilterNBT::new, Item.Properties::new);
 
     //Misc
-    public static final DeferredHolder<Item, LogicChipRaw> Logic_Chip_Raw = ITEMS.register("logic_chip_raw", LogicChipRaw::new);
-    public static final DeferredHolder<Item, LogicChip> Logic_Chip = ITEMS.register("logic_chip", LogicChip::new);
-    public static final DeferredHolder<Item, OverclockerCard> Overclocker_Card = ITEMS.register("overclocker_card", OverclockerCard::new);
-    public static final DeferredHolder<Item, OverclockerNode> Overclocker_Node = ITEMS.register("overclocker_node", OverclockerNode::new);
+    public static final DeferredHolder<Item, LogicChipRaw> Logic_Chip_Raw = ITEMS.registerItem("logic_chip_raw", LogicChipRaw::new, Item.Properties::new);
+    public static final DeferredHolder<Item, LogicChip> Logic_Chip = ITEMS.registerItem("logic_chip", LogicChip::new, Item.Properties::new);
+    public static final DeferredHolder<Item, OverclockerCard> Overclocker_Card = ITEMS.registerItem("overclocker_card", OverclockerCard::new, Item.Properties::new);
+    public static final DeferredHolder<Item, OverclockerNode> Overclocker_Node = ITEMS.registerItem("overclocker_node", OverclockerNode::new, Item.Properties::new);
 
     //Containers
     public static final DeferredHolder<MenuType<?>, MenuType<LaserNodeContainer>> LaserNode_Container = CONTAINERS.register("lasernode",
