@@ -9,6 +9,7 @@ import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +24,7 @@ public class GhostFilterCount implements IGhostIngredientHandler<FilterCountScre
                 continue;
             }
 
-            Rect2i bounds = new Rect2i(gui.getGuiLeft() + slot.x, gui.getGuiTop() + slot.y, 16, 16); //RS Had this as 17 17
+            Rect2i bounds = new Rect2i(gui.getLeftPos() + slot.x, gui.getTopPos() + slot.y, 16, 16); //RS Had this as 17 17
 
             if (ingredient.getIngredient() instanceof ItemStack && (slot instanceof FilterBasicSlot)) {
                 targets.add(new Target<I>() {
@@ -34,9 +35,10 @@ public class GhostFilterCount implements IGhostIngredientHandler<FilterCountScre
 
                     @Override
                     public void accept(I ingredient) {
-                        slot.set((ItemStack) ingredient);
-                        gui.getMenu().handler.setStackInSlot(slot.index, (ItemStack) ingredient); //We do this for continuity between client/server -- not needed in cardItemScreen
-                        ClientPacketDistributor.sendToServer(new GhostSlotPayload(slot.index, (ItemStack) ingredient, ((ItemStack) ingredient).getCount(), -1));
+                        ItemStack itemStack = (ItemStack) ingredient;
+                        slot.set(itemStack);
+                        gui.getMenu().handler.set(slot.index, ItemResource.of(itemStack), itemStack.getCount()); //We do this for continuity between client/server -- not needed in cardItemScreen
+                        ClientPacketDistributor.sendToServer(new GhostSlotPayload(slot.index, itemStack, itemStack.getCount(), -1));
                     }
                 });
             }

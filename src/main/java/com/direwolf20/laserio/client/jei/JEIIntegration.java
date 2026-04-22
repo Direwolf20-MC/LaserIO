@@ -16,11 +16,12 @@ import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
 import mezz.jei.api.runtime.IJeiRuntime;
-import net.minecraft.client.Minecraft;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.crafting.CraftingRecipe;
+import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
-import net.minecraft.world.item.crafting.RecipeManager;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -38,18 +39,27 @@ public class JEIIntegration implements IModPlugin {
     @Override
     public void onRuntimeAvailable(IJeiRuntime jeiRuntime) {
         IRecipeManager recipeRegistry = jeiRuntime.getRecipeManager();
-        RecipeManager recipeManager = Minecraft.getInstance().level.getRecipeManager();
         List<RecipeHolder<CraftingRecipe>> hiddenRecipes = new ArrayList<>();
-        hiddenRecipes.add((RecipeHolder<CraftingRecipe>) recipeManager.byKey(Identifier.parse(LaserIORegistration.Card_Item.getId() + "_nbtclear")).get());
-        hiddenRecipes.add((RecipeHolder<CraftingRecipe>) recipeManager.byKey(Identifier.parse(LaserIORegistration.Card_Fluid.getId() + "_nbtclear")).get());
-        hiddenRecipes.add((RecipeHolder<CraftingRecipe>) recipeManager.byKey(Identifier.parse(LaserIORegistration.Card_Energy.getId() + "_nbtclear")).get());
-        hiddenRecipes.add((RecipeHolder<CraftingRecipe>) recipeManager.byKey(Identifier.parse(LaserIORegistration.Card_Redstone.getId() + "_nbtclear")).get());
-        hiddenRecipes.add((RecipeHolder<CraftingRecipe>) recipeManager.byKey(Identifier.parse(LaserIORegistration.Filter_Basic.getId() + "_nbtclear")).get());
-        hiddenRecipes.add((RecipeHolder<CraftingRecipe>) recipeManager.byKey(Identifier.parse(LaserIORegistration.Filter_Count.getId() + "_nbtclear")).get());
-        hiddenRecipes.add((RecipeHolder<CraftingRecipe>) recipeManager.byKey(Identifier.parse(LaserIORegistration.Filter_Tag.getId() + "_nbtclear")).get());
-        hiddenRecipes.add((RecipeHolder<CraftingRecipe>) recipeManager.byKey(Identifier.parse(LaserIORegistration.Filter_NBT.getId() + "_nbtclear")).get());
-        hiddenRecipes.add((RecipeHolder<CraftingRecipe>) recipeManager.byKey(Identifier.parse(LaserIORegistration.Filter_Mod.getId() + "_nbtclear")).get());
+        addHiddenNbtClear(hiddenRecipes, LaserIORegistration.Card_Item.getId());
+        addHiddenNbtClear(hiddenRecipes, LaserIORegistration.Card_Fluid.getId());
+        addHiddenNbtClear(hiddenRecipes, LaserIORegistration.Card_Energy.getId());
+        addHiddenNbtClear(hiddenRecipes, LaserIORegistration.Card_Redstone.getId());
+        addHiddenNbtClear(hiddenRecipes, LaserIORegistration.Filter_Basic.getId());
+        addHiddenNbtClear(hiddenRecipes, LaserIORegistration.Filter_Count.getId());
+        addHiddenNbtClear(hiddenRecipes, LaserIORegistration.Filter_Tag.getId());
+        addHiddenNbtClear(hiddenRecipes, LaserIORegistration.Filter_NBT.getId());
+        addHiddenNbtClear(hiddenRecipes, LaserIORegistration.Filter_Mod.getId());
         recipeRegistry.hideRecipes(RecipeTypes.CRAFTING, hiddenRecipes);
+    }
+
+    @SuppressWarnings("unchecked")
+    private static void addHiddenNbtClear(List<RecipeHolder<CraftingRecipe>> out, Identifier itemId) {
+        Identifier recipeId = Identifier.fromNamespaceAndPath(itemId.getNamespace(), itemId.getPath() + "_nbtclear");
+        ResourceKey<Recipe<?>> recipeKey = ResourceKey.create(Registries.RECIPE, recipeId);
+        RecipeHolder<?> holder = JEIRecipeSync.CLIENT_RECIPES.byKey(recipeKey);
+        if (holder != null && holder.value() instanceof CraftingRecipe) {
+            out.add((RecipeHolder<CraftingRecipe>) holder);
+        }
     }
 
     @Override

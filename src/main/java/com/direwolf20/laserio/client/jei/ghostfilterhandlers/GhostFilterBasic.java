@@ -23,7 +23,7 @@ public class GhostFilterBasic implements IGhostIngredientHandler<FilterBasicScre
                 continue;
             }
 
-            Rect2i bounds = new Rect2i(gui.getGuiLeft() + slot.x, gui.getGuiTop() + slot.y, 16, 16); //RS Had this as 17 17
+            Rect2i bounds = new Rect2i(gui.getLeftPos() + slot.x, gui.getTopPos() + slot.y, 16, 16); //RS Had this as 17 17
 
             if (ingredient.getIngredient() instanceof ItemStack && (slot instanceof FilterBasicSlot)) {
                 targets.add(new Target<I>() {
