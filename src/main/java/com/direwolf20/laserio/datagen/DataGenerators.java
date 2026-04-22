@@ -10,29 +10,35 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 
-import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 @EventBusSubscriber(modid = LaserIO.MODID)
 public class DataGenerators {
+
     @SubscribeEvent
-    public static void gatherData(GatherDataEvent event) {
+    public static void gatherClientData(GatherDataEvent.Client event) {
+        DataGenerator generator = event.getGenerator();
+        PackOutput packOutput = generator.getPackOutput();
+
+        generator.addProvider(true, new LaserIOModelProvider(packOutput));
+        generator.addProvider(true, new LaserIOLanguageProvider(packOutput, "en_us"));
+    }
+
+    @SubscribeEvent
+    public static void gatherServerData(GatherDataEvent.Server event) {
         DataGenerator generator = event.getGenerator();
         PackOutput packOutput = generator.getPackOutput();
         CompletableFuture<HolderLookup.Provider> lookupProvider = event.getLookupProvider();
 
-        generator.addProvider(event.includeServer(), new LaserIORecipes(packOutput, event.getLookupProvider()));
-        generator.addProvider(event.includeServer(), new LootTableProvider(packOutput, Collections.emptySet(),
-                List.of(new LootTableProvider.SubProviderEntry(LaserIOLootTable::new, LootContextParamSets.BLOCK)), event.getLookupProvider()));
-        LaserIOBlockTags blockTags = new LaserIOBlockTags(packOutput, lookupProvider, event.getExistingFileHelper());
-        generator.addProvider(event.includeServer(), blockTags);
-        LaserIOItemTags itemTags = new LaserIOItemTags(packOutput, lookupProvider, blockTags, event.getExistingFileHelper());
-        generator.addProvider(event.includeServer(), itemTags);
-
-        generator.addProvider(event.includeClient(), new LaserIOBlockStates(packOutput, event.getExistingFileHelper()));
-        generator.addProvider(event.includeClient(), new LaserIOItemModels(packOutput, event.getExistingFileHelper()));
-        generator.addProvider(event.includeClient(), new LaserIOLanguageProvider(packOutput, "en_us"));
-
+        generator.addProvider(true, new LaserIORecipes.Runner(packOutput, lookupProvider));
+        generator.addProvider(true, new LootTableProvider(
+                packOutput,
+                Set.of(),
+                List.of(new LootTableProvider.SubProviderEntry(LaserIOLootTable::new, LootContextParamSets.BLOCK)),
+                lookupProvider));
+        generator.addProvider(true, new LaserIOBlockTags(packOutput, lookupProvider));
+        generator.addProvider(true, new LaserIOItemTags(packOutput, lookupProvider));
     }
 }

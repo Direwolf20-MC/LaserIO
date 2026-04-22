@@ -26,7 +26,7 @@ public class LaserIOLootTable extends VanillaBlockLoot {
     @Override
     protected Iterable<Block> getKnownBlocks() {
         return BuiltInRegistries.BLOCK.entrySet().stream()
-                .filter(e -> e.getKey().location().getNamespace().equals(LaserIO.MODID))
+                .filter(e -> e.getKey().identifier().getNamespace().equals(LaserIO.MODID))
                 .map(Map.Entry::getValue)
                 .collect(Collectors.toList());
     }

@@ -4,13 +4,11 @@ import com.direwolf20.laserio.common.LaserIO;
 import com.direwolf20.laserio.setup.Registration;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
-import net.minecraft.data.tags.ItemTagsProvider;
 import net.minecraft.resources.Identifier;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
-import net.neoforged.neoforge.common.data.BlockTagsProvider;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.common.data.ItemTagsProvider;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -21,13 +19,12 @@ public class LaserIOItemTags extends ItemTagsProvider {
 
     public static final TagKey<Item> FILTERS_TAG = ItemTags.create(Identifier.fromNamespaceAndPath(LaserIO.MODID, "filters"));
 
-
     private static TagKey<Item> forgeTag(String name) {
         return ItemTags.create(Identifier.fromNamespaceAndPath("c", name));
     }
 
-    public LaserIOItemTags(PackOutput packOutput, CompletableFuture<HolderLookup.Provider> lookupProvider, BlockTagsProvider blockTags, ExistingFileHelper helper) {
-        super(packOutput, lookupProvider, blockTags.contentsGetter(), LaserIO.MODID, helper);
+    public LaserIOItemTags(PackOutput packOutput, CompletableFuture<HolderLookup.Provider> lookupProvider) {
+        super(packOutput, lookupProvider, LaserIO.MODID);
     }
 
     @Override

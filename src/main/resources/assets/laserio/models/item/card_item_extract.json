@@ -1,6 +1,0 @@
-{
-  "parent": "laserio:item/card_item",
-  "textures": {
-    "layer1": "laserio:item/cardlayers/extract"
-  }
-}
