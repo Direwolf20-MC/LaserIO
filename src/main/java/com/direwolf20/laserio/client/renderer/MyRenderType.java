@@ -1,131 +1,75 @@
 package com.direwolf20.laserio.client.renderer;
 
 import com.direwolf20.laserio.common.LaserIO;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.VertexFormat;
-import net.minecraft.client.renderer.RenderType;
+import com.mojang.blaze3d.pipeline.DepthStencilState;
+import com.mojang.blaze3d.pipeline.RenderPipeline;
+import com.mojang.blaze3d.platform.CompareOp;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.rendertype.LayeringTransform;
+import net.minecraft.client.renderer.rendertype.RenderSetup;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.resources.Identifier;
+import net.neoforged.neoforge.client.event.RegisterRenderPipelinesEvent;
 
-import java.util.OptionalDouble;
-
-public class MyRenderType extends RenderType {
-    private final static Identifier laserBeam = Identifier.parse(LaserIO.MODID + ":textures/misc/laser.png");
-    private final static Identifier laserBeam2 = Identifier.parse(LaserIO.MODID + ":textures/misc/laser2.png");
-    private final static Identifier laserBeamGlow = Identifier.parse(LaserIO.MODID + ":textures/misc/laser_glow.png");
-
-    // Dummy
-    public MyRenderType(String name, VertexFormat format, VertexFormat.Mode p_i225992_3_, int p_i225992_4_, boolean p_i225992_5_, boolean p_i225992_6_, Runnable runnablePre, Runnable runnablePost) {
-        super(name, format, p_i225992_3_, p_i225992_4_, p_i225992_5_, p_i225992_6_, runnablePre, runnablePost);
+public final class MyRenderType {
+    private MyRenderType() {
     }
 
-    private static final LineStateShard THICK_LINES = new LineStateShard(OptionalDouble.of(3.0D));
+    private static final Identifier laserBeam = Identifier.parse(LaserIO.MODID + ":textures/misc/laser.png");
+    private static final Identifier laserBeam2 = Identifier.parse(LaserIO.MODID + ":textures/misc/laser2.png");
+    private static final Identifier laserBeamGlow = Identifier.parse(LaserIO.MODID + ":textures/misc/laser_glow.png");
 
-    public static void updateRenders() {
-        /*LASER_MAIN_BEAM = create("MiningLaserMainBeam",
-                DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP, VertexFormat.Mode.QUADS, 256, false, false,
-                RenderType.CompositeState.builder().setTextureState(new TextureStateShard(laserBeam2, false, false))
-                        .setShaderState(ShaderStateShard.POSITION_COLOR_TEX_LIGHTMAP_SHADER)
-                        .setLayeringState(NO_LAYERING)
-                        .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
-                        .setDepthTestState(LEQUAL_DEPTH_TEST)
-                        .setCullState(CULL)
-                        .setLightmapState(NO_LIGHTMAP)
-                        .setWriteMaskState(COLOR_DEPTH_WRITE)
-                        .createCompositeState(true));
-        LASER_MAIN_CORE = create("MiningLaserCoreBeam",
-                DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP, VertexFormat.Mode.QUADS, 256, false, false,
-                RenderType.CompositeState.builder().setTextureState(new TextureStateShard(laserBeam, false, false))
-                        .setShaderState(ShaderStateShard.POSITION_COLOR_TEX_LIGHTMAP_SHADER)
-                        .setLayeringState(VIEW_OFFSET_Z_LAYERING)
-                        .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
-                        .setDepthTestState(LEQUAL_DEPTH_TEST)
-                        .setCullState(CULL)
-                        .setLightmapState(NO_LIGHTMAP)
-                        .setWriteMaskState(COLOR_WRITE)
-                        .createCompositeState(true));
-        CONNECTING_LASER = create("ConnectingLaser",
-                DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP, VertexFormat.Mode.QUADS, 256, false, false,
-                RenderType.CompositeState.builder().setTextureState(new TextureStateShard(laserBeam, false, false))
-                        .setShaderState(ShaderStateShard.POSITION_COLOR_TEX_LIGHTMAP_SHADER)
-                        .setLayeringState(VIEW_OFFSET_Z_LAYERING)
-                        .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
-                        .setDepthTestState(LEQUAL_DEPTH_TEST)
-                        .setCullState(CULL)
-                        .setLightmapState(NO_LIGHTMAP)
-                        .setWriteMaskState(COLOR_WRITE)
-                        .createCompositeState(true));*/
+    // Custom pipeline: POSITION_COLOR, NO_CULL, translucent blend, depth test ALWAYS_PASS (draw through walls).
+    // Used by BlockOverlay for wrench-selected-block highlight so it remains visible through geometry.
+    static final RenderPipeline BLOCK_OVERLAY_PIPELINE = RenderPipelines.DEBUG_QUADS.toBuilder()
+            .withLocation(Identifier.fromNamespaceAndPath(LaserIO.MODID, "pipeline/block_overlay"))
+            .withDepthStencilState(new DepthStencilState(CompareOp.ALWAYS_PASS, false))
+            .build();
+
+    public static void registerPipelines(RegisterRenderPipelinesEvent event) {
+        event.registerPipeline(BLOCK_OVERLAY_PIPELINE);
     }
 
-    public static final RenderType LASER_MAIN_BEAM = create("MiningLaserMainBeam",
-            DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP, VertexFormat.Mode.QUADS, 256, false, false,
-            RenderType.CompositeState.builder().setTextureState(new TextureStateShard(laserBeam2, false, false))
-                    .setShaderState(ShaderStateShard.POSITION_COLOR_TEX_LIGHTMAP_SHADER)
-                    .setLayeringState(NO_LAYERING)
-                    .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
-                    .setDepthTestState(LEQUAL_DEPTH_TEST)
-                    .setCullState(CULL)
-                    .setLightmapState(NO_LIGHTMAP)
-                    .setWriteMaskState(COLOR_DEPTH_WRITE)
-                    .createCompositeState(false));
-    public static final RenderType LASER_MAIN_CORE = create("MiningLaserCoreBeam",
-            DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP, VertexFormat.Mode.QUADS, 256, false, false,
-            RenderType.CompositeState.builder().setTextureState(new TextureStateShard(laserBeam, false, false))
-                    .setShaderState(ShaderStateShard.POSITION_COLOR_TEX_LIGHTMAP_SHADER)
-                    .setLayeringState(VIEW_OFFSET_Z_LAYERING)
-                    .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
-                    .setDepthTestState(LEQUAL_DEPTH_TEST)
-                    .setCullState(CULL)
-                    .setLightmapState(NO_LIGHTMAP)
-                    .setWriteMaskState(COLOR_WRITE)
-                    .createCompositeState(false));
-    public static final RenderType CONNECTING_LASER = create("ConnectingLaser",
-            DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP, VertexFormat.Mode.QUADS, 256, false, false,
-            RenderType.CompositeState.builder().setTextureState(new TextureStateShard(laserBeam, false, false))
-                    .setShaderState(ShaderStateShard.POSITION_COLOR_TEX_LIGHTMAP_SHADER)
-                    .setLayeringState(VIEW_OFFSET_Z_LAYERING)
-                    .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
-                    .setDepthTestState(LEQUAL_DEPTH_TEST)
-                    .setCullState(CULL)
-                    .setLightmapState(NO_LIGHTMAP)
-                    .setWriteMaskState(COLOR_WRITE)
-                    .createCompositeState(false));
-    //Unused?
-    public static final RenderType LASER_MAIN_ADDITIVE = create("MiningLaserAdditiveBeam",
-            DefaultVertexFormat.POSITION_TEX_LIGHTMAP_COLOR, VertexFormat.Mode.QUADS, 256, false, false,
-            RenderType.CompositeState.builder().setTextureState(new TextureStateShard(laserBeamGlow, false, false))
-                    .setShaderState(ShaderStateShard.POSITION_COLOR_TEX_LIGHTMAP_SHADER)
-                    .setLayeringState(VIEW_OFFSET_Z_LAYERING)
-                    .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
-                    .setDepthTestState(LEQUAL_DEPTH_TEST)
-                    .setCullState(NO_CULL)
-                    .setLightmapState(NO_LIGHTMAP)
-                    .setWriteMaskState(COLOR_WRITE)
-                    .createCompositeState(false));
+    public static final RenderType LASER_MAIN_BEAM = RenderType.create(
+            "MiningLaserMainBeam",
+            RenderSetup.builder(RenderPipelines.ENTITY_TRANSLUCENT_CULL)
+                    .withTexture("Sampler0", laserBeam2)
+                    .useLightmap()
+                    .createRenderSetup()
+    );
 
-    public static final RenderType BlockOverlay = create("MiningLaserBlockOverlay",
-            DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.QUADS, 256, false, false,
-            RenderType.CompositeState.builder()
-                    .setShaderState(ShaderStateShard.POSITION_COLOR_SHADER)
-                    .setLayeringState(VIEW_OFFSET_Z_LAYERING)
-                    .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
-                    .setTextureState(NO_TEXTURE)
-                    .setDepthTestState(NO_DEPTH_TEST)
-                    .setCullState(NO_CULL)
-                    .setLightmapState(NO_LIGHTMAP)
-                    .setWriteMaskState(COLOR_WRITE)
-                    .createCompositeState(false));
+    public static final RenderType LASER_MAIN_CORE = RenderType.create(
+            "MiningLaserCoreBeam",
+            RenderSetup.builder(RenderPipelines.ENTITY_TRANSLUCENT_CULL)
+                    .withTexture("Sampler0", laserBeam)
+                    .useLightmap()
+                    .setLayeringTransform(LayeringTransform.VIEW_OFFSET_Z_LAYERING)
+                    .createRenderSetup()
+    );
 
-    /*public static final RenderType RenderBlock = create("MiningLaserRenderBlock",
-            DefaultVertexFormat.BLOCK, VertexFormat.Mode.QUADS, 256, false, false,
-            RenderType.CompositeState.builder()
-//                    .setShaderState(SMOOTH_SHADE)
-                    .setShaderState(ShaderStateShard.BLOCK_SHADER)
-                    .setLightmapState(LIGHTMAP)
-                    .setTextureState(BLOCK_SHEET_MIPPED)
-                    .setLayeringState(VIEW_OFFSET_Z_LAYERING)
-                    .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
-                    .setDepthTestState(LEQUAL_DEPTH_TEST)
-                    .setCullState(CULL)
-                    .setWriteMaskState(COLOR_WRITE)
-                    .createCompositeState(false));*/
+    public static final RenderType CONNECTING_LASER = RenderType.create(
+            "ConnectingLaser",
+            RenderSetup.builder(RenderPipelines.ENTITY_TRANSLUCENT_CULL)
+                    .withTexture("Sampler0", laserBeam)
+                    .useLightmap()
+                    .setLayeringTransform(LayeringTransform.VIEW_OFFSET_Z_LAYERING)
+                    .createRenderSetup()
+    );
+
+    // Unused in current code paths; kept for parity with pre-port surface.
+    public static final RenderType LASER_MAIN_ADDITIVE = RenderType.create(
+            "MiningLaserAdditiveBeam",
+            RenderSetup.builder(RenderPipelines.ENTITY_TRANSLUCENT)
+                    .withTexture("Sampler0", laserBeamGlow)
+                    .useLightmap()
+                    .setLayeringTransform(LayeringTransform.VIEW_OFFSET_Z_LAYERING)
+                    .createRenderSetup()
+    );
+
+    public static final RenderType BlockOverlay = RenderType.create(
+            "MiningLaserBlockOverlay",
+            RenderSetup.builder(BLOCK_OVERLAY_PIPELINE)
+                    .setLayeringTransform(LayeringTransform.VIEW_OFFSET_Z_LAYERING)
+                    .createRenderSetup()
+    );
 }

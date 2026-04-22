@@ -68,7 +68,7 @@ public class PacketOpenCard {
                         buf.writeByte(side);
                     }));
                 } else {
-                    ItemStack filterItem = handler.getStackInSlot(0);
+                    ItemStack filterItem = handler.getResource(0).toStack(handler.getAmountAsInt(0));
                     if (filterItem.getItem() instanceof BaseFilter)
                         PacketOpenFilter.doOpenFilter(filterItem, itemStack, (ServerPlayer) sender, payload.sourcePos());
                 }
@@ -95,7 +95,7 @@ public class PacketOpenCard {
                         buf.writeByte(side);
                     }));
                 } else {
-                    ItemStack filterItem = handler.getStackInSlot(0);
+                    ItemStack filterItem = handler.getResource(0).toStack(handler.getAmountAsInt(0));
                     if (filterItem.getItem() instanceof BaseFilter)
                         PacketOpenFilter.doOpenFilter(filterItem, itemStack, (ServerPlayer) sender, payload.sourcePos());
                 }
@@ -167,7 +167,7 @@ public class PacketOpenCard {
                         buf.writeByte(side);
                     }));
                 } else {
-                    ItemStack filterItem = handler.getStackInSlot(0);
+                    ItemStack filterItem = handler.getResource(0).toStack(handler.getAmountAsInt(0));
                     if (filterItem.getItem() instanceof BaseFilter)
                         PacketOpenFilter.doOpenFilter(filterItem, itemStack, (ServerPlayer) sender, payload.sourcePos());
                 }

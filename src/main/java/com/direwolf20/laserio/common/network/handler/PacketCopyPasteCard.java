@@ -56,9 +56,9 @@ public class PacketCopyPasteCard {
                 if (slotStack.getItem().toString().equals(CardCloner.getItemType(clonerStack))) {
                     CardItemHandler cardItemHandler = BaseCard.getInventory(slotStack);
                     ItemStack filterNeeded = CardCloner.getFilter(clonerStack);
-                    ItemStack existingFilter = cardItemHandler.getStackInSlot(0);
+                    ItemStack existingFilter = cardItemHandler.getResource(0).toStack(cardItemHandler.getAmountAsInt(0));
                     ItemStack overclockersNeeded = CardCloner.getOverclocker(clonerStack);
-                    ItemStack existingOverclockers = cardItemHandler.getStackInSlot(1);
+                    ItemStack existingOverclockers = cardItemHandler.getResource(1).toStack(cardItemHandler.getAmountAsInt(1));
                     boolean filterSatisfied = false;
                     boolean filterNeedsReturn = false;
                     boolean overclockSatisfied = false;

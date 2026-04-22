@@ -5,38 +5,74 @@ import com.direwolf20.laserio.client.renderer.DelayedRenderer;
 import com.direwolf20.laserio.common.blockentities.LaserConnectorAdvBE;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
+import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
+import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
+import org.jspecify.annotations.Nullable;
 
-public class LaserConnectorAdvBERender extends BaseLaserBERender<LaserConnectorAdvBE> {
+public class LaserConnectorAdvBERender extends BaseLaserBERender<LaserConnectorAdvBE, LaserConnectorAdvBERender.LaserConnectorAdvRenderState> {
+
+    public static class LaserConnectorAdvRenderState extends BaseLaserRenderState {
+        public boolean hasPartner;
+        public Direction facing = Direction.NORTH;
+        public float animationTime;
+    }
+
     public LaserConnectorAdvBERender(BlockEntityRendererProvider.Context context) {
         super(context);
     }
 
     @Override
-    public void render(LaserConnectorAdvBE blockentity, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightsIn, int combinedOverlayIn) {
-        long gameTime = blockentity.getLevel().getGameTime();
-        if (blockentity.getPartnerGlobalPos() != null) {
-            Matrix4f matrix4f = matrixStackIn.last().pose();
-            this.renderCube(blockentity, matrix4f, bufferIn.getBuffer(this.renderType()), gameTime, partialTicks);
-            DelayedRenderer.add(blockentity);
-        } else
-            super.render(blockentity, partialTicks, matrixStackIn, bufferIn, combinedLightsIn, combinedOverlayIn);
+    public LaserConnectorAdvRenderState createRenderState() {
+        return new LaserConnectorAdvRenderState();
     }
 
-    private void renderCube(LaserConnectorAdvBE blockEntity, Matrix4f matrixStack, VertexConsumer vertexConsumer, long gameTime, float partialTicks) {
-        Direction direction = blockEntity.getBlockState().getValue(BlockStateProperties.FACING).getOpposite();
+    @Override
+    public void extractRenderState(LaserConnectorAdvBE blockEntity, LaserConnectorAdvRenderState state, float partialTicks, Vec3 cameraPosition,
+                                   ModelFeatureRenderer.@Nullable CrumblingOverlay breakProgress) {
+        // Skip super.extractRenderState — base always enqueues on any connection. When hasPartner we want
+        // the adv-connector queued unconditionally for its cross-dim beam; when not, we fall back to the
+        // base's "any connections → enqueue" behavior via BlockEntityRenderState.extractBase directly.
+        BlockEntityRenderState.extractBase(blockEntity, state, breakProgress);
+        state.hasPartner = blockEntity.getPartnerGlobalPos() != null;
+        if (state.hasPartner) {
+            state.facing = blockEntity.getBlockState().getValue(BlockStateProperties.FACING).getOpposite();
+            long gameTime = blockEntity.getLevel() != null ? blockEntity.getLevel().getGameTime() : 0L;
+            state.animationTime = (float) Math.floorMod(gameTime, 80) + partialTicks;
+            DelayedRenderer.add(blockEntity);
+        } else if (!blockEntity.getRenderedConnections().isEmpty()) {
+            DelayedRenderer.add(blockEntity);
+        }
+    }
+
+    @Override
+    public void submit(LaserConnectorAdvRenderState state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
+        if (!state.hasPartner) return;
+        submitNodeCollector.submitCustomGeometry(poseStack, RenderTypes.endPortal(),
+                (pose, buffer) -> renderCube(state, pose.pose(), buffer));
+    }
+
+    private RenderType renderType() {
+        return RenderTypes.endPortal();
+    }
+
+    private void renderCube(LaserConnectorAdvRenderState state, Matrix4f matrixStack, VertexConsumer vertexConsumer) {
+        Direction direction = state.facing;
         float oneSmall = 0.53125f;
         float zeroSmall = 0.46875f;
         float oneBig = 0.5625f;
         float zeroBig = 0.4375f;
         int ticks = 80;
-        float f1 = (float) Math.floorMod(gameTime, ticks) + partialTicks;
+        float f1 = state.animationTime;
         float lerp = f1 / ticks;
         float zero;
         float one;
@@ -115,9 +151,4 @@ public class LaserConnectorAdvBERender extends BaseLaserBERender<LaserConnectorA
         vertexConsumer.addVertex(matrixStack, x2, y2, z3);
         vertexConsumer.addVertex(matrixStack, x1, y2, z4);
     }
-
-    protected RenderType renderType() {
-        return RenderType.endPortal();
-    }
-
 }

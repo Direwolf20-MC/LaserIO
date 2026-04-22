@@ -9,7 +9,7 @@ import com.direwolf20.laserio.common.items.LaserWrench;
 import com.direwolf20.laserio.util.VectorHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.world.entity.player.Player;
@@ -19,19 +19,16 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.BlockHitResult;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.client.event.CustomizeGuiOverlayEvent;
+import net.neoforged.neoforge.client.event.RenderGuiEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 
 import static com.direwolf20.laserio.client.events.RenderGUIOverlay.renderLocation;
 
 public class ClientEvents {
     @SubscribeEvent
-    static void renderWorldLastEvent(RenderLevelStageEvent evt) {
-        if (evt.getStage() != RenderLevelStageEvent.Stage.AFTER_TRANSLUCENT_BLOCKS) {
-            return;
-        }
-
+    static void renderWorldLastEvent(RenderLevelStageEvent.AfterTranslucentBlocks evt) {
         Player myplayer = Minecraft.getInstance().player;
+        if (myplayer == null) return;
 
         ItemStack myItem = getWrench(myplayer);
         if (myItem.getItem() instanceof LaserWrench) {
@@ -60,8 +57,9 @@ public class ClientEvents {
     }
 
     @SubscribeEvent
-    static void renderGUIOverlay(CustomizeGuiOverlayEvent.DebugText evt) {
+    static void renderGUIOverlay(RenderGuiEvent.Post evt) {
         Player player = Minecraft.getInstance().player;
+        if (player == null) return;
         Level level = player.level();
         ItemStack wrench = getWrench(player);
         if (!(wrench.getItem() instanceof LaserWrench)) {
@@ -74,7 +72,7 @@ public class ClientEvents {
         }
         BlockEntity blockEntity = level.getBlockEntity(lookingAt.getBlockPos());
         if (blockEntity instanceof LaserConnectorAdvBE laserConnectorAdvBE) {
-            GuiGraphics guiGraphics = evt.getGuiGraphics();
+            GuiGraphicsExtractor guiGraphics = evt.getGuiGraphics();
             Font font = Minecraft.getInstance().font;
             renderLocation(font, guiGraphics, laserConnectorAdvBE);
         }

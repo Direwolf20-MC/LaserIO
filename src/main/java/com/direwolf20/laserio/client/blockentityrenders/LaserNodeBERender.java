@@ -3,14 +3,15 @@ package com.direwolf20.laserio.client.blockentityrenders;
 import com.direwolf20.laserio.client.blockentityrenders.baseberender.BaseLaserBERender;
 import com.direwolf20.laserio.client.renderer.DelayedRenderer;
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
-import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
+import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
+import org.jspecify.annotations.Nullable;
 
 import java.awt.*;
 
-public class LaserNodeBERender extends BaseLaserBERender<LaserNodeBE> {
+public class LaserNodeBERender extends BaseLaserBERender<LaserNodeBE, LaserNodeBERender.LaserNodeRenderState> {
     public static final Vector3f[] offsets = {
             new Vector3f(0.65f, 0.65f, 0.5f),
             new Vector3f(0.5f, 0.65f, 0.5f),
@@ -22,7 +23,7 @@ public class LaserNodeBERender extends BaseLaserBERender<LaserNodeBE> {
             new Vector3f(0.5f, 0.35f, 0.5f),
             new Vector3f(0.35f, 0.35f, 0.5f)
     };
-    public static final Color colors[] = {
+    public static final Color[] colors = {
             new Color(255, 255, 255),
             new Color(249, 128, 29),
             new Color(198, 79, 189),
@@ -41,17 +42,23 @@ public class LaserNodeBERender extends BaseLaserBERender<LaserNodeBE> {
             new Color(29, 28, 33)
     };
 
+    public static class LaserNodeRenderState extends BaseLaserRenderState {
+    }
 
     public LaserNodeBERender(BlockEntityRendererProvider.Context context) {
         super(context);
-
     }
 
     @Override
-    public void render(LaserNodeBE blockentity, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightsIn, int combinedOverlayIn) {
-        super.render(blockentity, partialTicks, matrixStackIn, bufferIn, combinedLightsIn, combinedOverlayIn);
-        if (!blockentity.rendersChecked)
-            blockentity.populateRenderList();
-        DelayedRenderer.addConnecting(blockentity);
+    public LaserNodeRenderState createRenderState() {
+        return new LaserNodeRenderState();
+    }
+
+    @Override
+    public void extractRenderState(LaserNodeBE blockEntity, LaserNodeRenderState state, float partialTicks, Vec3 cameraPosition,
+                                   ModelFeatureRenderer.@Nullable CrumblingOverlay breakProgress) {
+        super.extractRenderState(blockEntity, state, partialTicks, cameraPosition, breakProgress);
+        if (!blockEntity.rendersChecked) blockEntity.populateRenderList();
+        DelayedRenderer.addConnecting(blockEntity);
     }
 }

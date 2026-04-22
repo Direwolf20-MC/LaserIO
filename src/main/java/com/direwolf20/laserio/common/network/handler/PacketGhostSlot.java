@@ -14,6 +14,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 public class PacketGhostSlot {
     public static final PacketGhostSlot INSTANCE = new PacketGhostSlot();
@@ -42,7 +43,7 @@ public class PacketGhostSlot {
                 } else {
                     stack.setCount(payload.count());
                 }
-                handler.setStackInSlot(payload.slotNumber() - CardItemContainer.SLOTS, stack);
+                handler.set(payload.slotNumber() - CardItemContainer.SLOTS, ItemResource.of(stack), stack.getCount());
 
                 // TODO(port, mek): re-add `|| container instanceof CardChemicalContainer` when Mekanism 26.1 ships.
                 if (mbAmt != -1 && (container instanceof CardFluidContainer /* || container instanceof CardChemicalContainer */)) { //MB amt is only done in CardFluidContainers
@@ -52,7 +53,7 @@ public class PacketGhostSlot {
                 ItemStack stack = payload.stack();
                 stack.setCount(payload.count());
                 FilterCountHandler handler = ((FilterCountContainer) container).handler;
-                handler.setStackInSlot(payload.slotNumber(), stack);
+                handler.set(payload.slotNumber(), ItemResource.of(stack), stack.getCount());
             } else {
                 Slot slot = container.slots.get(payload.slotNumber());
                 ItemStack stack = payload.stack();

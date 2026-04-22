@@ -1,17 +1,14 @@
 package com.direwolf20.laserio.client.renderer;
 
-import com.direwolf20.laserio.client.blockentityrenders.LaserNodeBERender;
 import com.direwolf20.laserio.common.blockentities.LaserConnectorAdvBE;
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import com.direwolf20.laserio.common.blockentities.basebe.BaseLaserBE;
 import com.direwolf20.laserio.common.items.LaserWrench;
-import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.setup.Registration;
 import com.direwolf20.laserio.util.CardRender;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
@@ -22,8 +19,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.items.IItemHandler;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
@@ -32,7 +27,6 @@ import java.util.Queue;
 import java.util.Set;
 
 import static com.direwolf20.laserio.client.events.ClientEvents.getWrench;
-import static com.direwolf20.laserio.util.MiscTools.findOffset;
 
 public class RenderUtils {
     public static void render(Matrix4f matrix, VertexConsumer builder, BlockPos pos, Color color, float scale) {
@@ -80,7 +74,7 @@ public class RenderUtils {
     public static void drawLasersLast2(Queue<BaseLaserBE> beRenders, PoseStack matrixStackIn) {
         MultiBufferSource.BufferSource buffer = Minecraft.getInstance().renderBuffers().bufferSource();
         VertexConsumer builder;
-        Vec3 projectedView = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
+        Vec3 projectedView = Minecraft.getInstance().gameRenderer.getMainCamera().position();
 
         builder = buffer.getBuffer(MyRenderType.CONNECTING_LASER);
         while (beRenders.size() > 0) {
@@ -168,7 +162,7 @@ public class RenderUtils {
 
     public static void drawConnectingLasersLast4(Set<LaserNodeBE> beConnectingRenders, PoseStack matrixStackIn) {
         MultiBufferSource.BufferSource buffer = Minecraft.getInstance().renderBuffers().bufferSource();
-        Vec3 projectedView = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
+        Vec3 projectedView = Minecraft.getInstance().gameRenderer.getMainCamera().position();
         VertexConsumer builder;
 
         float alpha = 1f;
@@ -246,25 +240,25 @@ public class RenderUtils {
                 .setColor(r, g, b, alpha)
                 .setUv(1, (float) v1)
                 .setOverlay(OverlayTexture.NO_OVERLAY)
-                .setLight(LightTexture.FULL_BRIGHT)
+                .setLight(15728880)
         ;
         builder.addVertex(positionMatrix, p3.x(), p3.y(), p3.z())
                 .setColor(r, g, b, alpha)
                 .setUv(1, (float) v2)
                 .setOverlay(OverlayTexture.NO_OVERLAY)
-                .setLight(LightTexture.FULL_BRIGHT)
+                .setLight(15728880)
         ;
         builder.addVertex(positionMatrix, p4.x(), p4.y(), p4.z())
                 .setColor(r, g, b, alpha)
                 .setUv(0, (float) v2)
                 .setOverlay(OverlayTexture.NO_OVERLAY)
-                .setLight(LightTexture.FULL_BRIGHT)
+                .setLight(15728880)
         ;
         builder.addVertex(positionMatrix, p2.x(), p2.y(), p2.z())
                 .setColor(r, g, b, alpha)
                 .setUv(0, (float) v1)
                 .setOverlay(OverlayTexture.NO_OVERLAY)
-                .setLight(LightTexture.FULL_BRIGHT)
+                .setLight(15728880)
         ;
     }
 }

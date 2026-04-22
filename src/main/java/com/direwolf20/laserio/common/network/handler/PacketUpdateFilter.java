@@ -10,6 +10,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 public class PacketUpdateFilter {
     public static final PacketUpdateFilter INSTANCE = new PacketUpdateFilter();
@@ -27,11 +28,11 @@ public class PacketUpdateFilter {
                 return;
 
             if (container instanceof CardItemContainer cardItemContainer) {
-                ItemStack stack = cardItemContainer.handler.getStackInSlot(0);
+                ItemStack stack = cardItemContainer.handler.getResource(0).toStack(cardItemContainer.handler.getAmountAsInt(0));
                 if (stack.isEmpty()) return;
                 FilterBasic.setAllowList(stack, payload.allowList());
                 FilterBasic.setCompareNBT(stack, payload.compareNBT());
-                cardItemContainer.handler.setStackInSlot(0, stack);
+                cardItemContainer.handler.set(0, ItemResource.of(stack), stack.getCount());
             }
             if (container instanceof FilterBasicContainer) {
                 ItemStack stack = ((FilterBasicContainer) container).filterItem;

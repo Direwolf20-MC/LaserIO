@@ -21,8 +21,9 @@ import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 import static com.direwolf20.laserio.common.blocks.LaserNode.SCREEN_LASERNODE;
 import static com.direwolf20.laserio.common.blocks.LaserNode.findCardHolders;
@@ -63,7 +64,7 @@ public class PacketOpenNode {
                 // set it to empty, so it's doesn't get dropped
                 sender.containerMenu.setCarried(ItemStack.EMPTY);
             }
-            IItemHandler h = sender.level().getCapability(Capabilities.ItemHandler.BLOCK, sourcePos, Direction.values()[payload.side()]);
+            ResourceHandler<ItemResource> h = sender.level().getCapability(Capabilities.Item.BLOCK, sourcePos, Direction.values()[payload.side()]);
             ItemStack cardHolder = findCardHolders(sender);
 
             MenuProvider containerProvider = new MenuProvider() {
