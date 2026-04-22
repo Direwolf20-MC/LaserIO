@@ -128,10 +128,7 @@ public class EventTooltip {
     }
 
     private static void renderFilterStack(GuiGraphicsExtractor guiGraphics, ItemStack itemStack, int x, int y) {
-        Minecraft mc = Minecraft.getInstance();
-        LaserGuiGraphics laserGuiGraphics = new LaserGuiGraphics(mc, guiGraphics.bufferSource());
-        laserGuiGraphics.renderItemScale(8f, itemStack, x, y);
-        laserGuiGraphics.renderItemDecorations(mc.font, itemStack, x, y, null);
+        LaserGuiGraphics.renderItemScaleWithDecorations(guiGraphics, 8f, itemStack, x, y);
     }
 
     private static void renderTagStack(GuiGraphicsExtractor guiGraphics, String tag, int x, int y) {

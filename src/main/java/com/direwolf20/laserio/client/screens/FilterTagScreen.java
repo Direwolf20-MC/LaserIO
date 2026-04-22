@@ -121,7 +121,6 @@ public class FilterTagScreen extends AbstractContainerScreen<FilterTagContainer>
 
         int slot = 0;
         overSlot = -1;
-        LaserGuiGraphics laserGuiGraphics = new LaserGuiGraphics(minecraft, guiGraphics.bufferSource());
         for (String tag : displayTags) {
             List<Holder<Item>> tagItems = new ArrayList<>();
             BuiltInRegistries.ITEM.getTagOrEmpty(ItemTags.create(Identifier.parse(tag))).forEach(tagItems::add);
@@ -130,7 +129,7 @@ public class FilterTagScreen extends AbstractContainerScreen<FilterTagContainer>
                 drawStack = new ItemStack(tagItems.get((cycleRenders / 120) % tagItems.size()));
                 matrixStack.pushMatrix();
                 if (!drawStack.isEmpty())
-                    laserGuiGraphics.renderItemScale(8f, drawStack, (availableItemsstartX) - 4, (tagStartY) - 5);
+                    LaserGuiGraphics.renderItemScale(guiGraphics, 8f, drawStack, (availableItemsstartX) - 4, (tagStartY) - 5);
                 matrixStack.popMatrix();
             }
 
@@ -144,7 +143,7 @@ public class FilterTagScreen extends AbstractContainerScreen<FilterTagContainer>
                 if (!drawFluidStack.isEmpty()) {
                     bucketStack = new ItemStack(drawFluidStack.getFluid().getBucket(), 1);
                     if (!bucketStack.isEmpty())
-                        laserGuiGraphics.renderItemScale(8f, bucketStack, (availableItemsstartX) - 4, (tagStartY) - 5);
+                        LaserGuiGraphics.renderItemScale(guiGraphics, 8f, bucketStack, (availableItemsstartX) - 4, (tagStartY) - 5);
                 }
                 matrixStack.popMatrix();
             }

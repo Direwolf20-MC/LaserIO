@@ -45,8 +45,6 @@ public class FilterCountScreen extends AbstractContainerScreen<FilterCountContai
 
     @Override
     public void extractRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
-        // TODO(port, stage-12): re-enable LaserGuiGraphics slot-rendering substitution
-        // when LaserGuiGraphics is ported to the new GuiGraphicsExtractor + ItemRenderer pipeline.
         super.extractRenderState(guiGraphics, mouseX, mouseY, partialTicks);
         if (MiscTools.inBounds(leftPos + 5, topPos + 25, 16, 16, mouseX, mouseY)) {
             if (isCompareNBT)

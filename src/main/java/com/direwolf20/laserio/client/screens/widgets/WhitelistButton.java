@@ -1,10 +1,9 @@
 package com.direwolf20.laserio.client.screens.widgets;
 
 import com.direwolf20.laserio.common.LaserIO;
-import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 
@@ -19,9 +18,8 @@ public class WhitelistButton extends Button {
     }
 
     @Override
-    public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        guiGraphics.blit(isWhitelist ? allow : block, this.getX(), this.getY(), 0, 0, 16, 16, 16, 16);
+    protected void extractContents(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
+        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, isWhitelist ? allow : block, this.getX(), this.getY(), 0, 0, 16, 16, 16, 16);
     }
 
     public void setWhitelist(boolean whitelist) {

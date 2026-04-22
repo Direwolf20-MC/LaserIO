@@ -20,10 +20,12 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.transfer.fluid.FluidUtil;
+import org.jspecify.annotations.Nullable;
 
 public class CardFluidScreen extends CardItemScreen {
 
@@ -68,6 +70,20 @@ public class CardFluidScreen extends CardItemScreen {
             ((NumberButton) buttons.get("amount")).setValue(currentMode == 0 ? currentPriority : currentFluidExtractAmt);
             modeChange();
         }));
+    }
+
+    @Override
+    protected void renderSlotContents(GuiGraphicsExtractor graphics, ItemStack itemStack, Slot slot, @Nullable String itemCount) {
+        if (slot instanceof FilterBasicSlot && !itemStack.isEmpty()) {
+            FluidStack fluidStack = LaserGuiGraphicsFluid.getFluidForStack(itemStack);
+            if (!fluidStack.isEmpty()) {
+                LaserGuiGraphicsFluid.renderFluidSprite(graphics, fluidStack, slot.x, slot.y, 16);
+                int filterSlotIndex = slot.index - CardItemContainer.SLOTS;
+                LaserGuiGraphicsFluid.renderFilterCountOverlay(graphics, filter, filterSlotIndex, slot.x, slot.y);
+                return;
+            }
+        }
+        super.renderSlotContents(graphics, itemStack, slot, itemCount);
     }
 
     @Override

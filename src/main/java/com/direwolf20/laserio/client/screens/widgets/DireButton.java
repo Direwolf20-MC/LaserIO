@@ -1,11 +1,10 @@
 package com.direwolf20.laserio.client.screens.widgets;
 
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 
 public class DireButton extends Button {
@@ -15,27 +14,25 @@ public class DireButton extends Button {
     }
 
     @Override
-    public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
-        if (this.visible) {
-            Font fontrenderer = Minecraft.getInstance().font;
-            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-            this.isHovered = isMouseOver(mouseX, mouseY);
-            RenderSystem.enableBlend();
-            RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-            RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-            guiGraphics.blitSprite(SPRITES.get(this.active, this.isHoveredOrFocused()), this.getX(), this.getY(), this.getWidth(), this.getHeight());
+    protected void extractContents(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
+        if (!this.visible) return;
+        Font fontrenderer = Minecraft.getInstance().font;
+        this.isHovered = isMouseOver(mouseX, mouseY);
+        guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, SPRITES.get(this.active, this.isHoveredOrFocused()), this.getX(), this.getY(), this.getWidth(), this.getHeight());
 
-            int j = 14737632;
+        int j = 0xFFE0E0E0;
 
-            if (this.packedFGColor != 0) {
-                j = this.packedFGColor;
-            } else if (!this.active) {
-                j = 10526880;
-            } else if (this.isHovered) {
-                j = 16777120;
-            }
-
-            guiGraphics.drawCenteredString(fontrenderer, this.getMessage().getString(), this.getX() + this.width / 2, this.getY() + (this.height - 7) / 2, j);
+        if (this.packedFGColor != UNSET_FG_COLOR) {
+            j = this.packedFGColor | 0xFF000000;
+        } else if (!this.active) {
+            j = 0xFFA0A0A0;
+        } else if (this.isHovered) {
+            j = 0xFFFFFFA0;
         }
+
+        String msg = this.getMessage().getString();
+        int textX = this.getX() + this.width / 2 - fontrenderer.width(msg) / 2;
+        int textY = this.getY() + (this.height - 7) / 2;
+        guiGraphics.text(fontrenderer, msg, textX, textY, j);
     }
 }

@@ -91,10 +91,6 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
     public void extractRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
         validateHolder();
         toggleFilterSlots();
-        // TODO(port, stage-12): re-enable LaserGuiGraphicsFluid / LaserGuiGraphicsChemical slot-rendering substitution
-        // when LaserGuiGraphics* are ported to the new GuiGraphicsExtractor + ItemRenderer pipeline.
-        // Original 1.21.1 flow wrapped the graphics with a custom subclass that overrode itemDecorations /
-        // rendered fluid/chemical ghost items in slots.
         super.extractRenderState(guiGraphics, mouseX, mouseY, partialTicks);
         Button modeButton = buttons.get("mode");
         if (MiscTools.inBounds(modeButton.getX(), modeButton.getY(), modeButton.getWidth(), modeButton.getHeight(), mouseX, mouseY)) {
