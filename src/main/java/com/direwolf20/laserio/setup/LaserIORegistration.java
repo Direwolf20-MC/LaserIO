@@ -42,7 +42,7 @@ import static com.direwolf20.laserio.common.LaserIO.MODID;
 // TODO(port, mek): re-enable chemical particle DeferredRegister when Mekanism 26.1 ships.
 // import static com.direwolf20.laserio.integration.mekanism.client.chemicalparticle.MekanismModParticles.PARTICLE_TYPES_MEKANISM;
 
-public class Registration {
+public class LaserIORegistration {
 
     private static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MODID);
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(Registries.ITEM, MODID);

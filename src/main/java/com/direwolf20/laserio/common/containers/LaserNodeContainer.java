@@ -9,7 +9,7 @@ import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.common.items.filters.BaseFilter;
 import com.direwolf20.laserio.common.items.upgrades.OverclockerCard;
 import com.direwolf20.laserio.common.items.upgrades.OverclockerNode;
-import com.direwolf20.laserio.setup.Registration;
+import com.direwolf20.laserio.setup.LaserIORegistration;
 import com.direwolf20.laserio.util.CardHolderItemStackHandler;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
@@ -46,7 +46,7 @@ public class LaserNodeContainer extends AbstractContainerMenu {
     }
 
     public LaserNodeContainer(@Nullable LaserNodeBE tile, int windowId, byte side, Inventory playerInventory, Player player, LaserNodeItemHandler handler, ContainerLevelAccess containerLevelAccess, ItemStack cardHolder) {
-        super(Registration.LaserNode_Container.get(), windowId);
+        super(LaserIORegistration.LaserNode_Container.get(), windowId);
         this.playerEntity = player;
         this.tile = tile;
         this.side = side;
@@ -101,7 +101,7 @@ public class LaserNodeContainer extends AbstractContainerMenu {
                 }
             }
         }
-        return stillValid(containerLevelAccess, playerEntity, Registration.LaserNode.get());
+        return stillValid(containerLevelAccess, playerEntity, LaserIORegistration.LaserNode.get());
     }
 
     @Override

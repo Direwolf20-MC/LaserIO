@@ -2,8 +2,6 @@ package com.direwolf20.laserio.setup;
 
 import com.direwolf20.laserio.common.LaserIO;
 import com.direwolf20.laserio.common.events.ServerTickHandler;
-import com.direwolf20.laserio.common.items.cards.CardRedstone;
-import com.direwolf20.laserio.integration.mekanism.MekanismIntegration;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
@@ -25,10 +23,10 @@ public class ModSetup {
     public static DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, LaserIO.MODID);
     public static DeferredHolder<CreativeModeTab, CreativeModeTab> TAB_LASERIO = TABS.register(TAB_NAME, () -> CreativeModeTab.builder()
             .title(Component.literal("LaserIO"))
-            .icon(() -> new ItemStack(Registration.Laser_Wrench.get()))
+            .icon(() -> new ItemStack(LaserIORegistration.Laser_Wrench.get()))
             .withTabsBefore(CreativeModeTabs.SPAWN_EGGS)
             .displayItems((featureFlags, output) -> {
-                Registration.ITEMS.getEntries().forEach(e -> {
+                LaserIORegistration.ITEMS.getEntries().forEach(e -> {
                     Item item = e.get();
                     output.accept(item);
                     // TODO(port, mek): re-enable Mekanism creative-tab entries when Mekanism 26.1 ships.

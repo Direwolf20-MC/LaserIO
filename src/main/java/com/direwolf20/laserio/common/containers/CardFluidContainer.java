@@ -5,7 +5,7 @@ import com.direwolf20.laserio.common.containers.customslot.CardItemSlot;
 import com.direwolf20.laserio.common.containers.customslot.CardOverclockSlot;
 import com.direwolf20.laserio.common.items.CardHolder;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
-import com.direwolf20.laserio.setup.Registration;
+import com.direwolf20.laserio.setup.LaserIORegistration;
 import com.direwolf20.laserio.util.CardHolderItemStackHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -25,7 +25,7 @@ public class CardFluidContainer extends CardItemContainer {
     }
 
     public CardFluidContainer(int windowId, Inventory playerInventory, Player player, ItemStack cardItem) {
-        super(Registration.CardFluid_Container.get(), windowId);
+        super(LaserIORegistration.CardFluid_Container.get(), windowId);
         playerEntity = player;
         this.handler = BaseCard.getInventory(cardItem);
         this.playerInventory = playerInventory;

@@ -13,7 +13,7 @@ import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.common.items.filters.BaseFilter;
 import com.direwolf20.laserio.common.items.filters.FilterBasic;
 import com.direwolf20.laserio.common.items.filters.FilterCount;
-import com.direwolf20.laserio.setup.Registration;
+import com.direwolf20.laserio.setup.LaserIORegistration;
 import com.direwolf20.laserio.util.CardHolderItemStackHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -59,7 +59,7 @@ public class CardItemContainer extends AbstractContainerMenu {
     }
 
     public CardItemContainer(int windowId, Inventory playerInventory, Player player, ItemStack cardItem) {
-        super(Registration.CardItem_Container.get(), windowId);
+        super(LaserIORegistration.CardItem_Container.get(), windowId);
         playerEntity = player;
         this.handler = BaseCard.getInventory(cardItem);
         this.playerInventory = playerInventory;

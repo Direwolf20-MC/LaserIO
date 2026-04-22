@@ -5,7 +5,7 @@ import com.direwolf20.laserio.common.containers.customhandler.CardItemHandler;
 import com.direwolf20.laserio.common.containers.customhandler.FilterBasicHandler;
 import com.direwolf20.laserio.common.containers.customslot.FilterBasicSlot;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
-import com.direwolf20.laserio.setup.Registration;
+import com.direwolf20.laserio.setup.LaserIORegistration;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
@@ -34,7 +34,7 @@ public class FilterNBTContainer extends AbstractContainerMenu {
     }
 
     public FilterNBTContainer(int windowId, Inventory playerInventory, Player player, ItemStack filterItem) {
-        super(Registration.FilterNBT_Container.get(), windowId);
+        super(LaserIORegistration.FilterNBT_Container.get(), windowId);
         playerEntity = player;
         this.handler = new FilterBasicHandler(SLOTS, filterItem);
         this.playerInventory = playerInventory;

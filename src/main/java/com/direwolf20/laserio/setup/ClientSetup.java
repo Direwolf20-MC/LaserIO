@@ -42,25 +42,25 @@ public class ClientSetup {
 
     @SubscribeEvent
     public static void registerScreens(RegisterMenuScreensEvent event) {
-        event.register(Registration.LaserNode_Container.get(), LaserNodeScreen::new);
-        event.register(Registration.CardItem_Container.get(), CardItemScreen::new);
-        event.register(Registration.CardFluid_Container.get(), CardFluidScreen::new);
-        event.register(Registration.CardEnergy_Container.get(), CardEnergyScreen::new);
-        event.register(Registration.CardRedstone_Container.get(), CardRedstoneScreen::new);
+        event.register(LaserIORegistration.LaserNode_Container.get(), LaserNodeScreen::new);
+        event.register(LaserIORegistration.CardItem_Container.get(), CardItemScreen::new);
+        event.register(LaserIORegistration.CardFluid_Container.get(), CardFluidScreen::new);
+        event.register(LaserIORegistration.CardEnergy_Container.get(), CardEnergyScreen::new);
+        event.register(LaserIORegistration.CardRedstone_Container.get(), CardRedstoneScreen::new);
         // TODO(port, mek): re-enable CardChemical screen registration when Mekanism 26.1 ships.
         // event.register(Registration.CardChemical_Container.get(), CardChemicalScreen::new);
-        event.register(Registration.CardHolder_Container.get(), CardHolderScreen::new);
-        event.register(Registration.FilterBasic_Container.get(), FilterBasicScreen::new);
-        event.register(Registration.FilterCount_Container.get(), FilterCountScreen::new);
-        event.register(Registration.FilterTag_Container.get(), FilterTagScreen::new);
-        event.register(Registration.FilterNBT_Container.get(), FilterNBTScreen::new);
+        event.register(LaserIORegistration.CardHolder_Container.get(), CardHolderScreen::new);
+        event.register(LaserIORegistration.FilterBasic_Container.get(), FilterBasicScreen::new);
+        event.register(LaserIORegistration.FilterCount_Container.get(), FilterCountScreen::new);
+        event.register(LaserIORegistration.FilterTag_Container.get(), FilterTagScreen::new);
+        event.register(LaserIORegistration.FilterNBT_Container.get(), FilterNBTScreen::new);
     }
 
     @SubscribeEvent
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
-        event.registerBlockEntityRenderer(Registration.LaserConnector_BE.get(), LaserConnectorBERender::new);
-        event.registerBlockEntityRenderer(Registration.LaserNode_BE.get(), LaserNodeBERender::new);
-        event.registerBlockEntityRenderer(Registration.LaserConnectorAdv_BE.get(), LaserConnectorAdvBERender::new);
+        event.registerBlockEntityRenderer(LaserIORegistration.LaserConnector_BE.get(), LaserConnectorBERender::new);
+        event.registerBlockEntityRenderer(LaserIORegistration.LaserNode_BE.get(), LaserNodeBERender::new);
+        event.registerBlockEntityRenderer(LaserIORegistration.LaserConnectorAdv_BE.get(), LaserConnectorAdvBERender::new);
     }
 
     @SubscribeEvent
@@ -81,8 +81,8 @@ public class ClientSetup {
 
     @SubscribeEvent
     public static void registerBlockTintSources(RegisterColorHandlersEvent.BlockTintSources event) {
-        event.register(List.of(LaserBlockTintSource.INSTANCE), Registration.LaserNode.get());
-        event.register(List.of(LaserBlockTintSource.INSTANCE), Registration.LaserConnector.get());
-        event.register(List.of(LaserBlockTintSource.INSTANCE), Registration.LaserConnectorAdv.get());
+        event.register(List.of(LaserBlockTintSource.INSTANCE), LaserIORegistration.LaserNode.get());
+        event.register(List.of(LaserBlockTintSource.INSTANCE), LaserIORegistration.LaserConnector.get());
+        event.register(List.of(LaserBlockTintSource.INSTANCE), LaserIORegistration.LaserConnectorAdv.get());
     }
 }

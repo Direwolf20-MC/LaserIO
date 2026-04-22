@@ -4,7 +4,7 @@ import com.direwolf20.laserio.client.color.CardChannelTintSource;
 import com.direwolf20.laserio.client.color.CardRedstoneTintSource;
 import com.direwolf20.laserio.client.model.CardTransferModeProperty;
 import com.direwolf20.laserio.common.LaserIO;
-import com.direwolf20.laserio.setup.Registration;
+import com.direwolf20.laserio.setup.LaserIORegistration;
 import net.minecraft.client.color.item.ItemTintSource;
 import net.minecraft.client.data.models.BlockModelGenerators;
 import net.minecraft.client.data.models.ItemModelGenerators;
@@ -39,25 +39,25 @@ public class LaserIOModelProvider extends ModelProvider {
         // models/block/*.json files are what that fallback targets.
 
         // Simple flat-texture items.
-        itemModels.generateFlatItem(Registration.Laser_Wrench.get(), ModelTemplates.FLAT_ITEM);
-        itemModels.generateFlatItem(Registration.Card_Holder.get(), ModelTemplates.FLAT_ITEM);
-        itemModels.generateFlatItem(Registration.Card_Cloner.get(), ModelTemplates.FLAT_ITEM);
-        itemModels.generateFlatItem(Registration.Filter_Basic.get(), ModelTemplates.FLAT_ITEM);
-        itemModels.generateFlatItem(Registration.Filter_Count.get(), ModelTemplates.FLAT_ITEM);
-        itemModels.generateFlatItem(Registration.Filter_Tag.get(), ModelTemplates.FLAT_ITEM);
-        itemModels.generateFlatItem(Registration.Filter_Mod.get(), ModelTemplates.FLAT_ITEM);
-        itemModels.generateFlatItem(Registration.Filter_NBT.get(), ModelTemplates.FLAT_ITEM);
-        itemModels.generateFlatItem(Registration.Logic_Chip.get(), ModelTemplates.FLAT_ITEM);
-        itemModels.generateFlatItem(Registration.Logic_Chip_Raw.get(), ModelTemplates.FLAT_ITEM);
-        itemModels.generateFlatItem(Registration.Overclocker_Card.get(), ModelTemplates.FLAT_ITEM);
-        itemModels.generateFlatItem(Registration.Overclocker_Node.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(LaserIORegistration.Laser_Wrench.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(LaserIORegistration.Card_Holder.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(LaserIORegistration.Card_Cloner.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(LaserIORegistration.Filter_Basic.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(LaserIORegistration.Filter_Count.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(LaserIORegistration.Filter_Tag.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(LaserIORegistration.Filter_Mod.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(LaserIORegistration.Filter_NBT.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(LaserIORegistration.Logic_Chip.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(LaserIORegistration.Logic_Chip_Raw.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(LaserIORegistration.Overclocker_Card.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(LaserIORegistration.Overclocker_Node.get(), ModelTemplates.FLAT_ITEM);
 
         // Cards — three-layer models with per-mode variants, tinted on layer 2.
         ItemTintSource cardChannelTint = new CardChannelTintSource(true);
-        generateCardItem(itemModels, Registration.Card_Item.get(), "item", cardChannelTint);
-        generateCardItem(itemModels, Registration.Card_Fluid.get(), "fluid", cardChannelTint);
-        generateCardItem(itemModels, Registration.Card_Energy.get(), "energy", cardChannelTint);
-        generateCardItem(itemModels, Registration.Card_Redstone.get(), "redstone", new CardRedstoneTintSource());
+        generateCardItem(itemModels, LaserIORegistration.Card_Item.get(), "item", cardChannelTint);
+        generateCardItem(itemModels, LaserIORegistration.Card_Fluid.get(), "fluid", cardChannelTint);
+        generateCardItem(itemModels, LaserIORegistration.Card_Energy.get(), "energy", cardChannelTint);
+        generateCardItem(itemModels, LaserIORegistration.Card_Redstone.get(), "redstone", new CardRedstoneTintSource());
     }
 
     /**
@@ -116,25 +116,25 @@ public class LaserIOModelProvider extends ModelProvider {
     @Override
     protected Stream<? extends Holder<Item>> getKnownItems() {
         Set<Item> ours = Set.of(
-                Registration.LaserConnector_ITEM.get(),
-                Registration.LaserNode_ITEM.get(),
-                Registration.LaserConnectorAdv_ITEM.get(),
-                Registration.Laser_Wrench.get(),
-                Registration.Card_Holder.get(),
-                Registration.Card_Cloner.get(),
-                Registration.Card_Item.get(),
-                Registration.Card_Fluid.get(),
-                Registration.Card_Energy.get(),
-                Registration.Card_Redstone.get(),
-                Registration.Filter_Basic.get(),
-                Registration.Filter_Count.get(),
-                Registration.Filter_Tag.get(),
-                Registration.Filter_Mod.get(),
-                Registration.Filter_NBT.get(),
-                Registration.Logic_Chip.get(),
-                Registration.Logic_Chip_Raw.get(),
-                Registration.Overclocker_Card.get(),
-                Registration.Overclocker_Node.get()
+                LaserIORegistration.LaserConnector_ITEM.get(),
+                LaserIORegistration.LaserNode_ITEM.get(),
+                LaserIORegistration.LaserConnectorAdv_ITEM.get(),
+                LaserIORegistration.Laser_Wrench.get(),
+                LaserIORegistration.Card_Holder.get(),
+                LaserIORegistration.Card_Cloner.get(),
+                LaserIORegistration.Card_Item.get(),
+                LaserIORegistration.Card_Fluid.get(),
+                LaserIORegistration.Card_Energy.get(),
+                LaserIORegistration.Card_Redstone.get(),
+                LaserIORegistration.Filter_Basic.get(),
+                LaserIORegistration.Filter_Count.get(),
+                LaserIORegistration.Filter_Tag.get(),
+                LaserIORegistration.Filter_Mod.get(),
+                LaserIORegistration.Filter_NBT.get(),
+                LaserIORegistration.Logic_Chip.get(),
+                LaserIORegistration.Logic_Chip_Raw.get(),
+                LaserIORegistration.Overclocker_Card.get(),
+                LaserIORegistration.Overclocker_Node.get()
         );
         return ours.stream().map(Item::builtInRegistryHolder);
     }

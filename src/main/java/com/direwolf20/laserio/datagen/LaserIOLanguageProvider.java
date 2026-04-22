@@ -1,7 +1,7 @@
 package com.direwolf20.laserio.datagen;
 
 import com.direwolf20.laserio.common.LaserIO;
-import com.direwolf20.laserio.setup.Registration;
+import com.direwolf20.laserio.setup.LaserIORegistration;
 import net.minecraft.data.PackOutput;
 import net.neoforged.neoforge.common.data.LanguageProvider;
 
@@ -15,27 +15,27 @@ public class LaserIOLanguageProvider extends LanguageProvider {
     @Override
     protected void addTranslations() {
         add("itemGroup." + TAB_NAME, "LaserIO");
-        add(Registration.LaserConnector.get(), "Laser Connector");
-        add(Registration.LaserConnectorAdv.get(), "Advanced Laser Connector");
-        add(Registration.LaserNode.get(), "Laser Node");
-        add(Registration.Laser_Wrench.get(), "Laser Wrench");
-        add(Registration.Card_Holder.get(), "Card Holder");
-        add(Registration.Card_Item.get(), "Item Card");
-        add(Registration.Card_Fluid.get(), "Fluid Card");
-        add(Registration.Card_Energy.get(), "Energy Card");
-        add(Registration.Card_Redstone.get(), "Redstone Card");
+        add(LaserIORegistration.LaserConnector.get(), "Laser Connector");
+        add(LaserIORegistration.LaserConnectorAdv.get(), "Advanced Laser Connector");
+        add(LaserIORegistration.LaserNode.get(), "Laser Node");
+        add(LaserIORegistration.Laser_Wrench.get(), "Laser Wrench");
+        add(LaserIORegistration.Card_Holder.get(), "Card Holder");
+        add(LaserIORegistration.Card_Item.get(), "Item Card");
+        add(LaserIORegistration.Card_Fluid.get(), "Fluid Card");
+        add(LaserIORegistration.Card_Energy.get(), "Energy Card");
+        add(LaserIORegistration.Card_Redstone.get(), "Redstone Card");
         // TODO(port, mek): re-enable Chemical Card lang entry when Mekanism 26.1 ships.
         // add(Registration.Card_Chemical.get(), "Chemical Card");
-        add(Registration.Filter_Basic.get(), "Basic Filter");
-        add(Registration.Filter_Count.get(), "Counting Filter");
-        add(Registration.Filter_Tag.get(), "Tag Filter");
-        add(Registration.Filter_Mod.get(), "Mod Filter");
-        add(Registration.Filter_NBT.get(), "Data Filter");
-        add(Registration.Logic_Chip.get(), "Logic Chip");
-        add(Registration.Logic_Chip_Raw.get(), "Raw Logic Chip");
-        add(Registration.Overclocker_Card.get(), "Card Overclocker");
-        add(Registration.Overclocker_Node.get(), "Node Overclocker");
-        add(Registration.Card_Cloner.get(), "Card Cloner");
+        add(LaserIORegistration.Filter_Basic.get(), "Basic Filter");
+        add(LaserIORegistration.Filter_Count.get(), "Counting Filter");
+        add(LaserIORegistration.Filter_Tag.get(), "Tag Filter");
+        add(LaserIORegistration.Filter_Mod.get(), "Mod Filter");
+        add(LaserIORegistration.Filter_NBT.get(), "Data Filter");
+        add(LaserIORegistration.Logic_Chip.get(), "Logic Chip");
+        add(LaserIORegistration.Logic_Chip_Raw.get(), "Raw Logic Chip");
+        add(LaserIORegistration.Overclocker_Card.get(), "Card Overclocker");
+        add(LaserIORegistration.Overclocker_Node.get(), "Node Overclocker");
+        add(LaserIORegistration.Card_Cloner.get(), "Card Cloner");
 
         add("screen.laserio.extractamt", "Transfer Amount");
         add("screen.laserio.tickSpeed", "Speed (Ticks)");

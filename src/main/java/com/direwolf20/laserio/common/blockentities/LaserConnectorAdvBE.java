@@ -1,6 +1,7 @@
 package com.direwolf20.laserio.common.blockentities;
 
 import com.direwolf20.laserio.common.blockentities.basebe.BaseLaserBE;
+import com.direwolf20.laserio.setup.LaserIORegistration;
 import com.direwolf20.laserio.util.MiscTools;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
@@ -17,7 +18,7 @@ public class LaserConnectorAdvBE extends BaseLaserBE {
     protected GlobalPos partnerGlobalPos;
 
     public LaserConnectorAdvBE(BlockPos pos, BlockState state) {
-        super(Registration.LaserConnectorAdv_BE.get(), pos, state);
+        super(LaserIORegistration.LaserConnectorAdv_BE.get(), pos, state);
     }
 
     public GlobalPos getPartnerGlobalPos() {

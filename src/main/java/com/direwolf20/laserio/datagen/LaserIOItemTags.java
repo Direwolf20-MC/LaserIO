@@ -1,7 +1,7 @@
 package com.direwolf20.laserio.datagen;
 
 import com.direwolf20.laserio.common.LaserIO;
-import com.direwolf20.laserio.setup.Registration;
+import com.direwolf20.laserio.setup.LaserIORegistration;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.Identifier;
@@ -30,15 +30,15 @@ public class LaserIOItemTags extends ItemTagsProvider {
     @Override
     protected void addTags(HolderLookup.Provider provider) {
         tag(WRENCHES)
-                .add(Registration.Laser_Wrench.get());
+                .add(LaserIORegistration.Laser_Wrench.get());
         tag(TOOLS_WRENCH)
-                .add(Registration.Laser_Wrench.get());
+                .add(LaserIORegistration.Laser_Wrench.get());
         tag(FILTERS_TAG)
-                .add(Registration.Filter_Basic.get())
-                .add(Registration.Filter_Count.get())
-                .add(Registration.Filter_Tag.get())
-                .add(Registration.Filter_Mod.get())
-                .add(Registration.Filter_NBT.get());
+                .add(LaserIORegistration.Filter_Basic.get())
+                .add(LaserIORegistration.Filter_Count.get())
+                .add(LaserIORegistration.Filter_Tag.get())
+                .add(LaserIORegistration.Filter_Mod.get())
+                .add(LaserIORegistration.Filter_NBT.get());
     }
 
     @Override

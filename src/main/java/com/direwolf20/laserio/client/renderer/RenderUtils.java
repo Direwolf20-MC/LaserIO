@@ -4,7 +4,7 @@ import com.direwolf20.laserio.common.blockentities.LaserConnectorAdvBE;
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import com.direwolf20.laserio.common.blockentities.basebe.BaseLaserBE;
 import com.direwolf20.laserio.common.items.LaserWrench;
-import com.direwolf20.laserio.setup.Registration;
+import com.direwolf20.laserio.setup.LaserIORegistration;
 import com.direwolf20.laserio.util.CardRender;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -102,7 +102,7 @@ public class RenderUtils {
                 drawLaser(builder, positionMatrix, endLaser, startLaser, color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, alpha / 255f, 0.025f, v, v + diffY * 1.5, be);
             }
 
-            if (be instanceof LaserConnectorAdvBE laserConnectorAdvBE && laserConnectorAdvBE.getPartnerGlobalPos() != null && level.getBlockState(be.getBlockPos()).getBlock().equals(Registration.LaserConnectorAdv.get())) {
+            if (be instanceof LaserConnectorAdvBE laserConnectorAdvBE && laserConnectorAdvBE.getPartnerGlobalPos() != null && level.getBlockState(be.getBlockPos()).getBlock().equals(LaserIORegistration.LaserConnectorAdv.get())) {
                 Direction facing = level.getBlockState(be.getBlockPos()).getValue(BlockStateProperties.FACING).getOpposite();
                 BlockPos endBlock = laserConnectorAdvBE.getBlockPos().relative(facing);
                 Color color = be.getColor();

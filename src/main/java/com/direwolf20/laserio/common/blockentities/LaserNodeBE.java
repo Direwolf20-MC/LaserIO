@@ -12,6 +12,7 @@ import com.direwolf20.laserio.common.items.filters.FilterCount;
 import com.direwolf20.laserio.common.items.filters.FilterMod;
 import com.direwolf20.laserio.common.items.filters.FilterTag;
 import com.direwolf20.laserio.common.items.upgrades.OverclockerNode;
+import com.direwolf20.laserio.setup.LaserIORegistration;
 import com.direwolf20.laserio.util.*;
 import it.unimi.dsi.fastutil.bytes.Byte2BooleanMap;
 import it.unimi.dsi.fastutil.bytes.Byte2BooleanOpenHashMap;
@@ -159,7 +160,7 @@ public class LaserNodeBE extends BaseLaserBE {
     }
 
     public LaserNodeBE(BlockPos pos, BlockState state) {
-        super(Registration.LaserNode_BE.get(), pos, state);
+        super(LaserIORegistration.LaserNode_BE.get(), pos, state);
         // TODO(port, mek): re-enable MekanismCache initialization when Mekanism 26.1 ships.
         /*
         if (MekanismIntegration.isLoaded()) {

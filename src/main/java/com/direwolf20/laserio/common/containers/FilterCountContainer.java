@@ -4,7 +4,7 @@ import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import com.direwolf20.laserio.common.containers.customhandler.FilterCountHandler;
 import com.direwolf20.laserio.common.containers.customslot.FilterBasicSlot;
 import com.direwolf20.laserio.common.items.filters.FilterCount;
-import com.direwolf20.laserio.setup.Registration;
+import com.direwolf20.laserio.setup.LaserIORegistration;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
@@ -32,7 +32,7 @@ public class FilterCountContainer extends AbstractContainerMenu {
     }
 
     public FilterCountContainer(int windowId, Inventory playerInventory, Player player, ItemStack filterItem) {
-        super(Registration.FilterCount_Container.get(), windowId);
+        super(LaserIORegistration.FilterCount_Container.get(), windowId);
         playerEntity = player;
         this.handler = FilterCount.getInventory(filterItem);
         this.playerInventory = playerInventory;

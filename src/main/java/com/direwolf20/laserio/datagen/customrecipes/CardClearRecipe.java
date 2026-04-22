@@ -2,7 +2,7 @@ package com.direwolf20.laserio.datagen.customrecipes;
 
 import com.direwolf20.laserio.common.containers.customhandler.CardItemHandler;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
-import com.direwolf20.laserio.setup.Registration;
+import com.direwolf20.laserio.setup.LaserIORegistration;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
@@ -107,7 +107,7 @@ public class CardClearRecipe extends NormalCraftingRecipe {
 
     @Override
     public RecipeSerializer<CardClearRecipe> getSerializer() {
-        return Registration.CARD_CLEAR_RECIPE_SERIALIZER.get();
+        return LaserIORegistration.CARD_CLEAR_RECIPE_SERIALIZER.get();
     }
 
     public static final MapCodec<CardClearRecipe> MAP_CODEC = RecordCodecBuilder.mapCodec(

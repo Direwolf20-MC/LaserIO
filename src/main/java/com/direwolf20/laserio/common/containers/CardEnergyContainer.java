@@ -1,7 +1,7 @@
 package com.direwolf20.laserio.common.containers;
 
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
-import com.direwolf20.laserio.setup.Registration;
+import com.direwolf20.laserio.setup.LaserIORegistration;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
@@ -33,7 +33,7 @@ public class CardEnergyContainer extends AbstractContainerMenu {
     }
 
     public CardEnergyContainer(int windowId, Inventory playerInventory, Player player, ItemStack cardItem) {
-        super(Registration.CardEnergy_Container.get(), windowId);
+        super(LaserIORegistration.CardEnergy_Container.get(), windowId);
         playerEntity = player;
         this.playerInventory = playerInventory;
         this.cardItem = cardItem;

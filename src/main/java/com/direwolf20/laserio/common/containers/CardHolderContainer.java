@@ -1,7 +1,7 @@
 package com.direwolf20.laserio.common.containers;
 
 import com.direwolf20.laserio.common.containers.customslot.CardHolderSlot;
-import com.direwolf20.laserio.setup.Registration;
+import com.direwolf20.laserio.setup.LaserIORegistration;
 import com.direwolf20.laserio.util.CardHolderItemStackHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -28,7 +28,7 @@ public class CardHolderContainer extends AbstractContainerMenu {
     }
 
     public CardHolderContainer(int windowId, Inventory playerInventory, Player player, ItemStack cardHolder) {
-        super(Registration.CardHolder_Container.get(), windowId);
+        super(LaserIORegistration.CardHolder_Container.get(), windowId);
         playerEntity = player;
         this.cardHolderHandler = new CardHolderItemStackHandler(SLOTS,
                 cardHolder.isEmpty() ? ItemAccess.forStack(new ItemStack(Items.STONE)) : ItemAccess.forStack(cardHolder));

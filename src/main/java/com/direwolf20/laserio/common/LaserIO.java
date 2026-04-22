@@ -6,8 +6,8 @@ import com.direwolf20.laserio.common.items.CardHolder;
 import com.direwolf20.laserio.common.network.PacketHandler;
 import com.direwolf20.laserio.setup.ClientSetup;
 import com.direwolf20.laserio.setup.Config;
+import com.direwolf20.laserio.setup.LaserIORegistration;
 import com.direwolf20.laserio.setup.ModSetup;
-import com.direwolf20.laserio.setup.Registration;
 import com.direwolf20.laserio.util.CardHolderItemStackHandler;
 import com.mojang.logging.LogUtils;
 import net.neoforged.bus.api.IEventBus;
@@ -28,7 +28,7 @@ public class LaserIO {
 
     public LaserIO(IEventBus eventBus, ModContainer container) {
         // Register the deferred registry
-        Registration.init(eventBus);
+        LaserIORegistration.init(eventBus);
         Config.register(container);
         // Register the setup method for modloading
         // Register the enqueueIMC method for modloading
@@ -58,14 +58,14 @@ public class LaserIO {
                     return null;
                 },
                 // blocks to register for
-                Registration.LaserNode.get());
+                LaserIORegistration.LaserNode.get());
         event.registerItem(Capabilities.Item.ITEM, (itemStack, access) -> {
                     if (itemStack.getItem() instanceof CardHolder holder)
                         return new CardHolderItemStackHandler(CardHolderContainer.SLOTS,
                                 access != null ? access : ItemAccess.forStack(itemStack));
                     return null;
                 },
-                Registration.Card_Holder.get()
+                LaserIORegistration.Card_Holder.get()
         );
     }
 

@@ -1,7 +1,7 @@
 package com.direwolf20.laserio.datagen;
 
 import com.direwolf20.laserio.common.LaserIO;
-import com.direwolf20.laserio.setup.Registration;
+import com.direwolf20.laserio.setup.LaserIORegistration;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.loot.packs.VanillaBlockLoot;
@@ -18,9 +18,9 @@ public class LaserIOLootTable extends VanillaBlockLoot {
 
     @Override
     protected void generate() {
-        dropSelf(Registration.LaserNode.get());
-        dropSelf(Registration.LaserConnector.get());
-        dropSelf(Registration.LaserConnectorAdv.get());
+        dropSelf(LaserIORegistration.LaserNode.get());
+        dropSelf(LaserIORegistration.LaserConnector.get());
+        dropSelf(LaserIORegistration.LaserConnectorAdv.get());
     }
 
     @Override

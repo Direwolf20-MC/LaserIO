@@ -1,7 +1,7 @@
 package com.direwolf20.laserio.datagen;
 
 import com.direwolf20.laserio.common.LaserIO;
-import com.direwolf20.laserio.setup.Registration;
+import com.direwolf20.laserio.setup.LaserIORegistration;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.tags.BlockTags;
@@ -18,9 +18,9 @@ public class LaserIOBlockTags extends BlockTagsProvider {
     @Override
     protected void addTags(HolderLookup.Provider provider) {
         tag(BlockTags.MINEABLE_WITH_PICKAXE)
-                .add(Registration.LaserNode.get())
-                .add(Registration.LaserConnector.get())
-                .add(Registration.LaserConnectorAdv.get());
+                .add(LaserIORegistration.LaserNode.get())
+                .add(LaserIORegistration.LaserConnector.get())
+                .add(LaserIORegistration.LaserConnectorAdv.get());
     }
 
     @Override
