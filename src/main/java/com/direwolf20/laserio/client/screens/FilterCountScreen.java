@@ -9,26 +9,28 @@ import com.direwolf20.laserio.common.network.data.GhostSlotPayload;
 import com.direwolf20.laserio.common.network.data.UpdateFilterPayload;
 import com.direwolf20.laserio.util.MiscTools;
 import com.mojang.blaze3d.platform.InputConstants;
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
-import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class FilterCountScreen extends AbstractContainerScreen<FilterCountContainer> {
     private final Identifier GUI = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/filtercount.png");
+    private static final int GUI_TEXTURE_WIDTH = 256;
+    private static final int GUI_TEXTURE_HEIGHT = 256;
 
     protected final FilterCountContainer container;
     private ItemStack filter;
@@ -42,33 +44,21 @@ public class FilterCountScreen extends AbstractContainerScreen<FilterCountContai
     }
 
     @Override
-    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
-        //this.renderBackground(guiGraphics);
-        guiGraphics = new LaserGuiGraphics(Minecraft.getInstance(), guiGraphics.bufferSource());
-        updateItemCounts();
-        super.render(guiGraphics, mouseX, mouseY, partialTicks);
-        this.renderTooltip(guiGraphics, mouseX, mouseY);
-        if (MiscTools.inBounds(getGuiLeft() + 5, getGuiTop() + 25, 16, 16, mouseX, mouseY)) {
+    public void extractRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
+        // TODO(port, stage-12): re-enable LaserGuiGraphics slot-rendering substitution
+        // when LaserGuiGraphics is ported to the new GuiGraphicsExtractor + ItemRenderer pipeline.
+        super.extractRenderState(guiGraphics, mouseX, mouseY, partialTicks);
+        if (MiscTools.inBounds(leftPos + 5, topPos + 25, 16, 16, mouseX, mouseY)) {
             if (isCompareNBT)
-                guiGraphics.renderTooltip(font, Component.translatable("screen.laserio.nbttrue"), mouseX, mouseY);
+                guiGraphics.setTooltipForNextFrame(font, Component.translatable("screen.laserio.nbttrue"), mouseX, mouseY);
             else
-                guiGraphics.renderTooltip(font, Component.translatable("screen.laserio.nbtfalse"), mouseX, mouseY);
-        }
-    }
-
-    public void updateItemCounts() {
-        IItemHandler handler = container.handler;
-        for (int i = 0; i < handler.getSlots(); i++) {
-            ItemStack stack = handler.getStackInSlot(i);
-            stack.setCount(container.getStackSize(i));
+                guiGraphics.setTooltipForNextFrame(font, Component.translatable("screen.laserio.nbtfalse"), mouseX, mouseY);
         }
     }
 
     @Override
     public void init() {
         super.init();
-        Minecraft minecraft = Minecraft.getInstance();
-        BlockEntityWithoutLevelRenderer blockentitywithoutlevelrenderer = new BlockEntityWithoutLevelRenderer(minecraft.getBlockEntityRenderDispatcher(), minecraft.getEntityModels());
         List<AbstractWidget> leftWidgets = new ArrayList<>();
 
         this.isAllowList = FilterCount.getAllowList(filter);
@@ -78,7 +68,7 @@ public class FilterCountScreen extends AbstractContainerScreen<FilterCountContai
         nbtTextures[0] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/matchnbtfalse.png");
         nbtTextures[1] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/matchnbttrue.png");
 
-        leftWidgets.add(new ToggleButton(getGuiLeft() + 5, getGuiTop() + 25, 16, 16, nbtTextures, isCompareNBT ? 1 : 0, (button) -> {
+        leftWidgets.add(new ToggleButton(leftPos + 5, topPos + 25, 16, 16, nbtTextures, isCompareNBT ? 1 : 0, (button) -> {
             isCompareNBT = !isCompareNBT;
             ((ToggleButton) button).setTexturePosition(isCompareNBT ? 1 : 0);
         }));
@@ -91,18 +81,16 @@ public class FilterCountScreen extends AbstractContainerScreen<FilterCountContai
     }
 
     @Override
-    protected void renderLabels(GuiGraphics guiGraphics, int mouseX, int mouseY) {
-        //font.draw(stack, Component.translatable("screen.laserio.allowlist").getString(), 5, 5, Color.DARK_GRAY.getRGB());
-        //font.draw(stack, Component.translatable("screen.laserio.comparenbt").getString(), 5, 25, Color.DARK_GRAY.getRGB());
-        //super.renderLabels(matrixStack, x, y);
+    protected void extractLabels(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
+        // Intentionally empty — original screen suppressed the default title labels.
     }
 
     @Override
-    protected void renderBg(GuiGraphics guiGraphics, float partialTicks, int mouseX, int mouseY) {
-        RenderSystem.setShaderTexture(0, GUI);
+    public void extractBackground(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
+        super.extractBackground(guiGraphics, mouseX, mouseY, partialTicks);
         int relX = (this.width - this.imageWidth) / 2;
         int relY = (this.height - this.imageHeight) / 2;
-        guiGraphics.blit(GUI, relX, relY, 0, 0, this.imageWidth, this.imageHeight);
+        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, GUI, relX, relY, 0, 0, this.imageWidth, this.imageHeight, GUI_TEXTURE_WIDTH, GUI_TEXTURE_HEIGHT);
     }
 
     @Override
@@ -117,21 +105,22 @@ public class FilterCountScreen extends AbstractContainerScreen<FilterCountContai
     }
 
     @Override
-    public boolean keyPressed(int p_keyPressed_1_, int p_keyPressed_2_, int p_keyPressed_3_) {
-        InputConstants.Key mouseKey = InputConstants.getKey(p_keyPressed_1_, p_keyPressed_2_);
-        if (p_keyPressed_1_ == 256 || minecraft.options.keyInventory.isActiveAndMatches(mouseKey)) {
+    public boolean keyPressed(KeyEvent event) {
+        InputConstants.Key mouseKey = InputConstants.getKey(event);
+        if (event.isEscape() || minecraft.options.keyInventory.isActiveAndMatches(mouseKey)) {
             onClose();
 
             return true;
         }
 
-        return super.keyPressed(p_keyPressed_1_, p_keyPressed_2_, p_keyPressed_3_);
+        return super.keyPressed(event);
     }
 
     @Override
-    public boolean mouseClicked(double x, double y, int btn) {
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        int btn = event.button();
         if (hoveredSlot == null || !(hoveredSlot instanceof FilterBasicSlot))
-            return super.mouseClicked(x, y, btn);
+            return super.mouseClicked(event, doubleClick);
 
         // By splitting the stack we can get air easily :) perfect removal basically
         ItemStack stack = this.menu.getCarried();// getMinecraft().player.inventoryMenu.getCarried();
@@ -140,7 +129,7 @@ public class FilterCountScreen extends AbstractContainerScreen<FilterCountContai
             hoveredSlot.set(stack); // Temporarily update the client for continuity purposes
             if (ItemStack.isSameItemSameComponents(stack, container.filterItem)) return true;
             ClientPacketDistributor.sendToServer(new GhostSlotPayload(hoveredSlot.index, stack, stack.getCount(), -1));
-            container.handler.setStackInSlot(hoveredSlot.index, stack); //We do this for continuity between client/server -- not needed in cardItemScreen
+            container.handler.set(hoveredSlot.index, ItemResource.of(stack), stack.getCount()); //We do this for continuity between client/server -- not needed in cardItemScreen
         } else {
             ItemStack slotStack = hoveredSlot.getItem();
             if (slotStack.isEmpty()) return true;
@@ -150,21 +139,17 @@ public class FilterCountScreen extends AbstractContainerScreen<FilterCountContai
                 return true;
             }
             int amt = (btn == 0) ? 1 : -1;
-            if (Screen.hasShiftDown()) amt *= 10;
-            if (Screen.hasControlDown()) amt *= 64;
+            if (Minecraft.getInstance().hasShiftDown()) amt *= 10;
+            if (Minecraft.getInstance().hasControlDown()) amt *= 64;
             if (amt + slotStack.getCount() > 4096) amt = 4096 - slotStack.getCount();
             slotStack.grow(amt);
 
             ClientPacketDistributor.sendToServer(new GhostSlotPayload(hoveredSlot.index, slotStack, slotStack.getCount(), -1));
-            container.handler.setStackInSlot(hoveredSlot.index, slotStack); //We do this for continuity between client/server -- not needed in cardItemScreen
+            container.handler.set(hoveredSlot.index, ItemResource.of(slotStack), slotStack.getCount()); //We do this for continuity between client/server -- not needed in cardItemScreen
         }
 
 
         return true;
-    }
-
-    public boolean mouseReleased(double p_mouseReleased_1_, double p_mouseReleased_3_, int p_mouseReleased_5_) {
-        return super.mouseReleased(p_mouseReleased_1_, p_mouseReleased_3_, p_mouseReleased_5_);
     }
 
     @Override
@@ -175,8 +160,8 @@ public class FilterCountScreen extends AbstractContainerScreen<FilterCountContai
         ItemStack slotStack = hoveredSlot.getItem();
         if (slotStack.isEmpty()) return true;
         int amt = (int) delta;
-        if (Screen.hasShiftDown()) amt *= 10;
-        if (Screen.hasControlDown()) amt *= 64;
+        if (Minecraft.getInstance().hasShiftDown()) amt *= 10;
+        if (Minecraft.getInstance().hasControlDown()) amt *= 64;
         if (amt + slotStack.getCount() > 4096) amt = 4096 - slotStack.getCount();
         if (slotStack.getCount() + amt <= 0)
             amt = (slotStack.getCount() * -1) + 1;

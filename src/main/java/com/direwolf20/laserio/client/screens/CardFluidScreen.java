@@ -14,9 +14,7 @@ import com.direwolf20.laserio.common.network.data.UpdateCardPayload;
 import com.direwolf20.laserio.common.network.data.UpdateFilterPayload;
 import com.direwolf20.laserio.setup.Config;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -25,11 +23,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.FluidUtil;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
-
-import java.util.Optional;
+import net.neoforged.neoforge.transfer.fluid.FluidUtil;
 
 public class CardFluidScreen extends CardItemScreen {
 
@@ -51,14 +45,12 @@ public class CardFluidScreen extends CardItemScreen {
     public void init() {
         this.currentFluidExtractAmt = CardFluid.getFluidExtractAmt(card);
         super.init();
-        Minecraft minecraft = Minecraft.getInstance();
-        BlockEntityWithoutLevelRenderer blockentitywithoutlevelrenderer = new BlockEntityWithoutLevelRenderer(minecraft.getBlockEntityRenderDispatcher(), minecraft.getEntityModels());
         this.renderFluids = true;
     }
 
     @Override
     public void addAmtButton() {
-        buttons.put("amount", new NumberButton(getGuiLeft() + 141, getGuiTop() + 25, 30, 12, currentMode == 0 ? currentPriority : currentFluidExtractAmt, (button) -> {
+        buttons.put("amount", new NumberButton(leftPos + 141, topPos + 25, 30, 12, currentMode == 0 ? currentPriority : currentFluidExtractAmt, (button) -> {
             changeAmount(-1);
         }));
     }
@@ -70,7 +62,7 @@ public class CardFluidScreen extends CardItemScreen {
         modeTextures[1] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/modeextractor.png");
         modeTextures[2] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/modestocker.png");
         modeTextures[3] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/modesensor.png");
-        buttons.put("mode", new ToggleButton(getGuiLeft() + 5, getGuiTop() + 5, 16, 16, modeTextures, currentMode, (button) -> {
+        buttons.put("mode", new ToggleButton(leftPos + 5, topPos + 5, 16, 16, modeTextures, currentMode, (button) -> {
             currentMode = BaseCard.nextTransferMode(card);
             ((ToggleButton) button).setTexturePosition(currentMode);
             ((NumberButton) buttons.get("amount")).setValue(currentMode == 0 ? currentPriority : currentFluidExtractAmt);
@@ -79,33 +71,24 @@ public class CardFluidScreen extends CardItemScreen {
     }
 
     @Override
-    protected void renderTooltip(GuiGraphics pGuiGraphics, int pX, int pY) {
+    protected void extractTooltip(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
         if (this.menu.getCarried().isEmpty() && this.hoveredSlot != null && this.hoveredSlot.hasItem()) {
             ItemStack itemstack = this.hoveredSlot.getItem();
             if (hoveredSlot instanceof FilterBasicSlot) {
-                Optional<IFluidHandlerItem> fluidHandlerLazyOptional = FluidUtil.getFluidHandler(itemstack);
-                if (fluidHandlerLazyOptional.isPresent()) {
-                    FluidStack fluidStack = FluidStack.EMPTY;
-                    IFluidHandler fluidHandler = fluidHandlerLazyOptional.get();
-                    for (int tank = 0; tank < fluidHandler.getTanks(); tank++) {
-                        fluidStack = fluidHandler.getFluidInTank(tank);
-                        if (!fluidStack.isEmpty())
-                            break;
-                    }
-                    if (!fluidStack.isEmpty()) {
-                        pGuiGraphics.renderTooltip(this.font, fluidStack.getHoverName(), pX, pY);
-                        return;
-                    }
+                FluidStack fluidStack = FluidUtil.getFirstStackContained(itemstack);
+                if (!fluidStack.isEmpty()) {
+                    guiGraphics.setTooltipForNextFrame(this.font, fluidStack.getHoverName(), mouseX, mouseY);
+                    return;
                 }
             }
-            pGuiGraphics.renderTooltip(this.font, this.getTooltipFromContainerItem(itemstack), itemstack.getTooltipImage(), itemstack, pX, pY);
+            guiGraphics.setTooltipForNextFrame(this.font, this.getTooltipFromContainerItem(itemstack), itemstack.getTooltipImage(), itemstack, mouseX, mouseY);
         }
     }
 
     @Override
     public void changeAmount(int change) {
-        if (Screen.hasShiftDown()) change *= 10;
-        if (Screen.hasControlDown()) change *= 100;
+        if (Minecraft.getInstance().hasShiftDown()) change *= 10;
+        if (Minecraft.getInstance().hasControlDown()) change *= 100;
         int overClockerCount = container.getSlot(1).getItem().getCount();
         if (change < 0) {
             if (currentMode == 0) {
@@ -136,8 +119,8 @@ public class CardFluidScreen extends CardItemScreen {
         int amt = (btn == 0) ? 1 : -1;
         int filterSlot = hoveredSlot.index - CardItemContainer.SLOTS;
         int currentMBAmt = FilterCount.getSlotAmount(filter, filterSlot) + (FilterCount.getSlotCount(filter, filterSlot) * 1000);
-        if (Screen.hasShiftDown()) amt *= 10;
-        if (Screen.hasControlDown()) amt *= 100;
+        if (Minecraft.getInstance().hasShiftDown()) amt *= 10;
+        if (Minecraft.getInstance().hasControlDown()) amt *= 100;
         int newMBAmt = currentMBAmt + amt;
         if (newMBAmt < 0) newMBAmt = 0;
         if (newMBAmt > 4096000) newMBAmt = 4096000;

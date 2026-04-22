@@ -13,12 +13,13 @@ import com.direwolf20.laserio.common.network.data.UpdateCardPayload;
 import com.direwolf20.laserio.setup.Config;
 import com.direwolf20.laserio.util.MiscTools;
 import com.mojang.blaze3d.platform.InputConstants;
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -34,6 +35,8 @@ import java.util.Map;
 
 public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContainer> {
     private final Identifier GUI = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/energycard.png");
+    private static final int GUI_TEXTURE_WIDTH = 256;
+    private static final int GUI_TEXTURE_HEIGHT = 256;
 
     protected final CardEnergyContainer container;
     protected byte currentMode;
@@ -69,15 +72,13 @@ public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContaine
     }
 
     @Override
-    protected void renderLabels(GuiGraphics guiGraphics, int mouseX, int mouseY) {
-
+    protected void extractLabels(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
+        // Intentionally empty — original screen suppressed the default title labels.
     }
 
     @Override
-    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
-        //this.renderBackground(guiGraphics);
-        super.render(guiGraphics, mouseX, mouseY, partialTicks);
-        this.renderTooltip(guiGraphics, mouseX, mouseY);
+    public void extractRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
+        super.extractRenderState(guiGraphics, mouseX, mouseY, partialTicks);
         Button modeButton = buttons.get("mode");
         if (MiscTools.inBounds(modeButton.getX(), modeButton.getY(), modeButton.getWidth(), modeButton.getHeight(), mouseX, mouseY)) {
             MutableComponent translatableComponents[] = new MutableComponent[4];
@@ -85,34 +86,34 @@ public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContaine
             translatableComponents[1] = Component.translatable("screen.laserio.extract");
             translatableComponents[2] = Component.translatable("screen.laserio.stock");
             translatableComponents[3] = Component.translatable("screen.laserio.sensor");
-            guiGraphics.renderTooltip(font, translatableComponents[currentMode], mouseX, mouseY);
+            guiGraphics.setTooltipForNextFrame(font, translatableComponents[currentMode], mouseX, mouseY);
         }
         Button channelButton = buttons.get("channel");
         if (MiscTools.inBounds(channelButton.getX(), channelButton.getY(), channelButton.getWidth(), channelButton.getHeight(), mouseX, mouseY)) {
             if (currentMode != 3)
-                guiGraphics.renderTooltip(font, Component.translatable("screen.laserio.channel").append(String.valueOf(currentChannel)), mouseX, mouseY);
+                guiGraphics.setTooltipForNextFrame(font, Component.translatable("screen.laserio.channel").append(String.valueOf(currentChannel)), mouseX, mouseY);
         }
         Button redstoneChannelButton = buttons.get("redstoneChannel");
         if (MiscTools.inBounds(redstoneChannelButton.getX(), redstoneChannelButton.getY(), redstoneChannelButton.getWidth(), redstoneChannelButton.getHeight(), mouseX, mouseY)) {
-            guiGraphics.renderTooltip(font, Component.translatable("screen.laserio.redstonechannel").append(String.valueOf(currentRedstoneChannel)), mouseX, mouseY);
+            guiGraphics.setTooltipForNextFrame(font, Component.translatable("screen.laserio.redstonechannel").append(String.valueOf(currentRedstoneChannel)), mouseX, mouseY);
         }
         Button sneakyButton = buttons.get("sneaky");
         if (MiscTools.inBounds(sneakyButton.getX(), sneakyButton.getY(), sneakyButton.getWidth(), sneakyButton.getHeight(), mouseX, mouseY)) {
-            guiGraphics.renderTooltip(font, Component.translatable(String.valueOf(sneakyNames[currentSneaky + 1])), mouseX, mouseY);
+            guiGraphics.setTooltipForNextFrame(font, Component.translatable(String.valueOf(sneakyNames[currentSneaky + 1])), mouseX, mouseY);
         }
         Button amountButton = buttons.get("amount");
         if (MiscTools.inBounds(amountButton.getX(), amountButton.getY(), amountButton.getWidth(), amountButton.getHeight(), mouseX, mouseY)) {
             if (showExtractAmt()) {
-                guiGraphics.renderTooltip(font, Component.translatable("screen.laserio.extractamt"), mouseX, mouseY);
+                guiGraphics.setTooltipForNextFrame(font, Component.translatable("screen.laserio.extractamt"), mouseX, mouseY);
             }
             if (showPriority()) {
-                guiGraphics.renderTooltip(font, Component.translatable("screen.laserio.priority"), mouseX, mouseY);
+                guiGraphics.setTooltipForNextFrame(font, Component.translatable("screen.laserio.priority"), mouseX, mouseY);
             }
         }
         Button regulate = buttons.get("regulate");
         if (MiscTools.inBounds(regulate.getX(), regulate.getY(), regulate.getWidth(), regulate.getHeight(), mouseX, mouseY)) {
             if (showRegulate()) {
-                guiGraphics.renderTooltip(font, Component.translatable("screen.laserio.regulate"), mouseX, mouseY);
+                guiGraphics.setTooltipForNextFrame(font, Component.translatable("screen.laserio.regulate"), mouseX, mouseY);
             }
         }
         Button roundrobin = buttons.get("roundrobin");
@@ -122,7 +123,7 @@ public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContaine
                 translatableComponents[0] = Component.translatable("screen.laserio.false");
                 translatableComponents[1] = Component.translatable("screen.laserio.true");
                 translatableComponents[2] = Component.translatable("screen.laserio.enforced");
-                guiGraphics.renderTooltip(font, Component.translatable("screen.laserio.roundrobin").append(translatableComponents[currentRoundRobin]), mouseX, mouseY);
+                guiGraphics.setTooltipForNextFrame(font, Component.translatable("screen.laserio.roundrobin").append(translatableComponents[currentRoundRobin]), mouseX, mouseY);
             }
         }
         Button redstoneMode = buttons.get("redstoneMode");
@@ -131,34 +132,34 @@ public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContaine
             translatableComponents[0] = Component.translatable("screen.laserio.ignored");
             translatableComponents[1] = Component.translatable("screen.laserio.low");
             translatableComponents[2] = Component.translatable("screen.laserio.high");
-            guiGraphics.renderTooltip(font, Component.translatable("screen.laserio.redstoneMode").append(translatableComponents[currentRedstoneMode]), mouseX, mouseY);
+            guiGraphics.setTooltipForNextFrame(font, Component.translatable("screen.laserio.redstoneMode").append(translatableComponents[currentRedstoneMode]), mouseX, mouseY);
         }
         Button exact = buttons.get("exact");
         if (MiscTools.inBounds(exact.getX(), exact.getY(), exact.getWidth(), exact.getHeight(), mouseX, mouseY)) {
             if (showExactAmt()) { //Exact is the same conditions as ExtractAmt
-                guiGraphics.renderTooltip(font, Component.translatable("screen.laserio.exact"), mouseX, mouseY);
+                guiGraphics.setTooltipForNextFrame(font, Component.translatable("screen.laserio.exact"), mouseX, mouseY);
             }
         }
         Button speedButton = buttons.get("speed");
         if (MiscTools.inBounds(speedButton.getX(), speedButton.getY(), speedButton.getWidth(), speedButton.getHeight(), mouseX, mouseY)) {
             if (showExactAmt()) {
-                guiGraphics.renderTooltip(font, Component.translatable("screen.laserio.tickSpeed"), mouseX, mouseY);
+                guiGraphics.setTooltipForNextFrame(font, Component.translatable("screen.laserio.tickSpeed"), mouseX, mouseY);
             }
         }
         Button limitButton = buttons.get("limit");
         if (MiscTools.inBounds(limitButton.getX(), limitButton.getY(), limitButton.getWidth(), limitButton.getHeight(), mouseX, mouseY)) {
-            guiGraphics.renderTooltip(font, Component.translatable("screen.laserio.energylimit"), mouseX, mouseY);
+            guiGraphics.setTooltipForNextFrame(font, Component.translatable("screen.laserio.energylimit"), mouseX, mouseY);
         }
     }
 
     public void addAmtButton() {
-        buttons.put("amount", new NumberButton(getGuiLeft() + 125, getGuiTop() + 25, 46, 12, currentMode == 0 ? currentPriority : currentEnergyExtractAmt, (button) -> {
+        buttons.put("amount", new NumberButton(leftPos + 125, topPos + 25, 46, 12, currentMode == 0 ? currentPriority : currentEnergyExtractAmt, (button) -> {
             changeAmount(-1);
         }));
     }
 
     public void addLimitButton() {
-        buttons.put("limit", new NumberButton(getGuiLeft() + 147, getGuiTop() + 53, 24, 12, showExtractLimit() ? currentExtractLimitPercent : currentInsertLimitPercent, (button) -> {
+        buttons.put("limit", new NumberButton(leftPos + 147, topPos + 53, 24, 12, showExtractLimit() ? currentExtractLimitPercent : currentInsertLimitPercent, (button) -> {
             changeLimitAmount(-1);
         }));
     }
@@ -169,7 +170,7 @@ public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContaine
         modeTextures[1] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/modeextractor.png");
         modeTextures[2] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/modestocker.png");
         modeTextures[3] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/modesensor.png");
-        buttons.put("mode", new ToggleButton(getGuiLeft() + 5, getGuiTop() + 5, 16, 16, modeTextures, currentMode, (button) -> {
+        buttons.put("mode", new ToggleButton(leftPos + 5, topPos + 5, 16, 16, modeTextures, currentMode, (button) -> {
             currentMode = BaseCard.nextTransferMode(card);
             ((ToggleButton) button).setTexturePosition(currentMode);
             ((NumberButton) buttons.get("amount")).setValue(currentMode == 0 ? currentPriority : currentEnergyExtractAmt);
@@ -183,14 +184,14 @@ public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContaine
         redstoneTextures[0] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/redstoneignore.png");
         redstoneTextures[1] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/redstonelow.png");
         redstoneTextures[2] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/redstonehigh.png");
-        buttons.put("redstoneMode", new ToggleButton(getGuiLeft() + 105, getGuiTop() + 5, 16, 16, redstoneTextures, currentRedstoneMode, (button) -> {
+        buttons.put("redstoneMode", new ToggleButton(leftPos + 105, topPos + 5, 16, 16, redstoneTextures, currentRedstoneMode, (button) -> {
             currentRedstoneMode = (byte) (currentRedstoneMode == 2 ? 0 : currentRedstoneMode + 1);
             ((ToggleButton) button).setTexturePosition(currentRedstoneMode);
         }));
     }
 
     public void addRedstoneChannelButton() {
-        buttons.put("redstoneChannel", new ChannelButton(getGuiLeft() + 125, getGuiTop() + 5, 16, 16, currentRedstoneChannel, (button) -> {
+        buttons.put("redstoneChannel", new ChannelButton(leftPos + 125, topPos + 5, 16, 16, currentRedstoneChannel, (button) -> {
             currentRedstoneChannel = CardRedstone.nextRedstoneChannel(card);
             ((ChannelButton) button).setChannel(currentRedstoneChannel);
         }));
@@ -216,14 +217,14 @@ public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContaine
         addAmtButton();
         addLimitButton();
 
-        buttons.put("speed", new NumberButton(getGuiLeft() + 147, getGuiTop() + 39, 24, 12, currentTicks, (button) -> {
+        buttons.put("speed", new NumberButton(leftPos + 147, topPos + 39, 24, 12, currentTicks, (button) -> {
             changeTick(-1);
         }));
 
         Identifier[] exactTextures = new Identifier[2];
         exactTextures[0] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/exactfalse.png");
         exactTextures[1] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/exacttrue.png");
-        buttons.put("exact", new ToggleButton(getGuiLeft() + 25, getGuiTop() + 25, 16, 16, exactTextures, currentExact ? 1 : 0, (button) -> {
+        buttons.put("exact", new ToggleButton(leftPos + 25, topPos + 25, 16, 16, exactTextures, currentExact ? 1 : 0, (button) -> {
             currentExact = !currentExact;
             ((ToggleButton) button).setTexturePosition(currentExact ? 1 : 0);
         }));
@@ -232,7 +233,7 @@ public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContaine
         roundRobinTextures[0] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/roundrobinfalse.png");
         roundRobinTextures[1] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/roundrobintrue.png");
         roundRobinTextures[2] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/roundrobinenforced.png");
-        buttons.put("roundrobin", new ToggleButton(getGuiLeft() + 5, getGuiTop() + 25, 16, 16, roundRobinTextures, currentRoundRobin, (button) -> {
+        buttons.put("roundrobin", new ToggleButton(leftPos + 5, topPos + 25, 16, 16, roundRobinTextures, currentRoundRobin, (button) -> {
             currentRoundRobin = currentRoundRobin == 2 ? 0 : currentRoundRobin + 1;
             ((ToggleButton) button).setTexturePosition(currentRoundRobin);
         }));
@@ -240,7 +241,7 @@ public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContaine
         Identifier[] regulateTextures = new Identifier[2];
         regulateTextures[0] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/regulatefalse.png");
         regulateTextures[1] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/regulatetrue.png");
-        buttons.put("regulate", new ToggleButton(getGuiLeft() + 5, getGuiTop() + 25, 16, 16, regulateTextures, currentRegulate ? 1 : 0, (button) -> {
+        buttons.put("regulate", new ToggleButton(leftPos + 5, topPos + 25, 16, 16, regulateTextures, currentRegulate ? 1 : 0, (button) -> {
             currentRegulate = !currentRegulate;
             ((ToggleButton) button).setTexturePosition(currentRegulate ? 1 : 0);
         }));
@@ -249,7 +250,7 @@ public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContaine
         addRedstoneButton();
         addRedstoneChannelButton();
 
-        buttons.put("channel", new ChannelButton(getGuiLeft() + 5, getGuiTop() + 65, 16, 16, currentChannel, (button) -> {
+        buttons.put("channel", new ChannelButton(leftPos + 5, topPos + 65, 16, 16, currentChannel, (button) -> {
             currentChannel = BaseCard.nextChannel(card);
             ((ChannelButton) button).setChannel(currentChannel);
         }));
@@ -262,13 +263,13 @@ public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContaine
         sneakyTextures[4] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/sneaky-south.png");
         sneakyTextures[5] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/sneaky-west.png");
         sneakyTextures[6] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/sneaky-east.png");
-        buttons.put("sneaky", new ToggleButton(getGuiLeft() + 25, getGuiTop() + 5, 16, 16, sneakyTextures, currentSneaky + 1, (button) -> {
+        buttons.put("sneaky", new ToggleButton(leftPos + 25, topPos + 5, 16, 16, sneakyTextures, currentSneaky + 1, (button) -> {
             currentSneaky = BaseCard.nextSneaky(card);
             ((ToggleButton) button).setTexturePosition(currentSneaky + 1);
         }));
 
         if (container.direction != -1) {
-            buttons.put("return", new ExtendedButton(getGuiLeft() - 25, getGuiTop() + 1, 25, 20, Component.literal("<--"), (button) -> {
+            buttons.put("return", new ExtendedButton(leftPos - 25, topPos + 1, 25, 20, Component.literal("<--"), (button) -> {
                 openNode();
             }));
         }
@@ -331,8 +332,8 @@ public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContaine
     }
 
     public void changeAmount(int change) {
-        if (Screen.hasShiftDown()) change *= 10;
-        if (Screen.hasControlDown()) change *= 100;
+        if (Minecraft.getInstance().hasShiftDown()) change *= 10;
+        if (Minecraft.getInstance().hasControlDown()) change *= 100;
         int max = Config.MAX_FE_TICK.get();
         if (change < 0) {
             if (currentMode == 0) {
@@ -350,8 +351,8 @@ public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContaine
     }
 
     public void changeLimitAmount(int change) {
-        if (Screen.hasShiftDown()) change *= 10;
-        if (Screen.hasControlDown()) change *= 100;
+        if (Minecraft.getInstance().hasShiftDown()) change *= 10;
+        if (Minecraft.getInstance().hasControlDown()) change *= 100;
         if (change < 0) {
             if (showExtractLimit()) {
                 currentExtractLimitPercent = Math.max(currentExtractLimitPercent + change, 0);
@@ -368,8 +369,8 @@ public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContaine
     }
 
     public void changeTick(int change) {
-        if (Screen.hasShiftDown()) change *= 10;
-        if (Screen.hasControlDown()) change *= 64;
+        if (Minecraft.getInstance().hasShiftDown()) change *= 10;
+        if (Minecraft.getInstance().hasControlDown()) change *= 64;
         if (change < 0) {
             currentTicks = (Math.max(currentTicks + change, 1));
         } else {
@@ -402,11 +403,11 @@ public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContaine
     }
 
     @Override
-    protected void renderBg(GuiGraphics guiGraphics, float partialTicks, int mouseX, int mouseY) {
-        RenderSystem.setShaderTexture(0, GUI);
+    public void extractBackground(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
+        super.extractBackground(guiGraphics, mouseX, mouseY, partialTicks);
         int relX = (this.width - this.imageWidth) / 2;
         int relY = (this.height - this.imageHeight) / 2;
-        guiGraphics.blit(GUI, relX, relY, 0, 0, this.imageWidth, this.imageHeight);
+        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, GUI, relX, relY, 0, 0, this.imageWidth, this.imageHeight, GUI_TEXTURE_WIDTH, GUI_TEXTURE_HEIGHT);
     }
 
     @Override
@@ -421,20 +422,15 @@ public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContaine
     }
 
     @Override
-    public boolean keyPressed(int p_keyPressed_1_, int p_keyPressed_2_, int p_keyPressed_3_) {
-        InputConstants.Key mouseKey = InputConstants.getKey(p_keyPressed_1_, p_keyPressed_2_);
-        if (p_keyPressed_1_ == 256 || minecraft.options.keyInventory.isActiveAndMatches(mouseKey)) {
+    public boolean keyPressed(KeyEvent event) {
+        InputConstants.Key mouseKey = InputConstants.getKey(event);
+        if (event.isEscape() || minecraft.options.keyInventory.isActiveAndMatches(mouseKey)) {
             onClose();
 
             return true;
         }
 
-        return super.keyPressed(p_keyPressed_1_, p_keyPressed_2_, p_keyPressed_3_);
-    }
-
-
-    public boolean mouseReleased(double p_mouseReleased_1_, double p_mouseReleased_3_, int p_mouseReleased_5_) {
-        return super.mouseReleased(p_mouseReleased_1_, p_mouseReleased_3_, p_mouseReleased_5_);
+        return super.keyPressed(event);
     }
 
     @Override
@@ -476,7 +472,10 @@ public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContaine
     }
 
     @Override
-    public boolean mouseClicked(double x, double y, int btn) {
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        double x = event.x();
+        double y = event.y();
+        int btn = event.button();
         ChannelButton channelButton = ((ChannelButton) buttons.get("channel"));
         if ((currentMode != 3) && MiscTools.inBounds(channelButton.getX(), channelButton.getY(), channelButton.getWidth(), channelButton.getHeight(), x, y)) {
             if (btn == 0)
@@ -531,6 +530,6 @@ public class CardEnergyScreen extends AbstractContainerScreen<CardEnergyContaine
             return true;
         }
 
-        return super.mouseClicked(x, y, btn);
+        return super.mouseClicked(event, doubleClick);
     }
 }

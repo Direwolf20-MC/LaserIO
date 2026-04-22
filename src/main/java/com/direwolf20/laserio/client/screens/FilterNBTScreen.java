@@ -11,30 +11,33 @@ import com.direwolf20.laserio.common.network.data.UpdateFilterTagPayload;
 import com.direwolf20.laserio.util.MagicHelpers;
 import com.direwolf20.laserio.util.MiscTools;
 import com.mojang.blaze3d.platform.InputConstants;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.Util;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
+import net.minecraft.util.Util;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
-import java.awt.*;
 import java.util.*;
-import java.util.List;
 
 public class FilterNBTScreen extends AbstractContainerScreen<FilterNBTContainer> {
     private final Identifier GUI = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/filtertag.png");
+    private static final int GUI_TEXTURE_WIDTH = 256;
+    private static final int GUI_TEXTURE_HEIGHT = 256;
 
     protected final FilterNBTContainer container;
     private ItemStack filter;
@@ -51,35 +54,26 @@ public class FilterNBTScreen extends AbstractContainerScreen<FilterNBTContainer>
 
 
     public FilterNBTScreen(FilterNBTContainer container, Inventory inv, Component name) {
-        super(container, inv, name);
+        super(container, inv, name, 200, 254);
         this.container = container;
         this.filter = container.filterItem;
-        this.imageWidth = 200;
-        this.imageHeight = 254;
         this.tags = FilterTag.getTags(filter);
     }
 
     @Override
-    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
-        super.render(guiGraphics, mouseX, mouseY, partialTicks);
-        this.renderTooltip(guiGraphics, mouseX, mouseY);
-        if (MiscTools.inBounds(getGuiLeft() + 5, getGuiTop() + 10, 16, 16, mouseX, mouseY)) {
+    public void extractRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
+        super.extractRenderState(guiGraphics, mouseX, mouseY, partialTicks);
+        if (MiscTools.inBounds(leftPos + 5, topPos + 10, 16, 16, mouseX, mouseY)) {
             if (isAllowList)
-                guiGraphics.renderTooltip(font, Component.translatable("screen.laserio.allowlist"), mouseX, mouseY);
+                guiGraphics.setTooltipForNextFrame(font, Component.translatable("screen.laserio.allowlist"), mouseX, mouseY);
             else
-                guiGraphics.renderTooltip(font, Component.translatable("screen.laserio.denylist"), mouseX, mouseY);
+                guiGraphics.setTooltipForNextFrame(font, Component.translatable("screen.laserio.denylist"), mouseX, mouseY);
         }
         cycleRenders++;
-        int availableItemsstartX = getGuiLeft() + 7;
-        int availableItemstartY = getGuiTop() + 47;
+        int availableItemsstartX = leftPos + 7;
+        int availableItemstartY = topPos + 47;
         int color = 0x885B5B5B;
-        PoseStack matrixStack = guiGraphics.pose();
-        matrixStack.pushPose();
-        RenderSystem.disableDepthTest();
-        RenderSystem.colorMask(true, true, true, false);
         guiGraphics.fillGradient(availableItemsstartX - 2, availableItemstartY - 4, availableItemsstartX + 162, availableItemstartY + 110, color, color);
-        RenderSystem.colorMask(true, true, true, true);
-        matrixStack.popPose();
 
         this.displayTags = new ArrayList<>();
 
@@ -87,7 +81,6 @@ public class FilterNBTScreen extends AbstractContainerScreen<FilterNBTContainer>
 
         int tagsPerPage = 11;
 
-        ItemStack stackInSlot = container.handler.getStackInSlot(0);
         stackInSlotTags.sort(Comparator.naturalOrder());
         tags.sort(Comparator.naturalOrder());
 
@@ -98,7 +91,7 @@ public class FilterNBTScreen extends AbstractContainerScreen<FilterNBTContainer>
         maxPages = Math.max((int) Math.ceil((double) tempTags.size() / tagsPerPage) - 1, 0);
         if (page > maxPages) page = maxPages;
         String pagesLabel = MagicHelpers.withSuffix(page + 1) + " / " + MagicHelpers.withSuffix(maxPages + 1);
-        guiGraphics.drawString(font, pagesLabel, (availableItemsstartX - 2) / 2 + (availableItemsstartX + 162) / 2 - font.width(pagesLabel) / 2, getGuiTop() + 160, Color.DARK_GRAY.getRGB(), false);
+        guiGraphics.text(font, pagesLabel, (availableItemsstartX - 2) / 2 + (availableItemsstartX + 162) / 2 - font.width(pagesLabel) / 2, topPos + 160, 0xFF404040, false);
 
         int itemStackMin = (page * tagsPerPage);
         int itemStackMax = Math.min((page * tagsPerPage) + tagsPerPage, tempTags.size());
@@ -111,7 +104,7 @@ public class FilterNBTScreen extends AbstractContainerScreen<FilterNBTContainer>
         overSlot = -1;
 
         for (String tag : displayTags) {
-            int fontColor = stackInSlotTags.contains(tag) ? Color.BLUE.getRGB() : Color.DARK_GRAY.getRGB();
+            int fontColor = stackInSlotTags.contains(tag) ? 0xFF0000FF : 0xFF404040;
             renderScrollingString(guiGraphics, font, Component.literal(tag), availableItemsstartX, tagStartY, availableItemsstartX + 152, fontColor);
 
             if (MiscTools.inBounds(availableItemsstartX, tagStartY - 2, 160, 8, mouseX, mouseY)) {
@@ -121,8 +114,7 @@ public class FilterNBTScreen extends AbstractContainerScreen<FilterNBTContainer>
                 String tagValue = getTagValueFor(displayTags.get(overSlot));
                 if (!tagValue.isEmpty()) {
                     if (tagValue.length() > 60) tagValue = tagValue.substring(0, 60) + "...";
-                    guiGraphics.renderTooltip(font, Component.literal(tagValue), mouseX, mouseY);
-                    guiGraphics.flush(); //Not sure why this is necessary, but it is!
+                    guiGraphics.setTooltipForNextFrame(font, Component.literal(tagValue), mouseX, mouseY);
                 }
             }
 
@@ -131,10 +123,7 @@ public class FilterNBTScreen extends AbstractContainerScreen<FilterNBTContainer>
 
                 int x1 = availableItemsstartX + 160;
                 int y1 = tagStartY + 10;
-                guiGraphics.hLine(availableItemsstartX - 2, x1 - 0, tagStartY - 2, color);
-                guiGraphics.hLine(availableItemsstartX - 2, x1 - 0, y1 - 3, color);
-                guiGraphics.vLine(availableItemsstartX - 2, tagStartY - 2, y1 - 2, color);
-                guiGraphics.vLine(x1 - 0, tagStartY - 2, y1 - 2, color);
+                guiGraphics.outline(availableItemsstartX - 2, tagStartY - 2, x1 - (availableItemsstartX - 2), y1 - 2 - (tagStartY - 2), color);
             }
 
             tagStartY += 10;
@@ -142,7 +131,7 @@ public class FilterNBTScreen extends AbstractContainerScreen<FilterNBTContainer>
         }
     }
 
-    protected static void renderScrollingString(GuiGraphics graphics, Font fontRenderer, Component text, int xStart, int yStart, int xEnd, int textColor) {
+    protected static void renderScrollingString(GuiGraphicsExtractor graphics, Font fontRenderer, Component text, int xStart, int yStart, int xEnd, int textColor) {
         int textWidth = fontRenderer.width(text);
         int yEnd = yStart + fontRenderer.lineHeight;
         int maxRenderWidth = xEnd - xStart;
@@ -155,16 +144,16 @@ public class FilterNBTScreen extends AbstractContainerScreen<FilterNBTContainer>
             double scrollOffset = Mth.lerp(oscillation, 0.0D, (double) textOverflow);
 
             graphics.enableScissor(xStart, yStart, xEnd, yEnd);
-            graphics.drawString(fontRenderer, text, xStart - (int) scrollOffset, yStart, textColor, false);
+            graphics.text(fontRenderer, text, xStart - (int) scrollOffset, yStart, textColor, false);
             graphics.disableScissor();
         } else {
-            graphics.drawString(fontRenderer, text, xStart, yStart, textColor, false);
+            graphics.text(fontRenderer, text, xStart, yStart, textColor, false);
         }
     }
 
     protected void populateStackInSlotTags() {
         stackInSlotTags = new ArrayList<>();
-        ItemStack stackInSlot = container.handler.getStackInSlot(0);
+        ItemStack stackInSlot = container.handler.getResource(0).toStack(container.handler.getAmountAsInt(0));
         if (!stackInSlot.isEmpty()) {
             stackInSlot.getComponentsPatch().entrySet().forEach(t -> {
                 if (!stackInSlotTags.contains(t.getKey().toString()) && !tags.contains(t.getKey().toString()))
@@ -174,7 +163,7 @@ public class FilterNBTScreen extends AbstractContainerScreen<FilterNBTContainer>
     }
 
     protected String getTagValueFor(String name) {
-        ItemStack stackInSlot = container.handler.getStackInSlot(0);
+        ItemStack stackInSlot = container.handler.getResource(0).toStack(container.handler.getAmountAsInt(0));
         if (!stackInSlot.isEmpty()) {
             for (Map.Entry<DataComponentType<?>, Optional<?>> entry : stackInSlot.getComponentsPatch().entrySet()) {
                 if (entry.getKey().toString().equals(name)) {
@@ -200,13 +189,13 @@ public class FilterNBTScreen extends AbstractContainerScreen<FilterNBTContainer>
         allowListTextures[0] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/allowlistfalse.png");
         allowListTextures[1] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/allowlisttrue.png");
 
-        leftWidgets.add(new ToggleButton(getGuiLeft() + 5, getGuiTop() + 5, 16, 16, allowListTextures, isAllowList ? 1 : 0, (button) -> {
+        leftWidgets.add(new ToggleButton(leftPos + 5, topPos + 5, 16, 16, allowListTextures, isAllowList ? 1 : 0, (button) -> {
             isAllowList = !isAllowList;
             ((ToggleButton) button).setTexturePosition(isAllowList ? 1 : 0);
         }));
 
         Identifier add = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/add.png");
-        Button addButton = new IconButton(getGuiLeft() + 155, getGuiTop() + 5, 16, 16, add, (button) -> {
+        Button addButton = new IconButton(leftPos + 155, topPos + 5, 16, 16, add, (button) -> {
             if (!tagField.getValue().isEmpty()) {
                 String tag = tagField.getValue().toLowerCase(Locale.ROOT);
                 tag = tag.replaceAll("[^a-z0-9/._-]", "");
@@ -214,15 +203,15 @@ public class FilterNBTScreen extends AbstractContainerScreen<FilterNBTContainer>
                     tags.add(tag);
                 tagField.setValue("");
             } else {
-                ItemStack stack = container.handler.getStackInSlot(0);
+                ItemStack stack = container.handler.getResource(0).toStack(container.handler.getAmountAsInt(0));
                 if (!stack.isEmpty()) {
-                    if (hasShiftDown()) {
+                    if (Minecraft.getInstance().hasShiftDown()) {
                         stack.getItem().builtInRegistryHolder().tags().forEach(t -> {
                             String tag = t.location().toString().toLowerCase(Locale.ROOT);
                             if (!tags.contains(tag))
                                 tags.add(tag);
                         });
-                        container.handler.setStackInSlot(0, ItemStack.EMPTY);
+                        container.handler.set(0, ItemResource.EMPTY, 0);
                     } else {
                         if (selectedSlot != -1) {
                             String tag = displayTags.get(selectedSlot);
@@ -238,7 +227,7 @@ public class FilterNBTScreen extends AbstractContainerScreen<FilterNBTContainer>
         leftWidgets.add(addButton);
 
         Identifier remove = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/remove.png");
-        Button removeButton = new IconButton(getGuiLeft() + 135, getGuiTop() + 5, 16, 16, remove, (button) -> {
+        Button removeButton = new IconButton(leftPos + 135, topPos + 5, 16, 16, remove, (button) -> {
             if (selectedSlot != -1 && !tags.isEmpty()) {
                 tags.remove(displayTags.get(selectedSlot));
                 selectedSlot = -1;
@@ -247,24 +236,24 @@ public class FilterNBTScreen extends AbstractContainerScreen<FilterNBTContainer>
         leftWidgets.add(removeButton);
 
         Identifier clear = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/clear.png");
-        Button clearButton = new IconButton(getGuiLeft() + 115, getGuiTop() + 5, 16, 16, clear, (button) -> {
+        Button clearButton = new IconButton(leftPos + 115, topPos + 5, 16, 16, clear, (button) -> {
             tags.clear();
         });
         leftWidgets.add(clearButton);
 
         Identifier pageup = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/pageup.png");
-        Button pageUp = new IconButton(getGuiLeft() + 100, getGuiTop() + 157, 12, 12, pageup, (button) -> {
+        Button pageUp = new IconButton(leftPos + 100, topPos + 157, 12, 12, pageup, (button) -> {
             if (page < maxPages) page++;
         });
         leftWidgets.add(pageUp);
 
         Identifier pagedown = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/pagedown.png");
-        Button pageDown = new IconButton(getGuiLeft() + 58, getGuiTop() + 157, 12, 12, pagedown, (button) -> {
+        Button pageDown = new IconButton(leftPos + 58, topPos + 157, 12, 12, pagedown, (button) -> {
             if (page > 0) page--;
         });
         leftWidgets.add(pageDown);
 
-        tagField = new EditBox(font, getGuiLeft() + 7, getGuiTop() + 25, 160, 15, Component.empty());
+        tagField = new EditBox(font, leftPos + 7, topPos + 25, 160, 15, Component.empty());
         leftWidgets.add(tagField);
 
 
@@ -276,16 +265,14 @@ public class FilterNBTScreen extends AbstractContainerScreen<FilterNBTContainer>
     }
 
     @Override
-    protected void renderLabels(GuiGraphics guiGraphics, int mouseX, int mouseY) {
-        //font.draw(stack, Component.translatable("screen.laserio.allowlist").getString(), 5, 5, Color.DARK_GRAY.getRGB());
-        //font.draw(stack, Component.translatable("screen.laserio.comparenbt").getString(), 7, 35, Color.DARK_GRAY.getRGB());
-        //super.renderLabels(matrixStack, x, y);
+    protected void extractLabels(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
+        // Intentionally empty — original screen suppressed the default title labels.
     }
 
     @Override
-    protected void renderBg(GuiGraphics guiGraphics, float partialTicks, int mouseX, int mouseY) {
-        RenderSystem.setShaderTexture(0, GUI);
-        guiGraphics.blit(GUI, getGuiLeft(), getGuiTop(), 0, 0, this.imageWidth, this.imageHeight, this.imageWidth, this.imageHeight);
+    public void extractBackground(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
+        super.extractBackground(guiGraphics, mouseX, mouseY, partialTicks);
+        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, GUI, leftPos, topPos, 0, 0, this.imageWidth, this.imageHeight, this.imageWidth, this.imageHeight);
     }
 
     @Override
@@ -300,9 +287,9 @@ public class FilterNBTScreen extends AbstractContainerScreen<FilterNBTContainer>
     }
 
     @Override
-    public boolean keyPressed(int p_keyPressed_1_, int p_keyPressed_2_, int p_keyPressed_3_) {
-        InputConstants.Key mouseKey = InputConstants.getKey(p_keyPressed_1_, p_keyPressed_2_);
-        if (p_keyPressed_1_ == 256) {
+    public boolean keyPressed(KeyEvent event) {
+        InputConstants.Key mouseKey = InputConstants.getKey(event);
+        if (event.isEscape()) {
             if (tagField.isFocused()) {
                 tagField.setFocused(false);
                 return true;
@@ -320,7 +307,7 @@ public class FilterNBTScreen extends AbstractContainerScreen<FilterNBTContainer>
             }
         }
 
-        if (tagField.isFocused() && (p_keyPressed_1_ == 257 || p_keyPressed_1_ == 335)) { //enter key
+        if (tagField.isFocused() && (event.key() == 257 || event.key() == 335)) { //enter key
             if (!tagField.getValue().isEmpty()) {
                 String tag = tagField.getValue().toLowerCase(Locale.ROOT);
                 tag = tag.replaceAll("[^a-z0-9/._-]", "");
@@ -331,17 +318,20 @@ public class FilterNBTScreen extends AbstractContainerScreen<FilterNBTContainer>
             }
         }
 
-        return super.keyPressed(p_keyPressed_1_, p_keyPressed_2_, p_keyPressed_3_);
+        return super.keyPressed(event);
     }
 
     @Override
-    public boolean mouseClicked(double x, double y, int btn) {
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        double x = event.x();
+        double y = event.y();
+        int btn = event.button();
         if (MiscTools.inBounds(tagField.getX(), tagField.getY(), tagField.getWidth(), tagField.getHeight(), x, y) && btn == 1)
             tagField.setValue("");
 
         if (overSlot >= 0) {
             selectedSlot = overSlot;
-            if (hasShiftDown()) {
+            if (Minecraft.getInstance().hasShiftDown()) {
                 if (selectedSlot != -1) {
                     if (selectedSlot >= stackInSlotTags.size()) {
                         tags.remove(displayTags.get(selectedSlot));
@@ -372,11 +362,7 @@ public class FilterNBTScreen extends AbstractContainerScreen<FilterNBTContainer>
             ClientPacketDistributor.sendToServer(new GhostSlotPayload(hoveredSlot.index, stack, stack.getCount(), -1));
             return true;
         }
-        return super.mouseClicked(x, y, btn);
-    }
-
-    public boolean mouseReleased(double p_mouseReleased_1_, double p_mouseReleased_3_, int p_mouseReleased_5_) {
-        return super.mouseReleased(p_mouseReleased_1_, p_mouseReleased_3_, p_mouseReleased_5_);
+        return super.mouseClicked(event, doubleClick);
     }
 
     @Override

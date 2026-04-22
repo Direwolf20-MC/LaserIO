@@ -6,13 +6,14 @@ import com.direwolf20.laserio.common.network.data.ChangeColorPayload;
 import com.direwolf20.laserio.common.network.data.OpenNodePayload;
 import com.direwolf20.laserio.util.MiscTools;
 import com.direwolf20.laserio.util.Vec2i;
-import com.mojang.blaze3d.systems.RenderSystem;
 import it.unimi.dsi.fastutil.ints.IntConsumer;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -33,6 +34,8 @@ import java.util.Map;
 
 public class LaserNodeSettingsScreen extends Screen {
     private final Identifier GUI = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/laser_node_settings.png");
+    private static final int GUI_TEXTURE_WIDTH = 256;
+    private static final int GUI_TEXTURE_HEIGHT = 256;
     protected final LaserNodeContainer container;
     protected int imageWidth = 176;
     protected int imageHeight = 166;
@@ -89,19 +92,19 @@ public class LaserNodeSettingsScreen extends Screen {
         List<AbstractWidget> leftWidgets = new ArrayList<>();
 
         if (container.side != -1) {
-            Button returnButton = new ExtendedButton(getGuiLeft() - 25, getGuiTop() + 1, 25, 20, Component.literal("<--"), (button) -> {
+            Button returnButton = new ExtendedButton(leftPos - 25, topPos + 1, 25, 20, Component.literal("<--"), (button) -> {
                 ClientPacketDistributor.sendToServer(new OpenNodePayload(container.tile.getBlockPos(), (byte) container.side));
                 Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
             });
             leftWidgets.add(returnButton);
         }
 
-        Button applyButton = new ExtendedButton(getGuiLeft() + 25, getGuiTop() + 150, 50, 20, Component.translatable("screen.laserio.apply"), (button) -> {
+        Button applyButton = new ExtendedButton(leftPos + 25, topPos + 150, 50, 20, Component.translatable("screen.laserio.apply"), (button) -> {
             syncColors();
         });
         leftWidgets.add(applyButton);
 
-        Button defaultButton = new ExtendedButton(getGuiLeft() + 100, getGuiTop() + 150, 50, 20, Component.translatable("screen.laserio.default"), (button) -> {
+        Button defaultButton = new ExtendedButton(leftPos + 100, topPos + 150, 50, 20, Component.translatable("screen.laserio.default"), (button) -> {
             Color defaultColor = container.tile.getDefaultColor();
             laserRed = defaultColor.getRed();
             sliderRed.setValue(laserRed);
@@ -117,35 +120,35 @@ public class LaserNodeSettingsScreen extends Screen {
         });
         leftWidgets.add(defaultButton);
 
-        sliderRed = new ExtendedSlider(getGuiLeft() + 15, getGuiTop() + 45, 150, 15, Component.translatable("screen.laserio.red").append(": "), Component.empty(), 0, 255, this.laserRed, true) {
+        sliderRed = new ExtendedSlider(leftPos + 15, topPos + 45, 150, 15, Component.translatable("screen.laserio.red").append(": "), Component.empty(), 0, 255, this.laserRed, true) {
             @Override
             protected void applyValue() {
                 laserRed = this.getValueInt();
             }
         };
         leftWidgets.add(sliderRed);
-        sliderGreen = new ExtendedSlider(getGuiLeft() + 15, getGuiTop() + 65, 150, 15, Component.translatable("screen.laserio.green").append(": "), Component.empty(), 0, 255, this.laserGreen, true) {
+        sliderGreen = new ExtendedSlider(leftPos + 15, topPos + 65, 150, 15, Component.translatable("screen.laserio.green").append(": "), Component.empty(), 0, 255, this.laserGreen, true) {
             @Override
             protected void applyValue() {
                 laserGreen = this.getValueInt();
             }
         };
         leftWidgets.add(sliderGreen);
-        sliderBlue = new ExtendedSlider(getGuiLeft() + 15, getGuiTop() + 85, 150, 15, Component.translatable("screen.laserio.blue").append(": "), Component.empty(), 0, 255, this.laserBlue, true) {
+        sliderBlue = new ExtendedSlider(leftPos + 15, topPos + 85, 150, 15, Component.translatable("screen.laserio.blue").append(": "), Component.empty(), 0, 255, this.laserBlue, true) {
             @Override
             protected void applyValue() {
                 laserBlue = this.getValueInt();
             }
         };
         leftWidgets.add(sliderBlue);
-        sliderAlpha = new ExtendedSlider(getGuiLeft() + 15, getGuiTop() + 105, 150, 15, Component.translatable("screen.laserio.alpha").append(": "), Component.empty(), 0, 255, this.laserAlpha, true) {
+        sliderAlpha = new ExtendedSlider(leftPos + 15, topPos + 105, 150, 15, Component.translatable("screen.laserio.alpha").append(": "), Component.empty(), 0, 255, this.laserAlpha, true) {
             @Override
             protected void applyValue() {
                 laserAlpha = this.getValueInt();
             }
         };
         leftWidgets.add(sliderAlpha);
-        sliderWrenchAlpha = new ExtendedSlider(getGuiLeft() + 15, getGuiTop() + 125, 150, 15, Component.translatable("screen.laserio.wrench").append(": "), Component.empty(), 0, 255, this.wrenchAlpha, true) {
+        sliderWrenchAlpha = new ExtendedSlider(leftPos + 15, topPos + 125, 150, 15, Component.translatable("screen.laserio.wrench").append(": "), Component.empty(), 0, 255, this.wrenchAlpha, true) {
             @Override
             protected void applyValue() {
                 wrenchAlpha = this.getValueInt();
@@ -168,11 +171,9 @@ public class LaserNodeSettingsScreen extends Screen {
     }
 
     @Override
-    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
-        //this.renderBackground(guiGraphics);
-        //this.renderBg(guiGraphics, partialTicks, mouseX, mouseY);
-        super.render(guiGraphics, mouseX, mouseY, partialTicks);
-        this.renderLabels(guiGraphics, mouseX, mouseY);
+    public void extractRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
+        super.extractRenderState(guiGraphics, mouseX, mouseY, partialTicks);
+        renderLabels(guiGraphics, mouseX, mouseY);
     }
 
     @Override
@@ -191,33 +192,33 @@ public class LaserNodeSettingsScreen extends Screen {
         ClientPacketDistributor.sendToServer(new ChangeColorPayload(container.tile.getBlockPos(), new Color(laserRed, laserGreen, laserBlue, laserAlpha).getRGB(), wrenchAlpha));
     }
 
-    protected void renderLabels(GuiGraphics guiGraphics, int mouseX, int mouseY) {
-        guiGraphics.pose().pushPose();
-        guiGraphics.pose().translate(getGuiLeft(), getGuiTop(), 0);
+    protected void renderLabels(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
+        guiGraphics.pose().pushMatrix();
+        guiGraphics.pose().translate(leftPos, topPos);
         guiGraphics.fill(tabs[container.side].x + 2, tabs[container.side].y + 2, tabs[container.side].x + 22, tabs[container.side].y + 14, 0xFFC6C6C6);
         guiGraphics.fill(tabs[container.side].x, tabs[container.side].y + 11, tabs[container.side].x + 2, tabs[container.side].y + 12, 0xFFFFFFFF);
         guiGraphics.fill(tabs[container.side].x + 22, tabs[container.side].y + 11, tabs[container.side].x + 24, tabs[container.side].y + 12, 0xFFFFFFFF);
-        guiGraphics.drawString(font, Component.translatable("screen.laserio.settings"), imageWidth / 2 - font.width(Component.translatable("screen.laserio.settings")) / 2, 20, Color.DARK_GRAY.getRGB(), false);
-        guiGraphics.drawString(font, "U", 15, 7, Color.DARK_GRAY.getRGB(), false);
-        guiGraphics.drawString(font, "D", 43, 7, Color.DARK_GRAY.getRGB(), false);
-        guiGraphics.drawString(font, "N", 71, 7, Color.DARK_GRAY.getRGB(), false);
-        guiGraphics.drawString(font, "S", 99, 7, Color.DARK_GRAY.getRGB(), false);
-        guiGraphics.drawString(font, "W", 128, 7, Color.DARK_GRAY.getRGB(), false);
-        guiGraphics.drawString(font, "E", 155, 7, Color.DARK_GRAY.getRGB(), false);
+        guiGraphics.text(font, Component.translatable("screen.laserio.settings"), imageWidth / 2 - font.width(Component.translatable("screen.laserio.settings")) / 2, 20, Color.DARK_GRAY.getRGB() | 0xFF000000, false);
+        guiGraphics.text(font, "U", 15, 7, Color.DARK_GRAY.getRGB() | 0xFF000000, false);
+        guiGraphics.text(font, "D", 43, 7, Color.DARK_GRAY.getRGB() | 0xFF000000, false);
+        guiGraphics.text(font, "N", 71, 7, Color.DARK_GRAY.getRGB() | 0xFF000000, false);
+        guiGraphics.text(font, "S", 99, 7, Color.DARK_GRAY.getRGB() | 0xFF000000, false);
+        guiGraphics.text(font, "W", 128, 7, Color.DARK_GRAY.getRGB() | 0xFF000000, false);
+        guiGraphics.text(font, "E", 155, 7, Color.DARK_GRAY.getRGB() | 0xFF000000, false);
         for (Direction direction : Direction.values()) {
             ItemStack itemStack = getAdjacentBlock(direction);
             if (!itemStack.isEmpty()) {
-                guiGraphics.renderItem(itemStack, tabs[direction.ordinal()].x + 4, tabs[direction.ordinal()].y - 14, 0);
-                if (MiscTools.inBounds(getGuiLeft() + tabs[direction.ordinal()].x + 4, getGuiTop() + tabs[direction.ordinal()].y - 14, 16, 16, mouseX, mouseY)) {
-                    guiGraphics.renderTooltip(font, itemStack, mouseX - getGuiLeft(), mouseY - getGuiTop());
+                guiGraphics.item(itemStack, tabs[direction.ordinal()].x + 4, tabs[direction.ordinal()].y - 14, 0);
+                if (MiscTools.inBounds(leftPos + tabs[direction.ordinal()].x + 4, topPos + tabs[direction.ordinal()].y - 14, 16, 16, mouseX, mouseY)) {
+                    guiGraphics.setTooltipForNextFrame(font, itemStack, mouseX - leftPos, mouseY - topPos);
                 }
             }
         }
-        guiGraphics.pose().translate(0, 0, 100);
+        guiGraphics.nextStratum();
         int startX = 15;
         int startY = 30;
         guiGraphics.fill(startX, startY, startX + 150, startY + 10, new Color(laserRed, laserGreen, laserBlue, laserAlpha).getRGB());
-        guiGraphics.pose().popPose();
+        guiGraphics.pose().popMatrix();
     }
 
     protected ItemStack getAdjacentBlock(Direction direction) {
@@ -227,48 +228,49 @@ public class LaserNodeSettingsScreen extends Screen {
     }
 
     @Override
-    public void renderBackground(GuiGraphics guiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
-        super.renderBackground(guiGraphics, pMouseX, pMouseY, pPartialTick);
-        RenderSystem.setShaderTexture(0, GUI);
+    public void extractBackground(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
+        super.extractBackground(guiGraphics, mouseX, mouseY, partialTicks);
         int relX = (this.width - this.imageWidth) / 2;
         int relY = (this.height - this.imageHeight) / 2;
-        guiGraphics.blit(GUI, relX, relY, 0, 0, this.imageWidth, this.imageHeight);
+        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, GUI, relX, relY, 0, 0, this.imageWidth, this.imageHeight, GUI_TEXTURE_WIDTH, GUI_TEXTURE_HEIGHT);
     }
 
     @Override
-    public boolean mouseClicked(double x, double y, int btn) {
-        if (MiscTools.inBounds(getGuiLeft() + tabs[1].x, getGuiTop() + tabs[1].y, 24, 12, x, y)) {
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        double x = event.x();
+        double y = event.y();
+        if (MiscTools.inBounds(leftPos + tabs[1].x, topPos + tabs[1].y, 24, 12, x, y)) {
             ClientPacketDistributor.sendToServer(new OpenNodePayload(container.tile.getBlockPos(), (byte) 1));
             Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
             return true;
         }
-        if (MiscTools.inBounds(getGuiLeft() + tabs[0].x, getGuiTop() + tabs[0].y, 24, 12, x, y)) {
+        if (MiscTools.inBounds(leftPos + tabs[0].x, topPos + tabs[0].y, 24, 12, x, y)) {
             ClientPacketDistributor.sendToServer(new OpenNodePayload(container.tile.getBlockPos(), (byte) 0));
             Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
             return true;
         }
-        if (MiscTools.inBounds(getGuiLeft() + tabs[2].x, getGuiTop() + tabs[2].y, 24, 12, x, y)) {
+        if (MiscTools.inBounds(leftPos + tabs[2].x, topPos + tabs[2].y, 24, 12, x, y)) {
             ClientPacketDistributor.sendToServer(new OpenNodePayload(container.tile.getBlockPos(), (byte) 2));
             Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
             return true;
         }
-        if (MiscTools.inBounds(getGuiLeft() + tabs[3].x, getGuiTop() + tabs[3].y, 24, 12, x, y)) {
+        if (MiscTools.inBounds(leftPos + tabs[3].x, topPos + tabs[3].y, 24, 12, x, y)) {
             ClientPacketDistributor.sendToServer(new OpenNodePayload(container.tile.getBlockPos(), (byte) 3));
             Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
             return true;
         }
-        if (MiscTools.inBounds(getGuiLeft() + tabs[4].x, getGuiTop() + tabs[4].y, 24, 12, x, y)) {
+        if (MiscTools.inBounds(leftPos + tabs[4].x, topPos + tabs[4].y, 24, 12, x, y)) {
             ClientPacketDistributor.sendToServer(new OpenNodePayload(container.tile.getBlockPos(), (byte) 4));
             Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
             return true;
         }
-        if (MiscTools.inBounds(getGuiLeft() + tabs[5].x, getGuiTop() + tabs[5].y, 24, 12, x, y)) {
+        if (MiscTools.inBounds(leftPos + tabs[5].x, topPos + tabs[5].y, 24, 12, x, y)) {
             ClientPacketDistributor.sendToServer(new OpenNodePayload(container.tile.getBlockPos(), (byte) 5));
             Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
             return true;
         }
 
-        return super.mouseClicked(x, y, btn);
+        return super.mouseClicked(event, doubleClick);
     }
 
     @Override

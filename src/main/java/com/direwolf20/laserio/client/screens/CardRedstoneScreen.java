@@ -9,11 +9,13 @@ import com.direwolf20.laserio.common.network.data.OpenNodePayload;
 import com.direwolf20.laserio.common.network.data.UpdateRedstoneCardPayload;
 import com.direwolf20.laserio.util.MiscTools;
 import com.mojang.blaze3d.platform.InputConstants;
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -29,6 +31,8 @@ import java.util.Map;
 
 public class CardRedstoneScreen extends AbstractContainerScreen<CardRedstoneContainer> {
     private final Identifier GUI = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/redstonecard.png");
+    private static final int GUI_TEXTURE_WIDTH = 256;
+    private static final int GUI_TEXTURE_HEIGHT = 256;
 
     protected final CardRedstoneContainer container;
     protected byte currentMode;
@@ -44,16 +48,14 @@ public class CardRedstoneScreen extends AbstractContainerScreen<CardRedstoneCont
     }
 
     @Override
-    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
-        //this.renderBackground(guiGraphics);
-        super.render(guiGraphics, mouseX, mouseY, partialTicks);
-        this.renderTooltip(guiGraphics, mouseX, mouseY);
+    public void extractRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
+        super.extractRenderState(guiGraphics, mouseX, mouseY, partialTicks);
         Button modeButton = buttons.get("mode");
         if (MiscTools.inBounds(modeButton.getX(), modeButton.getY(), modeButton.getWidth(), modeButton.getHeight(), mouseX, mouseY)) {
             MutableComponent translatableComponents[] = new MutableComponent[3];
             translatableComponents[0] = Component.translatable("screen.laserio.input");
             translatableComponents[1] = Component.translatable("screen.laserio.output");
-            guiGraphics.renderTooltip(font, translatableComponents[currentMode], mouseX, mouseY);
+            guiGraphics.setTooltipForNextFrame(font, translatableComponents[currentMode], mouseX, mouseY);
         }
         if (currentMode == 1) {
             Button strongButton = buttons.get("strong");
@@ -61,12 +63,12 @@ public class CardRedstoneScreen extends AbstractContainerScreen<CardRedstoneCont
                 MutableComponent translatableComponents[] = new MutableComponent[2];
                 translatableComponents[0] = Component.translatable("screen.laserio.weak");
                 translatableComponents[1] = Component.translatable("screen.laserio.strong");
-                guiGraphics.renderTooltip(font, translatableComponents[currentStrong ? 1 : 0], mouseX, mouseY);
+                guiGraphics.setTooltipForNextFrame(font, translatableComponents[currentStrong ? 1 : 0], mouseX, mouseY);
             }
         }
         Button channelButton = buttons.get("channel");
         if (MiscTools.inBounds(channelButton.getX(), channelButton.getY(), channelButton.getWidth(), channelButton.getHeight(), mouseX, mouseY)) {
-            guiGraphics.renderTooltip(font, Component.translatable("screen.laserio.redstonechannel").append(String.valueOf(currentRedstoneChannel)), mouseX, mouseY);
+            guiGraphics.setTooltipForNextFrame(font, Component.translatable("screen.laserio.redstonechannel").append(String.valueOf(currentRedstoneChannel)), mouseX, mouseY);
         }
     }
 
@@ -74,7 +76,7 @@ public class CardRedstoneScreen extends AbstractContainerScreen<CardRedstoneCont
         Identifier[] modeTextures = new Identifier[2];
         modeTextures[0] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/redstoneinput.png");
         modeTextures[1] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/redstoneoutput.png");
-        buttons.put("mode", new ToggleButton(getGuiLeft() + 5, getGuiTop() + 5, 16, 16, modeTextures, currentMode, (button) -> {
+        buttons.put("mode", new ToggleButton(leftPos + 5, topPos + 5, 16, 16, modeTextures, currentMode, (button) -> {
             currentMode = CardRedstone.nextTransferMode(card);
             ((ToggleButton) button).setTexturePosition(currentMode);
             modeChange();
@@ -85,14 +87,14 @@ public class CardRedstoneScreen extends AbstractContainerScreen<CardRedstoneCont
         Identifier[] strongTextures = new Identifier[2];
         strongTextures[0] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/redstonelow.png");
         strongTextures[1] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/redstonehigh.png");
-        buttons.put("strong", new ToggleButton(getGuiLeft() + 5, getGuiTop() + 25, 16, 16, strongTextures, currentStrong ? 1 : 0, (button) -> {
+        buttons.put("strong", new ToggleButton(leftPos + 5, topPos + 25, 16, 16, strongTextures, currentStrong ? 1 : 0, (button) -> {
             currentStrong = !currentStrong;
             ((ToggleButton) button).setTexturePosition(currentStrong ? 1 : 0);
         }));
     }
 
     public void addChannelButton() {
-        buttons.put("channel", new ChannelButton(getGuiLeft() + 5, getGuiTop() + 65, 16, 16, currentRedstoneChannel, (button) -> {
+        buttons.put("channel", new ChannelButton(leftPos + 5, topPos + 65, 16, 16, currentRedstoneChannel, (button) -> {
             currentRedstoneChannel = CardRedstone.nextRedstoneChannel(card);
             ((ChannelButton) button).setChannel(currentRedstoneChannel);
         }));
@@ -109,7 +111,7 @@ public class CardRedstoneScreen extends AbstractContainerScreen<CardRedstoneCont
         addStrongButton();
 
         if (container.direction != -1) {
-            buttons.put("return", new ExtendedButton(getGuiLeft() - 25, getGuiTop() + 1, 25, 20, Component.literal("<--"), (button) -> {
+            buttons.put("return", new ExtendedButton(leftPos - 25, topPos + 1, 25, 20, Component.literal("<--"), (button) -> {
                 openNode();
             }));
         }
@@ -132,25 +134,16 @@ public class CardRedstoneScreen extends AbstractContainerScreen<CardRedstoneCont
     }
 
     @Override
-    protected void renderLabels(GuiGraphics guiGraphics, int mouseX, int mouseY) {
-        /*stack.pushPose();
-        stack.scale(0.5f, 0.5f, 0.5f);
-        if (showExtractAmt()) {
-            font.draw(stack, Component.translatable("screen.laserio.extractamt").getString() + ":", 5*2, 45*2, Color.DARK_GRAY.getRGB());
-        }
-        if (showPriority()) {
-            font.draw(stack, Component.translatable("screen.laserio.priority").getString() + ":", 5*2, 50*2, Color.DARK_GRAY.getRGB());
-        }
-        stack.popPose();*/
-        //super.renderLabels(matrixStack, x, y);
+    protected void extractLabels(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
+        // Intentionally empty — original screen suppressed the default title labels.
     }
 
     @Override
-    protected void renderBg(GuiGraphics guiGraphics, float partialTicks, int mouseX, int mouseY) {
-        RenderSystem.setShaderTexture(0, GUI);
+    public void extractBackground(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
+        super.extractBackground(guiGraphics, mouseX, mouseY, partialTicks);
         int relX = (this.width - this.imageWidth) / 2;
         int relY = (this.height - this.imageHeight) / 2;
-        guiGraphics.blit(GUI, relX, relY, 0, 0, this.imageWidth, this.imageHeight);
+        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, GUI, relX, relY, 0, 0, this.imageWidth, this.imageHeight, GUI_TEXTURE_WIDTH, GUI_TEXTURE_HEIGHT);
     }
 
     @Override
@@ -165,20 +158,15 @@ public class CardRedstoneScreen extends AbstractContainerScreen<CardRedstoneCont
     }
 
     @Override
-    public boolean keyPressed(int p_keyPressed_1_, int p_keyPressed_2_, int p_keyPressed_3_) {
-        InputConstants.Key mouseKey = InputConstants.getKey(p_keyPressed_1_, p_keyPressed_2_);
-        if (p_keyPressed_1_ == 256 || minecraft.options.keyInventory.isActiveAndMatches(mouseKey)) {
+    public boolean keyPressed(KeyEvent event) {
+        InputConstants.Key mouseKey = InputConstants.getKey(event);
+        if (event.isEscape() || minecraft.options.keyInventory.isActiveAndMatches(mouseKey)) {
             onClose();
 
             return true;
         }
 
-        return super.keyPressed(p_keyPressed_1_, p_keyPressed_2_, p_keyPressed_3_);
-    }
-
-
-    public boolean mouseReleased(double p_mouseReleased_1_, double p_mouseReleased_3_, int p_mouseReleased_5_) {
-        return super.mouseReleased(p_mouseReleased_1_, p_mouseReleased_3_, p_mouseReleased_5_);
+        return super.keyPressed(event);
     }
 
     @Override
@@ -201,7 +189,10 @@ public class CardRedstoneScreen extends AbstractContainerScreen<CardRedstoneCont
     }
 
     @Override
-    public boolean mouseClicked(double x, double y, int btn) {
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        double x = event.x();
+        double y = event.y();
+        int btn = event.button();
         ChannelButton channelButton = ((ChannelButton) buttons.get("channel"));
         if (MiscTools.inBounds(channelButton.getX(), channelButton.getY(), channelButton.getWidth(), channelButton.getHeight(), x, y)) {
             if (btn == 0)
@@ -213,6 +204,6 @@ public class CardRedstoneScreen extends AbstractContainerScreen<CardRedstoneCont
             return true;
         }
 
-        return super.mouseClicked(x, y, btn);
+        return super.mouseClicked(event, doubleClick);
     }
 }

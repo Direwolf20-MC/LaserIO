@@ -10,10 +10,12 @@ import com.direwolf20.laserio.common.network.data.GhostSlotPayload;
 import com.direwolf20.laserio.common.network.data.UpdateFilterPayload;
 import com.direwolf20.laserio.util.MiscTools;
 import com.mojang.blaze3d.platform.InputConstants;
-import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
@@ -26,6 +28,8 @@ import java.util.List;
 
 public class FilterBasicScreen extends AbstractContainerScreen<FilterBasicContainer> {
     private final Identifier GUI = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/basicfilter.png");
+    private static final int GUI_TEXTURE_WIDTH = 256;
+    private static final int GUI_TEXTURE_HEIGHT = 256;
 
     protected final FilterBasicContainer container;
     private ItemStack filter;
@@ -39,22 +43,20 @@ public class FilterBasicScreen extends AbstractContainerScreen<FilterBasicContai
     }
 
     @Override
-    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
-        //this.renderBackground(guiGraphics);
-        super.render(guiGraphics, mouseX, mouseY, partialTicks);
-        this.renderTooltip(guiGraphics, mouseX, mouseY);
-        if (MiscTools.inBounds(getGuiLeft() + 5, getGuiTop() + 10, 16, 16, mouseX, mouseY)) {
+    public void extractRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
+        super.extractRenderState(guiGraphics, mouseX, mouseY, partialTicks);
+        if (MiscTools.inBounds(leftPos + 5, topPos + 10, 16, 16, mouseX, mouseY)) {
             if (isAllowList)
-                guiGraphics.renderTooltip(font, Component.translatable("screen.laserio.allowlist"), mouseX, mouseY);
+                guiGraphics.setTooltipForNextFrame(font, Component.translatable("screen.laserio.allowlist"), mouseX, mouseY);
             else
-                guiGraphics.renderTooltip(font, Component.translatable("screen.laserio.denylist"), mouseX, mouseY);
+                guiGraphics.setTooltipForNextFrame(font, Component.translatable("screen.laserio.denylist"), mouseX, mouseY);
         }
         if (!(filter.getItem() instanceof FilterMod)) {
-            if (MiscTools.inBounds(getGuiLeft() + 5, getGuiTop() + 25, 16, 16, mouseX, mouseY)) {
+            if (MiscTools.inBounds(leftPos + 5, topPos + 25, 16, 16, mouseX, mouseY)) {
                 if (isCompareNBT)
-                    guiGraphics.renderTooltip(font, Component.translatable("screen.laserio.nbttrue"), mouseX, mouseY);
+                    guiGraphics.setTooltipForNextFrame(font, Component.translatable("screen.laserio.nbttrue"), mouseX, mouseY);
                 else
-                    guiGraphics.renderTooltip(font, Component.translatable("screen.laserio.nbtfalse"), mouseX, mouseY);
+                    guiGraphics.setTooltipForNextFrame(font, Component.translatable("screen.laserio.nbtfalse"), mouseX, mouseY);
             }
         }
     }
@@ -71,7 +73,7 @@ public class FilterBasicScreen extends AbstractContainerScreen<FilterBasicContai
         allowListTextures[0] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/allowlistfalse.png");
         allowListTextures[1] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/allowlisttrue.png");
 
-        leftWidgets.add(new ToggleButton(getGuiLeft() + 5, getGuiTop() + 5, 16, 16, allowListTextures, isAllowList ? 1 : 0, (button) -> {
+        leftWidgets.add(new ToggleButton(leftPos + 5, topPos + 5, 16, 16, allowListTextures, isAllowList ? 1 : 0, (button) -> {
             isAllowList = !isAllowList;
             ((ToggleButton) button).setTexturePosition(isAllowList ? 1 : 0);
         }));
@@ -81,7 +83,7 @@ public class FilterBasicScreen extends AbstractContainerScreen<FilterBasicContai
             nbtTextures[0] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/matchnbtfalse.png");
             nbtTextures[1] = Identifier.fromNamespaceAndPath(LaserIO.MODID, "textures/gui/buttons/matchnbttrue.png");
 
-            leftWidgets.add(new ToggleButton(getGuiLeft() + 5, getGuiTop() + 25, 16, 16, nbtTextures, isCompareNBT ? 1 : 0, (button) -> {
+            leftWidgets.add(new ToggleButton(leftPos + 5, topPos + 25, 16, 16, nbtTextures, isCompareNBT ? 1 : 0, (button) -> {
                 isCompareNBT = !isCompareNBT;
                 ((ToggleButton) button).setTexturePosition(isCompareNBT ? 1 : 0);
             }));
@@ -95,18 +97,16 @@ public class FilterBasicScreen extends AbstractContainerScreen<FilterBasicContai
     }
 
     @Override
-    protected void renderLabels(GuiGraphics guiGraphics, int mouseX, int mouseY) {
-        //font.draw(stack, Component.translatable("screen.laserio.allowlist").getString(), 5, 5, Color.DARK_GRAY.getRGB());
-        //font.draw(stack, Component.translatable("screen.laserio.comparenbt").getString(), 7, 35, Color.DARK_GRAY.getRGB());
-        //super.renderLabels(matrixStack, x, y);
+    protected void extractLabels(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
+        // Intentionally empty — original screen suppressed the default title labels.
     }
 
     @Override
-    protected void renderBg(GuiGraphics guiGraphics, float partialTicks, int mouseX, int mouseY) {
-        RenderSystem.setShaderTexture(0, GUI);
+    public void extractBackground(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
+        super.extractBackground(guiGraphics, mouseX, mouseY, partialTicks);
         int relX = (this.width - this.imageWidth) / 2;
         int relY = (this.height - this.imageHeight) / 2;
-        guiGraphics.blit(GUI, relX, relY, 0, 0, this.imageWidth, this.imageHeight);
+        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, GUI, relX, relY, 0, 0, this.imageWidth, this.imageHeight, GUI_TEXTURE_WIDTH, GUI_TEXTURE_HEIGHT);
     }
 
     @Override
@@ -121,21 +121,21 @@ public class FilterBasicScreen extends AbstractContainerScreen<FilterBasicContai
     }
 
     @Override
-    public boolean keyPressed(int p_keyPressed_1_, int p_keyPressed_2_, int p_keyPressed_3_) {
-        InputConstants.Key mouseKey = InputConstants.getKey(p_keyPressed_1_, p_keyPressed_2_);
-        if (p_keyPressed_1_ == 256 || minecraft.options.keyInventory.isActiveAndMatches(mouseKey)) {
+    public boolean keyPressed(KeyEvent event) {
+        InputConstants.Key mouseKey = InputConstants.getKey(event);
+        if (event.isEscape() || minecraft.options.keyInventory.isActiveAndMatches(mouseKey)) {
             onClose();
 
             return true;
         }
 
-        return super.keyPressed(p_keyPressed_1_, p_keyPressed_2_, p_keyPressed_3_);
+        return super.keyPressed(event);
     }
 
     @Override
-    public boolean mouseClicked(double x, double y, int btn) {
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
         if (hoveredSlot == null || !(hoveredSlot instanceof FilterBasicSlot))
-            return super.mouseClicked(x, y, btn);
+            return super.mouseClicked(event, doubleClick);
 
         // By splitting the stack we can get air easily :) perfect removal basically
         ItemStack stack = this.menu.getCarried();// getMinecraft().player.inventoryMenu.getCarried();
@@ -145,10 +145,6 @@ public class FilterBasicScreen extends AbstractContainerScreen<FilterBasicContai
         ClientPacketDistributor.sendToServer(new GhostSlotPayload(hoveredSlot.index, stack, stack.getCount(), -1));
 
         return true;
-    }
-
-    public boolean mouseReleased(double p_mouseReleased_1_, double p_mouseReleased_3_, int p_mouseReleased_5_) {
-        return super.mouseReleased(p_mouseReleased_1_, p_mouseReleased_3_, p_mouseReleased_5_);
     }
 
     @Override
