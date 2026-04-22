@@ -121,13 +121,12 @@ public class CardCloner extends Item {
 
     public static ItemStack getFilter(ItemStack stack) {
         CardItemHandler cardItemHandler = new CardItemHandler(CardItemContainer.SLOTS, stack);
-        ItemStack filterStack = cardItemHandler.getStackInSlot(0);
-        return filterStack;
+        return cardItemHandler.getResource(0).toStack(cardItemHandler.getAmountAsInt(0));
     }
 
     public static int getOverclockCount(ItemStack stack) {
         CardItemHandler cardItemHandler = new CardItemHandler(CardItemContainer.SLOTS, stack);
-        ItemStack overclockStack = cardItemHandler.getStackInSlot(1);
+        ItemStack overclockStack = cardItemHandler.getResource(1).toStack(cardItemHandler.getAmountAsInt(1));
         if (overclockStack.isEmpty()) return 0;
 
         return overclockStack.getCount();
@@ -136,11 +135,7 @@ public class CardCloner extends Item {
     public static ItemStack getOverclocker(ItemStack stack) {
         String cardType = getItemType(stack);
         CardItemHandler cardItemHandler = new CardItemHandler(CardItemContainer.SLOTS, stack);
-        ItemStack overclockStack;
-        if (cardType.equals("card_energy"))
-            overclockStack = cardItemHandler.getStackInSlot(0);
-        else
-            overclockStack = cardItemHandler.getStackInSlot(1);
-        return overclockStack;
+        int slot = cardType.equals("card_energy") ? 0 : 1;
+        return cardItemHandler.getResource(slot).toStack(cardItemHandler.getAmountAsInt(slot));
     }
 }

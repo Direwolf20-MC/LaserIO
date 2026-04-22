@@ -15,13 +15,13 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.SlotItemHandler;
-import net.neoforged.neoforge.items.wrapper.InvWrapper;
+import net.minecraft.world.item.Items;
+import net.neoforged.neoforge.transfer.access.ItemAccess;
+import net.neoforged.neoforge.transfer.item.ResourceHandlerSlot;
 
 import javax.annotation.Nullable;
 import java.util.UUID;
@@ -31,7 +31,7 @@ public class LaserNodeContainer extends AbstractContainerMenu {
     public static final int CARDHOLDERSLOTS = 15;
     public static final int CARDSLOTS = 9;
     public Player playerEntity;
-    private IItemHandler playerInventory;
+    private Inventory playerInventory;
     ContainerLevelAccess containerLevelAccess;
     public ItemStack cardHolder;
     public CardHolderItemStackHandler cardHolderHandler;
@@ -50,27 +50,26 @@ public class LaserNodeContainer extends AbstractContainerMenu {
         this.playerEntity = player;
         this.tile = tile;
         this.side = side;
-        this.playerInventory = new InvWrapper(playerInventory);
+        this.playerInventory = playerInventory;
         this.containerLevelAccess = containerLevelAccess;
         if (handler != null) {
-            addSlotBox(handler, 0, 62, 32, 3, 18, 3, 18);
-            addSlotRange(handler, 9, 152, 78, 1, 18);
+            addLaserNodeSlotBox(handler, 0, 62, 32, 3, 18, 3, 18);
+            addLaserNodeSlotRange(handler, 9, 152, 78, 1, 18);
         }
         this.cardHolder = cardHolder;
 
-        //if (!cardHolder.isEmpty()) {
         if (!cardHolder.isEmpty())
-            cardHolderHandler = new CardHolderItemStackHandler(CardHolderContainer.SLOTS, cardHolder);
+            cardHolderHandler = new CardHolderItemStackHandler(CardHolderContainer.SLOTS, ItemAccess.forStack(cardHolder));
         else
-            cardHolderHandler = new CardHolderItemStackHandler(CardHolderContainer.SLOTS, ItemStack.EMPTY);
-            addSlotBox(cardHolderHandler, 0, -92, 32, 5, 18, 3, 18);
-            cardHolderUUID = CardHolder.getUUID(cardHolder);
-        //}
+            cardHolderHandler = new CardHolderItemStackHandler(CardHolderContainer.SLOTS, ItemAccess.forStack(new ItemStack(Items.STONE)));
+        addCardHolderSlotBox(cardHolderHandler, 0, -92, 32, 5, 18, 3, 18);
+        cardHolderUUID = CardHolder.getUUID(cardHolder);
+
         layoutPlayerInventorySlots(8, 99);
     }
 
     @Override
-    public void clicked(int slotId, int dragType, ClickType clickTypeIn, Player player) {
+    public void clicked(int slotId, int dragType, ContainerInput clickTypeIn, Player player) {
         if (slotId >= 0) {
             if (slotId < SLOTS && slots.get(slotId) instanceof CardHolderSlot) {
                 ItemStack carriedItem = getCarried();
@@ -91,10 +90,9 @@ public class LaserNodeContainer extends AbstractContainerMenu {
     @Override
     public boolean stillValid(Player playerIn) {
         if (cardHolder.isEmpty() && cardHolderUUID != null) {
-            //System.out.println("Lost card holder!");
-            Inventory playerInventory = playerEntity.getInventory();
-            for (int i = 0; i < playerInventory.items.size(); i++) {
-                ItemStack itemStack = playerInventory.items.get(i);
+            Inventory playerInv = playerEntity.getInventory();
+            for (int i = 0; i < playerInv.getNonEquipmentItems().size(); i++) {
+                ItemStack itemStack = playerInv.getNonEquipmentItems().get(i);
                 if (itemStack.getItem() instanceof CardHolder) {
                     if (CardHolder.getUUID(itemStack).equals(cardHolderUUID)) {
                         cardHolder = itemStack;
@@ -149,7 +147,6 @@ public class LaserNodeContainer extends AbstractContainerMenu {
                 ++i;
             }
         }
-        //}
 
         if (!itemStack.isEmpty()) {
             if (p_38907_) {
@@ -308,23 +305,38 @@ public class LaserNodeContainer extends AbstractContainerMenu {
     }
 
 
-    private int addSlotRange(IItemHandler handler, int index, int x, int y, int amount, int dx) {
+    private int addLaserNodeSlotRange(LaserNodeItemHandler handler, int index, int x, int y, int amount, int dx) {
         for (int i = 0; i < amount; i++) {
-            if (handler instanceof LaserNodeItemHandler && index < 9)
-                addSlot(new LaserNodeSlot(handler, index, x, y));
-            else if ((handler.getSlots() == CardHolderContainer.SLOTS))
-                addSlot(new CardHolderSlot(handler, index, x, y));
+            if (index < 9)
+                addSlot(new LaserNodeSlot(handler, handler::set, index, x, y));
             else
-                addSlot(new SlotItemHandler(handler, index, x, y));
+                addSlot(new ResourceHandlerSlot(handler, handler::set, index, x, y));
             x += dx;
             index++;
         }
         return index;
     }
 
-    private int addSlotBox(IItemHandler handler, int index, int x, int y, int horAmount, int dx, int verAmount, int dy) {
+    private int addLaserNodeSlotBox(LaserNodeItemHandler handler, int index, int x, int y, int horAmount, int dx, int verAmount, int dy) {
         for (int j = 0; j < verAmount; j++) {
-            index = addSlotRange(handler, index, x, y, horAmount, dx);
+            index = addLaserNodeSlotRange(handler, index, x, y, horAmount, dx);
+            y += dy;
+        }
+        return index;
+    }
+
+    private int addCardHolderSlotRange(CardHolderItemStackHandler handler, int index, int x, int y, int amount, int dx) {
+        for (int i = 0; i < amount; i++) {
+            addSlot(new CardHolderSlot(handler, handler::set, index, x, y));
+            x += dx;
+            index++;
+        }
+        return index;
+    }
+
+    private int addCardHolderSlotBox(CardHolderItemStackHandler handler, int index, int x, int y, int horAmount, int dx, int verAmount, int dy) {
+        for (int j = 0; j < verAmount; j++) {
+            index = addCardHolderSlotRange(handler, index, x, y, horAmount, dx);
             y += dy;
         }
         return index;
@@ -332,10 +344,15 @@ public class LaserNodeContainer extends AbstractContainerMenu {
 
     private void layoutPlayerInventorySlots(int leftCol, int topRow) {
         // Player inventory
-        addSlotBox(playerInventory, 9, leftCol, topRow, 9, 18, 3, 18);
-
+        for (int row = 0; row < 3; row++) {
+            for (int col = 0; col < 9; col++) {
+                addSlot(new Slot(playerInventory, col + row * 9 + 9, leftCol + col * 18, topRow + row * 18));
+            }
+        }
         // Hotbar
         topRow += 58;
-        addSlotRange(playerInventory, 0, leftCol, topRow, 9, 18);
+        for (int col = 0; col < 9; col++) {
+            addSlot(new Slot(playerInventory, col, leftCol + col * 18, topRow));
+        }
     }
 }

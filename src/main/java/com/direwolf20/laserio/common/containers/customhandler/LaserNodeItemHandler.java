@@ -5,11 +5,10 @@ import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.common.items.upgrades.OverclockerNode;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.items.ItemStackHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
 
-import javax.annotation.Nonnull;
-
-public class LaserNodeItemHandler extends ItemStackHandler {
+public class LaserNodeItemHandler extends ItemStacksResourceHandler {
     LaserNodeBE blockEntity;
 
     public LaserNodeItemHandler(int size) {
@@ -22,39 +21,42 @@ public class LaserNodeItemHandler extends ItemStackHandler {
     }
 
     @Override
-    protected void onContentsChanged(int slot) {
+    protected void onContentsChanged(int slot, ItemStack previous) {
         // To make sure the TE persists when the chunk is saved later we need to
-        // mark it dirty every time the item handler changes
+        // mark it dirty every time the item handler changes.
+        // Client-side menus create dummy handlers with null blockEntity; null-guard.
         if (blockEntity == null) return;
         blockEntity.updateThisNode();
     }
 
     @Override
-    public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
-        if (slot == 9)
-            return stack.getItem() instanceof OverclockerNode;
-        return stack.getItem() instanceof BaseCard;
-    }
-
-    @Nonnull
-    @Override
-    public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
-        /*if (slot < LaserNodeContainer.CARDSLOTS && !(stack.getItem() instanceof BaseCard))
-            return stack;*/
-        return super.insertItem(slot, stack, simulate);
+    public boolean isValid(int index, ItemResource resource) {
+        if (resource.isEmpty()) return true;
+        if (index == 9)
+            return resource.getItem() instanceof OverclockerNode;
+        return resource.getItem() instanceof BaseCard;
     }
 
     @Override
-    public int getSlotLimit(int slot) {
-        if (slot == 9)
+    protected int getCapacity(int index, ItemResource resource) {
+        if (index == 9)
             return 8;
         return 1;
     }
 
     public void reSize(int size) {
         NonNullList<ItemStack> newStacks = NonNullList.withSize(size, ItemStack.EMPTY);
-        for (int i = 0; i < stacks.size(); i++)
+        for (int i = 0; i < Math.min(stacks.size(), size); i++)
             newStacks.set(i, stacks.get(i));
-        stacks = newStacks;
+        setStacks(newStacks);
+    }
+
+    // Convenience wrappers to keep legacy call sites in LaserNodeBE concise
+    public int getSlots() {
+        return size();
+    }
+
+    public ItemStack getStackInSlot(int slot) {
+        return getResource(slot).toStack(getAmountAsInt(slot));
     }
 }

@@ -18,7 +18,9 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.items.ComponentItemHandler;
+import net.neoforged.neoforge.transfer.access.ItemAccess;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -57,7 +59,7 @@ public class CardHolder extends Item {
     }
 
     public CardHolderItemStackHandler getItemHandler(ItemStack stack) {
-        return new CardHolderItemStackHandler(CardHolderContainer.SLOTS, stack);
+        return new CardHolderItemStackHandler(CardHolderContainer.SLOTS, ItemAccess.forStack(stack));
     }
 
     @Override
@@ -75,11 +77,10 @@ public class CardHolder extends Item {
     public static ItemStack addCardToInventory(ItemStack cardHolder, ItemStack card) {
         if (card.getItem() instanceof BaseFilter && !card.isComponentsPatchEmpty())
             return card;
-        ComponentItemHandler handler = new ComponentItemHandler(cardHolder, LaserIODataComponents.ITEMSTACK_HANDLER.get(), CardHolderContainer.SLOTS);
-        if (handler == null) return card;
+        CardHolderItemStackHandler handler = new CardHolderItemStackHandler(CardHolderContainer.SLOTS, ItemAccess.forStack(cardHolder));
         List<Integer> emptySlots = new ArrayList<>();
-        for (int i = 0; i < handler.getSlots(); i++) {
-            ItemStack stackInSlot = handler.getStackInSlot(i);
+        for (int i = 0; i < handler.size(); i++) {
+            ItemStack stackInSlot = handler.getResource(i).toStack(handler.getAmountAsInt(i));
             if (stackInSlot.isEmpty()) emptySlots.add(i);
             if (!stackInSlot.isEmpty() && ItemStack.isSameItemSameComponents(stackInSlot, card)) {
                 int j = stackInSlot.getCount() + card.getCount();
@@ -87,11 +88,11 @@ public class CardHolder extends Item {
                 if (j <= maxSize) {
                     card.setCount(0);
                     stackInSlot.setCount(j);
-                    handler.setStackInSlot(i, stackInSlot);
+                    handler.set(i, ItemResource.of(stackInSlot), stackInSlot.getCount());
                 } else if (stackInSlot.getCount() < maxSize) {
                     card.shrink(maxSize - stackInSlot.getCount());
                     stackInSlot.setCount(maxSize);
-                    handler.setStackInSlot(i, stackInSlot);
+                    handler.set(i, ItemResource.of(stackInSlot), stackInSlot.getCount());
                 }
                 if (card.isEmpty()) {
                     return card;
@@ -99,7 +100,12 @@ public class CardHolder extends Item {
             }
         }
         if (emptySlots.isEmpty()) return card;
-        handler.insertItem(emptySlots.get(0), card.split(card.getCount()), false);
+        try (Transaction tx = Transaction.openRoot()) {
+            int count = card.getCount();
+            int inserted = handler.insert(emptySlots.get(0), ItemResource.of(card), count, tx);
+            tx.commit();
+            card.shrink(inserted);
+        }
         return card;
     }
 

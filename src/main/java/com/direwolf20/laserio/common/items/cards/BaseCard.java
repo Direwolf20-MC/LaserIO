@@ -172,7 +172,7 @@ public class BaseCard extends Item {
 
     public static ItemStack getFilter(ItemStack card) {
         CardItemHandler cardItemHandler = getInventory(card);
-        return cardItemHandler.getStackInSlot(0);
+        return cardItemHandler.getResource(0).toStack(cardItemHandler.getAmountAsInt(0));
     }
 
     public static byte setSneaky(ItemStack card, byte sneaky) {

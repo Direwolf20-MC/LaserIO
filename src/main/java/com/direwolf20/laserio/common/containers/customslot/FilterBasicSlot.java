@@ -2,19 +2,21 @@ package com.direwolf20.laserio.common.containers.customslot;
 
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.SlotItemHandler;
+import net.neoforged.neoforge.transfer.IndexModifier;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.item.ResourceHandlerSlot;
 
 import javax.annotation.Nonnull;
 
 
-public class FilterBasicSlot extends SlotItemHandler {
+public class FilterBasicSlot extends ResourceHandlerSlot {
 
     protected boolean enabled = true;
     public boolean isCount;
 
-    public FilterBasicSlot(IItemHandler itemHandler, int index, int xPosition, int yPosition, boolean isCount) {
-        super(itemHandler, index, xPosition, yPosition);
+    public FilterBasicSlot(ResourceHandler<ItemResource> handler, IndexModifier<ItemResource> slotModifier, int index, int xPosition, int yPosition, boolean isCount) {
+        super(handler, slotModifier, index, xPosition, yPosition);
         this.isCount = isCount;
     }
 

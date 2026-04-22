@@ -1,29 +1,27 @@
 package com.direwolf20.laserio.common.containers;
 
 import com.direwolf20.laserio.common.containers.customslot.CardHolderSlot;
-import com.direwolf20.laserio.setup.LaserIODataComponents;
 import com.direwolf20.laserio.setup.Registration;
+import com.direwolf20.laserio.util.CardHolderItemStackHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.items.ComponentItemHandler;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.SlotItemHandler;
-import net.neoforged.neoforge.items.wrapper.InvWrapper;
+import net.minecraft.world.item.Items;
+import net.neoforged.neoforge.transfer.access.ItemAccess;
 
 
 public class CardHolderContainer extends AbstractContainerMenu {
     public static final int SLOTS = 15;
     public ItemStack cardHolder;
     public Player playerEntity;
-    private IItemHandler playerInventory;
+    private Inventory playerInventory;
     public BlockPos sourceContainer = BlockPos.ZERO;
-    public ComponentItemHandler cardHolderHandler;
+    public CardHolderItemStackHandler cardHolderHandler;
 
     public CardHolderContainer(int windowId, Inventory playerInventory, Player player, RegistryFriendlyByteBuf extraData) {
         this(windowId, playerInventory, player, ItemStack.OPTIONAL_STREAM_CODEC.decode(extraData));
@@ -32,8 +30,9 @@ public class CardHolderContainer extends AbstractContainerMenu {
     public CardHolderContainer(int windowId, Inventory playerInventory, Player player, ItemStack cardHolder) {
         super(Registration.CardHolder_Container.get(), windowId);
         playerEntity = player;
-        this.cardHolderHandler = new ComponentItemHandler(cardHolder, LaserIODataComponents.ITEMSTACK_HANDLER.get(), SLOTS);
-        this.playerInventory = new InvWrapper(playerInventory);
+        this.cardHolderHandler = new CardHolderItemStackHandler(SLOTS,
+                cardHolder.isEmpty() ? ItemAccess.forStack(new ItemStack(Items.STONE)) : ItemAccess.forStack(cardHolder));
+        this.playerInventory = playerInventory;
         this.cardHolder = cardHolder;
         if (cardHolderHandler != null) {
             addSlotBox(cardHolderHandler, 0, 44, 17, 5, 18, 3, 18);
@@ -43,7 +42,7 @@ public class CardHolderContainer extends AbstractContainerMenu {
     }
 
     @Override
-    public void clicked(int slotId, int dragType, ClickType clickTypeIn, Player player) {
+    public void clicked(int slotId, int dragType, ContainerInput clickTypeIn, Player player) {
         if (slotId >= 0 && slotId < SLOTS && slots.get(slotId) instanceof CardHolderSlot) {
             ItemStack carriedItem = getCarried();
             ItemStack stackInSlot = slots.get(slotId).getItem();
@@ -182,19 +181,16 @@ public class CardHolderContainer extends AbstractContainerMenu {
         return itemstack;
     }
 
-    private int addSlotRange(IItemHandler handler, int index, int x, int y, int amount, int dx) {
+    private int addSlotRange(CardHolderItemStackHandler handler, int index, int x, int y, int amount, int dx) {
         for (int i = 0; i < amount; i++) {
-            if ((handler.getSlots() == SLOTS))
-                addSlot(new CardHolderSlot(handler, index, x, y));
-            else
-                addSlot(new SlotItemHandler(handler, index, x, y));
+            addSlot(new CardHolderSlot(handler, handler::set, index, x, y));
             x += dx;
             index++;
         }
         return index;
     }
 
-    private int addSlotBox(IItemHandler handler, int index, int x, int y, int horAmount, int dx, int verAmount, int dy) {
+    private int addSlotBox(CardHolderItemStackHandler handler, int index, int x, int y, int horAmount, int dx, int verAmount, int dy) {
         for (int j = 0; j < verAmount; j++) {
             index = addSlotRange(handler, index, x, y, horAmount, dx);
             y += dy;
@@ -204,11 +200,16 @@ public class CardHolderContainer extends AbstractContainerMenu {
 
     private void layoutPlayerInventorySlots(int leftCol, int topRow) {
         // Player inventory
-        addSlotBox(playerInventory, 9, leftCol, topRow, 9, 18, 3, 18);
-
+        for (int row = 0; row < 3; row++) {
+            for (int col = 0; col < 9; col++) {
+                addSlot(new Slot(playerInventory, col + row * 9 + 9, leftCol + col * 18, topRow + row * 18));
+            }
+        }
         // Hotbar
         topRow += 58;
-        addSlotRange(playerInventory, 0, leftCol, topRow, 9, 18);
+        for (int col = 0; col < 9; col++) {
+            addSlot(new Slot(playerInventory, col, leftCol + col * 18, topRow));
+        }
     }
 
     @Override

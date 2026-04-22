@@ -5,16 +5,18 @@ import com.direwolf20.laserio.common.items.filters.BaseFilter;
 import com.direwolf20.laserio.common.items.upgrades.OverclockerCard;
 import com.direwolf20.laserio.common.items.upgrades.OverclockerNode;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.SlotItemHandler;
+import net.neoforged.neoforge.transfer.IndexModifier;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.item.ResourceHandlerSlot;
 
 import javax.annotation.Nonnull;
 
-public class CardHolderSlot extends SlotItemHandler {
+public class CardHolderSlot extends ResourceHandlerSlot {
     protected boolean enabled = true;
 
-    public CardHolderSlot(IItemHandler itemHandler, int index, int xPosition, int yPosition) {
-        super(itemHandler, index, xPosition, yPosition);
+    public CardHolderSlot(ResourceHandler<ItemResource> handler, IndexModifier<ItemResource> slotModifier, int index, int xPosition, int yPosition) {
+        super(handler, slotModifier, index, xPosition, yPosition);
     }
 
     @Override
@@ -25,13 +27,11 @@ public class CardHolderSlot extends SlotItemHandler {
     @Override
     public int getMaxStackSize() {
         return 64;
-        //return super.getMaxStackSize();
     }
 
     @Override
     public int getMaxStackSize(@Nonnull ItemStack stack) {
         return 64;
-        //return super.getMaxStackSize(stack);
     }
 
     @Override

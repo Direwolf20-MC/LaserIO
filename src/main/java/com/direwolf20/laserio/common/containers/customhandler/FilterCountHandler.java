@@ -2,8 +2,7 @@ package com.direwolf20.laserio.common.containers.customhandler;
 
 import com.direwolf20.laserio.common.items.filters.FilterCount;
 import net.minecraft.world.item.ItemStack;
-
-import javax.annotation.Nonnull;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 public class FilterCountHandler extends FilterBasicHandler {
 
@@ -12,31 +11,26 @@ public class FilterCountHandler extends FilterBasicHandler {
     }
 
     @Override
-    public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
-        return super.isItemValid(slot, stack);
+    public boolean isValid(int index, ItemResource resource) {
+        return super.isValid(index, resource);
     }
 
     @Override
-    public int getSlotLimit(int slot) {
+    protected int getCapacity(int index, ItemResource resource) {
         return 1;
     }
 
     @Override
-    public ItemStack getStackInSlot(int slot) {
-        ItemStack returnStack = super.getStackInSlot(slot);
-        int amt = FilterCount.getSlotCount(this.stack, slot);
-        if (amt != returnStack.getCount())
-            returnStack.setCount(amt);
-        return returnStack;
+    protected int getAmountFrom(ItemResource accessResource, int index) {
+        return FilterCount.getSlotCount(this.stack, index);
     }
 
     @Override
-    public void setStackInSlot(int slot, ItemStack stack) {
-        ItemStack stackCopy = stack.copy();
-        int amt = stackCopy.getCount();
-        stackCopy.setCount(1);
-        super.setStackInSlot(slot, stackCopy);
-        FilterCount.setSlotCount(this.stack, slot, amt);
+    public void set(int index, ItemResource resource, int amount) {
+        // The underlying ItemContainerContents stores count=1; the true amount is stored
+        // out-of-band in FILTER_COUNT_SLOT_COUNTS on the filter card.
+        super.set(index, resource, Math.min(amount, 1));
+        FilterCount.setSlotCount(this.stack, index, amount);
     }
 
     public void setMBAmountInSlot(int slot, int mbAmt) {
@@ -45,9 +39,12 @@ public class FilterCountHandler extends FilterBasicHandler {
     }
 
     public void syncSlots() {
-        for (int i = 0; i < this.getSlots(); i++) {
-            if (FilterCount.getSlotAmount(this.stack, i) == 0)
-                FilterCount.setSlotCount(this.stack, i, this.getStackInSlot(i).getCount());
+        for (int i = 0; i < this.size(); i++) {
+            if (FilterCount.getSlotAmount(this.stack, i) == 0) {
+                ItemResource slotResource = this.getResource(i);
+                int slotCount = slotResource.isEmpty() ? 0 : 1;
+                FilterCount.setSlotCount(this.stack, i, slotCount);
+            }
         }
     }
 }

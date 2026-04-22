@@ -20,15 +20,14 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.SlotItemHandler;
-import net.neoforged.neoforge.items.wrapper.InvWrapper;
+import net.neoforged.neoforge.transfer.access.ItemAccess;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 import javax.annotation.Nullable;
 import java.util.UUID;
@@ -42,7 +41,7 @@ public class CardItemContainer extends AbstractContainerMenu {
     public FilterBasicHandler filterHandler;
     public ItemStack cardItem;
     public Player playerEntity;
-    protected IItemHandler playerInventory;
+    protected Inventory playerInventory;
     public BlockPos sourceContainer = BlockPos.ZERO;
     public byte direction = -1;
     public ItemStack cardHolder;
@@ -63,18 +62,19 @@ public class CardItemContainer extends AbstractContainerMenu {
         super(Registration.CardItem_Container.get(), windowId);
         playerEntity = player;
         this.handler = BaseCard.getInventory(cardItem);
-        this.playerInventory = new InvWrapper(playerInventory);
+        this.playerInventory = playerInventory;
         this.cardItem = cardItem;
         if (handler != null) {
-            addSlotRange(handler, 0, 80, 5, 1, 18);
-            addSlotRange(handler, 1, 153, 5, 1, 18);
-            addSlotBox(filterHandler, 0, 44, 25, 5, 18, 3, 18);
+            addSlot(new CardItemSlot(handler, handler::set, this, 0, 80, 5));
+            addSlot(new CardOverclockSlot(handler, handler::set, 1, 153, 5));
+            getFilterHandler();
+            addFilterSlotBox(filterHandler, 0, 44, 25, 5, 18, 3, 18);
             toggleFilterSlots();
         }
         cardHolder = findCardHolders(player);
         if (!cardHolder.isEmpty()) {
-            this.cardHolderHandler = new CardHolderItemStackHandler(CardHolderContainer.SLOTS, cardHolder);
-            addSlotBox(cardHolderHandler, 0, -92, 32, 5, 18, 3, 18);
+            this.cardHolderHandler = new CardHolderItemStackHandler(CardHolderContainer.SLOTS, ItemAccess.forStack(cardHolder));
+            addCardHolderSlotBox(cardHolderHandler, 0, -92, 32, 5, 18, 3, 18);
             cardHolderUUID = CardHolder.getUUID(cardHolder);
         }
         layoutPlayerInventorySlots(8, 84);
@@ -87,7 +87,7 @@ public class CardItemContainer extends AbstractContainerMenu {
     }
 
     @Override
-    public void clicked(int slotId, int dragType, ClickType clickTypeIn, Player player) {
+    public void clicked(int slotId, int dragType, ContainerInput clickTypeIn, Player player) {
         if (slotId >= SLOTS && slotId < SLOTS + FILTERSLOTS) {
             return;
         }
@@ -127,9 +127,9 @@ public class CardItemContainer extends AbstractContainerMenu {
     public boolean stillValid(Player playerIn) {
         if (cardHolder.isEmpty() && cardHolderUUID != null) {
             //System.out.println("Lost card holder!");
-            Inventory playerInventory = playerEntity.getInventory();
-            for (int i = 0; i < playerInventory.items.size(); i++) {
-                ItemStack itemStack = playerInventory.items.get(i);
+            Inventory playerInv = playerEntity.getInventory();
+            for (int i = 0; i < playerInv.getNonEquipmentItems().size(); i++) {
+                ItemStack itemStack = playerInv.getNonEquipmentItems().get(i);
                 if (itemStack.getItem() instanceof CardHolder) {
                     if (CardHolder.getUUID(itemStack).equals(cardHolderUUID)) {
                         cardHolder = itemStack;
@@ -139,8 +139,9 @@ public class CardItemContainer extends AbstractContainerMenu {
             }
         }
         //The below ensures that when you nake a change to the filter data ,it gets saved to the card's Data Components
-        if (!ItemStack.isSameItemSameComponents(handler.getStackInSlot(0), filterHandler.stack))
-            handler.setStackInSlot(0, filterHandler.stack);
+        ItemStack slot0 = handler.getResource(0).toStack(handler.getAmountAsInt(0));
+        if (!ItemStack.isSameItemSameComponents(slot0, filterHandler.stack))
+            handler.set(0, ItemResource.of(filterHandler.stack), filterHandler.stack.getCount());
         if (sourceContainer.equals(BlockPos.ZERO))
             return playerIn.getMainHandItem().equals(cardItem) || playerIn.getOffhandItem().equals(cardItem);
         return true;
@@ -151,7 +152,7 @@ public class CardItemContainer extends AbstractContainerMenu {
         if (slot >= SLOTS && slot < SLOTS + FILTERSLOTS && (slots.get(slot) instanceof FilterBasicSlot) && filterStack.getItem() instanceof FilterCount) {
             return FilterCount.getSlotCount(filterStack, slot - SLOTS);
         }
-        return filterHandler.getStackInSlot(slot - SLOTS).getCount();
+        return filterHandler.getResource(slot - SLOTS).toStack(filterHandler.getAmountAsInt(slot - SLOTS)).getCount();
     }
 
     @Override
@@ -299,17 +300,11 @@ public class CardItemContainer extends AbstractContainerMenu {
         return itemstack;
     }
 
-    protected void updateFilterSlots(IItemHandler handler, int index, int x, int y, int horAmount, int dx, int verAmount, int dy) {
+    protected void updateFilterSlots(FilterBasicHandler handler, int index, int x, int y, int horAmount, int dx, int verAmount, int dy) {
         for (int j = 0; j < verAmount; j++) {
             for (int i = 0; i < horAmount; i++) {
-                if (handler instanceof CardItemHandler && index == 0) {
-                    //System.out.println("This shouldn't happen");
-                } else if (handler instanceof FilterBasicHandler) {
-                    slots.set(index + SLOTS, new FilterBasicSlot(handler, index, x, y, slots.get(0).getItem().getItem() instanceof FilterCount));
-                    slots.get(index + SLOTS).index = index + SLOTS; //Look at container.addSlot() -- it does this
-                } else {
-                    //System.out.println("This shouldn't happen");
-                }
+                slots.set(index + SLOTS, new FilterBasicSlot(handler, handler::set, index, x, y, slots.get(0).getItem().getItem() instanceof FilterCount));
+                slots.get(index + SLOTS).index = index + SLOTS; //Look at container.addSlot() -- it does this
                 x += dx;
                 index++;
             }
@@ -318,27 +313,36 @@ public class CardItemContainer extends AbstractContainerMenu {
         }
     }
 
-    protected int addSlotRange(IItemHandler handler, int index, int x, int y, int amount, int dx) {
+    protected int addFilterSlotRange(FilterBasicHandler handler, int index, int x, int y, int amount, int dx) {
         for (int i = 0; i < amount; i++) {
-            if (handler instanceof CardItemHandler && index == 0)
-                addSlot(new CardItemSlot(handler, this, index, x, y));
-            else if (handler instanceof CardItemHandler && index == 1)
-                addSlot(new CardOverclockSlot(handler, index, x, y));
-            else if (handler instanceof FilterBasicHandler)
-                addSlot(new FilterBasicSlot(handler, index, x, y, slots.get(0).getItem().getItem() instanceof FilterCount));
-            else if (handler != null && (handler.getSlots() == CardHolderContainer.SLOTS))
-                addSlot(new CardHolderSlot(handler, index, x, y));
-            else
-                addSlot(new SlotItemHandler(handler, index, x, y));
+            addSlot(new FilterBasicSlot(handler, handler::set, index, x, y,
+                    slots.get(0).getItem().getItem() instanceof FilterCount));
             x += dx;
             index++;
         }
         return index;
     }
 
-    protected int addSlotBox(IItemHandler handler, int index, int x, int y, int horAmount, int dx, int verAmount, int dy) {
+    protected int addFilterSlotBox(FilterBasicHandler handler, int index, int x, int y, int horAmount, int dx, int verAmount, int dy) {
         for (int j = 0; j < verAmount; j++) {
-            index = addSlotRange(handler, index, x, y, horAmount, dx);
+            index = addFilterSlotRange(handler, index, x, y, horAmount, dx);
+            y += dy;
+        }
+        return index;
+    }
+
+    protected int addCardHolderSlotRange(CardHolderItemStackHandler handler, int index, int x, int y, int amount, int dx) {
+        for (int i = 0; i < amount; i++) {
+            addSlot(new CardHolderSlot(handler, handler::set, index, x, y));
+            x += dx;
+            index++;
+        }
+        return index;
+    }
+
+    protected int addCardHolderSlotBox(CardHolderItemStackHandler handler, int index, int x, int y, int horAmount, int dx, int verAmount, int dy) {
+        for (int j = 0; j < verAmount; j++) {
+            index = addCardHolderSlotRange(handler, index, x, y, horAmount, dx);
             y += dy;
         }
         return index;
@@ -346,17 +350,22 @@ public class CardItemContainer extends AbstractContainerMenu {
 
     protected void layoutPlayerInventorySlots(int leftCol, int topRow) {
         // Player inventory
-        addSlotBox(playerInventory, 9, leftCol, topRow, 9, 18, 3, 18);
-
+        for (int row = 0; row < 3; row++) {
+            for (int col = 0; col < 9; col++) {
+                addSlot(new Slot(playerInventory, col + row * 9 + 9, leftCol + col * 18, topRow + row * 18));
+            }
+        }
         // Hotbar
         topRow += 58;
-        addSlotRange(playerInventory, 0, leftCol, topRow, 9, 18);
+        for (int col = 0; col < 9; col++) {
+            addSlot(new Slot(playerInventory, col, leftCol + col * 18, topRow));
+        }
     }
 
     @Override
     public void removed(Player playerIn) {
         Level world = playerIn.level();
-        if (!world.isClientSide) {
+        if (!world.isClientSide()) {
             if (!sourceContainer.equals(BlockPos.ZERO)) {
                 BlockEntity blockEntity = world.getBlockEntity(sourceContainer);
                 if (blockEntity instanceof LaserNodeBE)

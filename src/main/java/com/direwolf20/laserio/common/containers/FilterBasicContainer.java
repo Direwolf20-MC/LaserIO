@@ -9,14 +9,11 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.SlotItemHandler;
-import net.neoforged.neoforge.items.wrapper.InvWrapper;
 
 
 public class FilterBasicContainer extends AbstractContainerMenu {
@@ -25,7 +22,7 @@ public class FilterBasicContainer extends AbstractContainerMenu {
     public ItemStack filterItem;
     public ItemStack sourceCard = ItemStack.EMPTY;
     public Player playerEntity;
-    private IItemHandler playerInventory;
+    private Inventory playerInventory;
     public BlockPos sourceContainer = BlockPos.ZERO;
 
     public FilterBasicContainer(int windowId, Inventory playerInventory, Player player, RegistryFriendlyByteBuf extraData) {
@@ -37,8 +34,7 @@ public class FilterBasicContainer extends AbstractContainerMenu {
         super(Registration.FilterBasic_Container.get(), windowId);
         playerEntity = player;
         this.handler = new FilterBasicHandler(SLOTS, filterItem);
-        ;
-        this.playerInventory = new InvWrapper(playerInventory);
+        this.playerInventory = playerInventory;
         this.filterItem = filterItem;
         if (handler != null)
             addSlotBox(handler, 0, 44, 22, 5, 18, 3, 18);
@@ -58,9 +54,8 @@ public class FilterBasicContainer extends AbstractContainerMenu {
     }
 
     @Override
-    public void clicked(int slotId, int dragType, ClickType clickTypeIn, Player player) {
+    public void clicked(int slotId, int dragType, ContainerInput clickTypeIn, Player player) {
         if (slotId >= 0 && slotId < SLOTS) {
-            //System.out.println("Skipping!");
             return;
         }
         super.clicked(slotId, dragType, clickTypeIn, player);
@@ -89,19 +84,16 @@ public class FilterBasicContainer extends AbstractContainerMenu {
         return itemstack;
     }
 
-    private int addSlotRange(IItemHandler handler, int index, int x, int y, int amount, int dx) {
+    private int addSlotRange(FilterBasicHandler handler, int index, int x, int y, int amount, int dx) {
         for (int i = 0; i < amount; i++) {
-            if (handler instanceof FilterBasicHandler)
-                addSlot(new FilterBasicSlot(handler, index, x, y, false));
-            else
-                addSlot(new SlotItemHandler(handler, index, x, y));
+            addSlot(new FilterBasicSlot(handler, handler::set, index, x, y, false));
             x += dx;
             index++;
         }
         return index;
     }
 
-    private int addSlotBox(IItemHandler handler, int index, int x, int y, int horAmount, int dx, int verAmount, int dy) {
+    private int addSlotBox(FilterBasicHandler handler, int index, int x, int y, int horAmount, int dx, int verAmount, int dy) {
         for (int j = 0; j < verAmount; j++) {
             index = addSlotRange(handler, index, x, y, horAmount, dx);
             y += dy;
@@ -111,17 +103,22 @@ public class FilterBasicContainer extends AbstractContainerMenu {
 
     private void layoutPlayerInventorySlots(int leftCol, int topRow) {
         // Player inventory
-        addSlotBox(playerInventory, 9, leftCol, topRow, 9, 18, 3, 18);
-
+        for (int row = 0; row < 3; row++) {
+            for (int col = 0; col < 9; col++) {
+                addSlot(new Slot(playerInventory, col + row * 9 + 9, leftCol + col * 18, topRow + row * 18));
+            }
+        }
         // Hotbar
         topRow += 58;
-        addSlotRange(playerInventory, 0, leftCol, topRow, 9, 18);
+        for (int col = 0; col < 9; col++) {
+            addSlot(new Slot(playerInventory, col, leftCol + col * 18, topRow));
+        }
     }
 
     @Override
     public void removed(Player playerIn) {
         Level world = playerIn.level();
-        if (!world.isClientSide) {
+        if (!world.isClientSide()) {
             if (!sourceContainer.equals(BlockPos.ZERO)) {
                 BlockEntity blockEntity = world.getBlockEntity(sourceContainer);
                 if (blockEntity instanceof LaserNodeBE)

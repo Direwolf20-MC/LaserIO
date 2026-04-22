@@ -3,17 +3,19 @@ package com.direwolf20.laserio.common.containers.customslot;
 import com.direwolf20.laserio.common.containers.CardItemContainer;
 import com.direwolf20.laserio.common.items.filters.BaseFilter;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemHandlerCopySlot;
+import net.neoforged.neoforge.transfer.IndexModifier;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.item.ResourceHandlerSlot;
 
 import javax.annotation.Nonnull;
 
-public class CardItemSlot extends ItemHandlerCopySlot {
+public class CardItemSlot extends ResourceHandlerSlot {
     CardItemContainer parentContainer;
     protected boolean enabled = true;
 
-    public CardItemSlot(IItemHandler itemHandler, CardItemContainer cardItemContainer, int index, int xPosition, int yPosition) {
-        super(itemHandler, index, xPosition, yPosition);
+    public CardItemSlot(ResourceHandler<ItemResource> handler, IndexModifier<ItemResource> slotModifier, CardItemContainer cardItemContainer, int index, int xPosition, int yPosition) {
+        super(handler, slotModifier, index, xPosition, yPosition);
         this.parentContainer = cardItemContainer;
     }
 

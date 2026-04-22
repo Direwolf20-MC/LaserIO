@@ -16,11 +16,11 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.items.ComponentItemHandler;
 import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.access.ItemAccess;
 import net.neoforged.neoforge.transfer.fluid.FluidResource;
 import net.neoforged.neoforge.transfer.fluid.FluidUtil;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 import java.util.*;
 
@@ -147,8 +147,8 @@ public class BaseCardCache {
             return filterCountsFluid.get(key);
 
         FilterCountHandler filterSlotHandler = FilterCount.getInventory(filterCard);
-        for (int i = 0; i < filterSlotHandler.getSlots(); i++) { //Gotta iterate the card's NBT because of the way we store amounts (in the MBAmt tag)
-            ItemStack itemStack = filterSlotHandler.getStackInSlot(i);
+        for (int i = 0; i < filterSlotHandler.size(); i++) { //Gotta iterate the card's NBT because of the way we store amounts (in the MBAmt tag)
+            ItemStack itemStack = filterSlotHandler.getResource(i).toStack(filterSlotHandler.getAmountAsInt(i));
             if (!itemStack.isEmpty()) {
                 ResourceHandler<FluidResource> fluidHandler = ItemAccess.forStack(itemStack).getCapability(Capabilities.Fluid.ITEM);
                 if (fluidHandler == null) continue;
@@ -168,13 +168,13 @@ public class BaseCardCache {
 
     public List<ItemStack> getFilteredItems() {
         List<ItemStack> filteredItems = new ArrayList<>();
-        ComponentItemHandler filterSlotHandler;
+        ResourceHandler<ItemResource> filterSlotHandler;
         if (filterCard.getItem() instanceof FilterBasic)
             filterSlotHandler = FilterBasic.getInventory(filterCard);
         else
             filterSlotHandler = FilterCount.getInventory(filterCard);
-        for (int i = 0; i < filterSlotHandler.getSlots(); i++) {
-            ItemStack itemStack = filterSlotHandler.getStackInSlot(i);
+        for (int i = 0; i < filterSlotHandler.size(); i++) {
+            ItemStack itemStack = filterSlotHandler.getResource(i).toStack(filterSlotHandler.getAmountAsInt(i));
             if (!itemStack.isEmpty())
                 filteredItems.add(itemStack); //If this is a basic card it'll always be one, but getFilterAmt handles the proper logic of returning a value
         }
@@ -183,13 +183,13 @@ public class BaseCardCache {
 
     public List<FluidStack> getFilteredFluids() {
         List<FluidStack> filteredFluids = new ArrayList<>();
-        ComponentItemHandler filterSlotHandler;
+        ResourceHandler<ItemResource> filterSlotHandler;
         if (filterCard.getItem() instanceof FilterBasic)
             filterSlotHandler = FilterBasic.getInventory(filterCard);
         else
             filterSlotHandler = FilterCount.getInventory(filterCard);
-        for (int i = 0; i < filterSlotHandler.getSlots(); i++) {
-            ItemStack itemStack = filterSlotHandler.getStackInSlot(i);
+        for (int i = 0; i < filterSlotHandler.size(); i++) {
+            ItemStack itemStack = filterSlotHandler.getResource(i).toStack(filterSlotHandler.getAmountAsInt(i));
             if (!itemStack.isEmpty()) {
                 ResourceHandler<FluidResource> fluidHandler = ItemAccess.forStack(itemStack).getCapability(Capabilities.Fluid.ITEM);
                 if (fluidHandler == null) continue;
