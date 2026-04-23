@@ -26,6 +26,7 @@ public class CardItem extends BaseCard {
                 (windowId, playerInventory, playerEntity) -> new CardItemContainer(windowId, playerInventory, player, itemstack), Component.translatable("")), (buf -> {
             ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, itemstack);
             buf.writeByte(-1);
+            buf.writeVarInt(-1);
         }));
 
         return InteractionResult.PASS;

@@ -1,10 +1,13 @@
 package com.direwolf20.laserio.common.containers;
 
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
+import com.direwolf20.laserio.common.containers.customhandler.CardItemHandler;
 import com.direwolf20.laserio.common.containers.customhandler.FilterCountHandler;
 import com.direwolf20.laserio.common.containers.customslot.FilterBasicSlot;
+import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.common.items.filters.FilterCount;
 import com.direwolf20.laserio.setup.LaserIORegistration;
+import com.direwolf20.laserio.util.NodeSideCache;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
@@ -15,6 +18,7 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 
 public class FilterCountContainer extends AbstractContainerMenu {
@@ -25,10 +29,14 @@ public class FilterCountContainer extends AbstractContainerMenu {
     public ItemStack sourceCard = ItemStack.EMPTY;
     private Inventory playerInventory;
     public BlockPos sourceContainer = BlockPos.ZERO;
+    public byte direction = -1;
+    public int slotIndex = -1;
 
     public FilterCountContainer(int windowId, Inventory playerInventory, Player player, RegistryFriendlyByteBuf extraData) {
         this(windowId, playerInventory, player, ItemStack.OPTIONAL_STREAM_CODEC.decode(extraData));
         this.sourceCard = ItemStack.OPTIONAL_STREAM_CODEC.decode(extraData);
+        this.direction = extraData.readByte();
+        this.slotIndex = extraData.readVarInt();
     }
 
     public FilterCountContainer(int windowId, Inventory playerInventory, Player player, ItemStack filterItem) {
@@ -43,10 +51,12 @@ public class FilterCountContainer extends AbstractContainerMenu {
         layoutPlayerInventorySlots(8, 84);
     }
 
-    public FilterCountContainer(int windowId, Inventory playerInventory, Player player, BlockPos sourcePos, ItemStack filterItem, ItemStack sourceCard) {
+    public FilterCountContainer(int windowId, Inventory playerInventory, Player player, BlockPos sourcePos, ItemStack filterItem, ItemStack sourceCard, byte direction, int slotIndex) {
         this(windowId, playerInventory, player, filterItem);
         this.sourceContainer = sourcePos;
         this.sourceCard = sourceCard;
+        this.direction = direction;
+        this.slotIndex = slotIndex;
     }
 
     @Override
@@ -130,11 +140,21 @@ public class FilterCountContainer extends AbstractContainerMenu {
         if (!world.isClientSide()) {
             if (!sourceContainer.equals(BlockPos.ZERO)) {
                 BlockEntity blockEntity = world.getBlockEntity(sourceContainer);
-                if (blockEntity instanceof LaserNodeBE)
-                    ((LaserNodeBE) blockEntity).updateThisNode();
-
+                if (blockEntity instanceof LaserNodeBE node) {
+                    writeFilterBackToNode(node);
+                    node.updateThisNode();
+                }
             }
         }
         super.removed(playerIn);
+    }
+
+    private void writeFilterBackToNode(LaserNodeBE node) {
+        if (sourceCard.isEmpty() || direction < 0 || direction >= 6 || slotIndex < 0) return;
+        CardItemHandler cardHandler = BaseCard.getInventory(sourceCard);
+        if (cardHandler != null) cardHandler.set(0, ItemResource.of(filterItem), filterItem.getCount());
+        NodeSideCache cache = node.nodeSideCaches[direction];
+        if (cache != null && slotIndex < cache.itemHandler.size())
+            cache.itemHandler.set(slotIndex, ItemResource.of(sourceCard), sourceCard.getCount());
     }
 }

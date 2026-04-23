@@ -84,7 +84,7 @@ public class CardItemScreen extends AbstractContainerScreen<CardItemContainer> {
         this.container = container;
         this.card = container.cardItem;
         filter = container.slots.get(0).getItem();
-        showCardHolderUI = container.cardHolder.isEmpty();
+        showCardHolderUI = !container.cardHolder.isEmpty();
     }
 
     @Override

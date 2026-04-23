@@ -21,6 +21,7 @@ public class CardFluidContainer extends CardItemContainer {
     public CardFluidContainer(int windowId, Inventory playerInventory, Player player, RegistryFriendlyByteBuf extraData) {
         this(windowId, playerInventory, player, ItemStack.OPTIONAL_STREAM_CODEC.decode(extraData));
         this.direction = extraData.readByte();
+        this.slotIndex = extraData.readVarInt();
         cardHolder = findCardHolders(player);
     }
 
@@ -46,9 +47,10 @@ public class CardFluidContainer extends CardItemContainer {
         layoutPlayerInventorySlots(8, 84);
     }
 
-    public CardFluidContainer(int windowId, Inventory playerInventory, Player player, BlockPos sourcePos, ItemStack cardItem, byte direction) {
+    public CardFluidContainer(int windowId, Inventory playerInventory, Player player, BlockPos sourcePos, ItemStack cardItem, byte direction, int slotIndex) {
         this(windowId, playerInventory, player, cardItem);
         this.sourceContainer = sourcePos;
         this.direction = direction;
+        this.slotIndex = slotIndex;
     }
 }

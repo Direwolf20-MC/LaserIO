@@ -34,6 +34,8 @@ public class FilterCount extends BaseFilter {
                 (windowId, playerInventory, playerEntity) -> new FilterCountContainer(windowId, playerInventory, player, itemstack), Component.translatable("")), (buf -> {
             ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, itemstack);
             ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, ItemStack.EMPTY);
+            buf.writeByte(-1);
+            buf.writeVarInt(-1);
         }));
 
         return InteractionResult.PASS;

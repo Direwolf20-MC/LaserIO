@@ -15,6 +15,7 @@ import com.direwolf20.laserio.common.items.filters.FilterBasic;
 import com.direwolf20.laserio.common.items.filters.FilterCount;
 import com.direwolf20.laserio.setup.LaserIORegistration;
 import com.direwolf20.laserio.util.CardHolderItemStackHandler;
+import com.direwolf20.laserio.util.NodeSideCache;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
@@ -44,6 +45,7 @@ public class CardItemContainer extends AbstractContainerMenu {
     protected Inventory playerInventory;
     public BlockPos sourceContainer = BlockPos.ZERO;
     public byte direction = -1;
+    public int slotIndex = -1;
     public ItemStack cardHolder;
     public CardHolderItemStackHandler cardHolderHandler;
     public UUID cardHolderUUID;
@@ -55,6 +57,7 @@ public class CardItemContainer extends AbstractContainerMenu {
     public CardItemContainer(int windowId, Inventory playerInventory, Player player, RegistryFriendlyByteBuf extraData) {
         this(windowId, playerInventory, player, ItemStack.OPTIONAL_STREAM_CODEC.decode(extraData));
         this.direction = extraData.readByte();
+        this.slotIndex = extraData.readVarInt();
         cardHolder = findCardHolders(player);
     }
 
@@ -80,10 +83,11 @@ public class CardItemContainer extends AbstractContainerMenu {
         layoutPlayerInventorySlots(8, 84);
     }
 
-    public CardItemContainer(int windowId, Inventory playerInventory, Player player, BlockPos sourcePos, ItemStack cardItem, byte direction) {
+    public CardItemContainer(int windowId, Inventory playerInventory, Player player, BlockPos sourcePos, ItemStack cardItem, byte direction, int slotIndex) {
         this(windowId, playerInventory, player, cardItem);
         this.sourceContainer = sourcePos;
         this.direction = direction;
+        this.slotIndex = slotIndex;
     }
 
     @Override
@@ -368,8 +372,16 @@ public class CardItemContainer extends AbstractContainerMenu {
         if (!world.isClientSide()) {
             if (!sourceContainer.equals(BlockPos.ZERO)) {
                 BlockEntity blockEntity = world.getBlockEntity(sourceContainer);
-                if (blockEntity instanceof LaserNodeBE)
-                    ((LaserNodeBE) blockEntity).updateThisNode();
+                if (blockEntity instanceof LaserNodeBE node) {
+                    // The node-side ResourceHandler returned a detached ItemStack when the container
+                    // opened; write the edited stack back so component mutations persist.
+                    if (direction >= 0 && direction < 6 && slotIndex >= 0) {
+                        NodeSideCache cache = node.nodeSideCaches[direction];
+                        if (cache != null && slotIndex < cache.itemHandler.size())
+                            cache.itemHandler.set(slotIndex, ItemResource.of(cardItem), cardItem.getCount());
+                    }
+                    node.updateThisNode();
+                }
             }
         }
         super.removed(playerIn);

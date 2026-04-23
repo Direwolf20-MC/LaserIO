@@ -45,6 +45,7 @@ public class PacketOpenCard {
             if (container instanceof LaserNodeContainer laserNodeContainer)
                 sideTemp = laserNodeContainer.side;
             final byte side = sideTemp;
+            final int slotIndex = payload.slotNumber();
             if (itemStack.getItem() instanceof CardItem) {
                 if (!payload.hasShiftDown()) {
                     MenuProvider containerProvider = new MenuProvider() {
@@ -60,17 +61,18 @@ public class PacketOpenCard {
 
                         @Override
                         public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player playerEntity) {
-                            return new CardItemContainer(windowId, playerInventory, sender, payload.sourcePos(), itemStack, side);
+                            return new CardItemContainer(windowId, playerInventory, sender, payload.sourcePos(), itemStack, side, slotIndex);
                         }
                     };
                     sender.openMenu(containerProvider, (buf -> {
                         ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, itemStack);
                         buf.writeByte(side);
+                        buf.writeVarInt(slotIndex);
                     }));
                 } else {
                     ItemStack filterItem = handler.getResource(0).toStack(handler.getAmountAsInt(0));
                     if (filterItem.getItem() instanceof BaseFilter)
-                        PacketOpenFilter.doOpenFilter(filterItem, itemStack, (ServerPlayer) sender, payload.sourcePos());
+                        PacketOpenFilter.doOpenFilter(filterItem, itemStack, (ServerPlayer) sender, payload.sourcePos(), side, slotIndex);
                 }
             } else if (itemStack.getItem() instanceof CardFluid) {
                 if (!payload.hasShiftDown()) {
@@ -87,17 +89,18 @@ public class PacketOpenCard {
 
                         @Override
                         public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player playerEntity) {
-                            return new CardFluidContainer(windowId, playerInventory, sender, payload.sourcePos(), itemStack, side);
+                            return new CardFluidContainer(windowId, playerInventory, sender, payload.sourcePos(), itemStack, side, slotIndex);
                         }
                     };
                     sender.openMenu(containerProvider, (buf -> {
                         ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, itemStack);
                         buf.writeByte(side);
+                        buf.writeVarInt(slotIndex);
                     }));
                 } else {
                     ItemStack filterItem = handler.getResource(0).toStack(handler.getAmountAsInt(0));
                     if (filterItem.getItem() instanceof BaseFilter)
-                        PacketOpenFilter.doOpenFilter(filterItem, itemStack, (ServerPlayer) sender, payload.sourcePos());
+                        PacketOpenFilter.doOpenFilter(filterItem, itemStack, (ServerPlayer) sender, payload.sourcePos(), side, slotIndex);
                 }
             } else if (itemStack.getItem() instanceof CardEnergy) {
                 MenuProvider containerProvider = new MenuProvider() {
@@ -113,12 +116,13 @@ public class PacketOpenCard {
 
                     @Override
                     public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player playerEntity) {
-                        return new CardEnergyContainer(windowId, playerInventory, sender, payload.sourcePos(), itemStack, side);
+                        return new CardEnergyContainer(windowId, playerInventory, sender, payload.sourcePos(), itemStack, side, slotIndex);
                     }
                 };
                 sender.openMenu(containerProvider, (buf -> {
                     ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, itemStack);
                     buf.writeByte(side);
+                    buf.writeVarInt(slotIndex);
                 }));
             } else if (itemStack.getItem() instanceof CardRedstone) {
                 MenuProvider containerProvider = new MenuProvider() {
@@ -134,12 +138,13 @@ public class PacketOpenCard {
 
                     @Override
                     public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player playerEntity) {
-                        return new CardRedstoneContainer(windowId, playerInventory, sender, payload.sourcePos(), itemStack, side);
+                        return new CardRedstoneContainer(windowId, playerInventory, sender, payload.sourcePos(), itemStack, side, slotIndex);
                     }
                 };
                 sender.openMenu(containerProvider, (buf -> {
                     ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, itemStack);
                     buf.writeByte(side);
+                    buf.writeVarInt(slotIndex);
                 }));
             }
             // TODO(port, mek): re-enable CardChemical open branch when Mekanism 26.1 ships.
@@ -169,7 +174,7 @@ public class PacketOpenCard {
                 } else {
                     ItemStack filterItem = handler.getResource(0).toStack(handler.getAmountAsInt(0));
                     if (filterItem.getItem() instanceof BaseFilter)
-                        PacketOpenFilter.doOpenFilter(filterItem, itemStack, (ServerPlayer) sender, payload.sourcePos());
+                        PacketOpenFilter.doOpenFilter(filterItem, itemStack, (ServerPlayer) sender, payload.sourcePos(), side, slotIndex);
                 }
             }
             */

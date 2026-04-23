@@ -74,7 +74,7 @@ public class LaserNodeScreen extends AbstractContainerScreen<LaserNodeContainer>
     public LaserNodeScreen(LaserNodeContainer container, Inventory inv, Component name) {
         super(container, inv, name, 176, 181);
         this.container = container;
-        showCardHolderUI = container.cardHolder.isEmpty();
+        showCardHolderUI = !container.cardHolder.isEmpty();
         this.currentParticles = container.tile.getShowParticles();
     }
 

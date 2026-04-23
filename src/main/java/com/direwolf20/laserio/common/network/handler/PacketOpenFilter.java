@@ -26,7 +26,7 @@ public class PacketOpenFilter {
         return INSTANCE;
     }
 
-    public static void doOpenFilter(ItemStack filterItem, ItemStack cardItem, ServerPlayer sender, BlockPos sourcePos) {
+    public static void doOpenFilter(ItemStack filterItem, ItemStack cardItem, ServerPlayer sender, BlockPos sourcePos, byte nodeDirection, int cardSlotIndex) {
         if (filterItem.getItem() instanceof FilterBasic) {
             MenuProvider containerProvider = new MenuProvider() {
                 @Override
@@ -41,12 +41,14 @@ public class PacketOpenFilter {
 
                 @Override
                 public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player playerEntity) {
-                    return new FilterBasicContainer(windowId, playerInventory, sender, sourcePos, filterItem, cardItem);
+                    return new FilterBasicContainer(windowId, playerInventory, sender, sourcePos, filterItem, cardItem, nodeDirection, cardSlotIndex);
                 }
             };
             sender.openMenu(containerProvider, (buf -> {
                 ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, filterItem);
                 ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, cardItem);
+                buf.writeByte(nodeDirection);
+                buf.writeVarInt(cardSlotIndex);
             }));
         }
         if (filterItem.getItem() instanceof FilterCount) {
@@ -63,12 +65,14 @@ public class PacketOpenFilter {
 
                 @Override
                 public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player playerEntity) {
-                    return new FilterCountContainer(windowId, playerInventory, sender, sourcePos, filterItem, cardItem);
+                    return new FilterCountContainer(windowId, playerInventory, sender, sourcePos, filterItem, cardItem, nodeDirection, cardSlotIndex);
                 }
             };
             sender.openMenu(containerProvider, (buf -> {
                 ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, filterItem);
                 ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, cardItem);
+                buf.writeByte(nodeDirection);
+                buf.writeVarInt(cardSlotIndex);
             }));
         }
         if (filterItem.getItem() instanceof FilterTag) {
@@ -85,12 +89,14 @@ public class PacketOpenFilter {
 
                 @Override
                 public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player playerEntity) {
-                    return new FilterTagContainer(windowId, playerInventory, sender, sourcePos, filterItem, cardItem);
+                    return new FilterTagContainer(windowId, playerInventory, sender, sourcePos, filterItem, cardItem, nodeDirection, cardSlotIndex);
                 }
             };
             sender.openMenu(containerProvider, (buf -> {
                 ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, filterItem);
-                ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, ItemStack.EMPTY);
+                ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, cardItem);
+                buf.writeByte(nodeDirection);
+                buf.writeVarInt(cardSlotIndex);
             }));
         }
         if (filterItem.getItem() instanceof FilterNBT) {
@@ -107,12 +113,14 @@ public class PacketOpenFilter {
 
                 @Override
                 public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player playerEntity) {
-                    return new FilterNBTContainer(windowId, playerInventory, sender, sourcePos, filterItem, cardItem);
+                    return new FilterNBTContainer(windowId, playerInventory, sender, sourcePos, filterItem, cardItem, nodeDirection, cardSlotIndex);
                 }
             };
             sender.openMenu(containerProvider, (buf -> {
                 ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, filterItem);
-                ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, ItemStack.EMPTY);
+                ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, cardItem);
+                buf.writeByte(nodeDirection);
+                buf.writeVarInt(cardSlotIndex);
             }));
         }
     }
@@ -122,13 +130,13 @@ public class PacketOpenFilter {
             Player sender = context.player();
 
             AbstractContainerMenu container = sender.containerMenu;
-            if (container == null || !(container instanceof CardItemContainer))
+            if (container == null || !(container instanceof CardItemContainer cardItemContainer))
                 return;
 
             Slot slot = container.slots.get(payload.slotNumber());
 
             ItemStack itemStack = slot.getItem();
-            doOpenFilter(itemStack, ((CardItemContainer) container).cardItem, (ServerPlayer) sender, ((CardItemContainer) container).sourceContainer);
+            doOpenFilter(itemStack, cardItemContainer.cardItem, (ServerPlayer) sender, cardItemContainer.sourceContainer, cardItemContainer.direction, cardItemContainer.slotIndex);
         });
     }
 }

@@ -6,6 +6,7 @@ import com.direwolf20.laserio.common.containers.customhandler.FilterBasicHandler
 import com.direwolf20.laserio.common.containers.customslot.FilterBasicSlot;
 import com.direwolf20.laserio.common.items.cards.BaseCard;
 import com.direwolf20.laserio.setup.LaserIORegistration;
+import com.direwolf20.laserio.util.NodeSideCache;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
@@ -27,10 +28,14 @@ public class FilterTagContainer extends AbstractContainerMenu {
     public Player playerEntity;
     private Inventory playerInventory;
     public BlockPos sourceContainer = BlockPos.ZERO;
+    public byte direction = -1;
+    public int slotIndex = -1;
 
     public FilterTagContainer(int windowId, Inventory playerInventory, Player player, RegistryFriendlyByteBuf extraData) {
         this(windowId, playerInventory, player, ItemStack.OPTIONAL_STREAM_CODEC.decode(extraData));
         this.sourceCard = ItemStack.OPTIONAL_STREAM_CODEC.decode(extraData);
+        this.direction = extraData.readByte();
+        this.slotIndex = extraData.readVarInt();
     }
 
     public FilterTagContainer(int windowId, Inventory playerInventory, Player player, ItemStack filterItem) {
@@ -45,10 +50,12 @@ public class FilterTagContainer extends AbstractContainerMenu {
         layoutPlayerInventorySlots(8, 172);
     }
 
-    public FilterTagContainer(int windowId, Inventory playerInventory, Player player, BlockPos sourcePos, ItemStack filterItem, ItemStack sourceCard) {
+    public FilterTagContainer(int windowId, Inventory playerInventory, Player player, BlockPos sourcePos, ItemStack filterItem, ItemStack sourceCard, byte direction, int slotIndex) {
         this(windowId, playerInventory, player, filterItem);
         this.sourceContainer = sourcePos;
         this.sourceCard = sourceCard;
+        this.direction = direction;
+        this.slotIndex = slotIndex;
     }
 
     @Override
@@ -119,9 +126,14 @@ public class FilterTagContainer extends AbstractContainerMenu {
             }
             if (!sourceContainer.equals(BlockPos.ZERO)) {
                 BlockEntity blockEntity = world.getBlockEntity(sourceContainer);
-                if (blockEntity instanceof LaserNodeBE)
-                    ((LaserNodeBE) blockEntity).updateThisNode();
-
+                if (blockEntity instanceof LaserNodeBE node) {
+                    if (!sourceCard.isEmpty() && direction >= 0 && direction < 6 && slotIndex >= 0) {
+                        NodeSideCache cache = node.nodeSideCaches[direction];
+                        if (cache != null && slotIndex < cache.itemHandler.size())
+                            cache.itemHandler.set(slotIndex, ItemResource.of(sourceCard), sourceCard.getCount());
+                    }
+                    node.updateThisNode();
+                }
             }
         }
         super.removed(playerIn);

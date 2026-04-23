@@ -2,6 +2,7 @@ package com.direwolf20.laserio.common.containers;
 
 import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import com.direwolf20.laserio.setup.LaserIORegistration;
+import com.direwolf20.laserio.util.NodeSideCache;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
@@ -13,6 +14,7 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 import javax.annotation.Nullable;
 
@@ -22,6 +24,7 @@ public class CardEnergyContainer extends AbstractContainerMenu {
     protected Inventory playerInventory;
     public BlockPos sourceContainer = BlockPos.ZERO;
     public byte direction = -1;
+    public int slotIndex = -1;
 
     protected CardEnergyContainer(@Nullable MenuType<?> pMenuType, int pContainerId) {
         super(pMenuType, pContainerId);
@@ -30,6 +33,7 @@ public class CardEnergyContainer extends AbstractContainerMenu {
     public CardEnergyContainer(int windowId, Inventory playerInventory, Player player, RegistryFriendlyByteBuf extraData) {
         this(windowId, playerInventory, player, ItemStack.OPTIONAL_STREAM_CODEC.decode(extraData));
         this.direction = extraData.readByte();
+        this.slotIndex = extraData.readVarInt();
     }
 
     public CardEnergyContainer(int windowId, Inventory playerInventory, Player player, ItemStack cardItem) {
@@ -40,10 +44,11 @@ public class CardEnergyContainer extends AbstractContainerMenu {
         layoutPlayerInventorySlots(8, 84);
     }
 
-    public CardEnergyContainer(int windowId, Inventory playerInventory, Player player, BlockPos sourcePos, ItemStack cardItem, byte direction) {
+    public CardEnergyContainer(int windowId, Inventory playerInventory, Player player, BlockPos sourcePos, ItemStack cardItem, byte direction, int slotIndex) {
         this(windowId, playerInventory, player, cardItem);
         this.sourceContainer = sourcePos;
         this.direction = direction;
+        this.slotIndex = slotIndex;
     }
 
     @Override
@@ -104,8 +109,14 @@ public class CardEnergyContainer extends AbstractContainerMenu {
         if (!world.isClientSide()) {
             if (!sourceContainer.equals(BlockPos.ZERO)) {
                 BlockEntity blockEntity = world.getBlockEntity(sourceContainer);
-                if (blockEntity instanceof LaserNodeBE)
-                    ((LaserNodeBE) blockEntity).updateThisNode();
+                if (blockEntity instanceof LaserNodeBE node) {
+                    if (direction >= 0 && direction < 6 && slotIndex >= 0) {
+                        NodeSideCache cache = node.nodeSideCaches[direction];
+                        if (cache != null && slotIndex < cache.itemHandler.size())
+                            cache.itemHandler.set(slotIndex, ItemResource.of(cardItem), cardItem.getCount());
+                    }
+                    node.updateThisNode();
+                }
             }
         }
         super.removed(playerIn);

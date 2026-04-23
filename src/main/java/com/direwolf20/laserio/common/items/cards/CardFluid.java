@@ -28,6 +28,7 @@ public class CardFluid extends BaseCard {
                 (windowId, playerInventory, playerEntity) -> new CardFluidContainer(windowId, playerInventory, player, itemstack), Component.translatable("")), (buf -> {
             ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, itemstack);
             buf.writeByte(-1);
+            buf.writeVarInt(-1);
         }));
 
         //System.out.println(itemstack.getItem().getRegistryName()+""+itemstack.getTag());

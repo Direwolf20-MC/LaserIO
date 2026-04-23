@@ -27,6 +27,7 @@ public class CardRedstone extends BaseCard {
                 (windowId, playerInventory, playerEntity) -> new CardRedstoneContainer(windowId, playerInventory, player, itemstack), Component.translatable("")), (buf -> {
             ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, itemstack);
             buf.writeByte(-1);
+            buf.writeVarInt(-1);
         }));
 
         return InteractionResult.PASS;
