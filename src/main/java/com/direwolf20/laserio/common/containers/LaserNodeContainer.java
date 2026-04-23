@@ -219,13 +219,18 @@ public class LaserNodeContainer extends AbstractContainerMenu {
                 return ItemStack.EMPTY;
             }
         } else if (index < CARDSLOTS) { //If its a node CARD slot
+            // Source is a ResourceHandlerSlot-backed LaserNodeSlot; stack is a detached copy.
+            // moveItemStackTo mutates stack.count but never writes the decrement back to the
+            // handler, so we must slot.set(stack) after moving to persist the removal.
             if (!cardHolder.isEmpty()) { //Do the below set of logic if we have a card holder, otherwise just try to move to inventory
                 if (this.moveItemStackTo(stack, CARDSLOTS + 1, SLOTS, false)) { //Move to card holder
+                    slot.set(stack);
                     if (!playerIn.level().isClientSide() && !(tile == null)) {
                         tile.updateThisNode();
                     }
                     return ItemStack.EMPTY;
                 } else if (super.moveItemStackTo(stack, SLOTS, 36 + SLOTS, true)) { //Move to inventory
+                    slot.set(stack);
                     if (!playerIn.level().isClientSide() && !(tile == null)) {
                         tile.updateThisNode();
                     }
@@ -233,6 +238,7 @@ public class LaserNodeContainer extends AbstractContainerMenu {
                 }
             } else {
                 if (super.moveItemStackTo(stack, SLOTS, 36 + SLOTS, true)) { //Move to inventory
+                    slot.set(stack);
                     if (!playerIn.level().isClientSide() && !(tile == null)) {
                         tile.updateThisNode();
                     }
