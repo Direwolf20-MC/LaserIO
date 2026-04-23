@@ -35,6 +35,7 @@ public final class MyRenderType {
             RenderSetup.builder(RenderPipelines.ENTITY_TRANSLUCENT_CULL)
                     .withTexture("Sampler0", laserBeam2)
                     .useLightmap()
+                    .useOverlay()
                     .createRenderSetup()
     );
 
@@ -43,6 +44,7 @@ public final class MyRenderType {
             RenderSetup.builder(RenderPipelines.ENTITY_TRANSLUCENT_CULL)
                     .withTexture("Sampler0", laserBeam)
                     .useLightmap()
+                    .useOverlay()
                     .setLayeringTransform(LayeringTransform.VIEW_OFFSET_Z_LAYERING)
                     .createRenderSetup()
     );
@@ -52,6 +54,7 @@ public final class MyRenderType {
             RenderSetup.builder(RenderPipelines.ENTITY_TRANSLUCENT_CULL)
                     .withTexture("Sampler0", laserBeam)
                     .useLightmap()
+                    .useOverlay()
                     .setLayeringTransform(LayeringTransform.VIEW_OFFSET_Z_LAYERING)
                     .createRenderSetup()
     );
@@ -62,6 +65,7 @@ public final class MyRenderType {
             RenderSetup.builder(RenderPipelines.ENTITY_TRANSLUCENT)
                     .withTexture("Sampler0", laserBeamGlow)
                     .useLightmap()
+                    .useOverlay()
                     .setLayeringTransform(LayeringTransform.VIEW_OFFSET_Z_LAYERING)
                     .createRenderSetup()
     );

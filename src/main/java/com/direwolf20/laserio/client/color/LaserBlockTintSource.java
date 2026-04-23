@@ -24,7 +24,7 @@ public final class LaserBlockTintSource implements BlockTintSource {
     public int colorInWorld(BlockState state, BlockAndTintGetter level, BlockPos pos) {
         if (level.getBlockEntity(pos) instanceof BaseLaserBE laserBE) {
             Color color = laserBE.getColor();
-            return ARGB.color(color.getAlpha(), color.getRed(), color.getGreen(), color.getBlue());
+            return ARGB.color(255, color.getRed(), color.getGreen(), color.getBlue());
         }
         return -1;
     }

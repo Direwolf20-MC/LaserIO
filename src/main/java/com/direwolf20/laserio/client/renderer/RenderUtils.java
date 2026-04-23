@@ -7,6 +7,7 @@ import com.direwolf20.laserio.common.items.LaserWrench;
 import com.direwolf20.laserio.setup.LaserIORegistration;
 import com.direwolf20.laserio.util.CardRender;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.PoseStack.Pose;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -84,9 +85,8 @@ public class RenderUtils {
             double v = gameTime * 0.04;
             BlockPos startBlock = be.getBlockPos();
             matrixStackIn.pushPose();
-            Matrix4f positionMatrix = matrixStackIn.last().pose();
-
             matrixStackIn.translate(startBlock.getX() - projectedView.x, startBlock.getY() - projectedView.y, startBlock.getZ() - projectedView.z);
+            Pose pose = matrixStackIn.last();
 
             Vector3f startLaser = new Vector3f(0.5f, .5f, 0.5f);
             for (BlockPos target : be.getRenderedConnections()) {
@@ -99,7 +99,7 @@ public class RenderUtils {
                 float diffY = endBlock.getY() + .5f - startBlock.getY();
                 float diffZ = endBlock.getZ() + .5f - startBlock.getZ();
                 Vector3f endLaser = new Vector3f(diffX, diffY, diffZ);
-                drawLaser(builder, positionMatrix, endLaser, startLaser, color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, alpha / 255f, 0.025f, v, v + diffY * 1.5, be);
+                drawLaser(builder, pose, endLaser, startLaser, color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, alpha / 255f, 0.025f, v, v + diffY * 1.5, be);
             }
 
             if (be instanceof LaserConnectorAdvBE laserConnectorAdvBE && laserConnectorAdvBE.getPartnerGlobalPos() != null && level.getBlockState(be.getBlockPos()).getBlock().equals(LaserIORegistration.LaserConnectorAdv.get())) {
@@ -110,7 +110,7 @@ public class RenderUtils {
                 ItemStack myItem = getWrench(myplayer);
                 int alpha = (myItem.getItem() instanceof LaserWrench) ? Math.min(color.getAlpha() + be.getWrenchAlpha(), 255) : color.getAlpha();
                 Vector3f endLaser = calculateEndAdvConnector(startBlock, endBlock, facing);
-                drawLaser(builder, positionMatrix, endLaser, startLaser, color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, alpha / 255f, 0.025f, v, v + endLaser.y() * 1.5, be);
+                drawLaser(builder, pose, endLaser, startLaser, color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, alpha / 255f, 0.025f, v, v + endLaser.y() * 1.5, be);
             }
             matrixStackIn.popPose();
         }
@@ -177,11 +177,11 @@ public class RenderUtils {
             BlockPos startBlock = be.getBlockPos();
 
             matrixStackIn.pushPose();
-            Matrix4f positionMatrix = matrixStackIn.last().pose();
             matrixStackIn.translate(startBlock.getX() - projectedView.x, startBlock.getY() - projectedView.y, startBlock.getZ() - projectedView.z);
+            Pose pose = matrixStackIn.last();
 
             for (CardRender cardRender : be.cardRenders) {
-                drawLaser(builder, positionMatrix, cardRender.endLaser, cardRender.startLaser, cardRender.r, cardRender.g, cardRender.b, alpha, thickness, v, v + cardRender.diffY * 4.5, be);
+                drawLaser(builder, pose, cardRender.endLaser, cardRender.startLaser, cardRender.r, cardRender.g, cardRender.b, alpha, thickness, v, v + cardRender.diffY * 4.5, be);
             }
             matrixStackIn.popPose();
         }
@@ -196,11 +196,11 @@ public class RenderUtils {
             BlockPos startBlock = be.getBlockPos();
 
             matrixStackIn.pushPose();
-            Matrix4f positionMatrix = matrixStackIn.last().pose();
             matrixStackIn.translate(startBlock.getX() - projectedView.x, startBlock.getY() - projectedView.y, startBlock.getZ() - projectedView.z);
+            Pose pose = matrixStackIn.last();
 
             for (CardRender cardRender : be.cardRenders) {
-                drawLaser(builder, positionMatrix, cardRender.endLaser, cardRender.startLaser, cardRender.floatcolors[0], cardRender.floatcolors[1], cardRender.floatcolors[2], 1f, 0.0125f, v, v + cardRender.diffY * 1.5, be);
+                drawLaser(builder, pose, cardRender.endLaser, cardRender.startLaser, cardRender.floatcolors[0], cardRender.floatcolors[1], cardRender.floatcolors[2], 1f, 0.0125f, v, v + cardRender.diffY * 1.5, be);
             }
             matrixStackIn.popPose();
         }
@@ -223,7 +223,7 @@ public class RenderUtils {
         return adjustedVec;
     }
 
-    public static void drawLaser(VertexConsumer builder, Matrix4f positionMatrix, Vector3f from, Vector3f to, float r, float g, float b, float alpha, float thickness, double v1, double v2, BlockEntity be) {
+    public static void drawLaser(VertexConsumer builder, Pose pose, Vector3f from, Vector3f to, float r, float g, float b, float alpha, float thickness, double v1, double v2, BlockEntity be) {
         Vector3f adjustedVec = adjustBeamToEyes(from, to, be);
         adjustedVec.mul(thickness); //Determines how thick the beam is
 
@@ -236,29 +236,37 @@ public class RenderUtils {
         Vector3f p4 = new Vector3f(to);
         p4.sub(adjustedVec);
 
+        Matrix4f positionMatrix = pose.pose();
+        // Constant world-space normal so directional lighting is uniform across every beam,
+        // regardless of beam direction or camera side. Matches vanilla beam renderers
+        // (see EnderDragonRenderer crystal beam, BeaconRenderer).
         builder.addVertex(positionMatrix, p1.x(), p1.y(), p1.z())
                 .setColor(r, g, b, alpha)
                 .setUv(1, (float) v1)
                 .setOverlay(OverlayTexture.NO_OVERLAY)
                 .setLight(15728880)
+                .setNormal(pose, 0.0F, 1.0F, 0.0F)
         ;
         builder.addVertex(positionMatrix, p3.x(), p3.y(), p3.z())
                 .setColor(r, g, b, alpha)
                 .setUv(1, (float) v2)
                 .setOverlay(OverlayTexture.NO_OVERLAY)
                 .setLight(15728880)
+                .setNormal(pose, 0.0F, 1.0F, 0.0F)
         ;
         builder.addVertex(positionMatrix, p4.x(), p4.y(), p4.z())
                 .setColor(r, g, b, alpha)
                 .setUv(0, (float) v2)
                 .setOverlay(OverlayTexture.NO_OVERLAY)
                 .setLight(15728880)
+                .setNormal(pose, 0.0F, 1.0F, 0.0F)
         ;
         builder.addVertex(positionMatrix, p2.x(), p2.y(), p2.z())
                 .setColor(r, g, b, alpha)
                 .setUv(0, (float) v1)
                 .setOverlay(OverlayTexture.NO_OVERLAY)
                 .setLight(15728880)
+                .setNormal(pose, 0.0F, 1.0F, 0.0F)
         ;
     }
 }

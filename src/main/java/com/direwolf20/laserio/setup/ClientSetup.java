@@ -12,6 +12,8 @@ import com.direwolf20.laserio.client.model.CardTransferModeProperty;
 import com.direwolf20.laserio.client.renderer.MyRenderType;
 import com.direwolf20.laserio.client.screens.*;
 import com.direwolf20.laserio.common.LaserIO;
+import net.minecraft.client.color.block.BlockTintSource;
+import net.minecraft.client.color.block.BlockTintSources;
 import net.minecraft.resources.Identifier;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -81,8 +83,10 @@ public class ClientSetup {
 
     @SubscribeEvent
     public static void registerBlockTintSources(RegisterColorHandlersEvent.BlockTintSources event) {
-        event.register(List.of(LaserBlockTintSource.INSTANCE), LaserIORegistration.LaserNode.get());
-        event.register(List.of(LaserBlockTintSource.INSTANCE), LaserIORegistration.LaserConnector.get());
-        event.register(List.of(LaserBlockTintSource.INSTANCE), LaserIORegistration.LaserConnectorAdv.get());
+        BlockTintSource blankLayer = BlockTintSources.constant(-1);
+        List<BlockTintSource> layers = List.of(blankLayer, LaserBlockTintSource.INSTANCE);
+        event.register(layers, LaserIORegistration.LaserNode.get());
+        event.register(layers, LaserIORegistration.LaserConnector.get());
+        event.register(layers, LaserIORegistration.LaserConnectorAdv.get());
     }
 }
