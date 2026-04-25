@@ -71,12 +71,22 @@ public class LaserNodeContainer extends AbstractContainerMenu {
     @Override
     public void clicked(int slotId, int dragType, ContainerInput clickTypeIn, Player player) {
         if (slotId >= 0) {
-            if (slotId < SLOTS && slots.get(slotId) instanceof CardHolderSlot) {
+            if (slotId < SLOTS && slots.get(slotId) instanceof CardHolderSlot slot) {
                 ItemStack carriedItem = getCarried();
-                ItemStack stackInSlot = slots.get(slotId).getItem();
+                ItemStack stackInSlot = slot.getItem();
                 if (stackInSlot.getMaxStackSize() == 1 && stackInSlot.getCount() > 1) {
                     if (!carriedItem.isEmpty() && !stackInSlot.isEmpty() && !ItemStack.isSameItemSameComponents(carriedItem, stackInSlot))
                         return;
+                    // Cards have maxStackSize == 1, so the player can only carry one at a time.
+                    // Pick up exactly one from the slot regardless of left/right click.
+                    if (clickTypeIn == ContainerInput.PICKUP && carriedItem.isEmpty()) {
+                        ItemStack one = stackInSlot.copyWithCount(1);
+                        stackInSlot.shrink(1);
+                        slot.setByPlayer(stackInSlot);
+                        slot.setChanged();
+                        setCarried(one);
+                        return;
+                    }
                 }
             } else {
                 ItemStack slotItem = slots.get(slotId).getItem();

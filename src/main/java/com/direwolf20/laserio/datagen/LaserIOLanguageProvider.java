@@ -16,8 +16,11 @@ public class LaserIOLanguageProvider extends LanguageProvider {
     protected void addTranslations() {
         add("itemGroup." + TAB_NAME, "LaserIO");
         add(LaserIORegistration.LaserConnector.get(), "Laser Connector");
+        add(LaserIORegistration.LaserConnector_ITEM.get(), "Laser Connector");
         add(LaserIORegistration.LaserConnectorAdv.get(), "Advanced Laser Connector");
+        add(LaserIORegistration.LaserConnectorAdv_ITEM.get(), "Advanced Laser Connector");
         add(LaserIORegistration.LaserNode.get(), "Laser Node");
+        add(LaserIORegistration.LaserNode_ITEM.get(), "Laser Node");
         add(LaserIORegistration.Laser_Wrench.get(), "Laser Wrench");
         add(LaserIORegistration.Card_Holder.get(), "Card Holder");
         add(LaserIORegistration.Card_Item.get(), "Item Card");

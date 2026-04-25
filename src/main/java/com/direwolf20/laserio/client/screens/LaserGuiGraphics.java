@@ -10,12 +10,19 @@ public final class LaserGuiGraphics {
     private LaserGuiGraphics() {
     }
 
-    public static void renderItemScale(GuiGraphicsExtractor guiGraphics, float scale, ItemStack itemStack, int x, int y) {
+    /**
+     * Renders an item at a custom size. {@code pixelSize} is the desired width/height in screen pixels
+     * (e.g. {@code 8f} = half a slot, {@code 16f} = full slot). {@code GuiGraphics#item} renders at the
+     * default 16px size, so we divide by 16 to convert pixel-size into a multiplier — matches the
+     * 1.21.1 {@code LaserGuiGraphics#renderItemScale} semantics callers expect.
+     */
+    public static void renderItemScale(GuiGraphicsExtractor guiGraphics, float pixelSize, ItemStack itemStack, int x, int y) {
         if (itemStack.isEmpty()) return;
+        float multiplier = pixelSize / 16f;
         Matrix3x2fStack pose = guiGraphics.pose();
         pose.pushMatrix();
         pose.translate(x + 8f, y + 8f);
-        pose.scale(scale, scale);
+        pose.scale(multiplier, multiplier);
         guiGraphics.item(itemStack, -8, -8, 0);
         pose.popMatrix();
     }

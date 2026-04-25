@@ -1,6 +1,7 @@
 package com.direwolf20.laserio.setup;
 
 import com.direwolf20.laserio.common.LaserIO;
+import com.direwolf20.laserio.util.CardHolderContents;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.core.UUIDUtil;
@@ -23,6 +24,7 @@ public class LaserIODataComponents {
 
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<GlobalPos>> BOUND_GLOBAL_POS = COMPONENTS.register("bound_global_pos", () -> DataComponentType.<GlobalPos>builder().persistent(GlobalPos.CODEC).networkSynchronized(GlobalPos.STREAM_CODEC).build());
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<ItemContainerContents>> ITEMSTACK_HANDLER = COMPONENTS.register("itemstack_handler", () -> DataComponentType.<ItemContainerContents>builder().persistent(ItemContainerContents.CODEC).networkSynchronized(ItemContainerContents.STREAM_CODEC).cacheEncoding().build());
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<CardHolderContents>> CARD_HOLDER_CONTENTS = COMPONENTS.register("card_holder_contents", () -> DataComponentType.<CardHolderContents>builder().persistent(CardHolderContents.CODEC).networkSynchronized(CardHolderContents.STREAM_CODEC).cacheEncoding().build());
 
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Byte>> CARD_TRANSFER_MODE = COMPONENTS.register("card_transfer_mode", () -> DataComponentType.<Byte>builder().persistent(Codec.BYTE).networkSynchronized(ByteBufCodecs.BYTE).build());
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Byte>> CARD_CHANNEL = COMPONENTS.register("card_channel", () -> DataComponentType.<Byte>builder().persistent(Codec.BYTE).networkSynchronized(ByteBufCodecs.BYTE).build());
