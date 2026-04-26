@@ -1,6 +1,5 @@
 package com.direwolf20.laserio.common;
 
-import com.direwolf20.laserio.common.blockentities.LaserNodeBE;
 import com.direwolf20.laserio.common.containers.CardHolderContainer;
 import com.direwolf20.laserio.common.items.CardHolder;
 import com.direwolf20.laserio.common.network.PacketHandler;
@@ -51,14 +50,6 @@ public class LaserIO {
     }
 
     private void registerCapabilities(RegisterCapabilitiesEvent event) {
-        event.registerBlock(Capabilities.Item.BLOCK,
-                (level, pos, state, be, side) -> {
-                    if (side != null)
-                        return ((LaserNodeBE) be).nodeSideCaches[side.ordinal()].itemHandler;
-                    return null;
-                },
-                // blocks to register for
-                LaserIORegistration.LaserNode.get());
         event.registerItem(Capabilities.Item.ITEM, (itemStack, access) -> {
                     if (itemStack.getItem() instanceof CardHolder holder)
                         return new CardHolderItemStackHandler(CardHolderContainer.SLOTS,
