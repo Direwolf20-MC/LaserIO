@@ -2375,7 +2375,7 @@ public class LaserNodeBE extends BaseLaserBE {
         this.cardRenders.clear();
         redstoneCardSides.clear();
         for (Direction direction : Direction.values()) {
-            ResourceHandler<ItemResource> h = level.getCapability(Capabilities.Item.BLOCK, getBlockPos(), direction);
+            ResourceHandler<ItemResource> h = nodeSideCaches[direction.ordinal()].itemHandler;
             if (h == null) h = EMPTY;
             for (int slot = 0; slot < h.size(); slot++) {
                 ItemStack card = stackAt(h, slot);

@@ -9,7 +9,6 @@ import com.direwolf20.laserio.common.containers.LaserNodeContainer;
 import com.direwolf20.laserio.common.containers.customhandler.LaserNodeItemHandler;
 import com.direwolf20.laserio.common.network.data.OpenNodePayload;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
 import net.minecraft.server.level.ServerPlayer;
@@ -20,10 +19,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
-import net.neoforged.neoforge.transfer.ResourceHandler;
-import net.neoforged.neoforge.transfer.item.ItemResource;
 
 import static com.direwolf20.laserio.common.blocks.LaserNode.SCREEN_LASERNODE;
 import static com.direwolf20.laserio.common.blocks.LaserNode.findCardHolders;
@@ -64,7 +60,7 @@ public class PacketOpenNode {
                 // set it to empty, so it's doesn't get dropped
                 sender.containerMenu.setCarried(ItemStack.EMPTY);
             }
-            ResourceHandler<ItemResource> h = sender.level().getCapability(Capabilities.Item.BLOCK, sourcePos, Direction.values()[payload.side()]);
+            LaserNodeItemHandler h = ((LaserNodeBE) be).nodeSideCaches[payload.side()].itemHandler;
             ItemStack cardHolder = findCardHolders(sender);
 
             MenuProvider containerProvider = new MenuProvider() {
@@ -80,7 +76,7 @@ public class PacketOpenNode {
 
                 @Override
                 public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player playerEntity) {
-                    return new LaserNodeContainer((LaserNodeBE) be, windowId, payload.side(), playerInventory, playerEntity, (LaserNodeItemHandler) h, ContainerLevelAccess.create(be.getLevel(), be.getBlockPos()), cardHolder);
+                    return new LaserNodeContainer((LaserNodeBE) be, windowId, payload.side(), playerInventory, playerEntity, h, ContainerLevelAccess.create(be.getLevel(), be.getBlockPos()), cardHolder);
                 }
             };
 

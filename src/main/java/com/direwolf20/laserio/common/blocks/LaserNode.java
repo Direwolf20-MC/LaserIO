@@ -29,7 +29,6 @@ import net.minecraft.world.level.redstone.Orientation;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.item.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
@@ -57,7 +56,7 @@ public class LaserNode extends BaseLaserBlock implements EntityBlock {
             if (be instanceof LaserNodeBE) {
 
                 if (heldItem.getItem() instanceof BaseCard) {
-                    ResourceHandler<ItemResource> itemHandler = level.getCapability(Capabilities.Item.BLOCK, blockPos, hit.getDirection());
+                    LaserNodeItemHandler itemHandler = ((LaserNodeBE) be).nodeSideCaches[hit.getDirection().ordinal()].itemHandler;
                     ItemStack remainingStack = insertItemToNode(itemHandler, heldItem);
                     player.setItemInHand(InteractionHand.MAIN_HAND, remainingStack);
                 } else {
