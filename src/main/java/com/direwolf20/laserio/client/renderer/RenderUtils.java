@@ -95,6 +95,7 @@ public class RenderUtils {
                 Player myplayer = Minecraft.getInstance().player;
                 ItemStack myItem = getWrench(myplayer);
                 int alpha = (myItem.getItem() instanceof LaserWrench) ? Math.min(color.getAlpha() + be.getWrenchAlpha(), 255) : color.getAlpha();
+                if (alpha <= 0) continue;
                 float diffX = endBlock.getX() + .5f - startBlock.getX();
                 float diffY = endBlock.getY() + .5f - startBlock.getY();
                 float diffZ = endBlock.getZ() + .5f - startBlock.getZ();
@@ -109,8 +110,10 @@ public class RenderUtils {
                 Player myplayer = Minecraft.getInstance().player;
                 ItemStack myItem = getWrench(myplayer);
                 int alpha = (myItem.getItem() instanceof LaserWrench) ? Math.min(color.getAlpha() + be.getWrenchAlpha(), 255) : color.getAlpha();
-                Vector3f endLaser = calculateEndAdvConnector(startBlock, endBlock, facing);
-                drawLaser(builder, pose, endLaser, startLaser, color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, alpha / 255f, 0.025f, v, v + endLaser.y() * 1.5, be);
+                if (alpha > 0) {
+                    Vector3f endLaser = calculateEndAdvConnector(startBlock, endBlock, facing);
+                    drawLaser(builder, pose, endLaser, startLaser, color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, alpha / 255f, 0.025f, v, v + endLaser.y() * 1.5, be);
+                }
             }
             matrixStackIn.popPose();
         }

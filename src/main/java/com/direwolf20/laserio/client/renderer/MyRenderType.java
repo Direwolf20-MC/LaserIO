@@ -4,8 +4,10 @@ import com.direwolf20.laserio.common.LaserIO;
 import com.mojang.blaze3d.pipeline.DepthStencilState;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.platform.CompareOp;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.rendertype.LayeringTransform;
+import net.minecraft.client.renderer.rendertype.OutputTarget;
 import net.minecraft.client.renderer.rendertype.RenderSetup;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.resources.Identifier;
@@ -30,12 +32,23 @@ public final class MyRenderType {
         event.registerPipeline(BLOCK_OVERLAY_PIPELINE);
     }
 
+    // Route laser beams into the same render target as vanilla translucent chunk geometry (water, glass, etc.).
+    // With MC 26.1's "Improved Transparency" enabled, vanilla translucents render to a separate target that
+    // the transparency post-chain composites back onto main. If we draw to main directly, our beams blend
+    // against the not-yet-composited main pixels and end up tinted by water once the composite happens.
+    // OutputTarget falls back to main automatically when getTranslucentTarget() is null (option disabled).
+    private static final OutputTarget LASER_OUTPUT_TARGET = new OutputTarget(
+            "laserio:translucent_target",
+            () -> Minecraft.getInstance().levelRenderer.getTranslucentTarget()
+    );
+
     public static final RenderType LASER_MAIN_BEAM = RenderType.create(
             "MiningLaserMainBeam",
             RenderSetup.builder(RenderPipelines.ENTITY_TRANSLUCENT_CULL)
                     .withTexture("Sampler0", laserBeam2)
                     .useLightmap()
                     .useOverlay()
+                    .setOutputTarget(LASER_OUTPUT_TARGET)
                     .createRenderSetup()
     );
 
@@ -46,6 +59,7 @@ public final class MyRenderType {
                     .useLightmap()
                     .useOverlay()
                     .setLayeringTransform(LayeringTransform.VIEW_OFFSET_Z_LAYERING)
+                    .setOutputTarget(LASER_OUTPUT_TARGET)
                     .createRenderSetup()
     );
 
@@ -56,6 +70,7 @@ public final class MyRenderType {
                     .useLightmap()
                     .useOverlay()
                     .setLayeringTransform(LayeringTransform.VIEW_OFFSET_Z_LAYERING)
+                    .setOutputTarget(LASER_OUTPUT_TARGET)
                     .createRenderSetup()
     );
 
